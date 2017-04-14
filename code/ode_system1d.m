@@ -1,4 +1,4 @@
-function f = dae_system1d(t, y)
+function f = ode_system1d(t, y)
 
 startup;
 %t = 1.;
@@ -13,8 +13,20 @@ f = zeros(N,1);
 
 %% Non-linear part
 f(1) = heat_rate;
+
+% backward differences in gradient
 f(2:N-1) = lambda / rho * -1./c_p_formula(y(2:N-1)).^2 .* ...
-           dc_p_formula(y(2:N-1)) .* (y(3:N) - y(2:N-1)).^2 / dx^2;
+           dc_p_formula(y(2:N-1)) .* (y(2:N-1) - y(1:N-2)).^2 / dx^2;
+
+% forward differences in gradient
+%f(2:N-1) = lambda / rho * -1./c_p_formula(y(2:N-1)).^2 .* ...
+%           dc_p_formula(y(2:N-1)) .* (y(3:N) - y(2:N-1)).^2 / dx^2;
+
+% central differences in gradient
+f(2:N-1) = lambda / rho * -1./c_p_formula(y(2:N-1)).^2 .* ...
+           dc_p_formula(y(2:N-1)) .* (y(3:N) - y(1:N-2)).^2 / (4*dx^2);
+
+
 f(N) = 0;
 
 

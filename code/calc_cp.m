@@ -34,5 +34,5 @@ f = fit(T_grid(100:end-10), c_p_pcm(100:end-10), fit_fct2, ...
 c_p_fit = f(T_grid(100:end-10));
 
 plot(T_grid(100:end-10), c_p_fit, 'color', 'red'); hold on
-plot(T_grid(100:end-10), c_p_pcm(100:end-10), 'color', 'blue');
+%plot(T_grid(100:end-10), c_p_pcm(100:end-10), 'color', 'blue');
 hold off
