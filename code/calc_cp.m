@@ -17,17 +17,29 @@ U_korr_sap = interp1(dsc_sap.data(:,1), dsc_sap.data(:,3), T_grid);
 
 c_p_sap = DSC204_cp_saphire_DIN11357(T_grid);
 
-c_p_pcm = c_p_sap .* m_sap./m_pcm .* U_korr_pcm./U_korr_sap;
-% !!!! mit Massen multipl. weil V/g Einheit U_korr...
+%c_p_pcm = c_p_sap .* m_sap./m_pcm .* U_korr_pcm./U_korr_sap; % old
+c_p_pcm = c_p_sap .* U_korr_pcm./U_korr_sap; 
+% measured voltage already normalized by mass: 
+%U_korr_pcm = (U_pcm - U_0)/m_pcm}
 
 % save data for further processing in python
 filename = 'c_p_pcm.mat';
 save(filename, 'c_p_pcm', 'T_grid');
 
-% fit c_p on function
-fit_fct2 = fittype('1/(exp(d*(x-a))+1) * (b*exp(-c*(x-a)^2)) + e*x + f', ...
+
+
+% test start parameters
+%fit_fct = @(x, a, b, c, d, e, f) (atan(-d*(x-a))+pi/2) .* (b*exp(-c.*(x-a).^2)) + e*x + f;
+%plot(T_grid(100:end-10), fit_fct(T_grid(100:end-10), 140., 5., 0.01, 0.7, 0.01, 0.)); hold on
+%plot(T_grid(100:end-10), c_p_pcm(100:end-10), 'color', 'blue');
+
+
+%% fit c_p on function
+%fit_fct1 = fittype('1/(exp(d*(x-a))+1) * (b*exp(-c*(x-a)^2)) + e*x + f', ...
+%    'coeff', {'a', 'b', 'c', 'd', 'e', 'f'});
+fit_fct2 = fittype('(atan(-d*(x-a))+pi/2) * (b*exp(-c*(x-a)^2)) + e*x + f', ...
     'coeff', {'a', 'b', 'c', 'd', 'e', 'f'});
-start_param = [140., 100., 0.01, 0.7, 0.01, 15.];
+start_param = [140., 5., 0.01, 0.7, 0.01, 0.];
 f = fit(T_grid(100:end-10), c_p_pcm(100:end-10), fit_fct2, ...
     'Startpoint', start_param);
 
@@ -36,3 +48,5 @@ c_p_fit = f(T_grid(100:end-10));
 plot(T_grid(100:end-10), c_p_fit, 'color', 'red'); hold on
 %plot(T_grid(100:end-10), c_p_pcm(100:end-10), 'color', 'blue');
 hold off
+
+coeffvalues(f)

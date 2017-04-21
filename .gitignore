@@ -1,0 +1,35 @@
+# walkerator .gitignore
+
+# Blacklist
+*.orig
+*.log
+*_build
+*htmlcov
+*.egg-info
+*__pycache__
+*~
+*.pyc
+*.pdf
+*.hdf5
+*.h5
+*.csv
+.coverage
+.tox/
+sonic.log
+*.aux
+*.nav
+*.out
+*.snm
+*.gz
+*.toc
+*.jpg
+*.mat
+*.txt
+DSC204_F1_Phoenix_Messungen/
+code_old/
+.ipynb_checkpoints/
+
+
+
+# Whitelist
+tox.ini

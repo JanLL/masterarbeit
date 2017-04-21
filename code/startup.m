@@ -1,8 +1,8 @@
-N = 10;
-L = 0.08;
+N = 20;
+L = 0.5; %[m]
 dx = L/N;
 
-rho = 1.;
-lambda = 1.;
+rho = 800.;  % [kg/m^3]
+lambda = 0.96; % [W/(m * K)]
 
-heat_rate = 0.01; 
+heat_rate = 1.0; 
