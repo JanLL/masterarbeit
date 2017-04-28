@@ -10,6 +10,9 @@
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
 
+\usepackage{mathtools}
+\usepackage{units}
+
 \usepackage{caption}
 \usepackage{subcaption}
 
@@ -31,7 +34,8 @@
 \maketitle \ \\ 
 \newpage
 
-\section{Derivation}
+\section{Derivations}
+\subsection{Heat equation with temperature dependency of $c_p$, $\rho$ and $\lambda$}
 
 $T = T(\vec{x},t)$ but skipped in the following derivation for clarity.
 
@@ -48,6 +52,73 @@ $T = T(\vec{x},t)$ but skipped in the following derivation for clarity.
 	= & \frac{1}{\rho (T) \cdot c_p (T)} \frac{\partial \lambda}{\partial T} (\nabla T)^T \nabla T - \frac{\lambda (T)}{(\rho(T))^2 c_p(T)} \frac{\partial \rho}{\partial T} (\nabla T)^T \nabla T - \frac{\lambda (T)}{\rho(T) (c_p(T))^2} \frac{\partial c_p}{\partial T} (\nabla T)^T \nabla T \\
 	& + \frac{\lambda (T)}{\rho (T) \cdot c_p (T)} \Delta T \\
 	= & \left[ \frac{1}{\rho (T) \cdot c_p (T)} \frac{\partial \lambda}{\partial T} - \frac{\lambda (T)}{(\rho(T))^2 c_p(T)} \frac{\partial \rho}{\partial T} - \frac{\lambda (T)}{\rho(T) (c_p(T))^2} \frac{\partial c_p}{\partial T} \right] \cdot (\nabla T)^T \nabla T + \frac{\lambda (T)}{\rho (T) \cdot c_p (T)} \Delta T \\
+\end{align*}
+
+\subsection{Discretization 1D, $\lambda$ and $\rho$ const. $\forall T$}
+
+\begin{equation*}
+	(\nabla T)^k = \frac{T^{k+1} - T^k}{x^{x+1} - x^k} \underbrace{=}_{\substack{\text{equidistant} \\ \text{grid}}} =  \frac{T^{k+1} - T^k}{\Delta x}
+\end{equation*}
+
+\begin{equation*}
+	(\Delta T)^k = \frac{T^{k+1} - 2 T^k + T^{k-1}}{(\Delta x)^2}
+\end{equation*}
+
+Boundary conditions:
+
+\begin{itemize}
+	\item $T^0(t) = T_{\text{oven}}(t)$ \quad with \quad $\dot{ T}_{\text{oven}}= \beta = const.$
+	\item $(\nabla T)^{N-1} = \frac{T^{N} - T^{N-1}}{\Delta x} \stackrel{!}{=} 0 \quad \Leftrightarrow \quad T^{N-1} = T^N$ 
+\end{itemize}
+
+ODE-system with line-method:
+
+\begin{align*}
+	\dot{T}^k & = \frac{\lambda}{\rho} \left[ - \frac{1}{(c_p(T^k))^2} \cdot \frac{\partial c_p(T^k)}{\partial T^k} \cdot \left( \frac{T^{k+1} - T^k}{\Delta x} \right)^2 + \frac{1}{c_p(T^k)} \cdot \frac{T^{k+1} - 2 T^k + T^{k-1}}{(\Delta x)^2} \right] & & \text{for } k = 1, ..., N-1 \\
+	T^0 & = T_{\text{oven}} \\
+	T^N & = T^{N-1}
+\end{align*}
+
+which is equivalent to
+
+\begin{align*}
+	\frac{d}{dt} \begin{bmatrix*}
+	T^0 \\
+	T^1 \\
+	T^2 \\
+	\vdots \\
+	T^{N-2} \\
+	T^{N-1}
+	\end{bmatrix*} = &
+	\begin{bmatrix}
+		\beta \\
+		- \frac{\lambda}{\rho} \frac{1}{(c_p(T^1))^2} \frac{\partial c_p (T^1)}{\partial T^1} \frac{(T^2 - T^1)^2}{(\Delta x)^2} \\
+		- \frac{\lambda}{\rho} \frac{1}{(c_p(T^2))^2} \frac{\partial c_p (T^2)}{\partial T^2} \frac{(T^3 - T^2)^2}{(\Delta x)^2} \\
+		\vdots \\
+		- \frac{\lambda}{\rho} \frac{1}{(c_p(T^{N-2}))^2} \frac{\partial c_p (T^{N-2})}{\partial T^{N-2}} \frac{(T^{N-1} - T^{N-2})^2}{(\Delta x)^2} \\	
+		0 \\			
+	\end{bmatrix} \\
+	& + \frac{\lambda}{\rho} \frac{1}{(\Delta x)^2}
+	\begin{bmatrix}
+		0 & 0 & 0 & \dots & 0 & 0 \\
+		\nicefrac{1}{c_p(T^1)} & -\nicefrac{2}{c_p(T^1)} & \nicefrac{1}{c_p(T^1)} & & &  \\
+		& \nicefrac{1}{c_p(T^2)} & -\nicefrac{2}{c_p(T^2)} & \nicefrac{1}{c_p(T^2)} & \\
+		\\
+		& & \ddots & \ddots & \ddots \\
+		\\
+		& 0 & &  \nicefrac{1}{c_p(T^{N-2})} & -\nicefrac{2}{c_p(T^{N-2})} & \nicefrac{1}{c_p(T^{N-2})} \\
+		& & & & \nicefrac{1}{c_p(T^{N-1})} & -\nicefrac{1}{c_p(T^{N-1})}
+	\end{bmatrix}
+	\begin{bmatrix*}
+		T^0 \\
+		T^1 \\
+		T^2 \\
+		\\
+		\vdots \\
+		\\
+		T^{N-2} \\
+		T^{N-1}
+	\end{bmatrix*}
 \end{align*}
 
 
