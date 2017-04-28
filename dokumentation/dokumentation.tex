@@ -1,0 +1,55 @@
+\documentclass{scrartcl}[12pt, halfparskip]
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{amsmath, amssymb, amstext}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+
+\usepackage{caption}
+\usepackage{subcaption}
+
+\bibliographystyle{unsrt}
+
+\setlength{\parindent}{0pt}
+
+\newcommand{\todo}[1]{\textcolor{red}{TODO: #1}}
+
+
+\title{Master Thesis}
+\author{Jan Lammel}
+\date{\today{}, Heidelberg}
+
+
+
+\begin{document}
+
+\maketitle \ \\ 
+\newpage
+
+\section{Derivation}
+
+$T = T(\vec{x},t)$ but skipped in the following derivation for clarity.
+
+\begin{align*}
+	\frac{\partial T}{\partial t} = & \nabla \left[ a(\vec{x},T) \cdot \nabla T(\vec{x},T) \right] \\
+	= & \nabla \left[ \frac{\lambda(T)}{\rho(T) \cdot c_p(T)} \nabla T \right] \\
+	= & \nabla \left( \frac{\lambda(T)}{\rho(T) \cdot c_p(T)} \right) \nabla T + \frac{\lambda(T)}{\rho(T) \cdot c_p(T)} \Delta T \\
+	= & \frac{1}{\rho (T) \cdot c_p (T)} \nabla \lambda (T) \nabla T + \lambda (T) \nabla \cdot \left[ \rho (T) \cdot c_p (T) \right]^{-1} \nabla T + \frac{\lambda (T)}{\rho (T) \cdot c_p (T)} \Delta T \\
+	= & \frac{1}{\rho (T) \cdot c_p (T)} \nabla \lambda (T) \nabla T - \left[ \rho (T) \cdot c_p (T) \right]^{-2} \nabla \left[ \rho (T) \cdot c_p (T) \right] \lambda(T) \nabla T + \frac{\lambda (T)}{\rho (T) \cdot c_p (T)} \Delta T \\
+	= & \frac{1}{\rho (T) \cdot c_p (T)} \nabla \lambda (T) \nabla T - \frac{\lambda (T)}{(\rho(T) \cdot c_p(T))^2} (\nabla T)^T \left[ \nabla \rho(T) c_p(T) + \rho(T) \nabla c_p(T) \right] \\
+	& + \frac{\lambda (T)}{\rho (T) \cdot c_p (T)} \Delta T \\
+	= & \frac{1}{\rho (T) \cdot c_p (T)} \frac{\partial \lambda}{\partial T} (\nabla T)^T \nabla T - \frac{\lambda (T)}{(\rho(T) \cdot c_p(T))^2} (\nabla T)^T \left[ \frac{\partial \rho}{\partial T} \nabla T \cdot c_p(T) + \rho(T) \frac{ \partial c_p}{\partial T} \nabla T \right] \\
+	& + \frac{\lambda (T)}{\rho (T) \cdot c_p (T)} \Delta T \\
+	= & \frac{1}{\rho (T) \cdot c_p (T)} \frac{\partial \lambda}{\partial T} (\nabla T)^T \nabla T - \frac{\lambda (T)}{(\rho(T))^2 c_p(T)} \frac{\partial \rho}{\partial T} (\nabla T)^T \nabla T - \frac{\lambda (T)}{\rho(T) (c_p(T))^2} \frac{\partial c_p}{\partial T} (\nabla T)^T \nabla T \\
+	& + \frac{\lambda (T)}{\rho (T) \cdot c_p (T)} \Delta T \\
+	= & \left[ \frac{1}{\rho (T) \cdot c_p (T)} \frac{\partial \lambda}{\partial T} - \frac{\lambda (T)}{(\rho(T))^2 c_p(T)} \frac{\partial \rho}{\partial T} - \frac{\lambda (T)}{\rho(T) (c_p(T))^2} \frac{\partial c_p}{\partial T} \right] \cdot (\nabla T)^T \nabla T + \frac{\lambda (T)}{\rho (T) \cdot c_p (T)} \Delta T \\
+\end{align*}
+
+
+
+\end{document}
