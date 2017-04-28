@@ -46,32 +46,26 @@ dT_non_lin(N) = 0;
 J_lin = zeros(N,N);
 
 % main diagonal 
-J_lin = J_lin + diag( -2 ./ c_p(1:N));
+J_lin = J_lin + diag(-2. * ones(N,1));
 J_lin(1,1) = 0.;
-J_lin(N,N) = J_lin(N,N) / 2.;
+J_lin(N,N) = -1.;
 
 % upper first diagonal
-J_lin = J_lin + diag( 1 ./ c_p(2:N),1);
+J_lin = J_lin + diag(1. * ones(N-1,1),1);
 J_lin(1,2) = 0;
 
 % lower first diagonal
-J_lin = J_lin + diag( 1 ./ c_p(2:N),-1);
+J_lin = J_lin + diag(1. * ones(N-1,1),-1);
+
+% inverse c_p vector
+inv_c_p = 1 ./ c_p_formula(T(1:N));
 
 % linear part vector
-dT_lin = lambda / (rho * dx^2) * J_lin * T(1:N);
+dT_lin = lambda / (rho * dx^2) * inv_c_p .* (J_lin * T(1:N));
 
 %% put linear and non-linear part together
 
 dT = dT_non_lin + dT_lin;
-
-
-% dT
-%if t>80 && t<85, dT, end
-%if any(dT>500); keyboard; end
-
-if t > 75 && t < 79
-    fprintf('t:%d\tdT2 NL: %d\tdT2 L: %d\n', t, dT_non_lin(2), dT_lin(2))
-end
 
 
 return
