@@ -1,4 +1,4 @@
-function dT = ode_system1d(t, T)
+function dT = ode_system1d(t, T, J_lin_sparse)
 
 startup;
 
@@ -37,17 +37,12 @@ dT_non_lin(N) = 0;
 
 
 %% Linear part
-%Jacobi matrix
-
-% todo: sparse:
-% spdiag, sparse(N,N)
-% siehe spdiags(B,d,A)
-
-% sparse variant
+%{
+%Jacobi matrix sparse variant
 J_lin_columns = ones(N, 3);
 
 % main diagonal
-J_lin_columns(:, 1) = J_lin_columns(:, 1) * (-2.);
+J_lin_columns(2:end-1, 1) = -2.;
 J_lin_columns(1, 1) = 0;
 J_lin_columns(N, 1) = -1.;
 
@@ -60,6 +55,7 @@ J_lin_columns(1:2, 2) = 0.;  % one element less again and one zero entry
 % build actual sparse matrix for linear part
 diagonals = [0, 1, -1];
 J_lin_sparse = spdiags(J_lin_columns, diagonals, N, N);
+%}
 
 
 % inverse c_p vector

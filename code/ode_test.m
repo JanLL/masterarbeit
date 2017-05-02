@@ -7,8 +7,31 @@ t0 = 0.;
 tf = 50.;
 t = linspace(t0, tf, (tf-t0)*10000)';
 
+
+%Jacobi matrix sparse variant
+J_lin_columns = ones(N, 3);
+
+% main diagonal
+J_lin_columns(2:end-1, 1) = -2.;
+J_lin_columns(1, 1) = 0;
+J_lin_columns(N, 1) = -1.;
+
+% upper first diagonal
+J_lin_columns(1, 2) = 0.;  % one element less than in main diagonal
+
+% lower first diagonal
+J_lin_columns(1:2, 2) = 0.;  % one element less again and one zero entry
+
+% build actual sparse matrix for linear part
+diagonals = [0, 1, -1];
+J_lin_sparse = spdiags(J_lin_columns, diagonals, N, N);
+
+
 opts = odeset('reltol', 1.0d-6, 'abstol', 1.0d-16);
-sol = ode15s(@ode_system1d, t, T0, opts);
+
+tic;
+sol = ode15s(@(t, y) ode_system1d(t, y, J_lin_sparse), t, T0, opts);
+toc
 
 T = deval(sol, t)';
 
