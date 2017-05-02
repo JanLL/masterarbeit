@@ -43,25 +43,30 @@ dT_non_lin(N) = 0;
 % spdiag, sparse(N,N)
 % siehe spdiags(B,d,A)
 
-J_lin = zeros(N,N);
+% sparse variant
+J_lin_columns = ones(N, 3);
 
-% main diagonal 
-J_lin = J_lin + diag(-2. * ones(N,1));
-J_lin(1,1) = 0.;
-J_lin(N,N) = -1.;
+% main diagonal
+J_lin_columns(:, 1) = J_lin_columns(:, 1) * (-2.);
+J_lin_columns(1, 1) = 0;
+J_lin_columns(N, 1) = -1.;
 
 % upper first diagonal
-J_lin = J_lin + diag(1. * ones(N-1,1),1);
-J_lin(1,2) = 0;
+J_lin_columns(1, 2) = 0.;  % one element less than in main diagonal
 
 % lower first diagonal
-J_lin = J_lin + diag(1. * ones(N-1,1),-1);
+J_lin_columns(1:2, 2) = 0.;  % one element less again and one zero entry
+
+% build actual sparse matrix for linear part
+diagonals = [0, 1, -1];
+J_lin_sparse = spdiags(J_lin_columns, diagonals, N, N);
+
 
 % inverse c_p vector
 inv_c_p = 1 ./ c_p_formula(T(1:N));
 
 % linear part vector
-dT_lin = lambda / (rho * dx^2) * inv_c_p .* (J_lin * T(1:N));
+dT_lin = lambda / (rho * dx^2) * inv_c_p .* (J_lin_sparse * T(1:N));
 
 %% put linear and non-linear part together
 

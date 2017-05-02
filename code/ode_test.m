@@ -4,7 +4,7 @@ startup;
 T0 = 80 .* ones(N,1);
 
 t0 = 0.;
-tf = 150.;
+tf = 50.;
 t = linspace(t0, tf, (tf-t0)*10000)';
 
 opts = odeset('reltol', 1.0d-6, 'abstol', 1.0d-16);
