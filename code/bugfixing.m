@@ -1,42 +1,10 @@
-startup;
-
-i0 = find(t > 55, 1, 'first');
-%ie = find(T(:,1) < T(:,2), 1, 'first');
-ie = find(t < 70, 1, 'last');
-
-%i0 = 10000
+N = 500;
+L = 0.005;
+lambda = 0.96;
 
 
-dt = t(2) - t(1); % assume: equidistant
+T_5 = ode_test(N, L, lambda, 5.);
+T_1 = ode_test(N, L, lambda, 1.);
 
-dT1 = diff(T(:,2))./dt;
-dT2 = diff(T(:,3))./dt;
-dT5 = diff(T(:,6))./dt;
-dTN = diff(T(:,end))./dt;
-
-
-ddT1 = diff(dT1)./dt;
-ddT2 = diff(dT2)./dt;
-ddT5 = diff(dT5)./dt;
-ddTN = diff(dTN)./dt;
-
-
-figure(1);
-plot(t(i0:ie), ddT1(i0:ie), 'DisplayName', 'ddT_1'); hold on
-plot(t(i0:ie), ddT2(i0:ie), 'DisplayName', 'ddT_2'); hold on
-%plot(t(i0:ie), ddT5(i0:ie), 'DisplayName', 'ddT_5'); hold on
-
-%plot(t(1:ie), ddTN(1:ie), 'DisplayName', 'ddT_N'); hold on
-
-legend(gca, 'show', 'Location', 'northwest')
-xlabel('Time t');
-
-
-figure(2);
-plot(t(i0:ie), T(i0:ie,1), 'g--', 'DisplayName', 'T_0'); hold on
-plot(t(i0:ie), T(i0:ie,2), 'r--', 'DisplayName', 'T_1'); hold on
-plot(t(i0:ie), T(i0:ie,6), 'r--', 'DisplayName', 'T_5'); hold on
-%plot(t(1:ie), T(1:ie,end), 'r--', 'DisplayName', 'T_N'); hold on
-
-xlabel('Time t');
-ylabel('Temp T');
+plot(T_5(:,1), T_5(:,1)-T_5(:,2)); hold on
+plot(T_1(:,1), 5. .* (T_1(:,1)-T_1(:,2))); hold on

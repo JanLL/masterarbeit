@@ -1,5 +1,8 @@
 function [c_p] = c_p_formula(T)
 
+% c_p in [J/(kg K)]
+% T in [°C]
+
 % values from fit for beta=10K/min
 p0 = 144.0009;
 p1 = 4.1036;
