@@ -3,7 +3,7 @@ function [c_p] = c_p_formula(T)
 % 
 % Calculates specific heat capacity for given temperature range.
 %
-% INPUT:    T --> temperature in degree Celsius
+% INPUT:    T --> temperature in [degree Celsius]
 %
 % OUTPUT: c_p --> specific heat capacity in [mJ/(mg*K)]
 %

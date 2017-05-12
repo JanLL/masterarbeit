@@ -1,11 +1,19 @@
 function [J_lin_sparse] = build_linear_matrix(N)
 % [J_lin_sparse] = build_linear_matrix(N)
-%  TODO AB HIER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-% Calculates specific heat capacity for given temperature range.
+% 
+% Builds the sparse matrix of the linear part of the heat equation:
 %
-% INPUT:    T --> temperature in degree Celsius
+% |0   0  0 .... 0|
+% |1  -2  1 0 .. 0|
+% |0   1 -2 1 0..0|
+% |...............|
+% |0...0  1  -2  1|
+% |0...0  0   1 -1|
 %
-% OUTPUT: c_p --> specific heat capacity in [mJ/(mg*K)]
+% INPUT:             N --> number of spatial lattice points.
+%
+% OUTPUT: J_lin_sparse --> sparse matrix of the linear part of the 
+%                          heat equation (see above structure)
 %
 % Author: Jan Lammel, lammel@stud.uni-heidelberg.de
 
@@ -28,4 +36,4 @@ diagonals = [0, 1, -1];
 J_lin_sparse = spdiags(J_lin_columns, diagonals, N, N);
 
 
-end
+return

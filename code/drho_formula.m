@@ -3,9 +3,9 @@ function [drho] = drho_formula(T)
 % 
 % Calculates density for specified temperature.
 %
-% INPUT:    T --> temperature in degree Celsius
+% INPUT:    T --> temperature in [degree Celsius]
 %
-% OUTPUT: drho --> d(density)/dT in mg/mm^3
+% OUTPUT: drho --> d(density)/dT in [mg/mm^3]
 %
 % Author: Jan Lammel, lammel@stud.uni-heidelberg.de
 
