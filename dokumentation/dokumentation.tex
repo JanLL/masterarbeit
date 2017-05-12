@@ -7,8 +7,6 @@
 \usepackage{float}
 \usepackage{graphicx}
 \usepackage{color}
-\usepackage{algorithm}
-\usepackage[noend]{algpseudocode}
 
 \usepackage{mathtools}
 \usepackage{units}
@@ -36,6 +34,7 @@
 
 \section{Derivations}
 \subsection{Heat equation with temperature dependency of $c_p$, $\rho$ and $\lambda$}
+
 
 $T = T(\vec{x},t)$ but skipped in the following derivation for clarity.
 
@@ -121,6 +120,19 @@ which is equivalent to
 	\end{bmatrix*}
 \end{align*}
 
+\section{Functions for $c_p$ and $\rho$-fit}
+
+\begin{equation*}
+	c_p(T) = \left[ \arctan (-p_3 (T-p_0)) + \frac{\pi}{2} \right] \cdot \left[ p_1 \exp(-p_2(T-p_0)^2)] \right] + p_4 \cdot T + p_5 
+\end{equation*}
+
+
+\begin{equation*}
+	c_p(T) = \left[ \frac{1}{\exp(p_3(T-p_0)) + 1} \right] \cdot \left[ p_1 \exp(-p_2(T-p_0)^2)] \right] + p_4 \cdot T + p_5 
+\end{equation*}
+
+
+$ a \underbrace{=}_{\stackrel{hallo}{Ina}} b $
 
 
 \end{document}

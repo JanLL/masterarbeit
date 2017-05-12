@@ -1,10 +1,17 @@
 function [rho] = rho_formula(T)
+% [rho] = rho_formula(T)
+% 
+% Calculates density for specified temperature.
+%
+% INPUT:    T --> temperature in degree Celsius
+%
+% OUTPUT: rho --> density in kg/m^3
+%
+% Author: Jan Lammel, lammel@stud.uni-heidelberg.de
 
-% formula from PCM_rho.m from Robert
 
-% rho in [kg/m^3] ??
-% T in [°C]
 
+% formula and parameter from PCM_rho.m from Robert
 p0 = 167.2182;
 p1 = 129.9861;
 p2 = 760.8218;
