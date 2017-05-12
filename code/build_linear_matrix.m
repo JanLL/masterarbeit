@@ -1,4 +1,14 @@
 function [J_lin_sparse] = build_linear_matrix(N)
+% [J_lin_sparse] = build_linear_matrix(N)
+%  TODO AB HIER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+% Calculates specific heat capacity for given temperature range.
+%
+% INPUT:    T --> temperature in degree Celsius
+%
+% OUTPUT: c_p --> specific heat capacity in [mJ/(mg*K)]
+%
+% Author: Jan Lammel, lammel@stud.uni-heidelberg.de
+
 
 J_lin_columns = ones(N, 3);
 

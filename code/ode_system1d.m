@@ -1,18 +1,31 @@
 function dT = ode_system1d(t, T, N, dx, heat_rate, lambda, J_lin_sparse)
+% [dT] = ode_system1d(t, T, N, dx, heat_rate, lambda, J_lin_sparse)
+% 
+% Computes the right hand side of the 1D differential heat equation for
+% density and specific heat capacity is temperature dependent and thermal
+% conductivity is constant.
+%
+% INPUT:     t --> time
+%            T --> temperature in degree Celsius.
+%            N --> number of spatial discretization lattice points.
+%           dx --> length [mm] of one spatial lattice point.
+%    heat_rate --> rate [K/s] the temperature of the oven is increasing.
+%       lambda --> thermal conductivity [mJ/mg*K]
+% J_lin_sparse --> sparse matrix for the linear part pre-computed with
+%                  build_linear_matrix(N) to avoid building up repeatedly
+%                  at each function call.
+%
+% OUTPUT:   dT --> right hand side of the 1D differential heat equation
+%                  \nabla \left[ \frac{\lambda}{\rho c_p} \nabla T \right]
+%
+% Author: Jan Lammel, lammel@stud.uni-heidelberg.de
 
-
-%t = 1.;
-%y = linspace(1,10,N)';
 
 c_p = c_p_formula(T);
 dc_p = dc_p_formula(T);
 
 rho = rho_formula(T);
 drho = drho_formula(T);
-
-% test case where rho is constant
-%rho = ones(size(rho)) .* 800;
-%drho = drho .* 0;
 
 
 %% Non-linear part
@@ -42,8 +55,6 @@ dT_non_lin(N) = 0;
 
 
 %% Linear part
-% inverse c_p vector
-%inv_c_p = 1 ./ (c_p(1:N) .* rho(1:N));
 
 % linear part vector
 dT_lin = lambda / dx^2 ./ (c_p(1:N) .* rho(1:N)) .* (J_lin_sparse * T(1:N));

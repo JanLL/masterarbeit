@@ -5,7 +5,7 @@ function [rho] = rho_formula(T)
 %
 % INPUT:    T --> temperature in degree Celsius
 %
-% OUTPUT: rho --> density in kg/m^3
+% OUTPUT: rho --> density in mg/mm^3
 %
 % Author: Jan Lammel, lammel@stud.uni-heidelberg.de
 
@@ -19,5 +19,6 @@ p3 = 0.078916;
 
 
 rho = p0./(1.0+exp(p3.*(T-p1))) + p2;
+rho = rho * 1e-3;  % rescale to [mg / mm^3]
 
 return
