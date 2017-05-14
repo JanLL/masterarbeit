@@ -22,22 +22,26 @@ N = 500;
 L = 5.; % [mm]
 lambda = 0.96; % [mw/(mm * K)]
 heat_rate = 0.3; % [K/min]
+T_0 = 70.; % [min]
+T_end = 200.; % [min]
 
 % check for input arguments and update variables where necessary
 if hasOption(varargin, 'N'), N = getOption(varargin, 'N'); end;
 if hasOption(varargin, 'L'), L = getOption(varargin, 'L'); end;
 if hasOption(varargin, 'lambda'), lambda = getOption(varargin, 'lambda'); end;
 if hasOption(varargin, 'heat_rate'), heat_rate = getOption(varargin, 'heat_rate'); end;
+if hasOption(varargin, 'T_0'), T_0 = getOption(varargin, 'T_0'); end;
+if hasOption(varargin, 'T_end'), T_end = getOption(varargin, 'T_end'); end;
 
 
 heat_rate = heat_rate / 60.;  % [K/min] -> [K/s]
 dx = L/N;
 
 % integration initial values
-T0 = 70 .* ones(N,1);
+T0 = T_0 .* ones(N,1);
 
 t0 = 0.;
-tf = (200. - T0(1)) / heat_rate;  % integrate up to T_oven = 200 degree Celsius
+tf = (T_end - T0(1)) / heat_rate;  % integrate up to T_oven = 200 degree Celsius
 t = linspace(t0, tf, (tf-t0)*1)'; 
 
 % pre-compute constant sparse matrix from linear part
