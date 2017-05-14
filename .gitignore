@@ -27,6 +27,7 @@ sonic.log
 *.txt
 DSC204_F1_Phoenix_Messungen/
 code_old/
+code/tools/
 .ipynb_checkpoints/
 
 
