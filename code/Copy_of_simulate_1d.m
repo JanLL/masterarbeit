@@ -18,20 +18,16 @@ function varargout = simulate_1d(varargin)
 startup;  % load paths to external .m functions
 
 % default values
-N1 = 50;
-L1 = 50.; % [mm]
-N2 = 450;
-L2 = 5.; % [mm]
+N = 500;
+L = 5.; % [mm]
 lambda = 0.96; % [mw/(mm * K)]
 heat_rate = 0.3; % [K/min]
 T_0 = 70.; % [min]
 T_end = 200.; % [min]
 
 % check for input arguments and update variables where necessary
-if hasOption(varargin, 'N1'), N1 = getOption(varargin, 'N1'); end;
-if hasOption(varargin, 'L1'), L1 = getOption(varargin, 'L1'); end;
-if hasOption(varargin, 'N2'), N2 = getOption(varargin, 'N2'); end;
-if hasOption(varargin, 'L2'), L2 = getOption(varargin, 'L2'); end;
+if hasOption(varargin, 'N'), N = getOption(varargin, 'N'); end;
+if hasOption(varargin, 'L'), L = getOption(varargin, 'L'); end;
 if hasOption(varargin, 'lambda'), lambda = getOption(varargin, 'lambda'); end;
 if hasOption(varargin, 'heat_rate'), heat_rate = getOption(varargin, 'heat_rate'); end;
 if hasOption(varargin, 'T_0'), T_0 = getOption(varargin, 'T_0'); end;
@@ -39,10 +35,7 @@ if hasOption(varargin, 'T_end'), T_end = getOption(varargin, 'T_end'); end;
 
 
 heat_rate = heat_rate / 60.;  % [K/min] -> [K/s]
-N = N1+N2;
-dx = ones(N, 1);
-dx(1:N1) = L1/N1;
-dx(N1+1:end) = L2/N2;
+dx = L/N;
 
 % integration initial values
 T0 = T_0 .* ones(N,1);
@@ -61,7 +54,7 @@ Jpattern = spdiags(cols, [0,1,-1], N, N);
 opts = odeset('reltol', 1.0d-5, 'abstol', 1.0d-6, 'Jpattern', Jpattern);
 
 tic;
-sol = ode15s(@(t, y) ode_system1d(t, y, N1, N2, dx, heat_rate, lambda, J_lin_sparse), t, T0, opts);
+sol = ode15s(@(t, y) ode_system1d(t, y, N, dx, heat_rate, lambda, J_lin_sparse), t, T0, opts);
 toc
 
 
@@ -75,7 +68,7 @@ T = deval(sol, t)';
 %plot(T(:,1), T(:,end) - T(:,1), 'b', 'DisplayName', 'T_N'); hold on
 
 %figure(2);
-%plot(T(:,1), T(:,N1-1)-T(:,N1), 'DisplayName', 'T_0 - T_1'); hold on
+%plot(T(:,1), T(:,1)-T(:,2), 'DisplayName', 'T_0 - T_1'); hold on
 
 % xlabel('Time t');
 % ylabel('Temp T');
