@@ -40,22 +40,18 @@ drho = zeros(N, 1);
 drho(N1+1:end) = drho_formula(T(N1+1:end));
 
 
+lambda = ones(N, 1) * lambda;
+lambda(1:N1) = 23; % [mW/(mm*K)]
+
 %% Non-linear part
 dT_non_lin = zeros(N,1);
 
 dT_non_lin(1) = heat_rate;
 
-% forward differences in gradient (old)
-% dT_non_lin(2:N-1) = ...
-%     (-lambda ./ (rho(2:N-1) .* c_p(2:N-1).^2) .* dc_p(2:N-1) ...
-%      -lambda ./ (rho(2:N-1).^2 .* c_p(2:N-1)) .* drho(2:N-1)) ...
-%     .* ((T(3:N) - T(2:N-1)).^2 / dx^2);
-
-
 % forward differences in gradient
 dT_non_lin(N1+2:N-1) = ...
-    (-lambda ./ (rho(N1+2:N-1) .* c_p(N1+2:N-1).^2) .* dc_p(N1+2:N-1) ...
-     -lambda ./ (rho(N1+2:N-1).^2 .* c_p(N1+2:N-1)) .* drho(N1+2:N-1)) ...
+    (-lambda(N1+2:N-1) ./ (rho(N1+2:N-1) .* c_p(N1+2:N-1).^2) .* dc_p(N1+2:N-1) ...
+     -lambda(N1+2:N-1) ./ (rho(N1+2:N-1).^2 .* c_p(N1+2:N-1)) .* drho(N1+2:N-1)) ...
     .* ((T(N1+3:N) - T(N1+2:N-1)).^2 ...
     ./ dx(N1+2:N-1).^2);
 
@@ -65,7 +61,7 @@ dT_non_lin(N) = 0;
 %% Linear part
 
 % linear part vector
-dT_lin = lambda ./ dx.^2 ./ (c_p(1:N) .* rho(1:N)) .* (J_lin_sparse * T(1:N));
+dT_lin = lambda(1:N) ./ dx.^2 ./ (c_p(1:N) .* rho(1:N)) .* (J_lin_sparse * T(1:N));
 
 %% put linear and non-linear part together
 

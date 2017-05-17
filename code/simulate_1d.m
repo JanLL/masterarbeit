@@ -20,11 +20,11 @@ startup;  % load paths to external .m functions
 % default values
 N1 = 50;
 L1 = 50.; % [mm]
-N2 = 450;
+N2 = 750;
 L2 = 5.; % [mm]
 lambda = 0.96; % [mw/(mm * K)]
 heat_rate = 0.3; % [K/min]
-T_0 = 70.; % [min]
+T_0 = 10.; % [min]
 T_end = 200.; % [min]
 
 % check for input arguments and update variables where necessary
@@ -58,7 +58,7 @@ J_lin_sparse = build_linear_matrix(N);
 cols = ones(N, 3);
 Jpattern = spdiags(cols, [0,1,-1], N, N);
 
-opts = odeset('reltol', 1.0d-5, 'abstol', 1.0d-6, 'Jpattern', Jpattern);
+opts = odeset('reltol', 1.0d-6, 'abstol', 1.0d-6, 'Jpattern', Jpattern);
 
 tic;
 sol = ode15s(@(t, y) ode_system1d(t, y, N1, N2, dx, heat_rate, lambda, J_lin_sparse), t, T0, opts);
@@ -66,20 +66,6 @@ toc
 
 
 T = deval(sol, t)';
-
-
-%figure(1);
-% plot(t, T(:,1) - T(:,1), 'g', 'DisplayName', 'T_0'); hold on
-% plot(t, T(:,2) - T(:,1), 'r', 'DisplayName', 'T_1');
-% plot(t, T(:,3) - T(:,1), 'y', 'DisplayName', 'T_2');
-%plot(T(:,1), T(:,end) - T(:,1), 'b', 'DisplayName', 'T_N'); hold on
-
-%figure(2);
-%plot(T(:,1), T(:,N1-1)-T(:,N1), 'DisplayName', 'T_0 - T_1'); hold on
-
-% xlabel('Time t');
-% ylabel('Temp T');
-% legend(gca, 'show', 'Location', 'northwest')
 
 if (nargout >= 1), varargout{1} = T; end
 if (nargout >= 2), varargout{2} = sol; end
