@@ -5,7 +5,7 @@ function [drho] = drho_formula(T)
 %
 % INPUT:    T --> temperature in [degree Celsius]
 %
-% OUTPUT: drho --> d(density)/dT in [mg/mm^3]
+% OUTPUT: drho --> d(density)/dT in [mg/(mm^3 * K)]
 %
 % Author: Jan Lammel, lammel@stud.uni-heidelberg.de
 
@@ -19,6 +19,6 @@ p3 = 0.078916;
 
 
 drho = -p0*p3*(exp(p3*(T-p1))) ./ (1+exp(p3*(T-p1))).^2;
-drho = drho * 1e-3;
+drho = drho * 1e-3; % rescale to [mg / (mm^3 * K)]
 
 return

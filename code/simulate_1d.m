@@ -14,18 +14,15 @@ function varargout = simulate_1d(varargin)
 %
 % Author: Jan Lammel, lammel@stud.uni-heidelberg.de
 
-
-startup;  % load paths to external .m functions
-
 % default values
 N1 = 50;
 L1 = 50.; % [mm]
 N2 = 750;
 L2 = 5.; % [mm]
-lambda = 0.96; % [mw/(mm * K)]
-heat_rate = 0.3; % [K/min]
-T_0 = 10.; % [min]
-T_end = 200.; % [min]
+lambda = 0.96; % [mW/(mm * K)]
+heat_rate = 10.; % [K/min]
+T_0 = 10.; % [degree Celsius]
+T_end = 300.; % [degree Celsius]
 
 % check for input arguments and update variables where necessary
 if hasOption(varargin, 'N1'), N1 = getOption(varargin, 'N1'); end;
@@ -41,14 +38,15 @@ if hasOption(varargin, 'T_end'), T_end = getOption(varargin, 'T_end'); end;
 heat_rate = heat_rate / 60.;  % [K/min] -> [K/s]
 N = N1+N2;
 dx = ones(N, 1);
-dx(1:N1) = L1/N1;
+dx(1:N1)     = L1/N1;
 dx(N1+1:end) = L2/N2;
+
 
 % integration initial values
 T0 = T_0 .* ones(N,1);
 
 t0 = 0.;
-tf = (T_end - T0(1)) / heat_rate;  % integrate up to T_oven = 200 degree Celsius
+tf = (T_end - T0(1)) / heat_rate;  % integrate up to T_oven = T_end degree Celsius
 t = linspace(t0, tf, (tf-t0)*1)'; 
 
 % pre-compute constant sparse matrix from linear part
@@ -58,14 +56,15 @@ J_lin_sparse = build_linear_matrix(N);
 cols = ones(N, 3);
 Jpattern = spdiags(cols, [0,1,-1], N, N);
 
-opts = odeset('reltol', 1.0d-6, 'abstol', 1.0d-6, 'Jpattern', Jpattern);
+opts = odeset('reltol', 1e-8, 'abstol', 1e-8, 'Jpattern', Jpattern);
 
 tic;
 sol = ode15s(@(t, y) ode_system1d(t, y, N1, N2, dx, heat_rate, lambda, J_lin_sparse), t, T0, opts);
 toc
 
-
 T = deval(sol, t)';
+
+%plot(t, T(:,N1));
 
 if (nargout >= 1), varargout{1} = T; end
 if (nargout >= 2), varargout{2} = sol; end
