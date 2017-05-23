@@ -1,7 +1,7 @@
 N1 = 1000;
 L1 = 25.;
-N2 = 400.;
-L2 = 4.;
+N2 = 0;
+L2 = 0.;
 N3 = 200;
 L3 = 1.;
 lambda = 0.96;
@@ -29,14 +29,14 @@ offset = 0.;
 
 % take Delta T between reference and link constantan-pcm and plot against T_ref
 fig1 = figure(1);
-dT = T_ref_10(:,N1) - T_pcm_10(:,N1);
-plot(T_ref_10(:,N1), dT, 'DisplayName', 'beta=10'); hold on
+dT10 = T_ref_10(:,N1) - T_pcm_10(:,N1);
+plot(T_ref_10(:,N1), dT10, 'DisplayName', 'beta=10'); hold on
 
-dT = T_ref_5(:,N1) - T_pcm_5(:,N1);
-plot(T_ref_5(:,N1), dT, 'DisplayName', 'beta=5'); hold on
+dT5 = T_ref_5(:,N1) - T_pcm_5(:,N1);
+plot(T_ref_5(:,N1), 2.*dT5, 'DisplayName', 'beta=5'); hold on
 
-dT = T_ref_1(:,N1) - T_pcm_1(:,N1);
-plot(T_ref_1(:,N1), dT, 'DisplayName', 'beta=1'); hold on
+dT1 = T_ref_1(:,N1) - T_pcm_1(:,N1);
+plot(T_ref_1(:,N1), 10.*dT1, 'DisplayName', 'beta=1'); hold on
 
 xlabel('T_{ref}');
 ylabel('T_{ref} - T_{pcm-Constantan}');
