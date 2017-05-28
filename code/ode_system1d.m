@@ -1,4 +1,5 @@
-function dT = ode_system1d(t, T, N1, N2, N3, dx, heat_rate, lambda, J_lin_sparse)
+function dT = ode_system1d(t, T, N1, N2, N3, dx, heat_rate, lambda, ...
+                           c_p_params, J_lin_sparse)
 % [dT] = ode_system1d(t, T, N, dx, heat_rate, lambda, J_lin_sparse)
 % 
 % Computes the right hand side of the 1D differential heat equation for
@@ -12,6 +13,7 @@ function dT = ode_system1d(t, T, N1, N2, N3, dx, heat_rate, lambda, J_lin_sparse
 %           dx --> length [mm] of one spatial lattice point.
 %    heat_rate --> rate [K/s] the temperature of the oven is increasing.
 %       lambda --> thermal conductivity [mJ/mg*K]
+%   c_p_params --> Parameter of function for specific heat capacity
 % J_lin_sparse --> sparse matrix for the linear part pre-computed with
 %                  build_linear_matrix(N) to avoid building up repeatedly
 %                  at each function call.
@@ -27,14 +29,17 @@ N = N1+N2+N3;
 c_p = ones(N, 1);
 c_p(1:N1) = 0.41; % [mJ/(mg*K], Constantan, src: Wikipedia
 c_p(N1+1:N1+N2) = 0.99; % [mJ/(mg*K], Al2O3, src: www.pgo-online.com
-c_p(N1+N2+1:end) = c_p_formula(T(N1+N2+1:end), 0.);
+c_p(N1+N2+1:end) = c_p_formula(T(N1+N2+1:end), c_p_params);
 
 dc_p = zeros(N, 1);
-dc_p(N1+N2+1:end) = dc_p_formula(T(N1+N2+1:end), 0.);
+dc_p(N1+N2+1:end) = dc_p_formula(T(N1+N2+1:end), c_p_params);
 
 
 rho = ones(N, 1);
 rho(1:N1) = 8.9; % [mg/mm^3], Constantan, src: Wikipedia
+%rho(1:N1) = 40.; % Um zu zeigen, dass eine anpassung des querschnitts ueber
+                 % die Dichte einen unterschied macht...
+
 rho(N1+1:N1+N2) = 3.75; % [mg/mm^3], Al2O3, src: www.pgo-online.com
 rho(N1+N2+1:end) = rho_formula(T(N1+N2+1:end));
 
@@ -43,8 +48,8 @@ drho(N1+N2+1:end) = drho_formula(T(N1+N2+1:end));
 
 
 lambda = ones(N, 1) * lambda;
-lambda(1:N1) = 23. * 1.; % [mW/(mm*K)], Constantan, src: Wikipedia
-lambda(N1+1:N1+N2) = 35.6; % [mW/(mm*K)], Constantan, src: Wikipedia
+lambda(1:N1) = 23. * 4.; % [mW/(mm*K)], Constantan, src: Wikipedia
+lambda(N1+1:N1+N2) = 35.6; % [mW/(mm*K)], Al2O3, src: Wikipedia
 
 %% Non-linear part
 dT_non_lin = zeros(N,1);

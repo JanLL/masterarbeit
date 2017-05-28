@@ -32,6 +32,9 @@ heat_rate = 10.; % [K/min]
 T_0 = 10.; % [degree Celsius]
 T_end = 300.; % [degree Celsius]
 
+% delta Peak as default
+c_p_params = [144.0009, 4.1036 * 5., 0.0039 + 0.1, 1.4217 * 0., 0.0078, 1.5325];
+
 % check for input arguments and update variables where necessary
 if hasOption(varargin, 'N1'), N1 = getOption(varargin, 'N1'); end;
 if hasOption(varargin, 'L1'), L1 = getOption(varargin, 'L1'); end;
@@ -44,6 +47,27 @@ if hasOption(varargin, 'heat_rate'), heat_rate = getOption(varargin, 'heat_rate'
 if hasOption(varargin, 'T_0'), T_0 = getOption(varargin, 'T_0'); end;
 if hasOption(varargin, 'T_end'), T_end = getOption(varargin, 'T_end'); end;
 
+% parameter vectors for different c_p shapes
+if hasOption(varargin, 'c_p_shape')
+  c_p_shape = getOption(varargin, 'c_p_shape');
+  switch c_p_shape
+      case 'beta=10K/min'
+        % values from fit of measurement for beta=10K/min
+        c_p_params = [144.0009, ...
+                      4.1036, ...
+                      0.0039, ...
+                      1.4217, ...
+                      0.0078, ...
+                      1.5325];
+      case 'delta_distr'
+        c_p_params = [144.0009, ...
+                      4.1036 * 5., ...
+                      0.0039 + 0.1, ...
+                      1.4217 * 0., ...
+                      0.0078, ...
+                      1.5325];
+  end
+end
 
 heat_rate = heat_rate / 60.;  % [K/min] -> [K/s]
 N = N1+N2+N3;
@@ -57,7 +81,8 @@ T0 = T_0 .* ones(N,1);
 
 t0 = 0.;
 tf = (T_end - T0(1)) / heat_rate;  % integrate up to T_oven = T_end degree Celsius
-t = linspace(t0, tf, (tf-t0)*1)'; 
+t = linspace(t0, tf, int32((T_end - T_0(1))*20.))';
+% function evaluation every 0.05 K, independend of heat_rate
 
 % pre-compute constant sparse matrix from linear part
 J_lin_sparse = build_linear_matrix(N);
@@ -66,15 +91,16 @@ J_lin_sparse = build_linear_matrix(N);
 cols = ones(N, 3);
 Jpattern = spdiags(cols, [0,1,-1], N, N);
 
-opts = odeset('reltol', 1e-8, 'abstol', 1e-8, 'Jpattern', Jpattern);
+opts = odeset('reltol', 1e-10, 'abstol', 1e-12, 'Jpattern', Jpattern);
+
+ode_system1d_expl = @(t, y) ode_system1d(t, y, N1, N2, N3, dx, heat_rate, ...
+    lambda, c_p_params, J_lin_sparse);
 
 tic;
-sol = ode15s(@(t, y) ode_system1d(t, y, N1, N2, N3, dx, heat_rate, lambda, J_lin_sparse), t, T0, opts);
+sol = ode15s(ode_system1d_expl, t, T0, opts);
 toc
 
 T = deval(sol, t)';
-
-%plot(t, T(:,N1));
 
 if (nargout >= 1), varargout{1} = T; end
 if (nargout >= 2), varargout{2} = sol; end
