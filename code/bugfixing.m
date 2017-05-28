@@ -1,16 +1,19 @@
-N1 = 1250;
 L1 = 25.;
-N2 = 0;
 L2 = 0.;
-N3 = 50;
 L3 = 1.;
-lambda = 0.96;
+N3 = 50;
+
+% equal dx everywhere
+N1 = L1 / L3 * N3;
+N2 = L2 / L3 * N3;
+
+lambda = 0.96; % TODO: in ode_system1d anpassen...
 
 T_end = 300;
 
 % PCM side
-common_args = {'N1', N1, 'L1', L1, 'N2', N2, 'L2', L2, 'N3', N3, 'L3', L3, ...
-               'lambda', lambda, 'T_end', T_end, 'c_p_shape', 'delta_distr'};
+common_args = {'L1', L1, 'L2', L2, 'L3', L3, 'N3', N3, 'lambda', lambda, ...
+               'T_end', T_end, 'c_p_shape', 'delta_distr'};
 T_pcm_10 = simulate_1d('heat_rate', 10., common_args{:});
 T_pcm_5 = simulate_1d('heat_rate', 5., common_args{:});
 T_pcm_1 = simulate_1d('heat_rate', 1., common_args{:});
@@ -21,7 +24,7 @@ N3 = 0;
 L3 = 0.;
 
 % Reference side
-common_args = {'N1', N1, 'L1', L1, 'N2', N2, 'L2', L2, 'N3', N3, 'L3', L3, ...
+common_args = {'L1', L1, 'L2', L2, 'L3', L3, 'N1', N1, 'N2', N2, 'N3', N3, ...
                'lambda', lambda, 'T_end', T_end, 'c_p_shape', 'delta_distr'};
 T_ref_10 = simulate_1d('heat_rate', 10., common_args{:});
 T_ref_5 = simulate_1d('heat_rate', 5., common_args{:});

@@ -16,16 +16,16 @@ function varargout = simulate_1d(varargin)
 
 % Default values
 % Constantan
-N1 = 50;
-L1 = 50.; % [mm]
+N1 = 1250;
+L1 = 25.; % [mm]
 
 % crucible
-N2 = 100.;
-L2 = 2.; % [mm]
+N2 = 0;
+L2 = 0.; % [mm]
 
 % PCM
-N3 = 750;
-L3 = 5.; % [mm]
+N3 = 50;
+L3 = 1.; % [mm]
 
 lambda = 0.96; % [mW/(mm * K)]
 heat_rate = 10.; % [K/min]
@@ -36,12 +36,19 @@ T_end = 300.; % [degree Celsius]
 c_p_params = [144.0009, 4.1036 * 5., 0.0039 + 0.1, 1.4217 * 0., 0.0078, 1.5325];
 
 % check for input arguments and update variables where necessary
-if hasOption(varargin, 'N1'), N1 = getOption(varargin, 'N1'); end;
 if hasOption(varargin, 'L1'), L1 = getOption(varargin, 'L1'); end;
-if hasOption(varargin, 'N2'), N2 = getOption(varargin, 'N2'); end;
 if hasOption(varargin, 'L2'), L2 = getOption(varargin, 'L2'); end;
-if hasOption(varargin, 'N3'), N3 = getOption(varargin, 'N3'); end;
 if hasOption(varargin, 'L3'), L3 = getOption(varargin, 'L3'); end;
+
+if hasOption(varargin, 'N3')
+  N3 = getOption(varargin, 'N3');
+  % compute N1, N2 s.t. dx is equal everywhere as default
+  N2 = L2 / L3 * N3;
+  N1 = L1 / L3 * N3;
+end
+if hasOption(varargin, 'N1'), N1 = getOption(varargin, 'N1'); end;
+if hasOption(varargin, 'N2'), N2 = getOption(varargin, 'N2'); end;
+
 if hasOption(varargin, 'lambda'), lambda = getOption(varargin, 'lambda'); end;
 if hasOption(varargin, 'heat_rate'), heat_rate = getOption(varargin, 'heat_rate'); end;
 if hasOption(varargin, 'T_0'), T_0 = getOption(varargin, 'T_0'); end;
