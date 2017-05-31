@@ -81,6 +81,7 @@ ODE-system with line-method:
 which is equivalent to
 
 \begin{align*}
+	\hspace{-6cm}
 	\frac{d}{dt} \begin{bmatrix*}
 	T^0 \\
 	T^1 \\
@@ -88,25 +89,49 @@ which is equivalent to
 	\vdots \\
 	T^{N-2} \\
 	T^{N-1}
-	\end{bmatrix*} = &
+	\end{bmatrix*} = & 
 	\begin{bmatrix}
 		\beta \\
-		- \frac{\lambda}{\rho} \frac{1}{(c_p(T^1))^2} \frac{\partial c_p (T^1)}{\partial T^1} \frac{(T^2 - T^1)^2}{(\Delta x)^2} \\
-		- \frac{\lambda}{\rho} \frac{1}{(c_p(T^2))^2} \frac{\partial c_p (T^2)}{\partial T^2} \frac{(T^3 - T^2)^2}{(\Delta x)^2} \\
+		0 \\
+		\\
 		\vdots \\
-		- \frac{\lambda}{\rho} \frac{1}{(c_p(T^{N-2}))^2} \frac{\partial c_p (T^{N-2})}{\partial T^{N-2}} \frac{(T^{N-1} - T^{N-2})^2}{(\Delta x)^2} \\	
+		\\
+		0
+	\end{bmatrix}
+	-
+	\begin{bmatrix}
+			0 \\
+			\frac{\lambda}{(\rho(T^1))^2 c_p(T^1)} \frac{\partial \rho (T^1)}{\partial T^1} \frac{(T^2 - T^1)^2}{(\Delta x)^2} \\
+			\frac{\lambda}{(\rho(T^2))^2 c_p(T^2)} \frac{\partial \rho (T^2)}{\partial T^2} \frac{(T^3 - T^2)^2}{(\Delta x)^2} \\
+			\vdots \\
+			\frac{\lambda}{(\rho(T^{N-2}))^2 c_p(T^{N-2})} \frac{\partial \rho (T^{N-2})}{\partial T^{N-2}} \frac{(T^{N-1} - T^{N-2})^2}{(\Delta x)^2} \\	
+			0 \\			
+	\end{bmatrix} \\
+	- &
+	\begin{bmatrix}
+		0 \\
+		\frac{\lambda}{\rho(T^1) (c_p(T^1))^2} \frac{\partial c_p (T^1)}{\partial T^1} \frac{(T^2 - T^1)^2}{(\Delta x)^2} \\
+		\frac{\lambda}{\rho(T^2) (c_p(T^2))^2} \frac{\partial c_p (T^2)}{\partial T^2} \frac{(T^3 - T^2)^2}{(\Delta x)^2} \\
+		\vdots \\
+		\frac{\lambda}{\rho(T^{N-2}) (c_p(T^{N-2}))^2} \frac{\partial c_p (T^{N-2})}{\partial T^{N-2}} \frac{(T^{N-1} - T^{N-2})^2}{(\Delta x)^2} \\	
 		0 \\			
 	\end{bmatrix} \\
-	& + \frac{\lambda}{\rho} \frac{1}{(\Delta x)^2}
+	+ & \frac{\lambda}{(\Delta x)^2}
+	\begin{bmatrix}
+		\frac{1}{c_p(T^0) \rho(T^0)} & 0 & & \dots & & 0 \\
+		0 & \frac{1}{c_p(T^1) \rho(T^1)} & 0 & & \dots & 0 \\
+		0 & \ddots & \ddots & \ddots & \ddots & 0 \\
+		0 & & \dots & & 0 & \frac{1}{c_p(T^{N-1}) \rho(T^{N-1)}} \\
+	\end{bmatrix}
 	\begin{bmatrix}
 		0 & 0 & 0 & \dots & 0 & 0 \\
-		\nicefrac{1}{c_p(T^1)} & -\nicefrac{2}{c_p(T^1)} & \nicefrac{1}{c_p(T^1)} & & &  \\
-		& \nicefrac{1}{c_p(T^2)} & -\nicefrac{2}{c_p(T^2)} & \nicefrac{1}{c_p(T^2)} & \\
+		1 & -2 & 1 & & &  \\
+		& 1 & -2 & 1 & \\
 		\\
 		& & \ddots & \ddots & \ddots \\
 		\\
-		& 0 & &  \nicefrac{1}{c_p(T^{N-2})} & -\nicefrac{2}{c_p(T^{N-2})} & \nicefrac{1}{c_p(T^{N-2})} \\
-		& & & & \nicefrac{1}{c_p(T^{N-1})} & -\nicefrac{1}{c_p(T^{N-1})}
+		& 0 & &  1 & -2 & 1 \\
+		& & & & 1 & -1
 	\end{bmatrix}
 	\begin{bmatrix*}
 		T^0 \\
@@ -117,7 +142,7 @@ which is equivalent to
 		\\
 		T^{N-2} \\
 		T^{N-1}
-	\end{bmatrix*}
+	\end{bmatrix*} \\
 \end{align*}
 
 \section{Functions for $c_p$ and $\rho$-fit}
