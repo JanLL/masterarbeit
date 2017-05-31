@@ -1,4 +1,4 @@
-function dT = ode_system1d(t, T, N1, N2, N3, dx, heat_rate, lambda, ...
+function dT = ode_system1d(t, T, N1, N2, N3, dx, heat_rate, ...
                            c_p_params, J_lin_sparse)
 % [dT] = ode_system1d(t, T, N, dx, heat_rate, lambda, J_lin_sparse)
 % 
@@ -12,7 +12,6 @@ function dT = ode_system1d(t, T, N1, N2, N3, dx, heat_rate, lambda, ...
 %           N2 --> number of spatial discretization lattice points (PCM).
 %           dx --> length [mm] of one spatial lattice point.
 %    heat_rate --> rate [K/s] the temperature of the oven is increasing.
-%       lambda --> thermal conductivity [mJ/mg*K]
 %   c_p_params --> Parameter of function for specific heat capacity
 % J_lin_sparse --> sparse matrix for the linear part pre-computed with
 %                  build_linear_matrix(N) to avoid building up repeatedly
@@ -47,7 +46,7 @@ drho = zeros(N, 1);
 drho(N1+N2+1:end) = drho_formula(T(N1+N2+1:end));
 
 
-lambda = ones(N, 1) * lambda;
+lambda = ones(N, 1) * 0.96; % [mJ/mg*K], PCM, src: Robert: PCM_lambda.m
 lambda(1:N1) = 23. * 4.; % [mW/(mm*K)], Constantan, src: Wikipedia
 lambda(N1+1:N1+N2) = 35.6; % [mW/(mm*K)], Al2O3, src: Wikipedia
 

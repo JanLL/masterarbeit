@@ -6,7 +6,6 @@ function varargout = simulate_1d(varargin)
 %
 % INPUT:          N --> number of spatial discretization lattice points.
 % (variable)      L --> length [mm] of line where the heat diffuses.
-%            lambda --> thermal conductivity [mw/(mm * K)]
 %            heat_rate --> rate [K/min] with which oven temperature increases
 %
 % OUTPUT:      T --> array of temperatures for all lattice points
@@ -49,7 +48,6 @@ end
 if hasOption(varargin, 'N1'), N1 = getOption(varargin, 'N1'); end;
 if hasOption(varargin, 'N2'), N2 = getOption(varargin, 'N2'); end;
 
-if hasOption(varargin, 'lambda'), lambda = getOption(varargin, 'lambda'); end;
 if hasOption(varargin, 'heat_rate'), heat_rate = getOption(varargin, 'heat_rate'); end;
 if hasOption(varargin, 'T_0'), T_0 = getOption(varargin, 'T_0'); end;
 if hasOption(varargin, 'T_end'), T_end = getOption(varargin, 'T_end'); end;
@@ -73,6 +71,8 @@ if hasOption(varargin, 'c_p_shape')
                       1.4217 * 0., ...
                       0.0078, ...
                       1.5325];
+      otherwise
+          error('c_p_shape wrong. Choose from [''beta=10K/min'', ''delta_distr'']')
   end
 end
 
@@ -101,7 +101,7 @@ Jpattern = spdiags(cols, [0,1,-1], N, N);
 opts = odeset('reltol', 1e-10, 'abstol', 1e-12, 'Jpattern', Jpattern);
 
 ode_system1d_expl = @(t, y) ode_system1d(t, y, N1, N2, N3, dx, heat_rate, ...
-    lambda, c_p_params, J_lin_sparse);
+    c_p_params, J_lin_sparse);
 
 tic;
 sol = ode15s(ode_system1d_expl, t, T0, opts);

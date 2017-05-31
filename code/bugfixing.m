@@ -7,12 +7,11 @@ N3 = 50;
 N1 = L1 / L3 * N3;
 N2 = L2 / L3 * N3;
 
-lambda = 0.96; % TODO: in ode_system1d anpassen...
-
-T_end = 300;
+T_0 = 50;
+T_end = 250;
 
 % PCM side
-common_args = {'L1', L1, 'L2', L2, 'L3', L3, 'N3', N3, 'lambda', lambda, ...
+common_args = {'L1', L1, 'L2', L2, 'L3', L3, 'N3', N3, 'T_0', T_0, ...
                'T_end', T_end, 'c_p_shape', 'delta_distr'};
 T_pcm_10 = simulate_1d('heat_rate', 10., common_args{:});
 T_pcm_5 = simulate_1d('heat_rate', 5., common_args{:});
@@ -25,7 +24,7 @@ L3 = 0.;
 
 % Reference side
 common_args = {'L1', L1, 'L2', L2, 'L3', L3, 'N1', N1, 'N2', N2, 'N3', N3, ...
-               'lambda', lambda, 'T_end', T_end, 'c_p_shape', 'delta_distr'};
+               'T_0', T_0, 'T_end', T_end, 'c_p_shape', 'delta_distr'};
 T_ref_10 = simulate_1d('heat_rate', 10., common_args{:});
 T_ref_5 = simulate_1d('heat_rate', 5., common_args{:});
 T_ref_1 = simulate_1d('heat_rate', 1., common_args{:});
@@ -54,4 +53,11 @@ legend(gca, 'show', 'Location', 'northwest')
 
 %print(fig1, '/home/argo/masterarbeit/simulationen-data/Delta_T_delta_peak', '-dpng')
 
+fig2 = figure(2);
+ax1 = subplot(1,1,1);
+contourf(T_pcm_10(1:10:end, 1:10:end))
+image(T_pcm_10(1:10:end, 1:10:end))
+colormap(ax1, (jet(T_end)));
+colorbar('ylim', [T_0, T_end]);
+grid();
 
