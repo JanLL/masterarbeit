@@ -1,5 +1,5 @@
 function dT = ode_system1d(t, T, N1, N2, N3, dx, heat_rate, ...
-                           eval_c_p, eval_dc_p, J_lin_sparse)
+                           eval_c_p, eval_dc_p)
 % [dT] = ode_system1d(t, T, N, dx, heat_rate, lambda, J_lin_sparse)
 % 
 % Computes the right hand side of the 1D differential heat equation for
@@ -7,15 +7,15 @@ function dT = ode_system1d(t, T, N1, N2, N3, dx, heat_rate, ...
 % conductivity is constant.
 %
 % INPUT:     t --> time
-%            T --> temperature in degree Celsius.
-%           N1 --> number of spatial discretization lattice points (part1).
-%           N2 --> number of spatial discretization lattice points (PCM).
+%            T --> temperature in degree Celsius
+%           N1 --> number of spatial discretization lattice points (Constantan)
+%           N2 --> number of spatial discretization lattice points (Crucible)
+%           N3 --> number of spatial discretization lattice points (PCM)
 %           dx --> length [mm] of one spatial lattice point.
 %    heat_rate --> rate [K/s] the temperature of the oven is increasing.
-%   c_p_params --> Parameter of function for specific heat capacity
-% J_lin_sparse --> sparse matrix for the linear part pre-computed with
-%                  build_linear_matrix(N) to avoid building up repeatedly
-%                  at each function call.
+%     eval_c_p --> fhandle to evaluate specific heat capacity.
+%    eval_dc_p --> fhandle to evaluate derivative of specific heat capacity
+%                  w.r.t. temperature.
 %
 % OUTPUT:   dT --> right hand side of the 1D differential heat equation
 %                  \nabla \left[ \frac{\lambda}{\rho c_p} \nabla T \right]
@@ -25,6 +25,17 @@ function dT = ode_system1d(t, T, N1, N2, N3, dx, heat_rate, ...
 % initial definitions
 N = N1+N2+N3;
 
+% Check if J_lin_sparse was built, if not -> build it
+persistent J_lin_sparse J_setup;
+
+if isempty(J_lin_sparse) || isempty(J_setup) || any(J_setup ~= [N1, N2, N3])
+    J_lin_sparse = build_linear_matrix(N);
+    J_setup = [N1, N2, N3];
+end
+
+
+% pre-compute c_p and rho + derivatives because we need these later
+% multiple times.
 c_p = ones(N, 1);
 c_p(1:N1) = 0.41; % [mJ/(mg*K], Constantan, src: Wikipedia
 c_p(N1+1:N1+N2) = 0.99; % [mJ/(mg*K], Al2O3, src: www.pgo-online.com
