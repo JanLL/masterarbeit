@@ -1,5 +1,5 @@
 function dT = ode_system1d(t, T, N1, N2, N3, dx, heat_rate, ...
-                           c_p_params, J_lin_sparse)
+                           eval_c_p, eval_dc_p, J_lin_sparse)
 % [dT] = ode_system1d(t, T, N, dx, heat_rate, lambda, J_lin_sparse)
 % 
 % Computes the right hand side of the 1D differential heat equation for
@@ -28,10 +28,10 @@ N = N1+N2+N3;
 c_p = ones(N, 1);
 c_p(1:N1) = 0.41; % [mJ/(mg*K], Constantan, src: Wikipedia
 c_p(N1+1:N1+N2) = 0.99; % [mJ/(mg*K], Al2O3, src: www.pgo-online.com
-c_p(N1+N2+1:end) = c_p_formula(T(N1+N2+1:end), c_p_params);
+c_p(N1+N2+1:end) = eval_c_p(T(N1+N2+1:end));
 
 dc_p = zeros(N, 1);
-dc_p(N1+N2+1:end) = dc_p_formula(T(N1+N2+1:end), c_p_params);
+dc_p(N1+N2+1:end) = eval_dc_p(T(N1+N2+1:end));
 
 
 rho = ones(N, 1);

@@ -52,29 +52,10 @@ if hasOption(varargin, 'heat_rate'), heat_rate = getOption(varargin, 'heat_rate'
 if hasOption(varargin, 'T_0'), T_0 = getOption(varargin, 'T_0'); end;
 if hasOption(varargin, 'T_end'), T_end = getOption(varargin, 'T_end'); end;
 
-% parameter vectors for different c_p shapes
-if hasOption(varargin, 'c_p_shape')
-  c_p_shape = getOption(varargin, 'c_p_shape');
-  switch c_p_shape
-      case 'beta=10K/min'
-        % values from fit of measurement for beta=10K/min
-        c_p_params = [144.0009, ...
-                      4.1036, ...
-                      0.0039, ...
-                      1.4217, ...
-                      0.0078, ...
-                      1.5325];
-      case 'delta_distr'
-        c_p_params = [144.0009, ...
-                      4.1036 * 5., ...
-                      0.0039 + 0.1, ...
-                      1.4217 * 0., ...
-                      0.0078, ...
-                      1.5325];
-      otherwise
-          error('c_p_shape wrong. Choose from [''beta=10K/min'', ''delta_distr'']')
-  end
-end
+if hasOption(varargin, 'eval_c_p'), eval_c_p = getOption(varargin, 'eval_c_p'); end;
+if hasOption(varargin, 'eval_dc_p'), eval_dc_p = getOption(varargin, 'eval_dc_p'); end;
+
+
 
 heat_rate = heat_rate / 60.;  % [K/min] -> [K/s]
 N = N1+N2+N3;
@@ -101,7 +82,7 @@ Jpattern = spdiags(cols, [0,1,-1], N, N);
 opts = odeset('reltol', 1e-10, 'abstol', 1e-12, 'Jpattern', Jpattern);
 
 ode_system1d_expl = @(t, y) ode_system1d(t, y, N1, N2, N3, dx, heat_rate, ...
-    c_p_params, J_lin_sparse);
+    eval_c_p, eval_dc_p, J_lin_sparse);
 
 tic;
 sol = ode15s(ode_system1d_expl, t, T0, opts);
