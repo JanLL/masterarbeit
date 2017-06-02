@@ -8,12 +8,9 @@ T_end = 300;
 
 common_args = {'L1', L1, 'L2', L2, 'L3', L3, 'N3', N3, 'T_0', T_0, ...
                'T_end', T_end};
-[sim_options_pcm_10, sim_options_ref_10] = ...
-    get_default_sim_params(common_args{:}, 'heat_rate', 10.);
-[sim_options_pcm_5, sim_options_ref_5] = ...
-    get_default_sim_params(common_args{:}, 'heat_rate', 5.);
-[sim_options_pcm_1, sim_options_ref_1] = ...
-    get_default_sim_params(common_args{:}, 'heat_rate', 1.);
+sim_options_10 = get_param_sim(common_args{:}, 'heat_rate', 10.);
+sim_options_5 = get_param_sim(common_args{:}, 'heat_rate', 5.);
+sim_options_1 = get_param_sim(common_args{:}, 'heat_rate', 1.);
 
 % set type and parameters of c_p
 c_p_params_delta = [144.0009, ...
@@ -45,18 +42,20 @@ eval_dc_p = @(T) dc_p(T,c_p_params_cell{1:end});
 % TODO: same for rho ...
 
 % PCM side 
-T_pcm_10 = simulate_1d(eval_c_p, eval_dc_p, sim_options_pcm_10);
-T_pcm_5 = simulate_1d(eval_c_p, eval_dc_p, sim_options_pcm_5);
-T_pcm_1 = simulate_1d(eval_c_p, eval_dc_p, sim_options_pcm_1);
+T_pcm_10 = simulate_1d(eval_c_p, eval_dc_p, sim_options_10(1));
+T_pcm_5 = simulate_1d(eval_c_p, eval_dc_p, sim_options_5(1));
+T_pcm_1 = simulate_1d(eval_c_p, eval_dc_p, sim_options_1(1));
 
 
 % Reference side
-T_ref_10 = simulate_1d(eval_c_p, eval_dc_p, sim_options_ref_10);
-T_ref_5 = simulate_1d(eval_c_p, eval_dc_p, sim_options_ref_5);
-T_ref_1 = simulate_1d(eval_c_p, eval_dc_p, sim_options_ref_1);
+T_ref_10 = simulate_1d(eval_c_p, eval_dc_p, sim_options_10(2));
+T_ref_5 = simulate_1d(eval_c_p, eval_dc_p, sim_options_5(2));
+T_ref_1 = simulate_1d(eval_c_p, eval_dc_p, sim_options_1(2));
 
 
 % take Delta T between reference and link constantan-pcm and plot against T_ref
+N1 = sim_options_10.N1;
+
 fig1 = figure(1);
 dT10 = T_ref_10(:,N1) - T_pcm_10(:,N1);
 plot(T_ref_10(:,N1), dT10, 'DisplayName', 'beta=10'); hold on
