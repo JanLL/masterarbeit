@@ -51,10 +51,10 @@ rho(1:N1) = 8.9; % [mg/mm^3], Constantan, src: Wikipedia
                  % die Dichte einen unterschied macht...
 
 rho(N1+1:N1+N2) = 3.75; % [mg/mm^3], Al2O3, src: www.pgo-online.com
-rho(N1+N2+1:end) = rho_formula(T(N1+N2+1:end));
+rho(N1+N2+1:end) = rho_formula(T(N1+N2+1:end)) .* 0.1;
 
 drho = zeros(N, 1);
-drho(N1+N2+1:end) = drho_formula(T(N1+N2+1:end));
+drho(N1+N2+1:end) = drho_formula(T(N1+N2+1:end)) .* 0.1;
 
 
 lambda = ones(N, 1) * 0.96; % [mJ/mg*K], PCM, src: Robert: PCM_lambda.m
