@@ -31,9 +31,9 @@ k = get_param_k(p_optim);
 
 dU = k * dT;
 
-tic;
+
 dU_interp = interp1(T_ref(:,N1), dU, T_ref_meas, 'linear');
-toc
+
 
 % Note: Interpolation necessary because T_ref doesnt increase linearly, at
 % least at the beginning, i.e. we dont start at T_0, theres a delay of the
@@ -41,10 +41,13 @@ toc
 
 residuum = U_dsc - dU_interp;
 
-plot(T_ref_meas, dU_interp); hold on
-plot(T_ref_meas, U_dsc); hold on
-plot(T_ref_meas, residuum); hold on
-
+plot(T_ref_meas, dU_interp, 'DisplayName', 'Simulation'); hold on
+plot(T_ref_meas, U_dsc, 'DisplayName', 'Measurements'); hold on
+plot(T_ref_meas, residuum, 'DisplayName', 'Residuum'); hold on
+legend('show', 'location', 'northwest');
+xlabel('T_{ref}');
+ylabel('\Delta U');
+print('/home/argo/masterarbeit/simulationen-data/delta_U_optimized','-dpng');
 
 end
 

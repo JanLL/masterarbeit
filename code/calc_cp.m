@@ -1,13 +1,12 @@
-% path for data extraction functions of measurements
-path('/home/argo/masterarbeit/DSC204_F1_Phoenix_Messungen', path);
+function [c_p_pcm] = calc_cp()
 
-dsc = DSC204_readFile(['/home/argo/masterarbeit/DSC204_F1_Phoenix_Messungen/' ...
-    'Messungen/Messungen/ExpDat_16-407-3_mitKorr_10Kmin_H.csv']);
-dsc_sap = DSC204_readFile(['/home/argo/masterarbeit/DSC204_F1_Phoenix_Messungen/' ...
-    'Waermekapazitaet_Saphirmessung/Sap-Kurve_10Kmin_H_Segment_7.csv']);
+dsc = DSC204_readFile('ExpDat_16-407-3_mitKorr_10Kmin_H.csv');
+dsc_sap = DSC204_readFile('Waermekapazitaet_Saphirmessung/Sap-Kurve_10Kmin_H_Segment_7.csv');
 
-m_pcm = dsc.mass;
-m_sap = dsc_sap.mass;
+% masses actually not needed because voltage already normalized by mass:
+% U_korr_pcm = (U_pcm - U_0)/m_pcm}
+%m_pcm = dsc.mass;
+%m_sap = dsc_sap.mass;
 
 % we need to interpolate the data on the same temp-grid because
 % dsc.data(:,1) != dsc_sap.data(:,1)
@@ -17,40 +16,16 @@ U_korr_sap = interp1(dsc_sap.data(:,1), dsc_sap.data(:,3), T_grid);
 
 c_p_sap = DSC204_cp_saphire_DIN11357(T_grid);
 
-%c_p_pcm = c_p_sap .* m_sap./m_pcm .* U_korr_pcm./U_korr_sap; % old
 c_p_pcm = c_p_sap .* U_korr_pcm./U_korr_sap; 
-% measured voltage already normalized by mass: 
-%U_korr_pcm = (U_pcm - U_0)/m_pcm}
 
-% save data for further processing in python
-filename = 'c_p_pcm.mat';
-save(filename, 'c_p_pcm', 'T_grid');
+
+end
 
 
 
-% test start parameters
-%fit_fct = @(x, a, b, c, d, e, f) (atan(-d*(x-a))+pi/2) .* (b*exp(-c.*(x-a).^2)) + e*x + f;
-%plot(T_grid(100:end-10), fit_fct(T_grid(100:end-10), 140., 5., 0.01, 0.7, 0.01, 0.)); hold on
-%plot(T_grid(100:end-10), c_p_pcm(100:end-10), 'color', 'blue');
 
 
-%% fit c_p on function
-%fit_fct1 = fittype('1/(exp(d*(x-a))+1) * (b*exp(-c*(x-a)^2)) + e*x + f', ...
-%    'coeff', {'a', 'b', 'c', 'd', 'e', 'f'});
-fit_fct2 = fittype('(atan(-d*(x-a))+pi/2) * (b*exp(-c*(x-a)^2)) + e*x + f', ...
-    'coeff', {'a', 'b', 'c', 'd', 'e', 'f'});
-start_param = [140., 5., 0.01, 0.7, 0.01, 0.];
-f = fit(T_grid(100:end-10), c_p_pcm(100:end-10), fit_fct2, ...
-    'Startpoint', start_param);
-
-c_p_fit = f(T_grid(100:end-10));
-
-%plot(T_grid(100:end-10), c_p_fit, 'color', 'red', ...
-%     'DisplayName', 'fit'); hold on
-plot(T_grid(100:end-10), c_p_pcm(100:end-10), 'color', 'blue', ...
-     'DisplayName', 'measurements');
-
-legend(gca, 'show', 'Location', 'northwest')
 
 
-coeffvalues(f)
+
+
