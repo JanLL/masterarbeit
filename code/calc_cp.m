@@ -1,5 +1,7 @@
 function [c_p_pcm] = calc_cp()
 
+% TODO: Allgemein mit filename als input variable, 
+%       ABER: Bisher keine Saphir Kurven != 10K/min
 dsc = DSC204_readFile('ExpDat_16-407-3_mitKorr_10Kmin_H.csv');
 dsc_sap = DSC204_readFile('Waermekapazitaet_Saphirmessung/Sap-Kurve_10Kmin_H_Segment_7.csv');
 

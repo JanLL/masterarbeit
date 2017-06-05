@@ -50,9 +50,9 @@ opts = odeset('reltol', 1e-7, 'abstol', 1e-12, 'Jpattern', Jpattern);
 ode_system1d_expl = @(t, y) ode_system1d(t, y, N1, N2, N3, dx, heat_rate, ...
     eval_c_p, eval_dc_p);
 
-tic;
+%tic;
 sol = ode15s(ode_system1d_expl, t, T0, opts);
-toc
+%toc
 
 T = deval(sol, t)';
 

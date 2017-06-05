@@ -58,7 +58,7 @@ drho(N1+N2+1:end) = drho_formula(T(N1+N2+1:end)) .* 0.1;
 
 
 lambda = ones(N, 1) * 0.96; % [mJ/mg*K], PCM, src: Robert: PCM_lambda.m
-lambda(1:N1) = 23. * 4.; % [mW/(mm*K)], Constantan, src: Wikipedia
+lambda(1:N1) = 23. * 8.; % [mW/(mm*K)], Constantan, src: Wikipedia
 lambda(N1+1:N1+N2) = 35.6; % [mW/(mm*K)], Al2O3, src: Wikipedia
 
 %% Non-linear part
