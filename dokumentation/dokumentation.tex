@@ -145,6 +145,33 @@ which is equivalent to
 	\end{bmatrix*} \\
 \end{align*}
 
+
+\section{Parameter Estimation}
+
+Measurements: $U_{dsc}(T_{ref};\beta)$ \\
+In the experiment we have a temperature difference $\Delta T(T_{ref})$ between sample reference. 
+Due to the Seebeck-effect we can measure this temperature difference as an electric potential $U_{dsc}(T_{ref})$. \\
+
+
+Simulation: $\Delta T = T_{ref} - T_{PCM}$ \\
+In order to get a temperature difference we perform the integration twice. 
+In both cases there is the Constantan disc to transport heat to the position where the crucible in the experiment is. 
+Now in one integration at the end of the Constantan there is the PCM. 
+In the reference integration there is no PCM, just the boundary conditions of no heat-flux at the end of the Constantan.
+The temperature difference is taken in both cases at the very end of the Constantan disc. \\
+
+There is a mapping $f$ from temperature difference to electric potential: $\Delta U = f(\Delta T)$.
+For simplicity we assume a linear relationship $\Delta U = k \cdot \Delta T(T_{ref})$ with parameter $k$ to optimize because we do not know this constant. \\
+
+\subsection{Optimization Problem}
+
+In order to obtain the specific heat capacity $c_p$ (and $k$) we solve the least square problem where we minimize the residuum of the measured and simulated voltages.
+
+\begin{align*}
+	& \min_{p_{c_p}, k} ||U_{dsc} - \Delta U ||_2^2 \\
+	\Leftrightarrow & \min_{p_{c_p}, k} ||U_{dsc} - k (T_{ref} - T_{pcm}) ||_2^2 \\
+\end{align*}
+
 \section{Functions for $c_p$ and $\rho$-fit}
 
 \begin{equation*}
