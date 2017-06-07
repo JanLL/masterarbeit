@@ -26,6 +26,9 @@ N3 = p_sim.N3;
 heat_rate = p_sim.heat_rate;
 T_0 = p_sim.T_0;
 T_end = p_sim.T_end;
+c_p_test_setup = p_sim.c_p_test_setup;
+rho_test_setup = p_sim.rho_test_setup;
+lambda_test_setup = p_sim.lambda_test_setup;
 
 heat_rate = heat_rate / 60.;  % [K/min] -> [K/s]
 N = N1+N2+N3;
@@ -48,7 +51,7 @@ Jpattern = spdiags(cols, [0,1,-1], N, N);
 opts = odeset('reltol', 1e-7, 'abstol', 1e-12, 'Jpattern', Jpattern);
 
 ode_system1d_expl = @(t, y) ode_system1d(t, y, N1, N2, N3, dx, heat_rate, ...
-    eval_c_p, eval_dc_p);
+    c_p_test_setup, rho_test_setup, lambda_test_setup, eval_c_p, eval_dc_p);
 
 %tic;
 sol = ode15s(ode_system1d_expl, t, T0, opts);

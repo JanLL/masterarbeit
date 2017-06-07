@@ -1,5 +1,5 @@
-function dT = ode_system1d(t, T, N1, N2, N3, dx, heat_rate, ...
-                           eval_c_p, eval_dc_p)
+function dT = ode_system1d(t, T, N1, N2, N3, dx, heat_rate, c_p_test_setup, ...
+                           rho_test_setup, lambda_test_setup, eval_c_p, eval_dc_p)
 % [dT] = ode_system1d(t, T, N, dx, heat_rate, lambda, J_lin_sparse)
 % 
 % Computes the right hand side of the 1D differential heat equation for
@@ -13,6 +13,11 @@ function dT = ode_system1d(t, T, N1, N2, N3, dx, heat_rate, ...
 %           N3 --> number of spatial discretization lattice points (PCM)
 %           dx --> length [mm] of one spatial lattice point.
 %    heat_rate --> rate [K/s] the temperature of the oven is increasing.
+% c_p_test_setup --> 2x1 array: specific heat capacity [mJ/(mg*K] 
+%                               of [Constantan, crucible]
+% rho_test_setup --> 2x1 array: density [mg/mm^3] of [Constantan, crucible]
+%         lambda --> 3x1 array: heat conductivity [mW/(mm*K)] 
+%                               of [Constantan, crucible, PCM]
 %     eval_c_p --> fhandle to evaluate specific heat capacity.
 %    eval_dc_p --> fhandle to evaluate derivative of specific heat capacity
 %                  w.r.t. temperature.
@@ -37,8 +42,8 @@ end
 % pre-compute c_p and rho + derivatives because we need these later
 % multiple times.
 c_p = ones(N, 1);
-c_p(1:N1) = 0.41; % [mJ/(mg*K], Constantan, src: Wikipedia
-c_p(N1+1:N1+N2) = 0.99; % [mJ/(mg*K], Al2O3, src: www.pgo-online.com
+c_p(1:N1) = c_p_test_setup(1); 
+c_p(N1+1:N1+N2) = c_p_test_setup(2); 
 c_p(N1+N2+1:end) = eval_c_p(T(N1+N2+1:end));
 
 dc_p = zeros(N, 1);
@@ -46,20 +51,20 @@ dc_p(N1+N2+1:end) = eval_dc_p(T(N1+N2+1:end));
 
 
 rho = ones(N, 1);
-rho(1:N1) = 8.9; % [mg/mm^3], Constantan, src: Wikipedia
-%rho(1:N1) = 40.; % Um zu zeigen, dass eine anpassung des querschnitts ueber
-                 % die Dichte einen unterschied macht...
-
-rho(N1+1:N1+N2) = 3.75; % [mg/mm^3], Al2O3, src: www.pgo-online.com
+rho(1:N1) = rho_test_setup(1); 
+rho(N1+1:N1+N2) = rho_test_setup(2); 
 rho(N1+N2+1:end) = rho_formula(T(N1+N2+1:end)) .* 0.1;
+% factor 0.1 (a simple guess) to compensate different 
+% masses(-> cross sections) of Constantan/PCM.
 
 drho = zeros(N, 1);
 drho(N1+N2+1:end) = drho_formula(T(N1+N2+1:end)) .* 0.1;
 
 
-lambda = ones(N, 1) * 0.96; % [mJ/mg*K], PCM, src: Robert: PCM_lambda.m
-lambda(1:N1) = 23. * 8.; % [mW/(mm*K)], Constantan, src: Wikipedia
-lambda(N1+1:N1+N2) = 35.6; % [mW/(mm*K)], Al2O3, src: Wikipedia
+lambda = ones(N, 1);
+lambda(1:N1) = lambda_test_setup(1);
+lambda(N1+1:N1+N2) = lambda_test_setup(2);
+lambda(N1+N2+1:end) = lambda_test_setup(3);
 
 %% Non-linear part
 dT_non_lin = zeros(N,1);

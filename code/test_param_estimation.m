@@ -9,8 +9,11 @@ T_end = 200;
 
 heat_rate = 10.; % K/min
 
+lambda_test_setup = [23*4 35.6000 0.9600];
+
 common_args = {'L1', L1, 'L2', L2, 'L3', L3, 'N3', N3, 'T_0', T_0, ...
-               'T_end', T_end, 'heat_rate', heat_rate};
+               'T_end', T_end, 'heat_rate', heat_rate, ...
+               'lambda_test_setup', lambda_test_setup};
 p_sim = get_param_sim(common_args{:});
 
 

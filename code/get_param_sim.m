@@ -2,15 +2,22 @@ function [sim_params] = get_param_sim(varargin)
 %
 %
 % INPUT (variable):          
-%        N1 --> number of spatial discretization lattice points (Constantan)
-%        N2 --> number of spatial discretization lattice points (Crucible)
-%        N3 --> number of spatial discretization lattice points (PCM)
-%        L1 --> length [mm] of Constantan part.
-%        L2 --> length [mm] of crucible part.
-%        L3 --> length [mm] of PCM part.
-%       T_0 --> initial temperature [degree celsius] everywhere.
-%     T_end --> integrate until T_oven as reached T_end [degree celsius].
-% heat_rate --> rate [K/min] with which oven temperature increases.
+%             N1 --> number of spatial discretization lattice points 
+%                    (Constantan)
+%             N2 --> number of spatial discretization lattice points 
+%                    (Crucible)
+%             N3 --> number of spatial discretization lattice points (PCM)
+%             L1 --> length [mm] of Constantan part.
+%             L2 --> length [mm] of crucible part.
+%             L3 --> length [mm] of PCM part.
+%            T_0 --> initial temperature [degree celsius] everywhere.
+%          T_end --> integrate until T_oven as reached T_end [degree celsius].
+%      heat_rate --> rate [K/min] with which oven temperature increases.
+% c_p_test_setup --> 2x1 array: specific heat capacity [mJ/(mg*K] 
+%                               of [Constantan, crucible]
+% rho_test_setup --> 2x1 array: density [mg/mm^3] of [Constantan, crucible]
+%         lambda --> 3x1 array: heat conductivity [mW/(mm*K)] 
+%                               of [Constantan, crucible, PCM]
 %
 % OUTPUT: 
 %   sim_params --> 1x2 struct with (default) simulation parameters as input 
@@ -45,6 +52,23 @@ if hasOption(varargin, 'T_0'), sim_params.T_0 = getOption(varargin, 'T_0');
 else sim_params.T_0 = 10.; end
 if hasOption(varargin, 'T_end'), sim_params.T_end = getOption(varargin, 'T_end'); 
 else sim_params.T_end = 300.; end
+
+% src of material constants: Constantan, crucible(Al2O3) -> Wikipedia; 
+% density of pcm: Robert: PCM_lambda.m
+if hasOption(varargin, 'c_p_test_setup')
+    sim_params.c_p_test_setup = getOption(varargin, 'c_p_test_setup'); 
+else sim_params.c_p_test_setup = [0.41, 0.99]; 
+end
+if hasOption(varargin, 'rho_test_setup')
+    sim_params.rho_test_setup = getOption(varargin, 'rho_test_setup'); 
+else sim_params.rho_test_setup = [8.9, 3.94]; 
+end
+if hasOption(varargin, 'lambda_test_setup')
+    sim_params.lambda_test_setup = getOption(varargin, 'lambda_test_setup'); 
+else sim_params.lambda_test_setup = [23., 35.6, 0.96]; 
+end
+
+
 
 sim_params(2) = deal(sim_params(1));
 sim_params(2).N3 = 0;
