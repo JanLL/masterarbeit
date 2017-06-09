@@ -31,22 +31,34 @@ U_dsc = interp1(dsc.data(index_T_29:end,1), dsc.data(index_T_29:end,3), ...
 
 % Solve optimization problem min_p ||U_dsc - dU||_2^2
 p_optim_start = [115., ...
-                 40., ...
-                 0.013, ...
+                 25., ...
+                 0.01, ...
                  -1.42, ...
                  0.018, ...
-                 4.5325, ...
+                 5.4, ...
                  0.3];
 
-compute_residuum_expl = @(p_optim) compute_residuum(p_optim, p_sim, U_dsc, T_ref_meas);
+% choose free(true)/fixed(false) parameters to optimize
+p_optim_estim = true(length(p_optim_start), 1);
+%p_optim_estim(6) = false;
+p_optim_fixed = p_optim_start(~p_optim_estim);
 
-% compute_residuum_expl(p_optim_start); % test initial value
+compute_residuum_expl = @(p_optim) ...
+    compute_residuum(p_optim, p_optim_estim, p_optim_fixed, p_sim, U_dsc, T_ref_meas);
+
+% compute_residuum_expl(p_optim_start(p_optim_estim)); % test initial value
 % return
 
-lb = ones(length(p_optim_start), 1) * -inf;
-ub = ones(length(p_optim_start), 1) * inf;
+% lb = zeros(length(p_optim_estim==true), 1);
+% lb(4) = -inf;  % activation function can mirror parallel to y-axis.
+% ub = ones(length(p_optim_estim==true), 1) * inf;
+
+lb = [];
+ub = [];
+
 opt_options = optimoptions('lsqnonlin', 'Display', 'iter-detailed');
-p_optim = lsqnonlin(compute_residuum_expl, p_optim_start, lb, ub, opt_options);
+
+p_optim = lsqnonlin(compute_residuum_expl, p_optim_start(p_optim_estim), lb, ub, opt_options);
 
 % Plot measured and optimized c_p
 figure();

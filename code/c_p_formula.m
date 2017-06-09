@@ -11,9 +11,6 @@ function [c_p] = c_p_formula(T, p)
 % Author: Jan Lammel, lammel@stud.uni-heidelberg.de
 
 
-
-    
-
 c_p = (atan(-p(4)*(T-p(1)))+pi/2) .* (p(2)*exp(-p(3)*(T-p(1)).^2)) + p(5)*T + p(6);
 % atan works as activation function to get an asymmetric peak
 
