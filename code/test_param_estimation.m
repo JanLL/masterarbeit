@@ -62,12 +62,13 @@ p_optim = lsqnonlin(compute_residuum_expl, p_optim_start(p_optim_estim), lb, ub,
 
 % Plot measured and optimized c_p
 figure();
-c_p_meas = calc_cp();
-plot(dsc.data(:,1), c_p_meas, 'DisplayName', 'Measurement'); hold on
-
 T_domain = linspace(dsc.data(1,1),dsc.data(end,1),200);
 plot(T_domain, c_p_formula(T_domain, get_param_c_p(p_optim)), ...
-     'DisplayName', 'Optimization');
+     'DisplayName', 'Optimization'); hold on
+
+c_p_meas = calc_cp();
+plot(dsc.data(:,1), 2.6 .* c_p_meas, 'DisplayName', 'Measurement');
+
 legend('show', 'location', 'northwest');
 xlabel('T_{ref}');
 ylabel('c_p');

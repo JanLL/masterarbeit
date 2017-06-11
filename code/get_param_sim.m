@@ -14,10 +14,13 @@ function [sim_params] = get_param_sim(varargin)
 %          T_end --> integrate until T_oven as reached T_end [degree celsius].
 %      heat_rate --> rate [K/min] with which oven temperature increases.
 % c_p_test_setup --> 2x1 array: specific heat capacity [mJ/(mg*K] 
-%                               of [Constantan, crucible]
+%                       of [Constantan, crucible]
 % rho_test_setup --> 2x1 array: density [mg/mm^3] of [Constantan, crucible]
 %         lambda --> 3x1 array: heat conductivity [mW/(mm*K)] 
-%                               of [Constantan, crucible, PCM]
+%                       of [Constantan, crucible, PCM]
+%     c_p_sample --> 2x1 cell array: Fct Handles with unspecified
+%                       parameters to eval. c_p (1) and dc_p (2) [mJ/(mg*K]
+%                       of sample.
 %
 % OUTPUT: 
 %   sim_params --> 1x2 struct with (default) simulation parameters as input 
@@ -68,8 +71,41 @@ if hasOption(varargin, 'lambda_test_setup')
 else sim_params.lambda_test_setup = [23., 35.6, 0.96]; 
 end
 
+if hasOption(varargin, 'c_p_sample')
+    sim_params.c_p_sample = getOption(varargin, 'c_p_sample');
+else
+    syms T;
+    p = sym('p', [6 1]);
+    dc_p = matlabFunction(diff(c_p_formula(T, p), T), 'Vars', [T;p]);
+    dc_p = @(T,p) dc_p(T,p(1),p(2),p(3),p(4),p(5),p(6));
+    sim_params.c_p_sample = {@c_p_formula, dc_p, [0, 6]};
+end
+
+% parameter vector to optimize: [c_p_knots, c_p_coeffs, k]
+c_p_params = sim_params.c_p_sample{3};
+sim_params.get_param_c_p_knots = ...
+    @(p_optim) p_optim(1 : c_p_params(1));
+sim_params.get_param_c_p_coeffs = ...
+    @(p_optim) p_optim(c_p_params(1)+1 : sum(c_p_params(1:2)));
+sim_params.get_param_k = ...
+    @(p_optim) p_optim(sum(c_p_params(1:2))+1);
 
 
+if isa(sim_params.c_p_sample{1}, 'function_handle')
+    sim_params.eval_c_p = @(T, p) sim_params.c_p_sample{1}(T,p);
+    sim_params.eval_dc_p = @(T, p) sim_params.c_p_sample{2}(T,p);
+elseif isa(sim_params.c_p_sample{1}, 'struct')
+    sim_params.eval_c_p = ...
+        @(T, p) spval(spmak(sim_params.get_param_c_p_knots(p), ...
+                            sim_params.get_param_c_p_coeffs(p)));
+    sim_params.eval_dc_p = ...
+        @(T, p) spval(fnder(spmak(sim_params.get_param_c_p_knots(p), ...
+                            sim_params.get_param_c_p_coeffs(p))));
+else
+    error('c_p_sample must either contain function handles or structs for B-splines!');
+end
+    
+    
 sim_params(2) = deal(sim_params(1));
 sim_params(2).N3 = 0;
 sim_params(2).L3 = 0.;

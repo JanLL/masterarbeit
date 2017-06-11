@@ -1,37 +1,31 @@
 function [residuum] = compute_residuum(p_optim, p_optim_estimable, p_optim_fixed, ...
                                        p_sim, U_dsc, T_ref_meas)
-%
+% TODO: function description!
 
-% compute derivative (symbolically) of c_p w.r.t. temperature T
-persistent dc_p;
 
-if isempty(dc_p)
-    syms T;
-    p = sym('p', [6 1]);
-    dc_p = matlabFunction(diff(c_p_formula(T, p), T), 'Vars', [T;p]);
-end
+% abbreviations
+N1 = p_sim(1).N1;
 
+% build vector of all (free and fixed) optimization parameters
 p_optim_all = zeros(1,length(p_optim_estimable));
-
-% p_optim_all 
-% p_optim
-
 p_optim_all(p_optim_estimable) = p_optim;
 p_optim_all(~p_optim_estimable) = p_optim_fixed;
 
 % build new function handles of c_p and derivative with explicit parameter
 % values from p_optim.
-c_p_params = get_param_c_p(p_optim_all);
-eval_c_p = @(T)c_p_formula(T, c_p_params);
-c_p_params_cell = num2cell(c_p_params);
-eval_dc_p = @(T) dc_p(T,c_p_params_cell{1:end});
+% c_p_params = get_param_c_p(p_optim_all);
+% eval_c_p = @(T)c_p_formula(T, c_p_params);
+% c_p_params_cell = num2cell(c_p_params);
+% eval_dc_p = @(T) dc_p(T,c_p_params_cell{1:end});
+
+
+
 
 % compute temperature difference between pcm and reference
 
 T_pcm = simulate_1d(eval_c_p, eval_dc_p, p_sim(1));
 T_ref = simulate_1d(eval_c_p, eval_dc_p, p_sim(2));
 
-N1 = p_sim(1).N1;
 dT = T_ref(:,N1) - T_pcm(:,N1);
 
 % convert temperatue to voltage difference with linear factor k
