@@ -1,4 +1,4 @@
-function [c_p_pcm] = calc_cp()
+function [T_ref, c_p_pcm] = calc_cp()
 
 % TODO: Allgemein mit filename als input variable, 
 %       ABER: Bisher keine Saphir Kurven != 10K/min
@@ -20,6 +20,7 @@ c_p_sap = DSC204_cp_saphire_DIN11357(T_grid);
 
 c_p_pcm = c_p_sap .* U_korr_pcm./U_korr_sap; 
 
+T_ref = dsc.data(:,1);
 
 end
 

@@ -1,23 +1,16 @@
-knots = [0, 1.5, 2, 4, 4.1, 5., 6., 6.5, 7., 8., 9., 10.];
-coeffs = [2., 6, -2, 1, 1, 1, 2, 1, 2];
+knots = [-50, 60., 90., 120., 130, 135, 140, 145, 150, 160, 220];
+coeffs = [1, 1, 1, 20, 1, 1, 1];
+
 
 sp = spmak(knots, coeffs);
 dsp = fnder(sp);
 
-
-x = linspace(0,10,2000000);
-
-f = @(x) spval(spmak(knots, coeffs), x);
-
+x = 30:0.05:160;
+ 
 % Bspline
 tic;
 y = spval(sp, x);
 toc
-
-tic;
-y = f(x);
-toc
-
 
 % % Normales Polynom (quadratisch)
 % coeffs = [2,1,1];
@@ -41,5 +34,5 @@ toc
 
 %dsp = fnder(sp);
 
-% plot(x, spval(sp, x)); hold on;
-% plot(x, spval(dsp, x)); hold on;
+plot(x, spval(sp, x)); hold on;
+plot(x, spval(dsp, x)); hold on;
