@@ -71,39 +71,70 @@ if hasOption(varargin, 'lambda_test_setup')
 else sim_params.lambda_test_setup = [23., 35.6, 0.96]; 
 end
 
+
+
+
 if hasOption(varargin, 'c_p_sample')
-    sim_params.c_p_sample = getOption(varargin, 'c_p_sample');
+    c_p_sample = getOption(varargin, 'c_p_sample');
+    
+    if isa(c_p_sample{1}, 'function_handle') && ...
+       isa(c_p_sample{2}, 'function_handle') && ...
+       isa(c_p_sample{3}, 'numeric')
+        sim_params.eval_c_p = c_p_sample{1};
+        sim_params.eval_dc_p = c_p_sample{2};
+        sim_params.c_p_params_num = c_p_sample{3};
+
+        sim_params.get_param_c_p = ...
+            @(p_optim) p_optim(1 : sim_params.c_p_params_num);
+        sim_params.get_param_k = ...
+            @(p_optim) p_optim(sim_params.c_p_params_num + 1);
+
+
+    elseif strcmp(c_p_sample{1}, 'B-') && ...
+           isa(c_p_sample{2}, 'numeric')
+        sim_params.c_p_params_num = c_p_sample{2};
+        c_p_params_num = sim_params.c_p_params_num;
+
+        sim_params.get_param_c_p_knots = ...
+            @(p_optim) p_optim(1 : c_p_params_num(1));
+        sim_params.get_param_c_p_coeffs = ...
+            @(p_optim) p_optim(c_p_params_num(1)+1 : sum(c_p_params_num(1:2)));
+        sim_params.get_param_c_p = ...
+            @(p_optim) cat(2, sim_params.get_param_c_p_knots(p_optim), ...
+                              sim_params.get_param_c_p_coeffs(p_optim));
+        sim_params.get_param_k = ...
+            @(p_optim) p_optim(sum(c_p_params_num(1:2))+1);
+
+        sim_params.eval_c_p = ...
+            @(T, p) spval(spmak(sim_params.get_param_c_p_knots(p), ...
+                                sim_params.get_param_c_p_coeffs(p)), T);
+        sim_params.eval_dc_p = ...
+            @(T, p) spval(fnder(spmak(sim_params.get_param_c_p_knots(p), ...
+                                sim_params.get_param_c_p_coeffs(p))), T);
+    else
+        error(['Option c_p_sample must be either ' ...
+              '{@cp_fct, @dcp_fct, [num_params]} for function handles' ...
+              'or {''B-'', [#knots, #coeffs]} for BSplines.']);
+    end
+    
 else
     syms T;
-    p = sym('p', [6 1]);
+    p = sym('p', [6, 1]);
     dc_p = matlabFunction(diff(c_p_formula(T, p), T), 'Vars', [T;p]);
     dc_p = @(T,p) dc_p(T,p(1),p(2),p(3),p(4),p(5),p(6));
-    sim_params.c_p_sample = {@c_p_formula, dc_p, [0, 6]};
+    
+    sim_params.eval_c_p = @c_p_formula;
+    sim_params.eval_dc_p = dc_p;
+    
+    sim_params.c_p_params_num = 6;
+    sim_params.get_param_c_p = ...
+        @(p_optim) p_optim(1 : sim_params.c_p_params_num);
+    sim_params.get_param_k = ...
+        @(p_optim) p_optim(sim_params.c_p_params_num + 1);
 end
 
-% parameter vector to optimize: [c_p_knots, c_p_coeffs, k]
-c_p_params = sim_params.c_p_sample{3};
-sim_params.get_param_c_p_knots = ...
-    @(p_optim) p_optim(1 : c_p_params(1));
-sim_params.get_param_c_p_coeffs = ...
-    @(p_optim) p_optim(c_p_params(1)+1 : sum(c_p_params(1:2)));
-sim_params.get_param_k = ...
-    @(p_optim) p_optim(sum(c_p_params(1:2))+1);
 
 
-if isa(sim_params.c_p_sample{1}, 'function_handle')
-    sim_params.eval_c_p = @(T, p) sim_params.c_p_sample{1}(T,p);
-    sim_params.eval_dc_p = @(T, p) sim_params.c_p_sample{2}(T,p);
-elseif isa(sim_params.c_p_sample{1}, 'struct')
-    sim_params.eval_c_p = ...
-        @(T, p) spval(spmak(sim_params.get_param_c_p_knots(p), ...
-                            sim_params.get_param_c_p_coeffs(p)), T);
-    sim_params.eval_dc_p = ...
-        @(T, p) spval(fnder(spmak(sim_params.get_param_c_p_knots(p), ...
-                            sim_params.get_param_c_p_coeffs(p))), T);
-else
-    error('c_p_sample must either contain function handles or structs for B-splines!');
-end
     
     
 sim_params(2) = deal(sim_params(1));

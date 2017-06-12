@@ -3,6 +3,11 @@ coeffs = [1, 1, 1, 20, 1, 1, 1];
 
 
 sp = spmak(knots, coeffs);
+
+strcmp(sp.form, 'B-')
+
+return
+
 dsp = fnder(sp);
 
 x = 30:0.05:160;
