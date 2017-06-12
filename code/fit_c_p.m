@@ -47,10 +47,12 @@ T_ref_knots = [find(T_ref > 30, 1, 'first'), ...
                find(T_ref > 159, 1, 'first')];
 
 fit = csapi(T_ref(T_ref_knots), c_p(T_ref_knots));
-fit_B = fn2fm(fit, 'B-');
+%fit_B = fn2fm(fit, 'B-');
 
-plot(T_ref(index_30:end), c_p(index_30:end)); hold on
-% plot(T_ref(index_30:end), ppval(fit, T_ref(index_30:end)));
+fit
+
+%plot(T_ref(index_30:end), c_p(index_30:end)); hold on
+%plot(T_ref(index_30:end), ppval(fit, T_ref(index_30:end)));
 
 end
 
