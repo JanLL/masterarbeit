@@ -62,8 +62,18 @@ knot_bounds = [-inf, 30, 70, 100, 120, 125, 130, 135, 140, 145, 150, inf];
 lb = [];
 ub = [];
 
+[T_meas, c_p_meas] = calc_cp();
 
-opt_options = optimoptions('lsqnonlin', 'Display', 'iter-detailed');
+optim_plot_c_p_expl = ...
+    @(x, optimValues, state) ...
+        optim_plot_c_p(x, optimValues, state, p_sim(1).eval_c_p, ...
+                       cat(2, T_meas, c_p_meas), p_sim(1).get_param_c_p, ...
+                       p_optim_estimable, p_optim_fixed);
+opt_options = optimoptions('lsqnonlin', 'Display', 'iter-detailed', ...
+                           'OutputFcn', optim_plot_c_p_expl);
+
+fig1 = figure(1); % dU plot
+fig1.WindowStyle = 'normal';
 
 p_optim = lsqnonlin(compute_residuum_expl, p_optim_start(p_optim_estimable), lb, ub, opt_options);
 
@@ -79,7 +89,7 @@ T_domain = linspace(dsc.data(1,1),dsc.data(end,1),200);
 plot(T_domain, p_sim(1).eval_c_p(T_domain, p_sim(1).get_param_c_p(p_optim_all)), ...
      'DisplayName', 'Optimization'); hold on
 
-[T_meas, c_p_meas] = calc_cp();
+
 plot(dsc.data(:,1), c_p_meas, 'DisplayName', 'Measurement');
 
 legend('show', 'location', 'northwest');
