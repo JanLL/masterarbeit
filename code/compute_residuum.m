@@ -41,13 +41,13 @@ dU_interp = interp1(T_ref(index_T_p5:end,N1), dU(index_T_p5:end), ...
 
 residuum = U_dsc - dU_interp;
 
-figure()
-plot(T_ref_meas, dU_interp, 'DisplayName', 'Simulation'); hold on
-plot(T_ref_meas, U_dsc, 'DisplayName', 'Measurements'); hold on
-plot(T_ref_meas, residuum, 'DisplayName', 'Residuum'); hold on
-legend('show', 'location', 'northwest');
-xlabel('T_{ref}');
-ylabel('\Delta U');
+% figure()
+% plot(T_ref_meas, dU_interp, 'DisplayName', 'Simulation'); hold on
+% plot(T_ref_meas, U_dsc, 'DisplayName', 'Measurements'); hold on
+% plot(T_ref_meas, residuum, 'DisplayName', 'Residuum'); hold on
+% legend('show', 'location', 'northwest');
+% xlabel('T_{ref}');
+% ylabel('\Delta U');
 
 % % print('/home/argo/masterarbeit/simulationen-data/delta_U_optimized_lambda-wikiX8','-dpng');
 

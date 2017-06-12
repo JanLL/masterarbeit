@@ -43,31 +43,40 @@ p_sim = get_param_sim(common_args{:}, 'c_p_sample', c_p_sample);
 
 
 % choose free(true)/fixed(false) parameters to optimize
-p_optim_estim = true(length(p_optim_start), 1);
-%p_optim_estim(6) = false;
-p_optim_fixed = p_optim_start(~p_optim_estim);
+p_optim_estimable = true(length(p_optim_start), 1);
+p_optim_estimable(1:length(knots)) = false;
+p_optim_fixed = p_optim_start(~p_optim_estimable);
 
 compute_residuum_expl = @(p_optim) ...
-    compute_residuum(p_optim, p_optim_estim, p_optim_fixed, p_sim, U_dsc, T_ref_meas);
+    compute_residuum(p_optim, p_optim_estimable, p_optim_fixed, p_sim, U_dsc, T_ref_meas);
 
 
-% compute_residuum_expl(p_optim_start(p_optim_estim)); % test initial value
+% compute_residuum_expl(p_optim_start(p_optim_estimable)); % test initial value
 % return
 
 
 knot_bounds = [-inf, 30, 70, 100, 120, 125, 130, 135, 140, 145, 150, inf];
 
-lb = cat(2, knot_bounds(1:end-1), ones(1, length(coeffs)+1)*-inf);
-ub = cat(2, knot_bounds(2:end), ones(1, length(coeffs)+1)*inf);
+%lb = cat(2, knot_bounds(1:end-1), ones(1, length(coeffs)+1)*-inf);
+%ub = cat(2, knot_bounds(2:end), ones(1, length(coeffs)+1)*inf);
+lb = [];
+ub = [];
+
 
 opt_options = optimoptions('lsqnonlin', 'Display', 'iter-detailed');
 
-p_optim = lsqnonlin(compute_residuum_expl, p_optim_start(p_optim_estim), lb, ub, opt_options);
+p_optim = lsqnonlin(compute_residuum_expl, p_optim_start(p_optim_estimable), lb, ub, opt_options);
+
+
+p_optim_all = zeros(1,length(p_optim_estimable));
+p_optim_all(p_optim_estimable) = p_optim;
+p_optim_all(~p_optim_estimable) = p_optim_fixed;
+
 
 % Plot measured and optimized c_p
 figure();
 T_domain = linspace(dsc.data(1,1),dsc.data(end,1),200);
-plot(T_domain, p_sim(1).eval_c_p(T_domain, p_sim(1).get_param_c_p(p_optim)), ...
+plot(T_domain, p_sim(1).eval_c_p(T_domain, p_sim(1).get_param_c_p(p_optim_all)), ...
      'DisplayName', 'Optimization'); hold on
 
 [T_meas, c_p_meas] = calc_cp();
