@@ -133,13 +133,15 @@ else
         @(p_optim) p_optim(sim_params.c_p_params_num + 1);
 end
 
-
-
     
     
 sim_params(2) = deal(sim_params(1));
 sim_params(2).N3 = 0;
 sim_params(2).L3 = 0.;
 
+
+
+
 end
+
 

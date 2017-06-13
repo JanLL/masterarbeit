@@ -11,12 +11,6 @@ heat_rate = 10.; % K/min
 
 lambda_test_setup = [23*4 35.6000 0.9600];
 
-common_args = {'L1', L1, 'L2', L2, 'L3', L3, 'N3', N3, 'T_0', T_0, ...
-               'T_end', T_end, 'heat_rate', heat_rate, ...
-               'lambda_test_setup', lambda_test_setup,};
-p_sim = get_param_sim(common_args{:});
-
-
 % measurement data
 dsc = DSC204_readFile('ExpDat_16-407-3_mitKorr_10Kmin_H.csv');
 
@@ -47,18 +41,24 @@ p_optim_estimable = true(length(p_optim_start), 1);
 p_optim_estimable(1:length(knots)) = false;
 p_optim_fixed = p_optim_start(~p_optim_estimable);
 
+figure(1); % dU plot
+ax1 = gca();
+figure(2); % c_p plot
+ax2 = gca();
+
 compute_residuum_expl = @(p_optim) ...
-    compute_residuum(p_optim, p_optim_estimable, p_optim_fixed, p_sim, U_dsc, T_ref_meas);
+    compute_residuum(p_optim, p_optim_estimable, p_optim_fixed, p_sim, ...
+                     U_dsc, T_ref_meas, ax1);
 
 
 % compute_residuum_expl(p_optim_start(p_optim_estimable)); % test initial value
 % return
 
 
-knot_bounds = [-inf, 30, 70, 100, 120, 125, 130, 135, 140, 145, 150, inf];
+% knot_bounds = [-inf, 30, 70, 100, 120, 125, 130, 135, 140, 145, 150, inf];
+% lb = cat(2, knot_bounds(1:end-1), ones(1, length(coeffs)+1)*-inf);
+% ub = cat(2, knot_bounds(2:end), ones(1, length(coeffs)+1)*inf);
 
-%lb = cat(2, knot_bounds(1:end-1), ones(1, length(coeffs)+1)*-inf);
-%ub = cat(2, knot_bounds(2:end), ones(1, length(coeffs)+1)*inf);
 lb = [];
 ub = [];
 
@@ -68,12 +68,11 @@ optim_plot_c_p_expl = ...
     @(x, optimValues, state) ...
         optim_plot_c_p(x, optimValues, state, p_sim(1).eval_c_p, ...
                        cat(2, T_meas, c_p_meas), p_sim(1).get_param_c_p, ...
-                       p_optim_estimable, p_optim_fixed);
+                       p_optim_estimable, p_optim_fixed, ax2);
 opt_options = optimoptions('lsqnonlin', 'Display', 'iter-detailed', ...
                            'OutputFcn', optim_plot_c_p_expl);
 
-fig1 = figure(1); % dU plot
-fig1.WindowStyle = 'normal';
+
 
 p_optim = lsqnonlin(compute_residuum_expl, p_optim_start(p_optim_estimable), lb, ub, opt_options);
 
@@ -81,7 +80,6 @@ p_optim = lsqnonlin(compute_residuum_expl, p_optim_start(p_optim_estimable), lb,
 p_optim_all = zeros(1,length(p_optim_estimable));
 p_optim_all(p_optim_estimable) = p_optim;
 p_optim_all(~p_optim_estimable) = p_optim_fixed;
-
 
 % Plot measured and optimized c_p
 figure();

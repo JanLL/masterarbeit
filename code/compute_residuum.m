@@ -1,5 +1,5 @@
 function [residuum] = compute_residuum(p_optim, p_optim_estimable, p_optim_fixed, ...
-                                       p_sim, U_dsc, T_ref_meas)
+                                       p_sim, U_dsc, T_ref_meas, ax1)
 % TODO: function description!
 
 
@@ -41,14 +41,13 @@ dU_interp = interp1(T_ref(index_T_p5:end,N1), dU(index_T_p5:end), ...
 
 residuum = U_dsc - dU_interp;
 
-clf(1)
-fig1 = figure(1);
-plot(T_ref_meas, dU_interp, 'DisplayName', 'Simulation'); hold on
-plot(T_ref_meas, U_dsc, 'DisplayName', 'Measurements'); hold on
-plot(T_ref_meas, residuum, 'DisplayName', 'Residuum'); hold on
-legend('show', 'location', 'northwest');
-xlabel('T_{ref}');
-ylabel('\Delta U');
+cla(ax1);
+plot(ax1, T_ref_meas, dU_interp, 'DisplayName', 'Simulation'); hold on
+plot(ax1, T_ref_meas, U_dsc, 'DisplayName', 'Measurements'); hold on
+plot(ax1, T_ref_meas, residuum, 'DisplayName', 'Residuum'); hold on
+legend(ax1, 'show', 'location', 'northwest');
+xlabel(ax1, 'T_{ref}');
+ylabel(ax1, '\Delta U');
 drawnow;
 
 % % print('/home/argo/masterarbeit/simulationen-data/delta_U_optimized_lambda-wikiX8','-dpng');
