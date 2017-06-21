@@ -80,9 +80,16 @@ if hasOption(varargin, 'c_p_sample')
     if isa(c_p_sample{1}, 'function_handle') && ...
        isa(c_p_sample{2}, 'function_handle') && ...
        isa(c_p_sample{3}, 'numeric')
-        sim_params.eval_c_p = c_p_sample{1};
-        sim_params.eval_dc_p = c_p_sample{2};
+        
+        sim_params.c_p_type = 'function_handle';
+        sim_params.c_p_fcn = c_p_sample{1};
+        sim_params.dc_p_fcn = c_p_sample{2};
         sim_params.c_p_params_num = c_p_sample{3};
+        
+        % default evaluation functions with zero parameters, 
+        % have to be set with update_c_p afterwards
+        sim_params.eval_c_p = @(T) c_p_fcn(T, zeros(1,sim_params.c_p_params_num));
+        sim_params.eval_dc_p = @(T) dc_p_fcn(T, zeros(1,sim_params.c_p_params_num));
 
         sim_params.get_param_c_p = ...
             @(p_optim) p_optim(1 : sim_params.c_p_params_num);
@@ -92,6 +99,7 @@ if hasOption(varargin, 'c_p_sample')
 
     elseif strcmp(c_p_sample{1}, 'B-') && ...
            isa(c_p_sample{2}, 'numeric')
+        sim_params.c_p_type = 'B_spline';
         sim_params.c_p_params_num = c_p_sample{2};
         c_p_params_num = sim_params.c_p_params_num;
 
@@ -105,12 +113,15 @@ if hasOption(varargin, 'c_p_sample')
         sim_params.get_param_k = ...
             @(p_optim) p_optim(sum(c_p_params_num(1:2))+1);
 
+        % default spline functions
+        sim_params.c_p_bspline = spmak(1:c_p_params_num(1), zeros(1,c_p_params_num(2)));
+        sim_params.dc_p_bspline = fnder(sim_params.c_p_bspline);
+        
         sim_params.eval_c_p = ...
-            @(T, p) spval(spmak(sim_params.get_param_c_p_knots(p), ...
-                                sim_params.get_param_c_p_coeffs(p)), T);
+            @(T) spval(sim_params.c_p_bspline, T);
         sim_params.eval_dc_p = ...
-            @(T, p) spval(fnder(spmak(sim_params.get_param_c_p_knots(p), ...
-                                sim_params.get_param_c_p_coeffs(p))), T);
+            @(T) spval(sim_params.dc_p_bspline, T);
+
     else
         error(['Option c_p_sample must be either ' ...
               '{@cp_fct, @dcp_fct, [num_params]} for function handles' ...
@@ -123,8 +134,12 @@ else
     dc_p = matlabFunction(diff(c_p_formula(T, p), T), 'Vars', [T;p]);
     dc_p = @(T,p) dc_p(T,p(1),p(2),p(3),p(4),p(5),p(6));
     
-    sim_params.eval_c_p = @c_p_formula;
-    sim_params.eval_dc_p = dc_p;
+    sim_params.c_p_type = 'function_handle';
+    sim_params.c_p_fcn = @c_p_formula;
+    sim_params.dc_p_fcn = dc_p;
+    
+    sim_params.eval_c_p = @(T) c_p_fcn(T, zeros(1,6));
+    sim_params.eval_dc_p = @(T) dc_p_fcn(T, zeros(1,6));
     
     sim_params.c_p_params_num = 6;
     sim_params.get_param_c_p = ...
@@ -133,15 +148,27 @@ else
         @(p_optim) p_optim(sim_params.c_p_params_num + 1);
 end
 
-    
-    
+
+
 sim_params(2) = deal(sim_params(1));
 sim_params(2).N3 = 0;
 sim_params(2).L3 = 0.;
 
 
-
+function update_c_p(p_optim, p_sim)
+    
+    p_sim(1).c_p_bspline.knots = p_sim(1).get_param_c_p_knots(p_optim);
+    p_sim(1).c_p_bspline.coefs = p_sim(1).get_param_c_p_coeffs(p_optim);
 
 end
+    
+
+end
+
+
+
+
+
+
 
 

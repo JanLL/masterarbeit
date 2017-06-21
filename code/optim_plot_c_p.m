@@ -29,7 +29,8 @@ p_optim_all(p_optim_estimable) = x;
 p_optim_all(~p_optim_estimable) = p_optim_fixed;
 
 T = c_p_meas(1,1):0.05:c_p_meas(end,1);
-plot(ax2, T, eval_c_p(T, get_param_c_p(p_optim_all)), 'DisplayName', 'Optimization'); hold on
+%plot(ax2, T, eval_c_p(T, get_param_c_p(p_optim_all)), 'DisplayName', 'Optimization'); hold on
+plot(ax2, T, eval_c_p(T), 'DisplayName', 'Optimization'); hold on
 plot(ax2, c_p_meas(:,1), c_p_meas(:,2), 'DisplayName', 'Measurement');
 
 legend(ax2, 'show', 'location', 'northwest');

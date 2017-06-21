@@ -34,6 +34,7 @@ common_args = {'L1', L1, 'L2', L2, 'L3', L3, 'N3', N3, 'T_0', T_0, ...
                'T_end', T_end, 'heat_rate', heat_rate, ...
                'lambda_test_setup', lambda_test_setup,};
 p_sim = get_param_sim(common_args{:}, 'c_p_sample', c_p_sample);
+p_sim = update_c_p(p_sim, p_optim_start);
 
 
 % choose free(true)/fixed(false) parameters to optimize
@@ -46,10 +47,11 @@ ax1 = gca();
 figure(2); % c_p plot
 ax2 = gca();
 
+[T_meas, c_p_meas] = calc_cp();
+
 compute_residuum_expl = @(p_optim) ...
     compute_residuum(p_optim, p_optim_estimable, p_optim_fixed, p_sim, ...
-                     U_dsc, T_ref_meas, ax1);
-
+                     U_dsc, T_meas, c_p_meas, T_ref_meas, ax1, ax2);
 
 % compute_residuum_expl(p_optim_start(p_optim_estimable)); % test initial value
 % return
@@ -62,15 +64,14 @@ compute_residuum_expl = @(p_optim) ...
 lb = [];
 ub = [];
 
-[T_meas, c_p_meas] = calc_cp();
 
 optim_plot_c_p_expl = ...
     @(x, optimValues, state) ...
         optim_plot_c_p(x, optimValues, state, p_sim(1).eval_c_p, ...
                        cat(2, T_meas, c_p_meas), p_sim(1).get_param_c_p, ...
                        p_optim_estimable, p_optim_fixed, ax2);
-opt_options = optimoptions('lsqnonlin', 'Display', 'iter-detailed', ...
-                           'OutputFcn', optim_plot_c_p_expl);
+opt_options = optimoptions('lsqnonlin', 'Display', 'iter-detailed');%, ...
+                           %'OutputFcn', optim_plot_c_p_expl);
 
 
 

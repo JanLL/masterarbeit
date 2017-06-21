@@ -1,5 +1,5 @@
 function [residuum] = compute_residuum(p_optim, p_optim_estimable, p_optim_fixed, ...
-                                       p_sim, U_dsc, T_ref_meas, ax1)
+                                       p_sim, U_dsc, T_meas, c_p_meas, T_ref_meas, ax1, ax2)
 % TODO: function description!
 
 
@@ -28,11 +28,12 @@ if isempty(T_ref) || isempty(T_ref_setup) || ...
     p_optim_all(p_optim_estimable) = p_optim;
     p_optim_all(~p_optim_estimable) = p_optim_fixed;
        
-    c_p_params = p_sim(1).get_param_c_p(p_optim_all);
-    eval_c_p_expl = @(T) p_sim(1).eval_c_p(T, c_p_params);
-    eval_dc_p_expl = @(T) p_sim(1).eval_dc_p(T, c_p_params);
+    %c_p_params = p_sim(1).get_param_c_p(p_optim_all);
+    %eval_c_p_expl = @(T) p_sim(1).eval_c_p(T, c_p_params);
+    %eval_dc_p_expl = @(T) p_sim(1).eval_dc_p(T, c_p_params);
                    
-    T_ref = simulate_1d(eval_c_p_expl, eval_dc_p_expl, p_sim(2));
+    %T_ref = simulate_1d(eval_c_p_expl, eval_dc_p_expl, p_sim(2));
+    T_ref = simulate_1d(p_sim(1).eval_c_p, p_sim(1).eval_dc_p, p_sim(2));
     T_ref_setup = [c_p_const, rho_const, lambda_const, L1, N1, T_0, ...
                    T_end, heat_rate];
 end
@@ -44,12 +45,16 @@ p_optim_all(~p_optim_estimable) = p_optim_fixed;
 
 % build new function handles of c_p and derivative with explicit parameter
 % values from p_optim.
-c_p_params = p_sim(1).get_param_c_p(p_optim_all);
-eval_c_p_expl = @(T) p_sim(1).eval_c_p(T, c_p_params);
-eval_dc_p_expl = @(T) p_sim(1).eval_dc_p(T, c_p_params);
+%c_p_params = p_sim(1).get_param_c_p(p_optim_all);
+p_sim = update_c_p(p_sim, p_optim_all);
+
+
+%eval_c_p_expl = @(T) p_sim(1).eval_c_p(T, c_p_params);
+%eval_dc_p_expl = @(T) p_sim(1).eval_dc_p(T, c_p_params);
 
 % compute temperature difference between pcm and reference
-T_pcm = simulate_1d(eval_c_p_expl, eval_dc_p_expl, p_sim(1));
+%T_pcm = simulate_1d(eval_c_p_expl, eval_dc_p_expl, p_sim(1));
+T_pcm = simulate_1d(p_sim(1).eval_c_p, p_sim(1).eval_dc_p, p_sim(1));
 
 dT = T_ref(:,N1) - T_pcm(:,N1);
 
@@ -73,12 +78,23 @@ residuum = U_dsc - dU_interp;
 
 cla(ax1);
 hold(ax1, 'on')
-plot(ax1, T_ref_meas, dU_interp, 'DisplayName', 'Simulation');
+plot(ax1, T_ref_meas, dU_interp, 'DisplayName', 'Optimization');
 plot(ax1, T_ref_meas, U_dsc, 'DisplayName', 'Measurements');
 plot(ax1, T_ref_meas, residuum, 'DisplayName', 'Residuum');
 legend(ax1, 'show', 'location', 'northwest');
 xlabel(ax1, 'T_{ref}');
 ylabel(ax1, '\Delta U');
+drawnow;
+
+
+cla(ax2);
+hold(ax2, 'on')
+%plot(ax2, T, eval_c_p(T, get_param_c_p(p_optim_all)), 'DisplayName', 'Optimization'); hold on
+plot(ax2, T_ref_meas, p_sim(1).eval_c_p(T_ref_meas), 'DisplayName', 'Optimization'); hold on
+plot(ax2, T_meas, c_p_meas, 'DisplayName', 'Measurement');
+legend(ax2, 'show', 'location', 'northwest');
+xlabel(ax2, 'T_{ref}');
+ylabel(ax2, 'c_p');
 drawnow;
 
 % % print('/home/argo/masterarbeit/simulationen-data/delta_U_optimized_lambda-wikiX8','-dpng');
