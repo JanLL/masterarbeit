@@ -153,14 +153,6 @@ end
 sim_params(2) = deal(sim_params(1));
 sim_params(2).N3 = 0;
 sim_params(2).L3 = 0.;
-
-
-function update_c_p(p_optim, p_sim)
-    
-    p_sim(1).c_p_bspline.knots = p_sim(1).get_param_c_p_knots(p_optim);
-    p_sim(1).c_p_bspline.coefs = p_sim(1).get_param_c_p_coeffs(p_optim);
-
-end
     
 
 end
