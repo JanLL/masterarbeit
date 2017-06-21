@@ -9,7 +9,7 @@ T_end = 200;
 
 heat_rate = 10.; % K/min
 
-lambda_test_setup = [23*4 35.6000 0.9600];
+lambda_test_setup = [23*1, 35.6000, 0.9600];
 
 % measurement data
 dsc = DSC204_readFile('ExpDat_16-407-3_mitKorr_10Kmin_H.csv');
@@ -24,8 +24,8 @@ U_dsc = interp1(dsc.data(index_T_29:end,1), dsc.data(index_T_29:end,3), ...
                 T_ref_meas, 'pchip');
 
 % Solve optimization problem min_p ||U_dsc - dU||_2^2
-knots = [-0, 50., 90., 110., 122, 127, 132, 137, 142, 147, 200];
-coeffs = [10, 15, 20., 100., 1.5, 1.5, 1.5];
+knots = [-10,0, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 115, 122, 127, 132, 137, 142, 147, 150, 155, 160, 170, 200];
+coeffs = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5];
 k = 0.3;
 p_optim_start = cat(2, knots, coeffs, k);
 

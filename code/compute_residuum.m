@@ -4,7 +4,38 @@ function [residuum] = compute_residuum(p_optim, p_optim_estimable, p_optim_fixed
 
 
 % abbreviations
+c_p_const = p_sim(1).c_p_test_setup(1);
+rho_const = p_sim(1).rho_test_setup(1);
+lambda_const = p_sim(1).lambda_test_setup(1);
+L1 = p_sim(1).L1;
 N1 = p_sim(1).N1;
+T_0 = p_sim(1).T_0;
+T_end = p_sim(1).T_end;
+heat_rate = p_sim(1).heat_rate;
+
+
+
+persistent T_ref T_ref_setup;
+
+if isempty(T_ref) || isempty(T_ref_setup) || ...
+   any(T_ref_setup ~= [c_p_const, rho_const, lambda_const, L1, N1, T_0, ...
+                       T_end, heat_rate])
+    
+    % TODO: eig. naechsten 2 bloecke nicht notwendig weil c_p fuer sample
+    % in Referenzsimulation garnicht aufgerufen wird ...
+    % ---> Wird mittelfristig aber eh durch analytische Lsg. ersetzt
+    p_optim_all = zeros(1,length(p_optim_estimable));
+    p_optim_all(p_optim_estimable) = p_optim;
+    p_optim_all(~p_optim_estimable) = p_optim_fixed;
+       
+    c_p_params = p_sim(1).get_param_c_p(p_optim_all);
+    eval_c_p_expl = @(T) p_sim(1).eval_c_p(T, c_p_params);
+    eval_dc_p_expl = @(T) p_sim(1).eval_dc_p(T, c_p_params);
+                   
+    T_ref = simulate_1d(eval_c_p_expl, eval_dc_p_expl, p_sim(2));
+    T_ref_setup = [c_p_const, rho_const, lambda_const, L1, N1, T_0, ...
+                   T_end, heat_rate];
+end
 
 % build vector of all (free and fixed) optimization parameters
 p_optim_all = zeros(1,length(p_optim_estimable));
@@ -19,7 +50,6 @@ eval_dc_p_expl = @(T) p_sim(1).eval_dc_p(T, c_p_params);
 
 % compute temperature difference between pcm and reference
 T_pcm = simulate_1d(eval_c_p_expl, eval_dc_p_expl, p_sim(1));
-T_ref = simulate_1d(eval_c_p_expl, eval_dc_p_expl, p_sim(2));
 
 dT = T_ref(:,N1) - T_pcm(:,N1);
 
@@ -42,9 +72,10 @@ dU_interp = interp1(T_ref(index_T_p5:end,N1), dU(index_T_p5:end), ...
 residuum = U_dsc - dU_interp;
 
 cla(ax1);
-plot(ax1, T_ref_meas, dU_interp, 'DisplayName', 'Simulation'); hold on
-plot(ax1, T_ref_meas, U_dsc, 'DisplayName', 'Measurements'); hold on
-plot(ax1, T_ref_meas, residuum, 'DisplayName', 'Residuum'); hold on
+hold(ax1, 'on')
+plot(ax1, T_ref_meas, dU_interp, 'DisplayName', 'Simulation');
+plot(ax1, T_ref_meas, U_dsc, 'DisplayName', 'Measurements');
+plot(ax1, T_ref_meas, residuum, 'DisplayName', 'Residuum');
 legend(ax1, 'show', 'location', 'northwest');
 xlabel(ax1, 'T_{ref}');
 ylabel(ax1, '\Delta U');
