@@ -29,14 +29,6 @@ T = repmat(T, [1,1,size(N,3)]);
 sol20 = u(X,T,N);
 
 
-%  image(u(X,T)','CDataMapping','scaled');
-%  colorbar;
-%  xlabel('time');
-%  ylabel('x');
-
-
-
-
 
 % Numerical Solution
 
@@ -55,21 +47,24 @@ common_args = {'L1', L1, 'L2', L2, 'L3', L3, 'N3', N3, 'T_0', T_0, ...
                'T_end', T_end, 'heat_rate', heat_rate};
 p_sim = get_param_sim(common_args{:});
 
+
 c_p_params = [144.0009 - 15., ...
                     4.1036 * 5., ...
                     0.0039 + 0.1, ...
                     1.4217 * 0., ...
                     0.0078, ...
                     1.5325];
-                
-eval_c_p_expl = @(T) p_sim(1).eval_c_p(T, c_p_params);
-eval_dc_p_expl = @(T) p_sim(1).eval_dc_p(T, c_p_params);
 
-T_ref = simulate_1d(eval_c_p_expl, eval_dc_p_expl, p_sim(2));
+p_sim = update_c_p(p_sim, c_p_params);
+
+                
+T_ref = simulate_1d(p_sim(1).eval_c_p, p_sim(1).eval_dc_p, p_sim(2));
 
 
 plot(sol20(:,1), sol20(:,1) - sol20(:,end), '--'); hold on
 plot(T_ref(:,1), T_ref(:,1) - T_ref(:,end), '--');
 
-xlabel('T_oven [degC]');
+xlabel('T_{oven} [degC]');
+ylabel('\Delta T');
+
 

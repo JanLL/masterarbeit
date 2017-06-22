@@ -2,6 +2,7 @@ function [residuum] = compute_residuum(p_optim, p_optim_estimable, p_optim_fixed
                                        p_sim, U_dsc, T_meas, c_p_meas, T_ref_meas, ax1, ax2)
 % TODO: function description!
 
+%p_optim
 
 % abbreviations
 c_p_const = p_sim(1).c_p_test_setup(1);

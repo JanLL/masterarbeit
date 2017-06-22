@@ -25,7 +25,7 @@ U_dsc = interp1(dsc.data(index_T_29:end,1), dsc.data(index_T_29:end,3), ...
 
 % Solve optimization problem min_p ||U_dsc - dU||_2^2
 knots = [-10,0, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 115, 122, 127, 132, 137, 142, 147, 150, 155, 160, 170, 200];
-coeffs = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5];
+coeffs = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1.5, 1.5, 3, 20, 1.5, 1.5, 1.5, 1.5, 1.5];
 k = 0.3;
 p_optim_start = cat(2, knots, coeffs, k);
 
@@ -39,6 +39,7 @@ p_sim = update_c_p(p_sim, p_optim_start);
 
 % choose free(true)/fixed(false) parameters to optimize
 p_optim_estimable = true(length(p_optim_start), 1);
+p_optim_estimable(end) = false;
 p_optim_estimable(1:length(knots)) = false;
 p_optim_fixed = p_optim_start(~p_optim_estimable);
 
@@ -53,16 +54,16 @@ compute_residuum_expl = @(p_optim) ...
     compute_residuum(p_optim, p_optim_estimable, p_optim_fixed, p_sim, ...
                      U_dsc, T_meas, c_p_meas, T_ref_meas, ax1, ax2);
 
-% compute_residuum_expl(p_optim_start(p_optim_estimable)); % test initial value
-% return
+compute_residuum_expl(p_optim_start(p_optim_estimable)); % test initial value
+return
 
 
 % knot_bounds = [-inf, 30, 70, 100, 120, 125, 130, 135, 140, 145, 150, inf];
 % lb = cat(2, knot_bounds(1:end-1), ones(1, length(coeffs)+1)*-inf);
 % ub = cat(2, knot_bounds(2:end), ones(1, length(coeffs)+1)*inf);
 
-lb = [];
-ub = [];
+lb = zeros(size(coeffs));
+ub = ones(size(coeffs))*100.;
 
 
 optim_plot_c_p_expl = ...

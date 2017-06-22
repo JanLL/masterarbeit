@@ -2,8 +2,8 @@ function [p_sim_mod] = update_c_p(p_sim, p_optim)
 % TODO: description
 
 if strcmp(p_sim(1).c_p_type, 'function_handle')
-    p_sim(1).eval_c_p = @(T) c_p_fcn(T, p_sim(1).get_param_c_p(p_optim));
-    p_sim(1).eval_dc_p = @(T) dc_p_fcn(T, p_sim(1).get_param_c_p(p_optim));
+    p_sim(1).eval_c_p = @(T) p_sim(1).c_p_fcn(T, p_sim(1).get_param_c_p(p_optim));
+    p_sim(1).eval_dc_p = @(T) p_sim(1).dc_p_fcn(T, p_sim(1).get_param_c_p(p_optim));
     
 elseif strcmp(p_sim(1).c_p_type, 'B_spline')
     p_sim(1).c_p_bspline.knots = p_sim(1).get_param_c_p_knots(p_optim);
