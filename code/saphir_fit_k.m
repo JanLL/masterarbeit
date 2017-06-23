@@ -1,0 +1,60 @@
+% Measurement data
+
+
+
+% Simulation data
+L1 = 25.;
+L2 = 0.;
+L3 = 1.;
+N3 = 50;
+
+T_0 = 10;
+T_end = 200;
+
+heat_rate = 10.; % K/min
+
+lambda_test_setup = [23*1, 35.6000, 41.9]; 
+% lambda of saphire questionable, current value from Wiki
+
+% coefficients of polynome to compute c_p of saphir in J/(g*K)
+c_p_sap_coeffs = [  0.34407  ...
+                   -0.37623  ...
+                   -0.47824  ...
+                    0.54579  ...
+                    0.15393  ...
+                   -0.10023  ...
+                   -0.23778  ...
+                    0.26410  ...
+                   -0.21704  ...
+                    0.23260  ...
+                    1.12705 ];
+      
+                
+c_p_sap = @(T, p) polyval(p, (T - 376.85) / 550);
+dc_p_sap = @(T, p) polyval(cat(2, [0], p(1:end-1)), (T - 376.85) / 550);
+
+c_p_sample = {c_p_sap, dc_p_sap, length(c_p_sap_coeffs)};
+common_args = {'L1', L1, 'L2', L2, 'L3', L3, 'N3', N3, 'T_0', T_0, ...
+               'T_end', T_end, 'heat_rate', heat_rate, ...
+               'lambda_test_setup', lambda_test_setup ...
+               'c_p_sample', c_p_sample};
+p_sim = get_param_sim(common_args{:});
+p_sim = update_c_p(p_sim, c_p_sap_coeffs);
+
+k = [0.1];
+p_optim_start = cat(2, c_p_sap_coeffs, k);
+
+
+% choose free(true)/fixed(false) parameters to optimize
+p_optim_estimable = true(length(p_optim_start), 1);
+p_optim_estimable(1:length(c_p_sap_coeffs)) = false;
+p_optim_fixed = p_optim_start(~p_optim_estimable);
+
+figure(1); % dU plot
+ax1 = gca();
+figure(2); % c_p plot
+ax2 = gca();
+
+
+
+
