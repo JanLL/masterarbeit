@@ -2,6 +2,7 @@
 
 dsc_sap = DSC204_readFile('Sap-Kurve_10Kmin_H_Segment_7.csv');
 
+
 index_T_29 = find(dsc_sap.data(:,1) > 29, 1);
 T_ref_meas = 30:0.05:157.;
 
@@ -9,7 +10,7 @@ T_ref_meas = 30:0.05:157.;
 % measurements
 U_dsc = interp1(dsc_sap.data(index_T_29:end,1), dsc_sap.data(index_T_29:end,3), ...
                 T_ref_meas, 'pchip');
-
+U_dsc = U_dsc * dsc_sap.mass; % reverse normalization with mass [uV/mg] -> [uv]
 
 % Simulation data
 L1 = 25.;
@@ -22,8 +23,8 @@ T_end = 200;
 
 heat_rate = 10.; % K/min
 
-lambda_test_setup = [23*1, 35.6000, 41.9]; 
-% lambda of saphire questionable, current value from Wiki
+lambda_test_setup = [23*1, 35.6000, 41.9]; % Wiki value: 41.9 
+% lambda of saphire questionable
 
 % coefficients of polynome to compute c_p of saphir in J/(g*K)
 c_p_sap_coeffs = [  0.34407  ...
@@ -87,16 +88,22 @@ p_optim = lsqnonlin(compute_residuum_expl, p_optim_start(p_optim_estimable), lb,
 % Comparison simulation fit and fit of data table from type_E_sensor.pdf
 % For the latter see spielwiese.ipynb
 
-data_table_fit_coeffs = [-3.76608759e-05   5.04978224e-02   5.85217070e+01];
+data_table_fit_coeffs = [  3.67763861e-02   6.00028439e+01  -4.47793211e+01];
 
 figure(3)
 gca();
+cla;
 
 plot(T_ref_meas, polyval(p_optim, T_ref_meas), 'DisplayName', 'Optimization'); hold on
 plot(T_ref_meas, polyval(data_table_fit_coeffs, T_ref_meas), 'DisplayName', 'Data table'); hold on
 legend('show', 'location', 'northoutside')
+xlabel('dT')
+ylabel('dU [uV]')
+title('dU(dT) = k_0 + k_1 * dT + k_2 * dT^2')
 
 
+p_optim
+data_table_fit_coeffs
 
 
 
