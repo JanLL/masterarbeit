@@ -1,5 +1,14 @@
 % Measurement data
 
+dsc_sap = DSC204_readFile('Sap-Kurve_10Kmin_H_Segment_7.csv');
+
+index_T_29 = find(dsc_sap.data(:,1) > 29, 1);
+T_ref_meas = 30:0.05:157.;
+
+% evaluation points of simulation, every 0.05K, interpolation of
+% measurements
+U_dsc = interp1(dsc_sap.data(index_T_29:end,1), dsc_sap.data(index_T_29:end,3), ...
+                T_ref_meas, 'pchip');
 
 
 % Simulation data
@@ -41,7 +50,7 @@ common_args = {'L1', L1, 'L2', L2, 'L3', L3, 'N3', N3, 'T_0', T_0, ...
 p_sim = get_param_sim(common_args{:});
 p_sim = update_c_p(p_sim, c_p_sap_coeffs);
 
-k = [0.1];
+k = [0., 1., 0.];
 p_optim_start = cat(2, c_p_sap_coeffs, k);
 
 
@@ -54,6 +63,39 @@ figure(1); % dU plot
 ax1 = gca();
 figure(2); % c_p plot
 ax2 = gca();
+
+% pseudo measurement values of c_p to plot, equal to the ones used in
+% simulation because we just optimize k here.
+T_meas = T_ref_meas;
+c_p_meas = p_sim(1).eval_c_p(T_meas);
+
+compute_residuum_expl = @(p_optim) ...
+    compute_residuum(p_optim, p_optim_estimable, p_optim_fixed, p_sim, ...
+                     U_dsc, T_meas, c_p_meas, T_ref_meas, ax1, ax2);
+
+% compute_residuum_expl(p_optim_start(p_optim_estimable)); % test initial value
+% return
+
+
+lb = [];
+ub = [];
+
+opt_options = optimoptions('lsqnonlin', 'Display', 'iter-detailed');
+p_optim = lsqnonlin(compute_residuum_expl, p_optim_start(p_optim_estimable), lb, ub, opt_options);
+
+
+% Comparison simulation fit and fit of data table from type_E_sensor.pdf
+% For the latter see spielwiese.ipynb
+
+data_table_fit_coeffs = [-3.76608759e-05   5.04978224e-02   5.85217070e+01];
+
+figure(3)
+gca();
+
+plot(T_ref_meas, polyval(p_optim, T_ref_meas), 'DisplayName', 'Optimization'); hold on
+plot(T_ref_meas, polyval(data_table_fit_coeffs, T_ref_meas), 'DisplayName', 'Data table'); hold on
+legend('show', 'location', 'northoutside')
+
 
 
 

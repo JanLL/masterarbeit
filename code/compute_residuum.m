@@ -45,7 +45,7 @@ dT = T_ref(:,N1) - T_pcm(:,N1);
 % convert temperatue to voltage difference with linear factor k
 k = p_sim(1).get_param_k(p_optim_all);
 
-dU = k * dT;
+dU = k(1) + k(2) * dT + k(3) * dT.^2;
 
 % In the first few seconds T_ref(:,N1) stays constant till the heat of the
 % oven reaches it. Interpolation can't handle non-unique domain of
@@ -65,7 +65,7 @@ hold(ax1, 'on')
 plot(ax1, T_ref_meas, dU_interp, 'DisplayName', 'Optimization');
 plot(ax1, T_ref_meas, U_dsc, 'DisplayName', 'Measurement');
 plot(ax1, T_ref_meas, residuum, 'DisplayName', 'Residuum');
-legend(ax1, 'show', 'location', 'northwest');
+legend(ax1, 'show', 'location', 'northoutside');
 xlabel(ax1, 'T_{ref}');
 ylabel(ax1, '\Delta U');
 drawnow;

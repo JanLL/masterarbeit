@@ -94,7 +94,7 @@ if hasOption(varargin, 'c_p_sample')
         sim_params.get_param_c_p = ...
             @(p_optim) p_optim(1 : sim_params.c_p_params_num);
         sim_params.get_param_k = ...
-            @(p_optim) p_optim(sim_params.c_p_params_num + 1);
+            @(p_optim) p_optim(sim_params.c_p_params_num + 1:sim_params.c_p_params_num + 3);
 
 
     elseif strcmp(c_p_sample{1}, 'B-') && ...
@@ -111,7 +111,7 @@ if hasOption(varargin, 'c_p_sample')
             @(p_optim) cat(2, sim_params.get_param_c_p_knots(p_optim), ...
                               sim_params.get_param_c_p_coeffs(p_optim));
         sim_params.get_param_k = ...
-            @(p_optim) p_optim(sum(c_p_params_num(1:2))+1);
+            @(p_optim) p_optim(sum(c_p_params_num(1:2))+1:sum(c_p_params_num(1:2))+3);
 
         % default spline functions
         sim_params.c_p_bspline = spmak(1:c_p_params_num(1), zeros(1,c_p_params_num(2)));
@@ -145,7 +145,7 @@ else
     sim_params.get_param_c_p = ...
         @(p_optim) p_optim(1 : sim_params.c_p_params_num);
     sim_params.get_param_k = ...
-        @(p_optim) p_optim(sim_params.c_p_params_num + 1);
+        @(p_optim) p_optim(sim_params.c_p_params_num + 1:sim_params.c_p_params_num + 3);
 end
 
 
