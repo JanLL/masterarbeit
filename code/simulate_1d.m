@@ -42,8 +42,8 @@ T0 = T_0 .* ones(N,1);
 
 t0 = 0.;
 tf = (T_end - T0(1)) / heat_rate;  % integrate up to T_oven = T_end degree Celsius
-t = linspace(t0, tf, int32((T_end - T_0(1))*20.))';
-% function evaluation every 0.05 K, independend of heat_rate
+t = linspace(t0, tf, int32((T_end - T_0(1))*20. + 1))';
+% function evaluation every 0.05 K of T_oven, independend of heat_rate
 
 cols = ones(N, 3);
 Jpattern = spdiags(cols, [0,1,-1], N, N);

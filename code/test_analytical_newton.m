@@ -1,7 +1,7 @@
 tic;
 
 T0 = 30.;
-heat_rate = 10. / 60;
+heat_rate = 10. / 60; % K/s
 L = 25.;
 
 c_p = 0.41;
@@ -11,24 +11,28 @@ lambda = 23.;
 a = lambda / (c_p * rho);
 
 x = L;
-n = 10;
+n = 100;
 
 
 T_ref_max = 200';
-t0 = 1/heat_rate*(T_ref_max - T0);
-      
-F = @(t) analytical_sol(x,t,n,T0, heat_rate, a) - T_ref_max;
 
-fsolve_options = optimoptions('fsolve','Display','none');
-t0_max = fsolve(F, t0, fsolve_options);
+% Solve non-linear system to get time t where T_ref (temp. at crucible)
+% reaches T_ref_max.
+% F = @(t) analytical_sol(x,t,n,T0, heat_rate, a) - T_ref_max;
+% 
+% fsolve_options = optimoptions('fsolve','Display','none');
+% t_max = fsolve(F, t, fsolve_options);
+% 
+% dt = 0.05 / heat_rate; % fct evaluation every 0.05K
+% t = 0:dt:t_max;
 
-t = 0:1:t0_max;
+dt = 0.05 / heat_rate; % fct evaluation every 0.05K
+t = 0:dt:1/heat_rate*(T_ref_max - T0);
+
 T_ref_ana = analytical_sol(x,t,n,T0, heat_rate, a);
-
 
 T_oven = T0 + heat_rate*t';
 dT = T_oven - T_ref_ana;
-
 toc
 
 tic;
@@ -37,7 +41,7 @@ tic;
 L1 = 25.;
 L2 = 0.;
 L3 = 1.;
-N3 = 200;
+N3 = 500;
 
 T_0 = 30;
 T_end = 200;
@@ -62,11 +66,19 @@ p_sim = update_c_p(p_sim, c_p_params);
 T_ref_num = simulate_1d(p_sim(1).eval_c_p, p_sim(1).eval_dc_p, p_sim(2));
 toc
 
+% T_rel_err = T_ref_ana ./ T_ref_num(:,end);
+% T_abs_err = abs(T_ref_ana - T_ref_num(:,end));
+% %plot(T_ref_ana, T_rel_err, '.'); hold on
+% plot(T_ref_ana, T_abs_err, '.', 'DisplayName', sprintf('N1=%i', N3*L1)); hold on
+% xlabel('T_{ref}(analytical)')
+% ylabel('|T_{ref}(analytical) - T_{ref}(numerical)|')
+% title('Absolute error with n_{ana}=100');
+
+%legend('show', 'location', 'northoutside')
 
 
-plot(T_ref_ana, dT, '--'); hold on
-plot(T_ref_num(:,end), T_ref_num(:,1) - T_ref_num(:,end), '--');
-
+%plot(T_ref_ana, dT, '--'); hold on
+%plot(T_ref_num(:,end), T_ref_num(:,1) - T_ref_num(:,end), '--');
 
 
 

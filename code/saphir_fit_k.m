@@ -11,6 +11,8 @@ T_ref_meas = 30:0.05:157.;
 U_dsc = interp1(dsc_sap.data(index_T_29:end,1), dsc_sap.data(index_T_29:end,3), ...
                 T_ref_meas, 'pchip');
 U_dsc = U_dsc * dsc_sap.mass; % reverse normalization with mass [uV/mg] -> [uv]
+U_dsc = transpose(cat(1, T_ref_meas, U_dsc));
+
 
 % Simulation data
 L1 = 25.;
@@ -69,10 +71,11 @@ ax2 = gca();
 % simulation because we just optimize k here.
 T_meas = T_ref_meas;
 c_p_meas = p_sim(1).eval_c_p(T_meas);
+c_p_meas = transpose(cat(1, T_meas, c_p_meas));
 
 compute_residuum_expl = @(p_optim) ...
     compute_residuum(p_optim, p_optim_estimable, p_optim_fixed, p_sim, ...
-                     U_dsc, T_meas, c_p_meas, T_ref_meas, ax1, ax2);
+                     U_dsc, c_p_meas, ax1, ax2);
 
 % compute_residuum_expl(p_optim_start(p_optim_estimable)); % test initial value
 % return
