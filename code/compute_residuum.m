@@ -42,9 +42,6 @@ T_pcm = simulate_1d(p_sim(1).eval_c_p, p_sim(1).eval_dc_p, p_sim(1));
 
 dT = T_ref(:,N1) - T_pcm(:,N1);
 
-max(dT)
-min(dT)
-
 % convert temperatue to voltage difference with linear factor k
 k = p_sim(1).get_param_k(p_optim_all);
 

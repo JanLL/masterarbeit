@@ -88,14 +88,16 @@ p_optim = lsqnonlin(compute_residuum_expl, p_optim_start(p_optim_estimable), lb,
 % Comparison simulation fit and fit of data table from type_E_sensor.pdf
 % For the latter see spielwiese.ipynb
 
-data_table_fit_coeffs = [  3.67763861e-02   6.00028439e+01  -4.47793211e+01];
+data_table_fit_coeffs = [  5.09505329e-02   5.85548916e+01  -2.86468463e-01];
 
 figure(3)
 gca();
-cla;
+%cla;
 
-plot(T_ref_meas, polyval(p_optim, T_ref_meas), 'DisplayName', 'Optimization'); hold on
-plot(T_ref_meas, polyval(data_table_fit_coeffs, T_ref_meas), 'DisplayName', 'Data table'); hold on
+T_domain_k = 0:0.1:30;
+
+plot(T_domain_k, polyval(p_optim, T_domain_k), 'DisplayName', 'Optimization'); hold on
+plot(T_domain_k, polyval(data_table_fit_coeffs, T_domain_k), 'DisplayName', 'Data table'); hold on
 legend('show', 'location', 'northoutside')
 xlabel('dT')
 ylabel('dU [uV]')

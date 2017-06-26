@@ -1,5 +1,7 @@
+tic;
+
 T0 = 30.;
-beta = 10. / 60;
+heat_rate = 10. / 60;
 L = 25.;
 
 c_p = 0.41;
@@ -8,16 +10,28 @@ lambda = 23.;
 
 a = lambda / (c_p * rho);
 
-x = 0:0.05:25;
-t_end = 1/beta*(200 - T0);
-t = 0:1:t_end;
+x = L;
+n = 10;
 
 
-% Analytical Solution
-sol20 = analytical_sol(x,t,20,T0, beta, a);
+T_ref_max = 200';
+t0 = 1/heat_rate*(T_ref_max - T0);
+      
+F = @(t) analytical_sol(x,t,n,T0, heat_rate, a) - T_ref_max;
+
+fsolve_options = optimoptions('fsolve','Display','none');
+t0_max = fsolve(F, t0, fsolve_options);
+
+t = 0:1:t0_max;
+T_ref_ana = analytical_sol(x,t,n,T0, heat_rate, a);
 
 
+T_oven = T0 + heat_rate*t';
+dT = T_oven - T_ref_ana;
 
+toc
+
+tic;
 % Numerical Solution
 % simulation data
 L1 = 25.;
@@ -45,15 +59,13 @@ c_p_params = [144.0009 - 15., ...
 p_sim = update_c_p(p_sim, c_p_params);
 
                 
-T_ref = simulate_1d(p_sim(1).eval_c_p, p_sim(1).eval_dc_p, p_sim(2));
+T_ref_num = simulate_1d(p_sim(1).eval_c_p, p_sim(1).eval_dc_p, p_sim(2));
+toc
 
 
-% Plot analytical and numerical result
-plot(sol20(:,end), sol20(:,1) - sol20(:,end), '--'); hold on
-plot(T_ref(:,end), T_ref(:,1) - T_ref(:,end), '--');
-xlabel('T_{ref} [degC]');
-ylabel('\Delta T');
 
+plot(T_ref_ana, dT, '--'); hold on
+plot(T_ref_num(:,end), T_ref_num(:,1) - T_ref_num(:,end), '--');
 
 
 
