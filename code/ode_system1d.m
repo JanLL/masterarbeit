@@ -53,15 +53,15 @@ dc_p(N1+N2+1:end) = eval_dc_p(T(N1+N2+1:end));
 rho = ones(N, 1);
 rho(1:N1) = rho_test_setup(1); 
 rho(N1+1:N1+N2) = rho_test_setup(2); 
-%rho(N1+N2+1:end) = rho_formula(T(N1+N2+1:end));% .* 0.1;
-rho(N1+N2+1:end) = 4.; % Saphire: Wiki: rho=3.95 .. 4.03 g/cm^3
+rho(N1+N2+1:end) = rho_formula(T(N1+N2+1:end));% .* 0.1;
+%rho(N1+N2+1:end) = 4.; % Saphire: Wiki: rho=3.95 .. 4.03 g/cm^3
 
 % factor 0.1 (a simple guess) to compensate different 
 % masses(-> cross sections) of Constantan/PCM.
 
 drho = zeros(N, 1);
-%drho(N1+N2+1:end) = drho_formula(T(N1+N2+1:end));% .* 0.1;
-drho(N1+N2+1:end) = 0.; % Saphire, rho const more or less
+drho(N1+N2+1:end) = drho_formula(T(N1+N2+1:end));% .* 0.1;
+%drho(N1+N2+1:end) = 0.; % Saphire, rho const more or less
 
 lambda = ones(N, 1);
 lambda(1:N1) = lambda_test_setup(1);

@@ -108,7 +108,6 @@ title('dU(dT) = k_0 + k_1 * dT + k_2 * dT^2')
 
 
 p_optim
-data_table_fit_coeffs
 
 
 

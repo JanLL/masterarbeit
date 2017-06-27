@@ -23,15 +23,17 @@ T_ref_meas = 30:0.05:157.9;
 % measurements
 U_dsc = interp1(dsc.data(index_T_29:end,1), dsc.data(index_T_29:end,3), ...
                 T_ref_meas, 'pchip');
-%U_dsc = U_dsc * dsc.mass; % reverse normalization with mass [uV/mg] -> [uv]
+U_dsc = U_dsc * dsc.mass; % reverse normalization with mass [uV/mg] -> [uv]
+U_dsc = transpose(cat(1, T_ref_meas, U_dsc));
+
 
 
 % Solve optimization problem min_p ||U_dsc - dU||_2^2
 knots = [-10,0, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 115, 122, 127, 132, 137, 142, 147, 150, 155, 160, 170, 200];
 coeffs = [1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 5, 15, 15, 15, 1.5, 1.5, 1.5, 1.5];
-k_sap = [20.7370  -17.8339   98.3524]; % values from saphire-fit
+k_sap_fit = [20.1293  -13.6992   94.2964]; % values from saphire-fit
 k_data_table = [  3.67763861e-02   6.00028439e+01  -4.47793211e+01]; % values from data table fit
-p_optim_start = cat(2, knots, coeffs, k_data_table);
+p_optim_start = cat(2, knots, coeffs, k_sap_fit);
 
 c_p_sample = {'B-', [length(knots), length(coeffs)]};
 common_args = {'L1', L1, 'L2', L2, 'L3', L3, 'N3', N3, 'T_0', T_0, ...
@@ -40,10 +42,8 @@ common_args = {'L1', L1, 'L2', L2, 'L3', L3, 'N3', N3, 'T_0', T_0, ...
 p_sim = get_param_sim(common_args{:}, 'c_p_sample', c_p_sample);
 p_sim = update_c_p(p_sim, p_optim_start);
 
-
 % choose free(true)/fixed(false) parameters to optimize
 p_optim_estimable = true(length(p_optim_start), 1);
-
 p_optim_estimable(end-2:end) = false; % fix mapping dT -> dU
 p_optim_estimable(1:length(knots)) = false; % fix knot positions
 
@@ -54,11 +54,11 @@ ax1 = gca();
 figure(2); % c_p plot
 ax2 = gca();
 
-[T_meas, c_p_meas] = calc_cp();
+c_p_meas = calc_cp();
 
 compute_residuum_expl = @(p_optim) ...
     compute_residuum(p_optim, p_optim_estimable, p_optim_fixed, p_sim, ...
-                     U_dsc, T_meas, c_p_meas, T_ref_meas, ax1, ax2);
+                     U_dsc, c_p_meas, ax1, ax2);
 
 % compute_residuum_expl(p_optim_start(p_optim_estimable)); % test initial value
 % return
@@ -71,17 +71,7 @@ compute_residuum_expl = @(p_optim) ...
 lb = zeros(size(coeffs));
 ub = ones(size(coeffs))*100.;
 
-
-optim_plot_c_p_expl = ...
-    @(x, optimValues, state) ...
-        optim_plot_c_p(x, optimValues, state, p_sim(1).eval_c_p, ...
-                       cat(2, T_meas, c_p_meas), p_sim(1).get_param_c_p, ...
-                       p_optim_estimable, p_optim_fixed, ax2);
-opt_options = optimoptions('lsqnonlin', 'Display', 'iter-detailed');%, ...
-                           %'OutputFcn', optim_plot_c_p_expl);
-
-
-
+opt_options = optimoptions('lsqnonlin', 'Display', 'iter-detailed');
 p_optim = lsqnonlin(compute_residuum_expl, p_optim_start(p_optim_estimable), lb, ub, opt_options);
 
 

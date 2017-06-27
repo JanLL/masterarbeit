@@ -1,4 +1,4 @@
-function [T_ref, c_p_pcm] = calc_cp()
+function c_p_meas = calc_cp()
 
 % TODO: Allgemein mit filename als input variable, 
 %       ABER: Bisher keine Saphir Kurven != 10K/min
@@ -12,15 +12,15 @@ dsc_sap = DSC204_readFile('Waermekapazitaet_Saphirmessung/Sap-Kurve_10Kmin_H_Seg
 
 % we need to interpolate the data on the same temp-grid because
 % dsc.data(:,1) != dsc_sap.data(:,1)
-T_grid = dsc.data(:,1);
+T_ref_meas = dsc.data(:,1);
 U_korr_pcm = dsc.data(:,3);
-U_korr_sap = interp1(dsc_sap.data(:,1), dsc_sap.data(:,3), T_grid);
+U_korr_sap = interp1(dsc_sap.data(:,1), dsc_sap.data(:,3), T_ref_meas);
 
-c_p_sap = DSC204_cp_saphire_DIN11357(T_grid);
+c_p_sap = DSC204_cp_saphire_DIN11357(T_ref_meas);
 
-c_p_pcm = c_p_sap .* U_korr_pcm./U_korr_sap; 
+c_p_meas = c_p_sap .* U_korr_pcm./U_korr_sap; 
 
-T_ref = dsc.data(:,1);
+c_p_meas = cat(2, T_ref_meas, c_p_meas);
 
 end
 
