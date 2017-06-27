@@ -10,9 +10,8 @@ lambda = 23.;
 
 a = lambda / (c_p * rho);
 
-x = L;
+x = [0, L];
 n = 100;
-
 
 T_ref_max = 200';
 
@@ -31,8 +30,7 @@ t = 0:dt:1/heat_rate*(T_ref_max - T0);
 
 T_ref_ana = analytical_sol(x,t,n,T0, heat_rate, a);
 
-T_oven = T0 + heat_rate*t';
-dT = T_oven - T_ref_ana;
+dT = T_ref_ana(:,1) - T_ref_ana(:,2);
 toc
 
 tic;
@@ -41,14 +39,16 @@ tic;
 L1 = 25.;
 L2 = 0.;
 L3 = 1.;
-N3 = 500;
+N1 = 1250;
+N2 = 0;
+N3 = 0;
 
 T_0 = 30;
 T_end = 200;
 
 heat_rate = 10.; % K/min
 
-common_args = {'L1', L1, 'L2', L2, 'L3', L3, 'N3', N3, 'T_0', T_0, ...
+common_args = {'L1', L1, 'L2', L2, 'L3', L3, 'N1', N1, 'N2', N2, 'N3', N3, 'T_0', T_0, ...
                'T_end', T_end, 'heat_rate', heat_rate};
 p_sim = get_param_sim(common_args{:});
 
@@ -63,7 +63,7 @@ c_p_params = [144.0009 - 15., ...
 p_sim = update_c_p(p_sim, c_p_params);
 
                 
-T_ref_num = simulate_1d(p_sim(1).eval_c_p, p_sim(1).eval_dc_p, p_sim(2));
+T_ref_num = simulate_1d(p_sim.eval_c_p, p_sim.eval_dc_p, p_sim);
 toc
 
 % T_rel_err = T_ref_ana ./ T_ref_num(:,end);
@@ -77,8 +77,8 @@ toc
 %legend('show', 'location', 'northoutside')
 
 
-%plot(T_ref_ana, dT, '--'); hold on
-%plot(T_ref_num(:,end), T_ref_num(:,1) - T_ref_num(:,end), '--');
+plot(T_ref_ana(:,2), dT, '--'); hold on
+plot(T_ref_num(:,end), T_ref_num(:,1) - T_ref_num(:,end), '--');
 
 
 

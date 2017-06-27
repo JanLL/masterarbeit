@@ -23,10 +23,8 @@ function [sim_params] = get_param_sim(varargin)
 %                       of sample.
 %
 % OUTPUT: 
-%   sim_params --> 1x2 struct with (default) simulation parameters as input 
+%   sim_params --> struct with (default) simulation parameters as input 
 %                  for simulate_1d. 
-%                  sim_params(1): simulation with PCM
-%                  sim_params(2): reference simulation without PCM
 
 sim_params = struct();
 
@@ -40,7 +38,7 @@ else sim_params.L3 = 1.; end
 
 if hasOption(varargin, 'N3'), sim_params.N3 = getOption(varargin, 'N3');
 else sim_params.N3 = 50; end
-if sim_params.N3 <= 0, error('N3 must be greater than 0!'); end
+%if sim_params.N3 <= 0, error('N3 must be greater than 0!'); end
 
 % compute N1, N2 s.t. dx is equal everywhere as default
 if hasOption(varargin, 'N1'), sim_params.N1 = getOption(varargin, 'N1'); 
@@ -148,12 +146,6 @@ else
         @(p_optim) p_optim(sim_params.c_p_params_num + 1:sim_params.c_p_params_num + 3);
 end
 
-
-
-sim_params(2) = deal(sim_params(1));
-sim_params(2).N3 = 0;
-sim_params(2).L3 = 0.;
-    
 
 end
 

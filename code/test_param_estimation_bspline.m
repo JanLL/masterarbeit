@@ -33,7 +33,8 @@ knots = [-10,0, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 115, 122, 127, 132, 13
 coeffs = [1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 5, 15, 15, 15, 1.5, 1.5, 1.5, 1.5];
 k_sap_fit = [20.1293  -13.6992   94.2964]; % values from saphire-fit
 k_data_table = [  3.67763861e-02   6.00028439e+01  -4.47793211e+01]; % values from data table fit
-p_optim_start = cat(2, knots, coeffs, k_sap_fit);
+
+p_optim_start = cat(2, knots, coeffs, k_data_table);
 
 c_p_sample = {'B-', [length(knots), length(coeffs)]};
 common_args = {'L1', L1, 'L2', L2, 'L3', L3, 'N3', N3, 'T_0', T_0, ...

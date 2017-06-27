@@ -2,7 +2,6 @@
 
 dsc_sap = DSC204_readFile('Sap-Kurve_10Kmin_H_Segment_7.csv');
 
-
 index_T_29 = find(dsc_sap.data(:,1) > 29, 1);
 T_ref_meas = 30:0.05:157.;
 
@@ -102,7 +101,7 @@ T_domain_k = 0:0.1:30;
 plot(T_domain_k, polyval(p_optim, T_domain_k), 'DisplayName', 'Optimization'); hold on
 plot(T_domain_k, polyval(data_table_fit_coeffs, T_domain_k), 'DisplayName', 'Data table'); hold on
 legend('show', 'location', 'northoutside')
-xlabel('dT')
+xlabel('dT [K]')
 ylabel('dU [uV]')
 title('dU(dT) = k_0 + k_1 * dT + k_2 * dT^2')
 

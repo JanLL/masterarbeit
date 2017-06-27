@@ -39,8 +39,8 @@ dx(N1+N2+1:end) = L3/N3;
 
 % integration initial values
 T0 = T_0 .* ones(N,1);
-
 t0 = 0.;
+
 tf = (T_end - T0(1)) / heat_rate;  % integrate up to T_oven = T_end degree Celsius
 t = linspace(t0, tf, int32((T_end - T_0(1))*20. + 1))';
 % function evaluation every 0.05 K of T_oven, independend of heat_rate
