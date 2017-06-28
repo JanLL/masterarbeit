@@ -9,7 +9,7 @@ T_ref_meas = 30:0.05:157.;
 % measurements
 U_dsc = interp1(dsc_sap.data(index_T_29:end,1), dsc_sap.data(index_T_29:end,3), ...
                 T_ref_meas, 'pchip');
-U_dsc = U_dsc * dsc_sap.mass; % reverse normalization with mass [uV/mg] -> [uv]
+%U_dsc = U_dsc * dsc_sap.mass; % reverse normalization with mass [uV/mg] -> [uv]
 U_dsc = transpose(cat(1, T_ref_meas, U_dsc));
 
 

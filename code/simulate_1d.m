@@ -50,7 +50,8 @@ Jpattern = spdiags(cols, [0,1,-1], N, N);
 
 opts = odeset('reltol', 1e-7, 'abstol', 1e-12, 'Jpattern', Jpattern);
 
-ode_system1d_expl = @(t, y) ode_system1d(t, y, N1, N2, N3, dx, heat_rate, ...
+% here changed either for PCM or Saphir!
+ode_system1d_expl = @(t, y) ode_system1d_sap(t, y, N1, N2, N3, dx, heat_rate, ...
     c_p_test_setup, rho_test_setup, lambda_test_setup, eval_c_p, eval_dc_p);
 
 %tic;

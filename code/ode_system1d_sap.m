@@ -1,4 +1,4 @@
-function dT = ode_system1d(t, T, N1, N2, N3, dx, heat_rate, c_p_test_setup, ...
+function dT = ode_system1d_sap(t, T, N1, N2, N3, dx, heat_rate, c_p_test_setup, ...
                            rho_test_setup, lambda_test_setup, eval_c_p, eval_dc_p)
 % [dT] = ode_system1d(t, T, N, dx, heat_rate, lambda, J_lin_sparse)
 % 
@@ -53,20 +53,29 @@ dc_p(N1+N2+1:end) = eval_dc_p(T(N1+N2+1:end));
 rho = ones(N, 1);
 rho(1:N1) = rho_test_setup(1); 
 rho(N1+1:N1+N2) = rho_test_setup(2); 
-rho(N1+N2+1:end) = rho_formula(T(N1+N2+1:end));% .* 0.1;
-%rho(N1+N2+1:end) = 4.; % Saphire: Wiki: rho=3.95 .. 4.03 mg/mm^3
+%rho(N1+N2+1:end) = rho_formula(T(N1+N2+1:end));% .* 0.1;
+rho(N1+N2+1:end) = 4.; % Saphire: Wiki: rho=3.95 .. 4.03 mg/mm^3
 
 % factor 0.1 (a simple guess) to compensate different 
 % masses(-> cross sections) of Constantan/PCM.
 
 drho = zeros(N, 1);
-drho(N1+N2+1:end) = drho_formula(T(N1+N2+1:end));% .* 0.1;
-%drho(N1+N2+1:end) = 0.; % Saphire, rho const more or less
+%drho(N1+N2+1:end) = drho_formula(T(N1+N2+1:end));% .* 0.1;
+drho(N1+N2+1:end) = 0.; % Saphire, rho const more or less
+
+lambda_sap_coeffs = 1.0e+03 * [0.0042    4.1855   -0.1000];
+% coeffs from saphir_heat_conductivity_fit
+lambda_sap = @(T) lambda_sap_coeffs(1) + lambda_sap_coeffs(2)./(T - lambda_sap_coeffs(3));
+dlambda_sap = @(T) -lambda_sap_coeffs(2)./(T-lambda_sap_coeffs(3)).^2;
 
 lambda = ones(N, 1);
 lambda(1:N1) = lambda_test_setup(1);
 lambda(N1+1:N1+N2) = lambda_test_setup(2);
-lambda(N1+N2+1:end) = lambda_test_setup(3);
+lambda(N1+N2+1:end) = lambda_sap(T(N1+N2+1:end));
+
+dlambda = zeros(N, 1);
+dlambda(N1+N2+1:end) = dlambda_sap(T(N1+N2+1:end));
+
 
 %% Non-linear part
 dT_non_lin = zeros(N,1);
@@ -76,7 +85,8 @@ dT_non_lin(1) = heat_rate;
 % forward differences in gradient
 dT_non_lin(N1+N2+1:N-1) = ...
     (-lambda(N1+N2+1:N-1) ./ (rho(N1+N2+1:N-1) .* c_p(N1+N2+1:N-1).^2) .* dc_p(N1+N2+1:N-1) ...
-     -lambda(N1+N2+1:N-1) ./ (rho(N1+N2+1:N-1).^2 .* c_p(N1+N2+1:N-1)) .* drho(N1+N2+1:N-1)) ...
+     -lambda(N1+N2+1:N-1) ./ (rho(N1+N2+1:N-1).^2 .* c_p(N1+N2+1:N-1)) .* drho(N1+N2+1:N-1) ...
+     +lambda(N1+N2+1:N-1).^2 ./ (rho(N1+N2+1:N-1) .* c_p(N1+N2+1:N-1)) .* dlambda(N1+N2+1:N-1)) ...
     .* ((T(N1+N2+2:N) - T(N1+N2+1:N-1)).^2 ...
     ./ dx(N1+N2+1:N-1).^2);
 
