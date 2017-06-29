@@ -1,3 +1,5 @@
+% values from properties_of_saphire.pdf
+
 lambda_meas = [46.06, 25.12, 12.56]; % [mW/(mm K)]
 temp_meas = [273, 373, 673]; % K
 
