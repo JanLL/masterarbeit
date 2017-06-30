@@ -73,10 +73,11 @@ T_pcm = simulate_1d(p_sim.eval_c_p, p_sim.eval_dc_p, p_sim);
 dT = T_ref(:) - T_pcm(:,N1);
 
 
-% convert temperatue to voltage difference with linear factor k
+% convert temperatue to voltage difference with coeffs k
 k = p_sim.get_param_k(p_optim_all);
 
-dU = k(1) + k(2) * dT + k(3) * dT.^2;
+%dU = k(3) + k(2) * dT + k(1) * dT.^2;
+dU = polyval(k, dT);
 
 % In the first few seconds T_ref(:,N1) stays constant till the heat of the
 % oven reaches it. Interpolation can't handle non-unique domain of

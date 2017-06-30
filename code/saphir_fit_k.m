@@ -9,7 +9,7 @@ T_ref_meas = 30:0.05:157.;
 % measurements
 U_dsc = interp1(dsc_sap.data(index_T_29:end,1), dsc_sap.data(index_T_29:end,3), ...
                 T_ref_meas, 'pchip');
-%U_dsc = U_dsc * dsc_sap.mass; % reverse normalization with mass [uV/mg] -> [uv]
+U_dsc = U_dsc * dsc_sap.mass; % reverse normalization with mass [uV/mg] -> [uv]
 U_dsc = transpose(cat(1, T_ref_meas, U_dsc));
 
 
@@ -59,6 +59,8 @@ p_optim_start = cat(2, c_p_sap_coeffs, k);
 % choose free(true)/fixed(false) parameters to optimize
 p_optim_estimable = true(length(p_optim_start), 1);
 p_optim_estimable(1:length(c_p_sap_coeffs)) = false;
+p_optim_estimable(length(c_p_sap_coeffs) + 1) = false;
+p_optim_estimable(length(c_p_sap_coeffs) + 3) = false;
 p_optim_fixed = p_optim_start(~p_optim_estimable);
 
 figure(1); % dU plot
@@ -98,7 +100,13 @@ gca();
 
 T_domain_k = 0:0.1:30;
 
-plot(T_domain_k, polyval(p_optim, T_domain_k), 'DisplayName', 'Optimization'); hold on
+p_optim_all = zeros(1,length(p_optim_estimable));
+p_optim_all(p_optim_estimable) = p_optim;
+p_optim_all(~p_optim_estimable) = p_optim_fixed;
+
+
+
+plot(T_domain_k, polyval(p_sim.get_param_k(p_optim_all), T_domain_k), 'DisplayName', 'Optimization'); hold on
 plot(T_domain_k, polyval(data_table_fit_coeffs, T_domain_k), 'DisplayName', 'Data table'); hold on
 legend('show', 'location', 'northoutside')
 xlabel('dT [K]')
