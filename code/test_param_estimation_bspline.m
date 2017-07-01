@@ -1,13 +1,15 @@
 % measurement data
 dsc = DSC204_readFile('ExpDat_16-407-3_mitKorr_10Kmin_H.csv');
 
+c_p_meas = calc_cp(); % TODO: calc_cp allgemein fuer beliebige Messdaten als input
+
 % TODO: sinnvolles Intervall automatisch waehlen ...
 index_T_dsc = [find(dsc.data(:,1) > 29, 1, 'first'), ...
                find(dsc.data(:,1) < 157.9, 1, 'last')];
-
-revMass = false;  % reverse normalization with mass [uV/mg] -> [uv]
 U_dsc = [dsc.data(index_T_dsc(1):index_T_dsc(2),1), dsc.data(index_T_dsc(1):index_T_dsc(2),3)];
-if revMass
+
+revMassNorm = false;  % reverse normalization with mass [uV/mg] -> [uv]
+if revMassNorm
     U_dsc(:,2) = U_dsc(:,2) * dsc.mass;
 end
 
@@ -25,6 +27,9 @@ heat_rate = 10.; % K/min
 
 lambda_test_setup = [23*1, 35.6000, 0.9600];
 
+optim_solverName = 'lsqnonlin';
+% optim_solverName = 'fminsearch';
+% optim_solverName = 'fmincon';
 % Solve optimization problem min_p ||U_dsc - dU||_2^2
 knots = [-10,0, 30, 50, 60, 70, 80, 90, 100, 110, 115, 122, 127, 132, 135:160, 165, 170, 200];
 coeffs = (0.05 .* [1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 5, 15, 15, 15, 15, 15, ...
@@ -37,7 +42,7 @@ coeffs = (0.05 .* [1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 5, 15, 15, 15, 15, 15, ..
 % length(coeffs)
 % return
 
-if revMass
+if revMassNorm
     k_sap_fit = [0.    45.5951   0.]; % values from saphire-fit
 else
     k_sap_fit = [0.    0.5381   0.]; % values from saphire-fit
@@ -65,13 +70,13 @@ ax1 = gca();
 figure(2); % c_p plot
 ax2 = gca();
 
-c_p_meas = calc_cp();
 
 compute_residuum_expl = @(p_optim) ...
     compute_residuum(p_optim, p_optim_estimable, p_optim_fixed, p_sim, ...
                      U_dsc, c_p_meas, ax1, ax2);
 
-% compute_residuum_expl(p_optim_start(p_optim_estimable)); % test initial value
+% TEST INITIAL VALUE
+% compute_residuum_expl(p_optim_start(p_optim_estimable));
 % return
 
 
@@ -79,33 +84,41 @@ compute_residuum_expl = @(p_optim) ...
 % lb = cat(2, knot_bounds(1:end-1), ones(1, length(coeffs)+1)*-inf);
 % ub = cat(2, knot_bounds(2:end), ones(1, length(coeffs)+1)*inf);
 
-lb = zeros(size(coeffs));
-ub = ones(size(coeffs))*100.;
+if strcmp(optim_solverName, 'lsqnonlin')
+    lb = zeros(size(coeffs));
+    ub = ones(size(coeffs))*100.;
+    
+    optim_con = {lb, ub};
 
-% lb = [];
-% ub = [];
+    opt_options = optimoptions('lsqnonlin', 'Display', 'iter-detailed', 'OutputFcn', @disp_aux);
+    [p_optim,~,~,~,optim_output] = lsqnonlin(...
+        compute_residuum_expl, p_optim_start(p_optim_estimable), optim_con{:}, opt_options);
 
-opt_options = optimoptions('lsqnonlin', 'Display', 'iter-detailed', 'OutputFcn', @disp_aux);
-[p_optim,~,~,~,optim_output] = lsqnonlin(compute_residuum_expl, p_optim_start(p_optim_estimable), lb, ub, opt_options);
+elseif strcmp(optim_solverName, 'fminsearch')
+    optim_con = {};
+    
+    opt_options = optimset('Display', 'iter-detailed');
+    p_optim = fminsearch(compute_residuum_expl, p_optim_start(p_optim_estimable), opt_options);
 
+elseif strcmp(optim_solverName, 'fmincon')
+    A = [];
+    b = [];
+    Aeq = [];
+    beq = [];
+    lb = zeros(size(coeffs));
+    ub = ones(size(coeffs))*100.;
+    nonlincon = @nonlcon_empty;
+    
+    optim_con = {A, b, Aeq, beq, lb, ub, nonlincon};
 
+    opt_options = optimoptions('fmincon', 'Display', 'iter-detailed', 'OutputFcn', @disp_aux);
+    p_optim = fmincon(compute_residuum_expl, p_optim_start(p_optim_estimable), ...
+                      optim_con{:}, opt_options);
 
-% opt_options = optimset('Display', 'iter-detailed');
-% p_optim = fminsearch(compute_residuum_expl, p_optim_start(p_optim_estimable), opt_options);
-
-
-
-% A = [];
-% b = [];
-% Aeq = [];
-% beq = [];
-% lb = zeros(size(coeffs));
-% ub = ones(size(coeffs))*100.;
-% 
-% opt_options = optimoptions('fmincon', 'Display', 'iter-detailed', 'OutputFcn', @disp_aux);
-% p_optim = fmincon(compute_residuum_expl, p_optim_start(p_optim_estimable), ...
-%                   A, b, Aeq, beq, lb, ub, @nonlcon_empty, opt_options);
-
+else
+    error('Choose optim_solverName from [lsqnonlin, fminsearch, fmincon]!');
+end
+    
 
 % update all (free and fixed) optimization parameters with optimized values
 p_optim_all = zeros(1,length(p_optim_estimable));
@@ -115,6 +128,11 @@ p_optim_all(~p_optim_estimable) = p_optim_fixed;
 % Plot final results
 compute_residuum_expl(p_optim_all(p_optim_estimable));
 
+p_sim = update_c_p(p_sim, p_optim_all);
 
+save_path = '/home/argo/masterarbeit/simulationen-data/test/';
+save_fit(save_path, dsc, index_T_dsc, revMassNorm, ...
+    p_sim, optim_solverName, opt_options, p_optim_start, p_optim_estimable, ...
+    optim_con, p_optim_all, optim_output)
 
 

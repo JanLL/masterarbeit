@@ -39,7 +39,7 @@ tic;
 L1 = 25.;
 L2 = 0.;
 L3 = 1.;
-N1 = 1250;
+N1 = 12500;
 N2 = 0;
 N3 = 0;
 
@@ -66,19 +66,25 @@ p_sim = update_c_p(p_sim, c_p_params);
 T_ref_num = simulate_1d(p_sim.eval_c_p, p_sim.eval_dc_p, p_sim);
 toc
 
-% T_rel_err = T_ref_ana ./ T_ref_num(:,end);
+T_rel_err = T_ref_ana(:,2) ./ T_ref_num(:,end);
+plot(T_ref_ana(:,2), T_rel_err, '.', 'DisplayName', sprintf('N1=%i', N3*L1)); hold on
+xlabel('T_{ref}(analytical)')
+ylabel('|T_{ref}(analytical) / T_{ref}(numerical)|')
+title('Relative error with n_{ana}=100');
+
 % T_abs_err = abs(T_ref_ana - T_ref_num(:,end));
-% %plot(T_ref_ana, T_rel_err, '.'); hold on
 % plot(T_ref_ana, T_abs_err, '.', 'DisplayName', sprintf('N1=%i', N3*L1)); hold on
 % xlabel('T_{ref}(analytical)')
 % ylabel('|T_{ref}(analytical) - T_{ref}(numerical)|')
 % title('Absolute error with n_{ana}=100');
 
+
+
 %legend('show', 'location', 'northoutside')
 
 
-plot(T_ref_ana(:,2), dT, '--'); hold on
-plot(T_ref_num(:,end), T_ref_num(:,1) - T_ref_num(:,end), '--');
+% plot(T_ref_ana(:,2), dT, '--'); hold on
+% plot(T_ref_num(:,end), T_ref_num(:,1) - T_ref_num(:,end), '--');
 
 
 
