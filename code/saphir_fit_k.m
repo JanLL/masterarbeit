@@ -20,6 +20,11 @@ T_end = 200;
 
 heat_rate = 10.; % K/min
 
+% fit for different heat_rates assuming signal U_dsc grows linear with
+% factor of heat_rate
+U_dsc(:,2) = U_dsc(:,2) * heat_rate/10.;
+
+
 lambda_test_setup = [23*1, 35.6000, 41.9]; % Wiki value: 41.9 
 % lambda of saphire questionable
 
@@ -66,9 +71,8 @@ ax2 = gca();
 
 % pseudo measurement values of c_p to plot, equal to the ones used in
 % simulation because we just optimize k here.
-T_meas = T_ref_meas;
-c_p_meas = p_sim(1).eval_c_p(T_meas);
-c_p_meas = transpose(cat(1, T_meas, c_p_meas));
+T_meas = (30:0.1:160)';
+c_p_meas = [T_meas, p_sim(1).eval_c_p(T_meas)];
 
 compute_residuum_expl = @(p_optim) ...
     compute_residuum(p_optim, p_optim_estimable, p_optim_fixed, p_sim, ...
@@ -82,7 +86,7 @@ lb = [];
 ub = [];
 
 opt_options = optimoptions('lsqnonlin', 'Display', 'iter-detailed', 'OptimalityTolerance', 1e-6);
-p_optim = lsqnonlin(compute_residuum_expl, p_optim_start(p_optim_estimable), lb, ub, opt_options);
+[p_optim,~,~,~,optim_output] = lsqnonlin(compute_residuum_expl, p_optim_start(p_optim_estimable), lb, ub, opt_options);
 
 
 % Comparison simulation fit and fit of data table from type_E_sensor.pdf

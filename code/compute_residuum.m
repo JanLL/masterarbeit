@@ -90,7 +90,7 @@ dU_interp = interp1(T_ref(index_T_p5:end), dU(index_T_p5:end), ...
 
 residuum = U_dsc(:,2) - dU_interp;
 
-cla(ax1);
+cla(ax1); % dU plot
 hold(ax1, 'on')
 plot(ax1, U_dsc(:,1), dU_interp, 'DisplayName', 'Optimization');
 plot(ax1, U_dsc(:,1), U_dsc(:,2), 'DisplayName', 'Measurement');
@@ -100,16 +100,17 @@ xlabel(ax1, 'T_{ref} [degC]');
 ylabel(ax1, '\Delta U [uV]');
 drawnow;
 
-cla(ax2);
+cla(ax2); % c_p plot
 hold(ax2, 'on')
-plot(ax2, U_dsc(:,1), p_sim.eval_c_p(U_dsc(:,1)), 'DisplayName', 'Optimization'); hold on
+plot(ax2, U_dsc(:,1), 1. * p_sim.eval_c_p(U_dsc(:,1)), 'DisplayName', 'Optimization'); hold on
 plot(ax2, c_p_meas(:,1), c_p_meas(:,2), 'DisplayName', 'Measurement');
 legend(ax2, 'show', 'location', 'northwest');
 xlabel(ax2, 'T_{ref} [degC]');
 ylabel(ax2, 'c_p [mJ/(mg*K]');
 drawnow;
 
-% % print('/home/argo/masterarbeit/simulationen-data/delta_U_optimized_lambda-wikiX8','-dpng');
+%residuum = sum(residuum.^2); % compute scalar for solvers like fminsearch
+
 
 end
 

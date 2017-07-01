@@ -1,3 +1,17 @@
+% measurement data
+dsc = DSC204_readFile('ExpDat_16-407-3_mitKorr_10Kmin_H.csv');
+
+% TODO: sinnvolles Intervall automatisch waehlen ...
+index_T_dsc = [find(dsc.data(:,1) > 29, 1, 'first'), ...
+               find(dsc.data(:,1) < 157.9, 1, 'last')];
+
+revMass = false;  % reverse normalization with mass [uV/mg] -> [uv]
+U_dsc = [dsc.data(index_T_dsc(1):index_T_dsc(2),1), dsc.data(index_T_dsc(1):index_T_dsc(2),3)];
+if revMass
+    U_dsc(:,2) = U_dsc(:,2) * dsc.mass;
+end
+
+
 % simulation data
 L1 = 25.;
 L2 = 0.;
@@ -11,28 +25,23 @@ heat_rate = 10.; % K/min
 
 lambda_test_setup = [23*1, 35.6000, 0.9600];
 
-% measurement data
-dsc = DSC204_readFile('ExpDat_16-407-3_mitKorr_10Kmin_H.csv');
-
-% TODO: sinnvolles Intervall automatisch waehlen ...
-index_T_29 = find(dsc.data(:,1) > 29, 1);
-T_ref_meas = 30:0.05:157.9;
-
-
-% evaluation points of simulation, every 0.05K, interpolation of
-% measurements
-U_dsc = interp1(dsc.data(index_T_29:end,1), dsc.data(index_T_29:end,3), ...
-                T_ref_meas, 'pchip');
-U_dsc = U_dsc * dsc.mass; % reverse normalization with mass [uV/mg] -> [uv]
-U_dsc = transpose(cat(1, T_ref_meas, U_dsc));
-
-
 % Solve optimization problem min_p ||U_dsc - dU||_2^2
-knots = [-10,0, 30, 50, 60, 70, 80, 90, 100, 110, 115, 122, 127, 132, 135:155, 160, 170, 200];
-%coeffs = 0.05 .* [1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 5, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5];
-coeffs = 0.05 * ones(1, length(knots)-4);
+knots = [-10,0, 30, 50, 60, 70, 80, 90, 100, 110, 115, 122, 127, 132, 135:160, 165, 170, 200];
+coeffs = (0.05 .* [1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 5, 15, 15, 15, 15, 15, ...
+                  15, 15, 15, 15, 15, 15, 15, 15, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5 1.5, 1.5, 1.5, 1.5, 1.5, 1.5]);
+% sqrt (later we square) to avoid negative coeffs when using optimizer without bounds
+              
+%coeffs = 0.05 * ones(1, length(knots)-4);
 
-k_sap_fit = [0.    45.5   0.]; % values from saphire-fit
+% length(knots)
+% length(coeffs)
+% return
+
+if revMass
+    k_sap_fit = [0.    45.5951   0.]; % values from saphire-fit
+else
+    k_sap_fit = [0.    0.5381   0.]; % values from saphire-fit
+end
 k_data_table = [3.67763861e-02   6.00028439e+01  -4.47793211e+01]; % values from data table fit
 
 p_optim_start = cat(2, knots, coeffs, k_sap_fit);
@@ -70,38 +79,41 @@ compute_residuum_expl = @(p_optim) ...
 % lb = cat(2, knot_bounds(1:end-1), ones(1, length(coeffs)+1)*-inf);
 % ub = cat(2, knot_bounds(2:end), ones(1, length(coeffs)+1)*inf);
 
-%lb = zeros(size(coeffs));
-%ub = ones(size(coeffs))*100.;
+lb = zeros(size(coeffs));
+ub = ones(size(coeffs))*100.;
 
-lb = [];
-ub = [];
+% lb = [];
+% ub = [];
 
 opt_options = optimoptions('lsqnonlin', 'Display', 'iter-detailed', 'OutputFcn', @disp_aux);
-p_optim = lsqnonlin(compute_residuum_expl, p_optim_start(p_optim_estimable), lb, ub, opt_options);
+[p_optim,~,~,~,optim_output] = lsqnonlin(compute_residuum_expl, p_optim_start(p_optim_estimable), lb, ub, opt_options);
 
 
+
+% opt_options = optimset('Display', 'iter-detailed');
+% p_optim = fminsearch(compute_residuum_expl, p_optim_start(p_optim_estimable), opt_options);
+
+
+
+% A = [];
+% b = [];
+% Aeq = [];
+% beq = [];
+% lb = zeros(size(coeffs));
+% ub = ones(size(coeffs))*100.;
+% 
+% opt_options = optimoptions('fmincon', 'Display', 'iter-detailed', 'OutputFcn', @disp_aux);
+% p_optim = fmincon(compute_residuum_expl, p_optim_start(p_optim_estimable), ...
+%                   A, b, Aeq, beq, lb, ub, @nonlcon_empty, opt_options);
+
+
+% update all (free and fixed) optimization parameters with optimized values
 p_optim_all = zeros(1,length(p_optim_estimable));
 p_optim_all(p_optim_estimable) = p_optim;
 p_optim_all(~p_optim_estimable) = p_optim_fixed;
 
-% Plot measured and optimized c_p
-% figure();
-% T_domain = linspace(dsc.data(1,1),dsc.data(end,1),200);
-% % plot(T_domain, p_sim(1).eval_c_p(T_domain, p_sim(1).get_param_c_p(p_optim_all)), ...
-% %      'DisplayName', 'Optimization'); hold on
-% 
-% % 
-% % plot(dsc.data(:,1), c_p_meas, 'DisplayName', 'Measurement');
-% 
-% legend('show', 'location', 'northwest');
-% xlabel('T_{ref}');
-% ylabel('c_p');
-
-
-% % print('/home/argo/masterarbeit/simulationen-data/c_p_optimized_lambda-wikiX8','-dpng');
-
-
-
+% Plot final results
+compute_residuum_expl(p_optim_all(p_optim_estimable));
 
 
 

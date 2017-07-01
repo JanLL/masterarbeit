@@ -17,6 +17,8 @@ if strcmp(p_sim.c_p_type, 'function_handle')
 elseif strcmp(p_sim.c_p_type, 'B_spline')
     p_sim.c_p_bspline.knots = p_sim.get_param_c_p_knots(p_optim);
     p_sim.c_p_bspline.coefs = p_sim.get_param_c_p_coeffs(p_optim);
+    %p_sim.c_p_bspline.coefs = (p_sim.get_param_c_p_coeffs(p_optim)).^2;
+    % square to avoid negative coeffs when using optimizer without bounds
     p_sim.eval_c_p = @(T) spval(p_sim.c_p_bspline, T);
     
     p_sim.dc_p_bspline = fnder(p_sim.c_p_bspline);
