@@ -133,6 +133,6 @@ p_sim = update_c_p(p_sim, p_optim_all);
 save_path = '/home/argo/masterarbeit/simulationen-data/test/';
 save_fit(save_path, dsc, index_T_dsc, revMassNorm, ...
     p_sim, optim_solverName, opt_options, p_optim_start, p_optim_estimable, ...
-    optim_con, p_optim_all, optim_output)
+    optim_con, p_optim_all, optim_output);
 
 

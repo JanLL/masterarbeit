@@ -8,7 +8,7 @@ success = false;
 % check if directory where we want to save our data exist
 % if not, create a folder
 if exist(path_root, 'dir') == 0
-    disp('Creating root directory')
+    disp('Creating root directory');
     mkdir(path_root);
 end
 
@@ -16,10 +16,10 @@ end
 % was done.
 fit_data = struct();
 
-fit_data.dsc_measurements = struct();
-fit_data.dsc_measurements.dsc_data = dsc_data;
-fit_data.dsc_measurements.index_T_dsc = index_T_dsc;
-fit_data.dsc_measurements.revMassNorm = revMassNorm;
+fit_data.dsc_p_optim = struct();
+fit_data.dsc_p_optim.dsc_data = dsc_data;
+fit_data.dsc_p_optim.index_T_dsc = index_T_dsc;
+fit_data.dsc_p_optim.revMassNorm = revMassNorm;
 
 fit_data.simulation = p_sim;
 
@@ -32,7 +32,7 @@ fit_data.optimization.estimable = p_optim_estimable;
 fit_data.optimization.param_end = p_optim_end;
 fit_data.optimization.output = optim_output;
 
-path_data = strcat(path_root, 'data.mat');
+path_data = strcat(path_root, 'fit_data.mat');
 save(path_data, '-struct', 'fit_data');
 
 % plot and save dU(T_ref) and c_p(T_ref) graphs
