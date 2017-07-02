@@ -66,27 +66,27 @@ p_optim_all(~p_optim_estimable) = p_optim_fixed;
 % new optimization parameters
 p_sim = update_c_p(p_sim, p_optim_all);
 
-% compute temperature difference between pcm and reference
-T_pcm = simulate_1d(p_sim.eval_c_p, p_sim.eval_dc_p, p_sim);
+% % % compute temperature difference between pcm and reference
+% % T_pcm = simulate_1d(p_sim.eval_c_p, p_sim.eval_dc_p, p_sim);
+% % 
+% % dT = T_ref(:) - T_pcm(:,N1);
+% % 
+% % % convert temperatue to voltage difference with coeffs k
+% % k = p_sim.get_param_k(p_optim_all);
+% % dU = polyval(k, dT);
+% % 
+% % % In the first few seconds T_ref(:,N1) stays constant till the heat of the
+% % % oven reaches it. Interpolation can't handle non-unique domain of
+% % % definition.
+% % index_T_p5 = find(T_ref(:) > p_sim.T_0 + 5, 1, 'first');
+% % dU_interp = interp1(T_ref(index_T_p5:end), dU(index_T_p5:end), ...
+% %                     U_dsc(:,1), 'linear');
+% % 
+% % % Note: Interpolation necessary because T_ref doesnt increase linearly, at
+% % % least at the beginning, i.e. we dont start at T_0, there's a delay of the
+% % % Constantan.
 
-
-dT = T_ref(:) - T_pcm(:,N1);
-
-
-% convert temperatue to voltage difference with coeffs k
-k = p_sim.get_param_k(p_optim_all);
-dU = polyval(k, dT);
-
-% In the first few seconds T_ref(:,N1) stays constant till the heat of the
-% oven reaches it. Interpolation can't handle non-unique domain of
-% definition.
-index_T_p5 = find(T_ref(:) > p_sim.T_0 + 5, 1, 'first');
-dU_interp = interp1(T_ref(index_T_p5:end), dU(index_T_p5:end), ...
-                    U_dsc(:,1), 'linear');
-
-% Note: Interpolation necessary because T_ref doesnt increase linearly, at
-% least at the beginning, i.e. we dont start at T_0, there's a delay of the
-% Constantan.
+dU_interp = compute_dU(p_sim, T_ref, U_dsc, p_optim_all);
 
 residuum = U_dsc(:,2) - dU_interp;
 

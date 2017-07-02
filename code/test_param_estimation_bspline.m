@@ -8,7 +8,7 @@ index_T_dsc = [find(dsc.data(:,1) > 29, 1, 'first'), ...
                find(dsc.data(:,1) < 157.9, 1, 'last')];
 U_dsc = [dsc.data(index_T_dsc(1):index_T_dsc(2),1), dsc.data(index_T_dsc(1):index_T_dsc(2),3)];
 
-revMassNorm = false;  % reverse normalization with mass [uV/mg] -> [uv]
+revMassNorm = true;  % reverse normalization with mass [uV/mg] -> [uv]
 if revMassNorm
     U_dsc(:,2) = U_dsc(:,2) * dsc.mass;
 end
@@ -131,7 +131,7 @@ compute_residuum_expl(p_optim_all(p_optim_estimable));
 p_sim = update_c_p(p_sim, p_optim_all);
 
 save_path = '/home/argo/masterarbeit/simulationen-data/test/';
-save_fit(save_path, dsc, index_T_dsc, revMassNorm, ...
+fit_data = save_fit(save_path, dsc, index_T_dsc, revMassNorm, ...
     p_sim, optim_solverName, opt_options, p_optim_start, p_optim_estimable, ...
     optim_con, p_optim_all, optim_output);
 
