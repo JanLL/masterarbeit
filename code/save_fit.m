@@ -31,6 +31,10 @@ fit_data.optimization.estimable = p_optim_estimable;
 fit_data.optimization.param_end = p_optim_end;
 fit_data.optimization.output = optim_output;
 
+[y,m,d] = ymd(datetime);
+date = sprintf('%04i-%02i-%02i', y,m,d)
+
+% TODO: save_name = 
 path_data = strcat(path_root, 'fit_data.mat');
 save(path_data, '-struct', 'fit_data');
 
