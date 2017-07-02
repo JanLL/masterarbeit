@@ -26,7 +26,6 @@ sonic.log
 *.mat
 *.txt
 DSC204_F1_Phoenix_Messungen/
-code_old/
 code/tools/
 SOLVIND_SUITE/
 simulationen-data/
