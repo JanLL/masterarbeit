@@ -1,5 +1,5 @@
 function [residuum] = compute_residuum(p_optim_free, p_optim_estimable, p_optim_fixed, ...
-                                       p_sim, U_dsc, c_p_meas, ax1, ax2)
+                                       p_sim, U_dsc, c_p_meas, scalar_output, ax1, ax2)
 % Given DSC measurements U_dsc(T_ref) and simulation setup. From the
 % simulation we also gain a voltage U_sim(T_ref). From these two quantities
 % we can compute a residuum between measurements and simulation.
@@ -109,8 +109,9 @@ xlabel(ax2, 'T_{ref} [degC]');
 ylabel(ax2, 'c_p [mJ/(mg*K]');
 drawnow;
 
-%residuum = sum(residuum.^2); % compute scalar for solvers like fminsearch
-
+if scalar_output
+    residuum = sum(residuum.^2); % compute scalar for solvers like fminsearch
+end
 
 end
 

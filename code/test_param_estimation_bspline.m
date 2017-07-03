@@ -1,7 +1,8 @@
 % measurement data
-dsc = DSC204_readFile('ExpDat_16-407-3_mitKorr_10Kmin_H.csv');
+dsc_filename = 'ExpDat_16-407-3_mitKorr_10Kmin_H.csv';
+dsc = DSC204_readFile(dsc_filename);
 
-c_p_meas = calc_cp(); % TODO: calc_cp allgemein fuer beliebige Messdaten als input
+c_p_meas = calc_cp(dsc_filename);
 
 % TODO: sinnvolles Intervall automatisch waehlen ...
 index_T_dsc = [find(dsc.data(:,1) > 29, 1, 'first'), ...
@@ -28,8 +29,7 @@ heat_rate = 10.; % K/min
 lambda_test_setup = [23*1, 35.6000, 0.9600];
 
 optim_solverName = 'lsqnonlin';
-% optim_solverName = 'fminsearch';
-% optim_solverName = 'fmincon';
+
 % Solve optimization problem min_p ||U_dsc - dU||_2^2
 knots = [-10,0, 30, 50, 60, 70, 80, 90, 100, 110, 115, 122, 127, 132, 135:160, 165, 170, 200];
 coeffs = (0.05 .* [1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 5, 15, 15, 15, 15, 15, ...
@@ -70,19 +70,21 @@ ax1 = gca();
 figure(2); % c_p plot
 ax2 = gca();
 
+if strcmp(optim_solverName, 'lsqnonlin')
+    scalar_output = false;
+elseif strcmp(optim_solverName, 'fminsearch') || ...
+       strcmp(optim_solverName, 'fmincon')
+    scalar_output = true;
+end
 
 compute_residuum_expl = @(p_optim) ...
     compute_residuum(p_optim, p_optim_estimable, p_optim_fixed, p_sim, ...
-                     U_dsc, c_p_meas, ax1, ax2);
+                     U_dsc, c_p_meas, scalar_output, ax1, ax2);
 
 % TEST INITIAL VALUE
 % compute_residuum_expl(p_optim_start(p_optim_estimable));
 % return
 
-
-% knot_bounds = [-inf, 30, 70, 100, 120, 125, 130, 135, 140, 145, 150, inf];
-% lb = cat(2, knot_bounds(1:end-1), ones(1, length(coeffs)+1)*-inf);
-% ub = cat(2, knot_bounds(2:end), ones(1, length(coeffs)+1)*inf);
 
 if strcmp(optim_solverName, 'lsqnonlin')
     lb = zeros(size(coeffs));
@@ -98,21 +100,42 @@ elseif strcmp(optim_solverName, 'fminsearch')
     optim_con = {};
     
     opt_options = optimset('Display', 'iter-detailed');
-    p_optim = fminsearch(compute_residuum_expl, p_optim_start(p_optim_estimable), opt_options);
+    [p_optim,~,~,optim_output] = fminsearch(compute_residuum_expl, p_optim_start(p_optim_estimable), opt_options);
 
 elseif strcmp(optim_solverName, 'fmincon')
     A = [];
     b = [];
+    
+    n_knots = length(knots);
+    n_coeffs = length(coeffs);
+
+    A_columns = ones(n_knots, 2);
+
+    % knots
+    A_columns(n_knots:end,1) = 0;
+
+    % coeffs
+    A_columns(1:n_knots-1,2) = -1;
+    A_columns(n_knots:end,2) = 0;
+
+    diagonals = [0,1];
+    A_sparse = spdiags(A_columns, diagonals, n_knots-1, n_knots+n_coeffs);
+
+%     A = full(A_sparse);
+%     b = zeros(size(A,1),1);
+    
     Aeq = [];
     beq = [];
-    lb = zeros(size(coeffs));
-    ub = ones(size(coeffs))*100.;
+%     lb = [-inf * ones(1,n_knots), zeros(1,n_coeffs)];
+%     ub = [+inf * ones(1,n_knots), ones(1,n_coeffs)*100.];
+    lb = zeros(1,n_coeffs);
+    ub = ones(1,n_coeffs)*100.;
     nonlincon = @nonlcon_empty;
     
     optim_con = {A, b, Aeq, beq, lb, ub, nonlincon};
 
     opt_options = optimoptions('fmincon', 'Display', 'iter-detailed', 'OutputFcn', @disp_aux);
-    p_optim = fmincon(compute_residuum_expl, p_optim_start(p_optim_estimable), ...
+    [p_optim,~,~,optim_output] = fmincon(compute_residuum_expl, p_optim_start(p_optim_estimable), ...
                       optim_con{:}, opt_options);
 
 else
@@ -130,7 +153,7 @@ compute_residuum_expl(p_optim_all(p_optim_estimable));
 
 p_sim = update_c_p(p_sim, p_optim_all);
 
-save_path = '/home/argo/masterarbeit/simulationen-data/test/';
+save_path = '/home/argo/masterarbeit/fits_data/';
 fit_data = save_fit(save_path, dsc, index_T_dsc, revMassNorm, ...
     p_sim, optim_solverName, opt_options, p_optim_start, p_optim_estimable, ...
     optim_con, p_optim_all, optim_output);
