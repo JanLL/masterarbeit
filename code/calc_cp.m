@@ -2,7 +2,7 @@ function c_p_meas = calc_cp(dsc_pcm_src)
 % TODO: Description!!
 
 if ischar(dsc_pcm_src)
-    dsc_pcm = DSC204_readFile(dsc_filename);
+    dsc_pcm = DSC204_readFile(dsc_pcm_src);
 elseif isstruct(dsc_pcm_src)
     dsc_pcm = dsc_pcm_src;
 else

@@ -4,7 +4,8 @@ dsc = DSC204_readFile(dsc_filename);
 
 c_p_meas = calc_cp(dsc_filename);
 
-% TODO: sinnvolles Intervall automatisch waehlen ...
+% TODO: sinnvolles Intervall automatisch waehlen ... wobei das hier fuer
+% alle Messungen bisher ganz gut war
 index_T_dsc = [find(dsc.data(:,1) > 29, 1, 'first'), ...
                find(dsc.data(:,1) < 157.9, 1, 'last')];
 U_dsc = [dsc.data(index_T_dsc(1):index_T_dsc(2),1), dsc.data(index_T_dsc(1):index_T_dsc(2),3)];
@@ -24,19 +25,19 @@ N3 = 50;
 T_0 = 10;
 T_end = 200;
 
-heat_rate = 10.; % K/min
+%heat_rate = 10.; % K/min
+heat_rate = dsc.Tinfo.Tstep; % same heat rate as in measurement
 
 lambda_test_setup = [23*1, 35.6000, 0.9600];
 
 optim_solverName = 'lsqnonlin';
 
 % Solve optimization problem min_p ||U_dsc - dU||_2^2
-knots = [-10,0, 30, 50, 60, 70, 80, 90, 100, 110, 115, 122, 127, 132, 135:160, 165, 170, 200];
+knots = [-10,0, 30, 50, 60, 70, 80, 90, 100, 110, 115, 122, 127, 132, ...
+         135:1:160, 165, 170, 200];
 coeffs = (0.05 .* [1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 5, 15, 15, 15, 15, 15, ...
                   15, 15, 15, 15, 15, 15, 15, 15, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5 1.5, 1.5, 1.5, 1.5, 1.5, 1.5]);
 % sqrt (later we square) to avoid negative coeffs when using optimizer without bounds
-              
-%coeffs = 0.05 * ones(1, length(knots)-4);
 
 % length(knots)
 % length(coeffs)
@@ -62,6 +63,9 @@ p_sim = update_c_p(p_sim, p_optim_start);
 p_optim_estimable = true(length(p_optim_start), 1);
 p_optim_estimable(end-2:end) = false; % fix mapping dT -> dU
 p_optim_estimable(1:length(knots)) = false; % fix knot positions
+%p_optim_estimable(15:40) = true; % set knots at pos 135:160 free
+
+n_free_knots = length(15:40);
 
 p_optim_fixed = p_optim_start(~p_optim_estimable);
 
@@ -71,15 +75,15 @@ figure(2); % c_p plot
 ax2 = gca();
 
 if strcmp(optim_solverName, 'lsqnonlin')
-    scalar_output = false;
+    residuum_scalar_output = false;
 elseif strcmp(optim_solverName, 'fminsearch') || ...
        strcmp(optim_solverName, 'fmincon')
-    scalar_output = true;
+    residuum_scalar_output = true;
 end
 
 compute_residuum_expl = @(p_optim) ...
     compute_residuum(p_optim, p_optim_estimable, p_optim_fixed, p_sim, ...
-                     U_dsc, c_p_meas, scalar_output, ax1, ax2);
+                     U_dsc, c_p_meas, residuum_scalar_output, ax1, ax2);
 
 % TEST INITIAL VALUE
 % compute_residuum_expl(p_optim_start(p_optim_estimable));
@@ -103,33 +107,28 @@ elseif strcmp(optim_solverName, 'fminsearch')
     [p_optim,~,~,optim_output] = fminsearch(compute_residuum_expl, p_optim_start(p_optim_estimable), opt_options);
 
 elseif strcmp(optim_solverName, 'fmincon')
-    A = [];
-    b = [];
     
     n_knots = length(knots);
     n_coeffs = length(coeffs);
 
-    A_columns = ones(n_knots, 2);
-
-    % knots
-    A_columns(n_knots:end,1) = 0;
+    A_columns = ones(n_free_knots-1, 2);
 
     % coeffs
-    A_columns(1:n_knots-1,2) = -1;
-    A_columns(n_knots:end,2) = 0;
-
+    A_columns(:,2) = -1;
+    
     diagonals = [0,1];
-    A_sparse = spdiags(A_columns, diagonals, n_knots-1, n_knots+n_coeffs);
+    A_sparse = spdiags(A_columns, diagonals, n_free_knots-1, n_free_knots+n_coeffs);
 
-%     A = full(A_sparse);
-%     b = zeros(size(A,1),1);
+    A = full(A_sparse);
+    b = zeros(size(A,1),1);
+
+    lb = [135 * ones(1,n_free_knots), zeros(1,n_coeffs)];
+    ub = [160 * ones(1,n_free_knots), ones(1,n_coeffs)*100.];
     
     Aeq = [];
     beq = [];
-%     lb = [-inf * ones(1,n_knots), zeros(1,n_coeffs)];
-%     ub = [+inf * ones(1,n_knots), ones(1,n_coeffs)*100.];
-    lb = zeros(1,n_coeffs);
-    ub = ones(1,n_coeffs)*100.;
+    %lb = zeros(1,n_coeffs);
+    %ub = ones(1,n_coeffs)*100.;
     nonlincon = @nonlcon_empty;
     
     optim_con = {A, b, Aeq, beq, lb, ub, nonlincon};
@@ -139,7 +138,7 @@ elseif strcmp(optim_solverName, 'fmincon')
                       optim_con{:}, opt_options);
 
 else
-    error('Choose optim_solverName from [lsqnonlin, fminsearch, fmincon]!');
+    error('Choose optim_solverName from [''lsqnonlin'', ''fminsearch'', ''fmincon'']!');
 end
     
 
