@@ -33,9 +33,9 @@ lambda_test_setup = p_sim.lambda_test_setup;
 heat_rate = heat_rate / 60.;  % [K/min] -> [K/s]
 N = N1+N2+N3;
 dx = ones(N, 1);
-dx(1:N1)        = L1/N1;
-dx(N1+1:N1+N2)  = L2/N2;
-dx(N1+N2+1:end) = L3/N3;
+dx(1:N1)       = L1/N1;
+dx(N1+1:N1+N2) = L2/N2;
+dx(N1+N2+1:N)  = L3/N3;
 
 % integration initial values
 T0 = T_0 .* ones(N,1);
@@ -51,8 +51,7 @@ Jpattern = spdiags(cols, [0,1,-1], N, N);
 opts = odeset('reltol', 1e-7, 'abstol', 1e-12, 'Jpattern', Jpattern);
 
 % Change here either for PCM (ode_system1d) or sapphire (ode_system1d_sap)
-ode_system1d_expl = @(t, y) ode_system1d(t, y, N1, N2, N3, dx, heat_rate, ...
-    c_p_test_setup, rho_test_setup, lambda_test_setup, eval_c_p, eval_dc_p);
+ode_system1d_expl = @(t, y) ode_system1d(t, y, p_sim, dx);
 
 %tic;
 sol = ode15s(ode_system1d_expl, t, T0, opts);

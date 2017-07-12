@@ -53,7 +53,7 @@ $T = T(\vec{x},t)$ but skipped in the following derivation for clarity.
 	= & \left[ \frac{1}{\rho (T) \cdot c_p (T)} \frac{\partial \lambda}{\partial T} - \frac{\lambda (T)}{(\rho(T))^2 c_p(T)} \frac{\partial \rho}{\partial T} - \frac{\lambda (T)}{\rho(T) (c_p(T))^2} \frac{\partial c_p}{\partial T} \right] \cdot (\nabla T)^T \nabla T + \frac{\lambda (T)}{\rho (T) \cdot c_p (T)} \Delta T \\
 \end{align*}
 
-\subsection{Discretization 1D, $\lambda$ and $\rho$ const. $\forall T$}
+\subsection{Discretization 1D, $\lambda$ const. $\forall T$}
 
 \begin{equation*}
 	(\nabla T)^k = \frac{T^{k+1} - T^k}{x^{x+1} - x^k} \underbrace{=}_{\substack{\text{equidistant} \\ \text{grid}}} =  \frac{T^{k+1} - T^k}{\Delta x}
@@ -73,7 +73,10 @@ Boundary conditions:
 ODE-system with line-method:
 
 \begin{align*}
-	\dot{T}^k & = \frac{\lambda}{\rho} \left[ - \frac{1}{(c_p(T^k))^2} \cdot \frac{\partial c_p(T^k)}{\partial T^k} \cdot \left( \frac{T^{k+1} - T^k}{\Delta x} \right)^2 + \frac{1}{c_p(T^k)} \cdot \frac{T^{k+1} - 2 T^k + T^{k-1}}{(\Delta x)^2} \right] & & \text{for } k = 1, ..., N-1 \\
+	\dot{T}^k = \lambda & \left[ - \frac{1}{\rho(T^k) (c_p(T^k))^2} \cdot \frac{\partial c_p(T^k)}{\partial T^k} \cdot \left( \frac{T^{k+1} - T^k}{\Delta x} \right)^2 \right. \\
+	& \left. - \frac{1}{(\rho(T^k))^2 c_p(T^k)} \cdot \frac{\partial \rho(T^k)}{\partial T^k} \cdot \left( \frac{T^{k+1} - T^k}{\Delta x} \right)^2 \right. \\
+	& \left. + \frac{1}{c_p(T^k)} \cdot \frac{T^{k+1} - 2 T^k + T^{k-1}}{(\Delta x)^2} \right] \\
+	& & &\text{for } k = 1, ..., N-1 \\
 	T^0 & = T_{\text{oven}} \\
 	T^N & = T^{N-1}
 \end{align*}
@@ -106,8 +109,8 @@ which is equivalent to
 			\vdots \\
 			\frac{\lambda}{(\rho(T^{N-2}))^2 c_p(T^{N-2})} \frac{\partial \rho (T^{N-2})}{\partial T^{N-2}} \frac{(T^{N-1} - T^{N-2})^2}{(\Delta x)^2} \\	
 			0 \\			
-	\end{bmatrix} \\
-	- &
+	\end{bmatrix}
+	- 
 	\begin{bmatrix}
 		0 \\
 		\frac{\lambda}{\rho(T^1) (c_p(T^1))^2} \frac{\partial c_p (T^1)}{\partial T^1} \frac{(T^2 - T^1)^2}{(\Delta x)^2} \\

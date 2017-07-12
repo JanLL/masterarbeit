@@ -1,7 +1,27 @@
 function [fit_data] = save_fit(path_root, dsc_data_struct, index_T_dsc, revMassNorm, ...
     p_sim, optim_solverName, optim_options, p_optim_start, p_optim_estimable, ...
     optim_con, p_optim_end, optim_output)
+% Saves the main fit results in form of the graphs c_p(T) and dU(T_ref)
+% with the optimized parameters.
+% Additionally saves all necessary data to be able to reproduce this fit.
 %
+% INPUT: 
+%       path_root --> Directory where all fits are saved. A single fit is
+%                     then saved in a special directory with generic name.
+% dsc_data_struct --> struct with dsc measurement information.
+%     index_T_dsc --> min/max index pair of used domain of T_ref for
+%                     residuum computation.
+%     revMassNorm --> logical value whether mass normalization U_dsc is 
+%                     reversed.
+%           p_sim --> simulation parameter struct.
+% optim_solverName -> name of optimization solver used.
+%   optim_options --> options of optimization solver.
+%   p_optim_start --> start optimization parameter values.
+% p_optim_estimable -> logical array which optimization parameters are
+%                      fixed (false) and free to optimize (true).
+%       optim_con --> cell array with optimization constraints.
+%     p_optim_end --> array with optimized optimization variables.
+%    optim_output --> information output struct TODO: FNISH!!
 
 
 % check if directory where we want to save our data exist
