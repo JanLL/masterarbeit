@@ -1,0 +1,1 @@
+knoten zwischen 135:160 freie opt.parametern mit constraints k1 < k2 < ... < kN

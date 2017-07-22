@@ -4,7 +4,7 @@ L1 = 25.;
 L2 = 0.;
 L3 = 1.;
 
-N1 = 100;
+N1 = 6;
 N2 = 0;
 N3 = 50;
 
@@ -41,7 +41,7 @@ i = 1;
 for i=1:50
 
     N1_old = N1;
-    N1 = N1 + 100;
+    N1 = N1 + 2;
     p_sim.N1 = N1;
     
     T_pcm_new = simulate_1d(p_sim.eval_c_p, p_sim.eval_dc_p, p_sim);
@@ -56,7 +56,7 @@ for i=1:50
 end
 
 
-semilogy((1:length(error_list)) * 100, error_list, 'x')
+semilogy((1:length(error_list))*2 + 6, error_list, 'x')
 xlabel('N1');
 ylabel('max\{|1 - T_{pcm}(N_1) / T_{pcm}(N_1^+)|\}');
 title(sprintf('Convergence rate of increasing Constantan\ndiscretization number'));
