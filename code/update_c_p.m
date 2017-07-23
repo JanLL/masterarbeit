@@ -24,6 +24,9 @@ elseif strcmp(p_sim.c_p_type, 'B_spline')
     p_sim.dc_p_bspline = fnder(p_sim.c_p_bspline);
     p_sim.eval_dc_p = @(T) spval(p_sim.dc_p_bspline, T); 
     
+elseif strcmp(p_sim.c_p_type, 'NURBS')
+    % TODO!
+
 else
     error('in update_c_p struct p_sim neither had c_p_type ''function_handle'' nor ''B_spline''.');
 
