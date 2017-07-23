@@ -1,4 +1,4 @@
-function varargout = simulate_1d(eval_c_p, eval_dc_p, p_sim)
+function varargout = simulate_1d(p_sim)
 % [T, sol] = simulate_1d(varargin)
 % 
 % Solves the 1D heat equation for density rho and specific heat capacity

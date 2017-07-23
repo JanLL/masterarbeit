@@ -64,7 +64,7 @@ switch nargin
 end
 
 
-T_pcm = simulate_1d(p_sim.eval_c_p, p_sim.eval_dc_p, p_sim);
+T_pcm = simulate_1d(p_sim);
 
 dT = T_ref(:) - T_pcm(:,p_sim.N1);
 
