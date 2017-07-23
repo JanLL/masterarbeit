@@ -4,7 +4,7 @@ tmpPATHS.root = fullfile(pwd, '../');
 
 % path to tools
 tmpPATHS.tools = fullfile(tmpPATHS.code, 'tools/');
-tmpPATHS.tools = fullfile(tmpPATHS.code, 'tools/nurbs_toolbox/');
+tmpPATHS.tools_nurbs = fullfile(tmpPATHS.code, 'tools/nurbs_toolbox/');
 
 % path to DSC measurements
 tmpPATHS.DSC204 = fullfile(tmpPATHS.root, 'DSC204_F1_Phoenix_Messungen/');

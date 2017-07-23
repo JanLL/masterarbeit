@@ -7,12 +7,19 @@ function dT = ode_system1d(t, T, p_sim, dx)
 %
 % INPUT:     t --> time
 %            T --> temperature in degree Celsius
-%        p_sim --> struct with simulation parameters, available via the
-%                  function get_default_sim_params()
-%           dx --> Nx1 array with spatial discretization grid-cell values
-%                  NOTE: dx(i) lies between T(i) and T(i-1),
-%                        dx(1) just necessary for dim-reasons in
-%                        linear-part multiplication.
+%           N1 --> number of spatial discretization lattice points (Constantan)
+%           N2 --> number of spatial discretization lattice points (Crucible)
+%           N3 --> number of spatial discretization lattice points (PCM)
+%           dx --> length [mm] of one spatial lattice point.
+%    heat_rate --> rate [K/s] the temperature of the oven is increasing.
+% c_p_test_setup --> 2x1 array: specific heat capacity [mJ/(mg*K] 
+%                               of [Constantan, crucible]
+% rho_test_setup --> 2x1 array: density [mg/mm^3] of [Constantan, crucible]
+%         lambda --> 3x1 array: heat conductivity [mW/(mm*K)] 
+%                               of [Constantan, crucible, PCM]
+%     eval_c_p --> fhandle to evaluate specific heat capacity.
+%    eval_dc_p --> fhandle to evaluate derivative of specific heat capacity
+%                  w.r.t. temperature.
 %
 % OUTPUT:   dT --> right hand side of the 1D differential heat equation
 %                  \nabla \left[ \frac{\lambda}{\rho c_p} \nabla T \right]
@@ -39,17 +46,11 @@ if isempty(J_lin_sparse) || isempty(J_setup) || ...
     J_lin_sparse = build_linear_matrix(N);
     
     alpha = L3/L1 * N1/N3;
-    alpha
 
-    %assignin('base', 'J1', J_lin_sparse);
-    
-    % Constantan - PCM transition with inhomogeneous grid
+    % Constantan - PCM transition with inhomogenous grid
     J_lin_sparse(N1,N1-1) = 2/(1+alpha);
     J_lin_sparse(N1,N1) = -2/alpha;
     J_lin_sparse(N1,N1+1) = 2/(alpha*(alpha+1));
-    
-    %assignin('base', 'J2', J_lin_sparse); keyboard;
-    
     
     J_setup = [N1, N2, N3, L1, L2, L3];
 end

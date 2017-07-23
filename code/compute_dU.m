@@ -66,13 +66,7 @@ end
 
 T_pcm = simulate_1d(p_sim.eval_c_p, p_sim.eval_dc_p, p_sim);
 
-%figure(20);
-%surf(T_pcm(1:50:end,p_sim.N1 - 10 : p_sim.N1 + 10));
-%plot(T_pcm(:,p_sim.N1) - T_pcm(:,p_sim.N1-1))
-
-%keyboard;
-
-dT = T_ref(:) - T_pcm(:,p_sim.N1-3);
+dT = T_ref(:) - T_pcm(:,p_sim.N1);
 
 k = p_sim.get_param_k(p_optim);
 dU = polyval(k, dT);
@@ -84,9 +78,12 @@ index_T_p5 = find(T_ref(:) > p_sim.T_0 + 5, 1, 'first');
 
 dU_interp = interp1(T_ref(index_T_p5:end), dU(index_T_p5:end), ...
                     U_dsc(:,1), 'linear');
-% Note: Interpolation on T_ref domain of measurements
+                
+% Note: Interpolation necessary because T_ref doesnt increase linearly, at
+% least at the beginning, i.e. we dont start at T_0, there's a delay of the
+% Constantan.
 
-
+                
 switch nargin
     case 1
         dU_output = [U_dsc(:,1), U_dsc(:,2), dU_interp];
