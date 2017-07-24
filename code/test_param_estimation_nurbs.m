@@ -36,8 +36,9 @@ optim_solverName = 'lsqnonlin';
 % c_p parametrization of sample
 nrb_order = 4; % nrb_order = 4 equates to C^2
 
-cntrl_pts = [0, 30, 60, 90, 120, 125, 130:2:160, 180, 200; ...
-             1, 1,  1.1, 1.15, 1.2, 5., repmat(10,1,16), 1.5, 1.51];
+cntrl_pts_x = [0, 30:20:130, 132, 135:1:145, 147:2:161, 180, 200];
+cntrl_pts_y = [1, linspace(1,1.5,6), 5., repmat(7,1,11), repmat(1.5,1,8), 1.5, 1.51];
+cntrl_pts = [cntrl_pts_x; cntrl_pts_y];
 num_cntrl_pts = size(cntrl_pts,2);
 
 cntrl_pts(2,:) = cntrl_pts(2,:) .* 0.05;
@@ -110,7 +111,7 @@ if strcmp(optim_solverName, 'lsqnonlin')
     opt_options = optimoptions('lsqnonlin', ...
                                'Display', 'iter-detailed', ...
                                'OutputFcn', @disp_aux);
-    [p_optim,~,~,~,optim_output] = lsqnonlin(...
+    [p_optim,~,~,~,optim_output,~,jac_output] = lsqnonlin(...
         compute_residuum_expl, p_optim_start(p_optim_estimable), optim_con{:}, opt_options);
 
 elseif strcmp(optim_solverName, 'fminsearch')
@@ -166,7 +167,15 @@ compute_residuum_expl(p_optim_all(p_optim_estimable));
 p_sim = update_c_p(p_sim, p_optim_all);
 
 save_path = '/home/argo/masterarbeit/fits_data/';
-fit_data = save_fit(save_path, dsc, index_T_dsc, revMassNorm, ...
-    p_sim, optim_solverName, opt_options, p_optim_start, p_optim_estimable, ...
-    optim_con, p_optim_all, optim_output);
+save_commong_args = {save_path, dsc, index_T_dsc, revMassNorm, p_sim, ...
+    optim_solverName, opt_options, p_optim_start, p_optim_estimable, ...
+    optim_con, p_optim_all, optim_output};
 
+if strcmp(optim_solverName, 'lsqnonlin')
+    fit_data = save_fit(save_commong_args{:}, jac_output);
+elseif strcmp(optim_solverName, 'fminsearch') || ...
+       strcmp(optim_solverName, 'fmincon')
+    fit_data = save_fit(save_commong_args{:});
+end
+
+save('jac_output.mat', 'jac_output');

@@ -1,6 +1,6 @@
 function [fit_data] = save_fit(path_root, dsc_data_struct, index_T_dsc, revMassNorm, ...
     p_sim, optim_solverName, optim_options, p_optim_start, p_optim_estimable, ...
-    optim_con, p_optim_end, optim_output)
+    optim_con, p_optim_end, optim_output, optim_jac_output)
 % Saves the main fit results in form of the graphs c_p(T) and dU(T_ref)
 % with the optimized parameters.
 % Additionally saves all necessary data to be able to reproduce this fit.
@@ -50,6 +50,8 @@ fit_data.optimization.param_start = p_optim_start;
 fit_data.optimization.estimable = p_optim_estimable;
 fit_data.optimization.param_end = p_optim_end;
 fit_data.optimization.output = optim_output;
+fit_data.optimization.jac_output = optim_jac_output;
+
 
 % generic filename generation
 dsc_fileSpec = dsc_data_struct.fileSpec;
@@ -107,6 +109,27 @@ path_plot_c_p = strcat(path_fit_data_dir, 'c_p(T_ref).fig');
 savefig(path_plot_c_p);
 
 close();
+
+% save jacobian if lsqnonlin used (currently just works for NURBS)
+if strcmp(optim_solverName, 'lsqnonlin') && strcmp(p_sim.c_p_type, 'NURBS')
+    U_dsc = [dsc_data_struct.data(index_T_dsc(1):index_T_dsc(2),1), ...
+             dsc_data_struct.data(index_T_dsc(1):index_T_dsc(2),3)];
+    num_cntrl_pts = p_sim.c_p_params_num(1);
+    cntrl_pts_x = p_optim_end(1:num_cntrl_pts);
+    
+    figure()
+    hold on;
+    pcolor(cntrl_pts_x, U_dsc(:,1), optim_jac_output);
+    shading flat % disable grid because too many lines
+    colormap hsv
+    colorbar;
+    xlabel('Temp c_p control points [degC]');
+    ylabel('Temp measurement points [degC]');
+    
+    path_plot_jac_output = strcat(path_fit_data_dir, 'jac_output.fig');
+    savefig(path_plot_jac_output);
+    close();
+end
 
 
 end
