@@ -95,7 +95,17 @@ savefig(path_plot_dU);
 c_p_meas = calc_cp(dsc_data_struct);
 c_p_optim = p_sim.eval_c_p(dU(:,1));
 
-factor = max(c_p_meas(:,2)) / max(c_p_optim);
+%factor = max(c_p_meas(:,2)) / max(c_p_optim); % old
+index_c_p_meas_1 = find(c_p_meas(:,1) > 30, 1, 'first');
+c_p_meas_1 = c_p_meas(index_c_p_meas_1,2);
+index_c_p_meas_2 = find(c_p_meas(index_c_p_meas_1:end,2) > c_p_meas_1*1.15, 1, 'first') + index_c_p_meas_1;
+mean_c_p_meas = mean(c_p_meas(index_c_p_meas_1:index_c_p_meas_2,2));
+
+index_c_p_optim_1 = find(dU(:,1) > 30, 1, 'first');
+index_c_p_optim_2 = find(dU(:,1) > c_p_meas(index_c_p_meas_2,1),1,'first');
+mean_c_p_optim = mean(c_p_optim(index_c_p_optim_1:index_c_p_optim_2));
+
+factor = mean_c_p_meas / mean_c_p_optim;
 
 clf;
 plot(dU(:,1), c_p_optim, 'DisplayName', 'Optimization'); hold on

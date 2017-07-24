@@ -36,8 +36,8 @@ optim_solverName = 'lsqnonlin';
 % c_p parametrization of sample
 nrb_order = 4; % nrb_order = 4 equates to C^2
 
-cntrl_pts_x = [0, 30:20:130, 132, 135:1:145, 147:2:161, 180, 200];
-cntrl_pts_y = [1, linspace(1,1.5,6), 5., repmat(7,1,11), repmat(1.5,1,8), 1.5, 1.51];
+cntrl_pts_x = [0, 30, 60, 90, 120, 125, 130, 132, 135:1:145, 147:2:161, 180, 200];
+cntrl_pts_y = [1, 1,  1.1, 1.15, 1.2, 3., 4., 5., repmat(7,1,11), repmat(1.5,1,8), 1.5, 1.51];
 cntrl_pts = [cntrl_pts_x; cntrl_pts_y];
 num_cntrl_pts = size(cntrl_pts,2);
 
