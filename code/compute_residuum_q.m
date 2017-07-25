@@ -1,8 +1,6 @@
-function [residuum] = compute_residuum(p_optim_free, p_optim_estimable, p_optim_fixed, ...
-                                       p_sim, U_dsc, c_p_meas, scalar_output, ax1, ax2)
-% Given DSC measurements U_dsc(T_ref) and simulation setup. From the
-% simulation we also gain a voltage U_sim(T_ref). From these two quantities
-% we can compute a residuum between measurements and simulation.
+function [residuum] = compute_residuum_q(p_optim_free, p_optim_estimable, p_optim_fixed, ...
+                                       p_sim, q_dsc, c_p_meas, m_pcm, scalar_output, ax1, ax2)
+% TODO!
 %
 % INPUT:
 %  p_optim_free --> free optimization variables:
@@ -66,23 +64,23 @@ p_optim_all(~p_optim_estimable) = p_optim_fixed;
 % new optimization parameters
 p_sim = update_c_p(p_sim, p_optim_all);
 
-dU_interp = compute_dU(p_sim, T_ref, U_dsc, p_optim_all);
+q_pcm_in_interp = compute_q_pcm_in(p_sim, T_ref, q_dsc, m_pcm);
 
-residuum = U_dsc(:,2) - dU_interp;
+residuum = q_dsc(:,2) - q_pcm_in_interp;
 
-cla(ax1); % dU plot
+cla(ax1); % q_pcm_in plot
 hold(ax1, 'on')
-plot(ax1, U_dsc(:,1), dU_interp, 'DisplayName', 'Optimization');
-plot(ax1, U_dsc(:,1), U_dsc(:,2), 'DisplayName', 'Measurement');
-plot(ax1, U_dsc(:,1), residuum, 'DisplayName', 'Residuum');
+plot(ax1, q_dsc(:,1), q_pcm_in_interp, 'DisplayName', 'Optimization');
+plot(ax1, q_dsc(:,1), q_dsc(:,2), 'DisplayName', 'Measurement');
+plot(ax1, q_dsc(:,1), residuum, 'DisplayName', 'Residuum');
 legend(ax1, 'show', 'location', 'northoutside');
 xlabel(ax1, 'T_{ref} [degC]');
-ylabel(ax1, '\Delta U [uV]');
+ylabel(ax1, 'q_{pcm}^{in} [mW]');
 drawnow;
 
 cla(ax2); % c_p plot
 hold(ax2, 'on')
-plot(ax2, U_dsc(:,1), 1. * p_sim.eval_c_p(U_dsc(:,1)), 'DisplayName', 'Optimization'); hold on
+plot(ax2, q_dsc(:,1), 1. * p_sim.eval_c_p(q_dsc(:,1)), 'DisplayName', 'Optimization'); hold on
 plot(ax2, c_p_meas(:,1), c_p_meas(:,2), 'DisplayName', 'Measurement');
 legend(ax2, 'show', 'location', 'northwest');
 xlabel(ax2, 'T_{ref} [degC]');
