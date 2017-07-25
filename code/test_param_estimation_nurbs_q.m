@@ -91,6 +91,26 @@ compute_residuum_expl = @(p_optim) ...
 % compute_residuum_expl(p_optim_start(p_optim_estimable));
 % return
 
+% LOAD FIT RESULT
+% fit_data = load('fit_data.mat');
+% p_optim_all = fit_data.optimization.param_end;
+% 
+% compute_residuum_expl(p_optim_all(p_optim_estimable));
+% 
+% p_sim = update_c_p(p_sim, p_optim_all);
+% 
+% T_pcm = simulate_1d(p_sim);
+% 
+% image(T_pcm(:,end-50:end), 'CDataMapping', 'scaled')
+% colorbar;
+% colormap hsv;
+% title('Temp. distribution in PCM');
+% ylabel('time');
+% xlabel('space [grid #]');
+% grid;
+% 
+% return
+
 
 if strcmp(optim_solverName, 'lsqnonlin')
     lb = zeros(1,num_cntrl_pts);

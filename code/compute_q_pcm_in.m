@@ -25,15 +25,15 @@ dt = 0.05 / p_sim.heat_rate * 60; % function evaluation every 0.05K at oven
 
 T_pcm = simulate_1d(p_sim);
 
-
+% Computation of q_pcm_in via combination of heat change aund fourier's law
 q_N1p1_out = - (lambda_pcm * m_pcm)./(N3 * rho_formula(T_pcm(1:end-1,N1+1))) ...
               .*(T_pcm(1:end-1,N1+2) - T_pcm(1:end-1,N1+1)) / (L3/N3)^2;
 
 dQdt = p_sim.eval_c_p(T_pcm(1:end-1,N1+1))*m_pcm/N3 ...
        .* (T_pcm(1:end-1,N1+1) - T_pcm(2:end,N1+1)) / dt;
-   
 
 q_pcm_in = dQdt + q_N1p1_out;
+
 
 % Note: In the first few seconds T_ref(:) stays constant till the heat of 
 % the oven reaches it. Interpolation can't handle non-unique domain of
