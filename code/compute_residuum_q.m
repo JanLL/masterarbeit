@@ -1,6 +1,6 @@
-function [residuum] = compute_residuum_q(p_optim_free, p_optim_estimable, p_optim_fixed, ...
+function [residuum] = compute_residuum_q(p_optim_free, optim_type, p_optim_estimable, p_optim_fixed, ...
                                        p_sim, q_dsc, c_p_meas, m_pcm, scalar_output, ax1, ax2)
-% TODO!
+% TODO: description!
 %
 % INPUT:
 %  p_optim_free --> free optimization variables:
@@ -64,13 +64,13 @@ p_optim_all(~p_optim_estimable) = p_optim_fixed;
 % new optimization parameters
 p_sim = update_c_p(p_sim, p_optim_all);
 
-q_pcm_in_interp = compute_q_pcm_in(p_sim, T_ref, q_dsc, m_pcm);
+q_pcm_in = compute_q_pcm_in(p_sim, T_ref, q_dsc, m_pcm, optim_type);
 
-residuum = q_dsc(:,2) - q_pcm_in_interp;
+residuum = q_dsc(:,2) - q_pcm_in;
 
 cla(ax1); % q_pcm_in plot
 hold(ax1, 'on')
-plot(ax1, q_dsc(:,1), q_pcm_in_interp, 'DisplayName', 'Optimization');
+plot(ax1, q_dsc(:,1), q_pcm_in, 'DisplayName', 'Optimization');
 plot(ax1, q_dsc(:,1), q_dsc(:,2), 'DisplayName', 'Measurement');
 plot(ax1, q_dsc(:,1), residuum, 'DisplayName', 'Residuum');
 legend(ax1, 'show', 'location', 'northoutside');

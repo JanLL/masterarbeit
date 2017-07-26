@@ -34,13 +34,14 @@ heat_rate = dsc.Tinfo.Tstep; % same heat rate as in measurement
 lambda_test_setup = [23*1, 35.6000, 0.9600];
 
 optim_solverName = 'lsqnonlin';
-
+optim_type = 'heat_flux_1';
+optim_type_int = str2double(optim_type(end));
 
 % c_p parametrization of sample
 nrb_order = 4; % nrb_order = 4 equates to C^2
 
-cntrl_pts_x = [0, 30, 60, 90, 120:1:125, 126:2:146, 180, 200];
-cntrl_pts_y = [2, 2,  2.1, 2.15, repmat(8,1,6), repmat(2.5,1,11), 2.5, 2.51];
+cntrl_pts_x = [0, 30, 60, 90, 100:2:150, 160, 180, 200]; %24
+cntrl_pts_y = [repmat(2.,1,length(cntrl_pts_x))];
 cntrl_pts = [cntrl_pts_x; cntrl_pts_y];
 num_cntrl_pts = size(cntrl_pts,2);
 
@@ -83,7 +84,7 @@ elseif strcmp(optim_solverName, 'fminsearch') || ...
 end
 
 compute_residuum_expl = @(p_optim) ...
-    compute_residuum_q(p_optim, p_optim_estimable, p_optim_fixed, p_sim, ...
+    compute_residuum_q(p_optim, optim_type_int, p_optim_estimable, p_optim_fixed, p_sim, ...
                        q_dsc, c_p_meas, m_pcm, residuum_scalar_output, ax1, ax2);
 
 
@@ -95,12 +96,16 @@ compute_residuum_expl = @(p_optim) ...
 % fit_data = load('fit_data.mat');
 % p_optim_all = fit_data.optimization.param_end;
 % 
-% compute_residuum_expl(p_optim_all(p_optim_estimable));
+% p_sim = update_c_p(fit_data.simulation, p_optim_all);
 % 
-% p_sim = update_c_p(p_sim, p_optim_all);
+% % TODO: compute_residuum_expl neu aufbauen mit daten aus fit_data um
+% % q_pcm_in und c_p neu zu berechnen und plotten...
 % 
-% T_pcm = simulate_1d(p_sim);
+% T_pcm = simulate_1d(fit_data.simulation);
 % 
+% max(T_pcm(:,end-50) - T_pcm(:,end))
+% 
+% figure(3)
 % image(T_pcm(:,end-50:end), 'CDataMapping', 'scaled')
 % colorbar;
 % colormap hsv;
@@ -114,7 +119,7 @@ compute_residuum_expl = @(p_optim) ...
 
 if strcmp(optim_solverName, 'lsqnonlin')
     lb = zeros(1,num_cntrl_pts);
-    ub = ones(1,num_cntrl_pts)*100.;
+    ub = ones(1,num_cntrl_pts)*200.;
     optim_con = {lb, ub};
 
     opt_options = optimoptions('lsqnonlin', ...
@@ -175,10 +180,12 @@ compute_residuum_expl(p_optim_all(p_optim_estimable));
 
 p_sim = update_c_p(p_sim, p_optim_all);
 
+
+
 save_path = '/home/argo/masterarbeit/fits_data/';
 save_commong_args = {save_path, dsc, index_T_dsc, revMassNorm, p_sim, ...
-    optim_solverName, opt_options, p_optim_start, p_optim_estimable, ...
-    optim_con, p_optim_all, optim_output};
+    optim_type, optim_solverName, opt_options, p_optim_start, ...
+    p_optim_estimable, optim_con, p_optim_all, optim_output};
 
 if strcmp(optim_solverName, 'lsqnonlin')
     fit_data = save_fit(save_commong_args{:}, jac_output);

@@ -1,5 +1,5 @@
 function [dU_output] = compute_dU(varargin)
-% TODO: Update description!
+% TODO: description!
 %
 % INPUT:
 %    fit_data_input --> either struct with saved fit data or string with
