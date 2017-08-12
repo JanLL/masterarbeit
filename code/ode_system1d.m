@@ -55,7 +55,6 @@ if isempty(J_lin_sparse) || isempty(J_setup) || ...
     J_setup = [N1, N2, N3, L1, L2, L3];
 end
 
-
 % pre-compute c_p and rho + derivatives because we need these later
 % multiple times.
 c_p = ones(N, 1);

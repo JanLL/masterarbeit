@@ -1,4 +1,4 @@
-function [residuum] = compute_residuum_q(p_optim_free, optim_type, p_optim_estimable, p_optim_fixed, ...
+function [residuum, Jacobian] = compute_residuum_q(p_optim_free, optim_type, p_optim_estimable, p_optim_fixed, ...
                                        p_sim, q_dsc, c_p_meas, m_pcm, scalar_output, ax1, ax2)
 % TODO: description!
 %
@@ -60,13 +60,45 @@ p_optim_all = zeros(1,length(p_optim_estimable));
 p_optim_all(p_optim_estimable) = p_optim_free;
 p_optim_all(~p_optim_estimable) = p_optim_fixed;
 
-% update c_p evaluation functions in simulation parameter struct p_sim with
-% new optimization parameters
 p_sim = update_c_p(p_sim, p_optim_all);
 
 q_pcm_in = compute_q_pcm_in(p_sim, T_ref, q_dsc, m_pcm, optim_type);
 
 residuum = q_dsc(:,2) - q_pcm_in;
+
+% Compute Jacobian by using imaginary-Trick
+% h = 0.00001;
+% Jacobian = zeros(length(q_dsc(:,2)), length(p_optim_free));
+% 
+% for n=1:length(p_optim_free)
+%     
+%     p_optim_free_perturb = p_optim_free;
+%     p_optim_free_perturb(n) = p_optim_free_perturb(n) + h*1i;
+%     
+%     p_optim_all_perturb = p_optim_all;
+%     p_optim_all_perturb(p_optim_estimable) = p_optim_free_perturb;
+%     
+%     % update c_p evaluation functions in simulation parameter struct p_sim with
+%     % new optimization parameters
+%     p_sim = update_c_p(p_sim, p_optim_all_perturb);
+% 
+%     q_pcm_in = compute_q_pcm_in(p_sim, T_ref, q_dsc, m_pcm, optim_type);
+% 
+%     residuum = q_dsc(:,2) - q_pcm_in;
+% 
+%     Jacobian(:,n) = imag(residuum)/h;
+%     
+% end
+% 
+% figure()
+% hold on;
+% pcolor(Jacobian);
+% shading flat % disable grid because too many lines
+% colormap hsv
+% colorbar;
+% xlabel('Temp c_p control points [degC]');
+% ylabel('Temp measurement points [degC]');
+
 
 cla(ax1); % q_pcm_in plot
 hold(ax1, 'on')

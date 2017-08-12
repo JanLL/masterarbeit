@@ -60,6 +60,7 @@ common_args = {'L1', L1, 'L2', L2, 'L3', L3, 'N3', N3, 'T_0', T_0, ...
 p_sim = get_param_sim(common_args{:}, 'c_p_sample', c_p_sample);
 
 p_optim_start = [cntrl_pts(1,:), cntrl_pts(2,:), knots];
+
 p_sim = update_c_p(p_sim, p_optim_start);
 
 % choose free(true)/fixed(false) parameters to optimize
@@ -124,7 +125,8 @@ if strcmp(optim_solverName, 'lsqnonlin')
 
     opt_options = optimoptions('lsqnonlin', ...
                                'Display', 'iter-detailed', ...
-                               'OutputFcn', @disp_aux);
+                               'OutputFcn', @disp_aux);%, ...
+                               %'SpecifyObjectiveGradient', true);
     [p_optim,~,~,~,optim_output,~,jac_output] = lsqnonlin(...
         compute_residuum_expl, p_optim_start(p_optim_estimable), optim_con{:}, opt_options);
 
@@ -193,5 +195,3 @@ elseif strcmp(optim_solverName, 'fminsearch') || ...
        strcmp(optim_solverName, 'fmincon')
     fit_data = save_fit(save_commong_args{:});
 end
-
-save('jac_output.mat', 'jac_output');

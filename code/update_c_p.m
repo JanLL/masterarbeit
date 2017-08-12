@@ -40,12 +40,22 @@ elseif strcmp(p_sim.c_p_type, 'NURBS')
     p_sim.c_p_table = c_p_curve(2,:);
     p_sim.dc_p_table = dc_p_curve(2,:) ./ dc_p_curve(1,:); 
 
+%     fprintf('c_p_T_table real: %d\n', isreal(p_sim.c_p_T_table))
+%     fprintf('c_p_table real: %d\n', isreal(p_sim.c_p_table))
+    
     % maybe not necessary...:
     p_sim.eval_c_p = ...
-        @(T) interp1(p_sim.c_p_T_table, p_sim.c_p_table, T);
+       @(T) interp1(p_sim.c_p_T_table, p_sim.c_p_table, T);
+%     p_sim.eval_c_p = ...
+%         @(T) interp1(p_sim.c_p_T_table, real(p_sim.c_p_table), real(T)) + ...
+%              interp1(p_sim.c_p_T_table, imag(p_sim.c_p_table), imag(T)) * 1i;
+    
     p_sim.eval_dc_p = ...
-        @(T) interp1(p_sim.c_p_T_table, p_sim.dc_p_table, T);
-
+       @(T) interp1(p_sim.c_p_T_table, p_sim.dc_p_table, T);
+%     p_sim.eval_dc_p = ...
+%     @(T) interp1(p_sim.c_p_T_table, real(p_sim.dc_p_table), real(T)) + ...
+%          interp1(p_sim.c_p_T_table, imag(p_sim.dc_p_table), imag(T)) * 1i;
+    
 else
     error('in update_c_p struct p_sim neither had c_p_type ''function_handle'' nor ''B_spline''.');
 

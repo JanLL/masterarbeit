@@ -73,7 +73,7 @@ mkdir(path_fit_data_dir);
 path_data_file = strcat(path_fit_data_dir, 'fit_data.mat');
 save(path_data_file, '-struct', 'fit_data');
 
-if strcmp(optim_type(1:end-2), 'dU')
+if strcmp(optim_type(1:end), 'dU')
     % plot and save dU(T_ref)
     fit_quantity = compute_dU(fit_data);
     residuum = fit_quantity(:,2) - fit_quantity(:,3);

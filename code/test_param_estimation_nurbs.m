@@ -31,7 +31,7 @@ heat_rate = dsc.Tinfo.Tstep; % same heat rate as in measurement
 lambda_test_setup = [23*1, 35.6000, 0.9600];
 
 optim_solverName = 'lsqnonlin';
-
+optim_type = 'dU';
 
 % c_p parametrization of sample
 nrb_order = 4; % nrb_order = 4 equates to C^2
@@ -104,27 +104,27 @@ compute_residuum_expl = @(p_optim) ...
 
 
 % LOAD FIT RESULT
-fit_data = load('fit_data.mat');
-p_optim_all = fit_data.optimization.param_end;
-
-compute_residuum_expl(p_optim_all(p_optim_estimable));
-
-p_sim = update_c_p(p_sim, p_optim_all);
-
-T_pcm = simulate_1d(p_sim);
-
-max(T_pcm(:,end-50) - T_pcm(:,end))
-
-figure(3)
-image(T_pcm(:,end-50:end), 'CDataMapping', 'scaled')
-colorbar;
-colormap hsv;
-title('Temp. distribution in PCM');
-ylabel('time');
-xlabel('space [grid #]');
-grid;
-
-return
+% fit_data = load('fit_data.mat');
+% p_optim_all = fit_data.optimization.param_end;
+% 
+% compute_residuum_expl(p_optim_all(p_optim_estimable));
+% 
+% p_sim = update_c_p(p_sim, p_optim_all);
+% 
+% T_pcm = simulate_1d(p_sim);
+% 
+% max(T_pcm(:,end-50) - T_pcm(:,end))
+% 
+% figure(3)
+% image(T_pcm(:,end-50:end), 'CDataMapping', 'scaled')
+% colorbar;
+% colormap hsv;
+% title('Temp. distribution in PCM');
+% ylabel('time');
+% xlabel('space [grid #]');
+% grid;
+% 
+% return
 
 
 if strcmp(optim_solverName, 'lsqnonlin')
@@ -192,8 +192,8 @@ p_sim = update_c_p(p_sim, p_optim_all);
 
 save_path = '/home/argo/masterarbeit/fits_data/';
 save_commong_args = {save_path, dsc, index_T_dsc, revMassNorm, p_sim, ...
-    optim_solverName, opt_options, p_optim_start, p_optim_estimable, ...
-    optim_con, p_optim_all, optim_output};
+    optim_type, optim_solverName, opt_options, p_optim_start, ...
+    p_optim_estimable, optim_con, p_optim_all, optim_output};
 
 if strcmp(optim_solverName, 'lsqnonlin')
     fit_data = save_fit(save_commong_args{:}, jac_output);
@@ -202,4 +202,3 @@ elseif strcmp(optim_solverName, 'fminsearch') || ...
     fit_data = save_fit(save_commong_args{:});
 end
 
-save('jac_output.mat', 'jac_output');
