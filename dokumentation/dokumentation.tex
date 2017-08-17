@@ -167,6 +167,7 @@ There is a mapping $f$ from temperature difference to electric potential: $\Delt
 For simplicity we assume a linear relationship $\Delta U = k \cdot \Delta T(T_{ref})$ with parameter $k$ to optimize because we do not know this constant. \\
 
 \subsection{Optimization Problem}
+\subsubsection{DSC voltage fit}
 
 In order to obtain the specific heat capacity $c_p$ (and $k$) we solve the least square problem where we minimize the residuum of the measured and simulated voltages.
 
@@ -175,7 +176,62 @@ In order to obtain the specific heat capacity $c_p$ (and $k$) we solve the least
 	\Leftrightarrow & \min_{p_{c_p}, k} ||U_{dsc} - k (T_{ref} - T_{pcm}) ||_2^2 \\
 \end{align*}
 
-\section{Functions for $c_p$ and $\rho$-fit}
+
+\subsubsection{DSC heat flux fit}
+So as to avoid the unknown proportional factor $k$ we now minimize the residuum of the measured and simulated heat flux into the PCM. Therefore we are using Fourier's law
+
+\begin{equation}
+	q = - \lambda \cdot \nabla T
+\end{equation}
+\label{eq:def_fouriers_law}
+
+where $q$ is the heat flux density, $\lambda$ the heat conductivity. So the total heat flux through an area element $A$ is
+
+\begin{equation*}
+	\Phi_q = q \cdot A =  - \lambda \cdot \nabla T \cdot A
+\end{equation*}
+
+Furthermore we use the definition of heat capacity
+
+\begin{equation}
+	C = \frac{dQ}{dT} \simeq \frac{\Delta Q}{\Delta T}
+\end{equation}
+\label{eq:def_heat_capacity}
+
+i.e. transfered heat $Q$ over a infinitesimal temperature change $T$. \\
+
+Assuming constant pressure we can write for the heat change of a volume element $i$
+
+\begin{equation*}
+	\dot{Q}_i \stackrel{\cdot}{=} \frac{\Delta Q_i}{\Delta t} = \frac{c_p \cdot m_i \cdot \Delta T}{\Delta t}
+\end{equation*}
+
+Using the continuity equation we get the relation
+
+\begin{equation*}
+	\dot{Q}_i = \Phi_i^{\text{in}} - \Phi_i^{\text{out}}
+\end{equation*}
+
+with which we get the wanted heat flux into the first PCM segment:
+
+\begin{align*}
+	\Phi_{\text{PCM,1}}^{\text{in}} = & \dot{Q}_{\text{PCM,1}} + \Phi_{\text{PCM,1}}^{\text{out}} \\
+	= & \frac{c_p \cdot m_{\text{PCM,}1} \cdot \Delta T}{\Delta t} - \lambda \cdot \nabla T \cdot A \\
+	= & c_p \cdot m_{\text{PCM,}1} \frac{T_{\text{PCM,}1}^{k+1} - T_{\text{PCM,}1}^k}{\Delta t} - \frac{\lambda \ m_i}{\rho \ \Delta x_i} \cdot \frac{T_{\text{PCM,}2}^{k} - T_{\text{PCM,}1}^k}{\Delta x_i}
+\end{align*}
+
+using $m_i = \rho \ \Delta x_i \ A \Leftrightarrow A = \frac{m_i}{\rho \ \Delta x_i}$
+
+\todo{Mechanische Arbeit hier bisher nicht beruecksichtigt weil sich $\rho$ ja schon betraechtlich aendert...?}
+
+An alternative way of computing $\Phi_{\text{PCM,}1}^{\text{in}}$ is to sum up all heat changes within the PCM:
+
+\begin{align*}
+	\Phi_{\text{PCM,1}}^{\text{in}} = \sum\limits_{i=\text{PCM,1}}^{\text{PCM,}N_3} \frac{c_p(T_i) \ m_i \ \Delta T_i}{\Delta t}
+\end{align*}
+
+
+\section{Explicit functions for $c_p$ and $\rho$-fit}
 
 \begin{equation*}
 	c_p(T) = \left[ \arctan (-p_3 (T-p_0)) + \frac{\pi}{2} \right] \cdot \left[ p_1 \exp(-p_2(T-p_0)^2)] \right] + p_4 \cdot T + p_5 
