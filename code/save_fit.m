@@ -1,6 +1,6 @@
 function [fit_data] = save_fit(path_root, dsc_data_struct, index_T_dsc, revMassNorm, ...
     p_sim, optim_type, optim_solverName, optim_options, p_optim_start, p_optim_estimable, ...
-    optim_con, p_optim_end, optim_output, optim_jac_output)
+    optim_con, p_optim_end, optim_output, optim_duration, optim_jac_output)
 % Saves the main fit results in form of the graphs c_p(T) and dU(T_ref)
 % with the optimized parameters.
 % Additionally saves all necessary data to be able to reproduce this fit.
@@ -51,6 +51,7 @@ fit_data.optimization.param_start = p_optim_start;
 fit_data.optimization.estimable = p_optim_estimable;
 fit_data.optimization.param_end = p_optim_end;
 fit_data.optimization.output = optim_output;
+fit_data.optimization.duration = optim_duration;
 fit_data.optimization.jac_output = optim_jac_output;
 
 
@@ -94,7 +95,7 @@ elseif strcmp(optim_type(1:end-2), 'heat_flux')
     fit_quantity = compute_q_pcm_in(fit_data);
     residuum = fit_quantity(:,2) - fit_quantity(:,3);
 
-    figure()
+    fig = figure();
     hold on;
     plot(fit_quantity(:,1), fit_quantity(:,3), 'DisplayName', 'Optimization');
     plot(fit_quantity(:,1), fit_quantity(:,2), 'DisplayName', 'Measurement');
@@ -104,7 +105,7 @@ elseif strcmp(optim_type(1:end-2), 'heat_flux')
     ylabel('q_{pcm}^{in} [mW]');
     
     path_plot_q_pcm_in = strcat(path_fit_data_dir, 'q_pcm_in(T_ref).fig');
-    savefig(path_plot_q_pcm_in);    
+    savefig(fig, path_plot_q_pcm_in);    
 end
 
 % c_p(T_ref) plot
@@ -128,11 +129,11 @@ plot(fit_quantity(:,1), c_p_optim, 'DisplayName', 'Optimization'); hold on
 plot(c_p_meas(:,1), c_p_meas(:,2), 'DisplayName', 'Measurement');
 %plot(fit_quantity(:,1), factor * c_p_optim, 'DisplayName', sprintf('Optimization X %g', factor)); hold on
 legend('show', 'location', 'northwest');
-xlabel('T_{ref} [degC]');
+xlabel('T [degC]');
 ylabel('c_p [mJ/(mg*K]');
 
-path_plot_c_p = strcat(path_fit_data_dir, 'c_p(T_ref).fig');
-savefig(path_plot_c_p);
+path_plot_c_p = strcat(path_fit_data_dir, 'c_p(T).fig');
+savefig(fig, path_plot_c_p);
 
 close();
 
@@ -143,7 +144,7 @@ if strcmp(optim_solverName, 'lsqnonlin') && strcmp(p_sim.c_p_type, 'NURBS')
     num_cntrl_pts = p_sim.c_p_params_num(1);
     cntrl_pts_x = p_optim_end(1:num_cntrl_pts);
     
-    figure()
+    fig = figure();
     hold on;
     pcolor(cntrl_pts_x, U_dsc(:,1), optim_jac_output);
     shading flat % disable grid because too many lines
@@ -153,7 +154,7 @@ if strcmp(optim_solverName, 'lsqnonlin') && strcmp(p_sim.c_p_type, 'NURBS')
     ylabel('Temp measurement points [degC]');
     
     path_plot_jac_output = strcat(path_fit_data_dir, 'jac_output.fig');
-    savefig(path_plot_jac_output);
+    savefig(fig, path_plot_jac_output);
     close();
 end
 

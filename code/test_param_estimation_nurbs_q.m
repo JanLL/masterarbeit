@@ -1,5 +1,5 @@
 % measurement data
-dsc_filename = 'ExpDat_16-407-3_mitKorr_10Kmin_H.csv';
+dsc_filename = 'ExpDat_16-407-3_mitKorr_20Kmin_H.csv';
 dsc = DSC204_readFile(dsc_filename);
 
 m_pcm = dsc.mass;
@@ -12,18 +12,21 @@ index_T_dsc = [find(dsc.data(:,1) > 29, 1, 'first'), ...
 q_dsc = [dsc.data(index_T_dsc(1):index_T_dsc(2),1), ...
          dsc.data(index_T_dsc(1):index_T_dsc(2),3) ...
          ./ dsc.data(index_T_dsc(1):index_T_dsc(2),4)];
-
-revMassNorm = true;  % reverse normalization with mass [uV/mg] -> [uv]
+     
+     
+revMassNorm = true;  % reverse normalization with mass [uV/mg] -> [uV]
 if revMassNorm
     q_dsc(:,2) = q_dsc(:,2) * m_pcm;
 end
 
 
 % simulation data
-L1 = 25.;
+L1 = 15.;
 L2 = 0.;
-L3 = 1.;
+L3 = 0.5;
 N3 = 50;
+
+%N1 = 1250;
 
 T_0 = 10;
 T_end = 200;
@@ -42,6 +45,9 @@ nrb_order = 4; % nrb_order = 4 equates to C^2
 
 cntrl_pts_x = [0, 30, 60, 90, 100:2:150, 160, 180, 200]; %24
 cntrl_pts_y = [repmat(2.,1,length(cntrl_pts_x))];
+% cntrl_pts_y = [linspace(2,4,13), 4.5, 5, 7, 10, 15, 30, 50, ...
+%                linspace(1,2.5,length(cntrl_pts_x)-20)];
+
 cntrl_pts = [cntrl_pts_x; cntrl_pts_y];
 num_cntrl_pts = size(cntrl_pts,2);
 
@@ -97,27 +103,17 @@ compute_residuum_expl = @(p_optim) ...
 % fit_data = load('fit_data.mat');
 % p_optim_all = fit_data.optimization.param_end;
 % 
+% %p_optim_all(58:66) = linspace(1.18, 2.5, 9);
+% 
+% 
 % p_sim = update_c_p(fit_data.simulation, p_optim_all);
 % 
-% % TODO: compute_residuum_expl neu aufbauen mit daten aus fit_data um
-% % q_pcm_in und c_p neu zu berechnen und plotten...
-% 
-% T_pcm = simulate_1d(fit_data.simulation);
-% 
-% max(T_pcm(:,end-50) - T_pcm(:,end))
-% 
-% figure(3)
-% image(T_pcm(:,end-50:end), 'CDataMapping', 'scaled')
-% colorbar;
-% colormap hsv;
-% title('Temp. distribution in PCM');
-% ylabel('time');
-% xlabel('space [grid #]');
-% grid;
+% compute_residuum_expl(p_optim_all(p_optim_estimable));
 % 
 % return
 
 
+tic  % start optimization duration
 if strcmp(optim_solverName, 'lsqnonlin')
     lb = zeros(1,num_cntrl_pts);
     ub = ones(1,num_cntrl_pts)*200.;
@@ -170,6 +166,7 @@ elseif strcmp(optim_solverName, 'fmincon')
 else
     error('Choose optim_solverName from [''lsqnonlin'', ''fminsearch'', ''fmincon'']!');
 end
+optim_duration = toc;
 
 
 % update all (free and fixed) optimization parameters with optimized values
@@ -187,7 +184,7 @@ p_sim = update_c_p(p_sim, p_optim_all);
 save_path = '/home/argo/masterarbeit/fits_data/';
 save_commong_args = {save_path, dsc, index_T_dsc, revMassNorm, p_sim, ...
     optim_type, optim_solverName, opt_options, p_optim_start, ...
-    p_optim_estimable, optim_con, p_optim_all, optim_output};
+    p_optim_estimable, optim_con, p_optim_all, optim_output, optim_duration};
 
 if strcmp(optim_solverName, 'lsqnonlin')
     fit_data = save_fit(save_commong_args{:}, jac_output);

@@ -2,6 +2,9 @@
 tmpPATHS.code = pwd; 
 tmpPATHS.root = fullfile(pwd, '../');
 
+% path to SOLVIND
+tmpPATHS.solvind = ( '/home/argo/masterarbeit/SOLVIND_SUITE/Packages/SOLVIND/Debug/matlab' );
+
 % path to tools
 tmpPATHS.tools = fullfile(tmpPATHS.code, 'tools/');
 tmpPATHS.tools_nurbs = fullfile(tmpPATHS.code, 'tools/nurbs_toolbox/');

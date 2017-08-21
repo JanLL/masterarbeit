@@ -74,9 +74,14 @@ if optim_type_int == 1
 
     dQdt = p_sim.eval_c_p(T_pcm(1:end-1,N1+1))*m_pcm/N3 ...
            .* (T_pcm(2:end,N1+1) - T_pcm(1:end-1,N1+1)) / dt;
+       
+%     p = 1e8; % pressure in [mg/(mm*s)]
+%     dQdt = p_sim.eval_c_p(T_pcm(1:end-1,N1+1))*m_pcm/N3 ...
+%            .* (T_pcm(2:end,N1+1) - T_pcm(1:end-1,N1+1)) / dt ...
+%            + p*m_pcm/N3./(dt*rho_formula(T_pcm(1:end-1,N1+1)).^2) .* diff(rho_formula(T_pcm(1:end,N1+1)));
 
     q_pcm_in = dQdt + q_N1p1_out;
-
+    
     % figure(4)
     % plot(q_N1p1_out, 'DisplayName', 'q_{N1p1}^{out}'); hold on
     % plot(dQdt, 'DisplayName', 'dQdt');

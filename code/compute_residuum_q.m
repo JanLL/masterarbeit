@@ -115,7 +115,7 @@ hold(ax2, 'on')
 plot(ax2, q_dsc(:,1), 1. * p_sim.eval_c_p(q_dsc(:,1)), 'DisplayName', 'Optimization'); hold on
 plot(ax2, c_p_meas(:,1), c_p_meas(:,2), 'DisplayName', 'Measurement');
 legend(ax2, 'show', 'location', 'northwest');
-xlabel(ax2, 'T_{ref} [degC]');
+xlabel(ax2, 'T [degC]');
 ylabel(ax2, 'c_p [mJ/(mg*K]');
 drawnow;
 

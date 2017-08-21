@@ -1,22 +1,3 @@
-% complex ODE
-% 
-% f = @(t,x) x(1) - x(1)^2 + 1;
-% 
-% t = 0:0.01:10;
-% x0 = [0.1];
-% 
-% sol = ode15s(f, t, x0);
-% 
-% figure()
-% plot(sol.x, real(sol.y)); hold on
-% plot(sol.x, imag(sol.y))
-% 
-% sol.x
-% 
-% return
-
-
-
 % rational splines testing
 
 nrb_order = 4; % nrb_order = 4 equates to C^2
@@ -41,14 +22,30 @@ assert(length(knots) - size(cntrl_pts, 2) == 4); % check for C^2 continuity
 
 curve = nrbmak(cntrl_pts, knots);
 dcurve = nrbderiv(curve);
-           
-tt = 0:0.001:1;
+          
+% tt = 0:0.001:1;
+% tic;
+% [C,dC] = nrbdeval(curve, dcurve, tt);
+% toc
+% 
+% x = C(1,:);
+% y_real = real(C(2,:));
+% y_imag = imag(C(2,:));
+% 
+% plot(x, y_real, 'DisplayName', 'Real'); hold on
+% plot(x, y_imag, 'DisplayName', 'Imag'); 
+
+
+tt_imag = 0i:0.001i:1i;
 tic;
-[C,dC] = nrbdeval(curve, dcurve, tt);
+[C,dC] = nrbdeval(curve, dcurve, tt_imag);
 toc
 
 x = C(1,:);
-y = C(2,:);
+y_real = real(C(2,:));
+y_imag = imag(C(2,:));
+
+return
 
 dy = dC(2,:) ./ dC(1,:); % gradients -> derivative
 
