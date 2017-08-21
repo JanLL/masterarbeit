@@ -1,5 +1,5 @@
 % measurement data
-dsc_filename = 'ExpDat_16-407-3_mitKorr_20Kmin_H.csv';
+dsc_filename = 'ExpDat_16-407-3_mitKorr_10Kmin_H.csv';
 dsc = DSC204_readFile(dsc_filename);
 
 m_pcm = dsc.mass;
