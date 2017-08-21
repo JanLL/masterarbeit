@@ -3,7 +3,7 @@ tmpPATHS.code = pwd;
 tmpPATHS.root = fullfile(pwd, '../');
 
 % path to SOLVIND
-tmpPATHS.solvind = ( '/home/argo/masterarbeit/SOLVIND_SUITE/Packages/SOLVIND/Debug/matlab' );
+%tmpPATHS.solvind = ( '/home/argo/masterarbeit/SOLVIND_SUITE/Packages/SOLVIND/Debug/matlab' );
 
 % path to tools
 tmpPATHS.tools = fullfile(tmpPATHS.code, 'tools/');
