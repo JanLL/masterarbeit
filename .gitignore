@@ -36,3 +36,4 @@ fits_data/
 
 # Whitelist
 tox.ini
+code/tools/nurbs_c++/nurbs.cpp

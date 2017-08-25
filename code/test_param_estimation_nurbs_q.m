@@ -12,8 +12,8 @@ index_T_dsc = [find(dsc.data(:,1) > 29, 1, 'first'), ...
 q_dsc = [dsc.data(index_T_dsc(1):index_T_dsc(2),1), ...
          dsc.data(index_T_dsc(1):index_T_dsc(2),3) ...
          ./ dsc.data(index_T_dsc(1):index_T_dsc(2),4)];
-     
-     
+
+
 revMassNorm = true;  % reverse normalization with mass [uV/mg] -> [uV]
 if revMassNorm
     q_dsc(:,2) = q_dsc(:,2) * m_pcm;
