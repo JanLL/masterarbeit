@@ -3,7 +3,7 @@ more off
 % Set Simulation parameters
 L1 = 15;  % [mm]
 L3 = 0.5;  % [mm]
-N1 = 201;
+N1 = 750;
 N3 = 50;
 
 lambda_Const = 23.;  % [mW/(mm*K)
@@ -60,11 +60,7 @@ retval = solvind('evaluate', int);
 
 if retval == 0
 	sol = solvind('getSolution', int);
-
 	contsol = solvind('getContOutput', int);
-	%[X,Y] = meshgrid(ogrid, linspace(0, 1, 11));
-	%surf(X, Y, contsol);
-	%drawnow
 
 	stats = solvind('getStats', int);
 	timings = solvind('getTimings', int);

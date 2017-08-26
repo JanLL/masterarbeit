@@ -1,9 +1,9 @@
 /**
- * \file heat1Drobin.cpp
- * \author Andreas Potschka
- * \date April 28, 2009
+ * \file heat1D_pcm.cpp
+ * \author Jan Lammel
+ * \date August 26, 2017
  *
- * \brief Finite Difference heat equation in 1D with Robin boundary control
+ * \brief Finite Difference heat equation in 1D as DSC measurement simulation
  *
  */
 
@@ -42,6 +42,7 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 	T heat_rate  = args.p[3];		// rate [K/min] with which oven temperature increases.
 
 	T c_p_pcm = 2.; // [mJ/(mg*K)]   (testweise konstant erstmal)
+	// TODO: Test-Verteilung fuer c_p(T) fuers PCM
 
 	// some pre-calculations
 	T heat_rate_s = heat_rate / 60; // [K/min] -> [K/s]
@@ -54,7 +55,7 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 	// Constantan linear part
 	for (long j = 1; j <= N1[level]-1; j++)
 	{
-		args.rhs[j] = scale_Const * (x[j-1] - 2.0 * x[j] + x[j+1]); // Laplace 3-star
+		args.rhs[j] = scale_Const * (x[j-1] - 2.0 * x[j] + x[j+1]); 
 	}
 
 
@@ -66,7 +67,7 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 	// PCM linear part
 	for (long j = N1[level]+1; j < N1[level]+N3[level]-1; j++)
 	{
-		args.rhs[j] = scale_pcm * (x[j-1] - 2.0 * x[j] + x[j+1]); // Laplace 3-star
+		args.rhs[j] = scale_pcm * (x[j-1] - 2.0 * x[j] + x[j+1]); 
 	}
 
 	args.rhs[N1[level]+N3[level]-1] = scale_pcm * (x[N1[level]+N3[level]-2] - x[N1[level]+N3[level]-1]); // Neumann boundary (right)
@@ -118,7 +119,7 @@ IDynamicModelDescription()
 		N3[level] = 50;
 	}
 
-	std::cout << "Using 1D heat equation with " << N1[level] <<" Discretization points for Constantan." << std::endl;
+	std::cout << "Using 1D heat equation with " << N1[level] <<" discretization points for Constantan." << std::endl;
 
 
 	dx_const[level] = L1 / static_cast<double>(N1[level]);
