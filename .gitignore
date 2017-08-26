@@ -1,5 +1,16 @@
 # walkerator .gitignore
 
+
+# Ignore all
+*
+
+# Unignore all with extensions
+!*.*
+
+# Unignore all dirs
+!*/
+
+
 # Blacklist
 *.orig
 *.log
