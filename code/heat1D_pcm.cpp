@@ -21,8 +21,14 @@ using namespace std;
 using namespace SolvInd;
 
 const long maxLevels = 2; // Comment: for more levels, the boost preprocessor subset might be helpful
-long N[maxLevels];	///< Number of discretization points
-double h[maxLevels];	///< Mesh size
+
+double L1;					// Length of Constantan
+double L3;					// Length of PCM
+long N1[maxLevels];			// Number of discretization points Constantan
+long N3[maxLevels];			// Number of discretization points PCM
+double dx_const[maxLevels];	// Mesh size Constantan
+double dx_pcm[maxLevels];	// Mesh size PCM
+double alpha;				// quotient for Constantan / PCM grid transition
 
 template <typename T, long level>
 svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
@@ -30,24 +36,38 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 	const T* x = args.xd;  // pointer to constant T (read only!)
 	
 	// parameters
-	T L1         = args.p[0];	    // Length Constantan [mm]
-	T L3         = args.p[1];		// Length PCM [mm]
-	T a_const    = args.p[2];		// Temp.-conductivity (diffusion constant) of Constantan [mm^2/s] 
-	T lambda_pcm = args.p[3];		// heat conductivity of pcm [mW/(mm*K)]
-	T rho_pcm    = args.p[4];		// density of pcm [mg/mm^3]
-	T heat_rate  = args.p[5];		// rate [K/min] with which oven temperature increases.
+	T a_const    = args.p[0];		// Temp.-conductivity (diffusion constant) of Constantan [mm^2/s] 
+	T lambda_pcm = args.p[1];		// heat conductivity of pcm [mW/(mm*K)]
+	T rho_pcm    = args.p[2];		// density of pcm [mg/mm^3]
+	T heat_rate  = args.p[3];		// rate [K/min] with which oven temperature increases.
 
+	T c_p_pcm = 2.; // [mJ/(mg*K)]   (testweise konstant erstmal)
 
+	// some pre-calculations
+	T heat_rate_s = heat_rate / 60; // [K/min] -> [K/s]
+	T scale_const = a_const / (dx_const[level]*dx_const[level]);
+	T scale_pcm   = lambda_pcm / (rho_pcm*c_p_pcm);
 
-	T scale = 1. / (h[level]*h[level]);
-
-	//args.rhs[0] = scale * (x[1] - x[0] + (beta*h[level])*(u - x[0])); // Robin boundary 
-	args.rhs[0] = 0.1;
-	for (long j = 1; j < N[level] - 1; j++)
+	args.rhs[0] = heat_rate_s; // oven boundary with constant slope
+	
+	// Constantan linear part
+	for (long j = 1; j <= N1[level]-1; j++)
 	{
-		args.rhs[j] = scale * (x[j-1] - 2.0 * x[j] + x[j+1]); // Laplace 3-star
+		args.rhs[j] = scale_const * (x[j-1] - 2.0 * x[j] + x[j+1]); // Laplace 3-star
 	}
-	args.rhs[N[level]-1] = scale * (x[N[level]-2] - x[N[level]-1]); // Neumann boundary (right)
+
+
+	// intermediate area between Constantan and PCM
+	args.rhs[N1[level]] = scale_const * (x[N1[level]-1] - 2.0 * x[N1[level]] + x[N1[level]+1]);
+
+
+	// PCM linear part
+	for (long j = N1[level]+1; j < N1[level]+N3[level]-1; j++)
+	{
+		args.rhs[j] = scale_pcm * (x[j-1] - 2.0 * x[j] + x[j+1]); // Laplace 3-star
+	}
+
+	args.rhs[N1[level]+N3[level]-1] = scale_pcm * (x[N1[level]+N3[level]-2] - x[N1[level]+N3[level]-1]); // Neumann boundary (right)
 
 	return 0;
 }
@@ -84,21 +104,28 @@ IDynamicModelDescription()
 			std::cerr << "Error: Only " << maxLevels << " non-negative model levels available." << std::endl;
 			return;
 		}
-		test1 >> N[level];  // set for chosen leven before grid size N
+		test1 >> L1;
+		test1 >> L3;
+		test1 >> N1[level];  // for chosen level before, set grid size N1
+		test1 >> N3[level];  // for chosen level before, set grid size N3
 	}
-	else
+	else  // standard choice of grid size
 	{
 		level = 0;
-		N[level] = 10;
+		N1[level] = 200;
+		N3[level] = 50;
 	}
 
-	std::cout << "Using 1D heat equation with " << N[level] <<" discretization points." << std::endl;
+	std::cout << "Using 1D heat equation with " << N1[level] <<" discretization points for Constantan." << std::endl;
 
-	h[level] = 1.0 / static_cast<double>(N[level] - 1);
+	dx_const[level] = L1 / static_cast<double>(N1[level]);
+	dx_pcm[level] = L3 / static_cast<double>(N3[level]);
+	alpha = L3/L1 * static_cast<double>(N1[level])/static_cast<double>(N3[level]);
+
 	m_dims. dim [ Component_T  ] = 1;
-	m_dims. dim [ Component_XD ] = N[level];
+	m_dims. dim [ Component_XD ] = N1[level] + N3[level];
 	m_dims. dim [ Component_XA ] = 0;
-	m_dims. dim [ Component_P  ] = 6;
+	m_dims. dim [ Component_P  ] = 4;
 	m_dims. dim [ Component_U  ] = 0;
 	m_dims. dim [ Component_Q  ] = 0;
 	//m_dims. dim [ Component_H  ] = 1;

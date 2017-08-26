@@ -1,13 +1,17 @@
 more off
 
 % Set Simulation parameters
-N = 201;
+L1 = 15; % [mm]
+L3 = 0.5; % [mm]
+N1 = 201;
+N3 = 50;
 
 
 
 solvind('importDynamicModelLib', '/home/argo/SOLVIND_SUITE/Packages/SOLVIND/Debug/TEST/MODELS/libdynModelDesc_heat1D_pcm.so');
 
-model = solvind('createDynamicModel', 'heat1D_pcm', sprintf('0 %d -', N));
+% grid sizes for level 0
+model = solvind('createDynamicModel', 'heat1D_pcm', sprintf('0 %d %d %d %d -', L1, L3, N1, N3));
 
 int = solvind('createIntegrator', 'daesol2_sparse_withCorrIters');
 
