@@ -1,26 +1,37 @@
 more off
 
 % Set Simulation parameters
-L1 = 15; % [mm]
-L3 = 0.5; % [mm]
+L1 = 15;  % [mm]
+L3 = 0.5;  % [mm]
 N1 = 201;
 N3 = 50;
 
+lambda_Const = 23.;  % [mW/(mm*K)
+rho_Const = 8.9;     % [mg/mm^3]
+c_p_Const = 0.41;    % [mJ/(mg*K)]
+
+lambda_pcm = 0.96;   % [mW/(mm*K)
+rho_pcm = 0.8;       % [mg/mm^3]
+
+heat_rate = 10.;     % [K/min]
+
+% some pre-calculations
+N = N1+N3;
+a_Const = lambda_Const/(rho_Const*c_p_Const);
 
 
 solvind('importDynamicModelLib', '/home/argo/SOLVIND_SUITE/Packages/SOLVIND/Debug/TEST/MODELS/libdynModelDesc_heat1D_pcm.so');
 
-% grid sizes for level 0
-model = solvind('createDynamicModel', 'heat1D_pcm', sprintf('0 %d %d %d %d -', L1, L3, N1, N3));
-
+% Create model with grid specified by L1, L3, N1 and N3.
+% Afterwards create integrator and link integrator with model.
+model = solvind('createDynamicModel', 'heat1D_pcm', sprintf('0 %2.2f %2.2f %d %d -', L1, L3, N1, N3));
 int = solvind('createIntegrator', 'daesol2_sparse_withCorrIters');
-
-
-dims = solvind('getDims', int);
-num_params = dims.np;
-
-
 solvind('setModel', int, model);
+
+model_dims = solvind('getDims', model);
+num_params = model_dims.np;
+
+% options
 solvind('setTapeStorageMode', int, 'values');
 solvind('setPrintLevel', int, 0);
 pL = solvind('getPrintLevel', int);
@@ -30,14 +41,20 @@ solvind('setMaxIntSteps', int, 100);
 solvind('setCorrectorAccuracyFactor', int, 1e-3);
 solvind('setCorrectorAbsoluteAccuracy', int, 1e-13);
 
-solvind('setTimeHorizon', int, [0 0.1]);
+solvind('setTimeHorizon', int, [0, 10.]);
 
-ogrid = linspace(0, 0.1, 21);
+ogrid = linspace(0, 10., 1001);
 solvind('setContOutputConfig', int, ogrid);
 solvind('storeAdjSensAtGrid', int);
 
-y0 = [0.99*ones(N,1); ones(2,1)];
-solvind('setInitVals', int, y0);
+T_0 = 30*ones(N,1);
+p = [a_Const, lambda_pcm, rho_pcm, heat_rate]';
+
+assert(num_params == length(p), ...
+    'Number of paramters inconsistent in model and matlab code!');
+
+initValues = [T_0; p];
+solvind('setInitVals', int, initValues);
 
 retval = solvind('evaluate', int);
 
@@ -54,10 +71,9 @@ if retval == 0
 end
 
 
-
 % compute first order forward sensitivities
-fwdSensDir = [zeros(1,N+2); eye(N+2)];
-solvind('setForwardTaylorCoefficients', int, N+2, 1, fwdSensDir);
+fwdSensDir = [zeros(1,N+num_params); eye(N+num_params)];
+solvind('setForwardTaylorCoefficients', int, N+num_params, 1, fwdSensDir);
 retval = solvind('forwardSensSweep', int);
 if retval == 0
 	fwdSens = solvind('getFwdSens', int);

@@ -45,20 +45,22 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 
 	// some pre-calculations
 	T heat_rate_s = heat_rate / 60; // [K/min] -> [K/s]
-	T scale_const = a_const / (dx_const[level]*dx_const[level]);
+	T scale_Const = a_const / (dx_const[level]*dx_const[level]);
 	T scale_pcm   = lambda_pcm / (rho_pcm*c_p_pcm);
 
+	/******************* Building up RHS of ODE ********************/
 	args.rhs[0] = heat_rate_s; // oven boundary with constant slope
 	
 	// Constantan linear part
 	for (long j = 1; j <= N1[level]-1; j++)
 	{
-		args.rhs[j] = scale_const * (x[j-1] - 2.0 * x[j] + x[j+1]); // Laplace 3-star
+		args.rhs[j] = scale_Const * (x[j-1] - 2.0 * x[j] + x[j+1]); // Laplace 3-star
 	}
 
 
 	// intermediate area between Constantan and PCM
-	args.rhs[N1[level]] = scale_const * (x[N1[level]-1] - 2.0 * x[N1[level]] + x[N1[level]+1]);
+	int j = N1[level];
+	args.rhs[N1[level]] = scale_Const * (2./(1.+alpha) * x[j-1] - 2./alpha * x[j] + 2./(alpha*(alpha+1.)) * x[j+1]);
 
 
 	// PCM linear part
@@ -116,11 +118,14 @@ IDynamicModelDescription()
 		N3[level] = 50;
 	}
 
-	std::cout << "Using 1D heat equation with " << N1[level] <<" discretization points for Constantan." << std::endl;
+	std::cout << "Using 1D heat equation with " << N1[level] <<" Discretization points for Constantan." << std::endl;
+
 
 	dx_const[level] = L1 / static_cast<double>(N1[level]);
 	dx_pcm[level] = L3 / static_cast<double>(N3[level]);
 	alpha = L3/L1 * static_cast<double>(N1[level])/static_cast<double>(N3[level]);
+
+	std::cout << "alpha: " << sprinf('%0.3f', alpha) << std::endl;
 
 	m_dims. dim [ Component_T  ] = 1;
 	m_dims. dim [ Component_XD ] = N1[level] + N3[level];
