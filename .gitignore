@@ -1,6 +1,6 @@
 # walkerator .gitignore
 
-
+###### With the following 3 commands files without extension will be ignored ###### 
 # Ignore all
 *
 
@@ -9,9 +9,10 @@
 
 # Unignore all dirs
 !*/
+####################################################################################
 
 
-# Blacklist
+##### Blacklist
 *.orig
 *.log
 *_build
@@ -48,5 +49,5 @@ fits_data/
 
 
 
-# Whitelist
+##### Whitelist
 tox.ini
