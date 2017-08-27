@@ -1,3 +1,7 @@
+#ifndef NURBS_H
+#define NURBS_H
+
+
 #include <iostream>
 #include <vector>
 
@@ -34,3 +38,7 @@ class Nurbs
 
 				
 };
+
+
+
+#endif

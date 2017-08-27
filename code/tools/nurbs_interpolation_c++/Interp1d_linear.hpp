@@ -1,3 +1,7 @@
+#ifndef INTERP1D_LINEAR_H
+#define INTERP1D_LINEAR_H
+
+
 #include <iostream>
 #include <vector>
 #include <set>
@@ -20,12 +24,17 @@ class Interp1d_linear {
 		void compute_coeffs();
 		std::vector<double> get_coeffs(double x);
 
-		int num_data_pts;
 
 		std::vector<double> x_data;
 		std::vector<double> y_data;
+
+		int num_data_pts;
+
 
 		std::map<double, std::vector<double> > coeffs_map;
 
 
 };
+
+
+#endif

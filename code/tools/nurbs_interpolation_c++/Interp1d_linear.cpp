@@ -10,12 +10,12 @@
 
 
 
-Interp1d_linear::Interp1d_linear(std::vector<double> x_data_input, std::vector<double> y_data_input)
-: x_data(x_data_input), y_data(y_data_input), num_data_pts(x_data_input.size()) {
-
+Interp1d_linear::Interp1d_linear(std::vector<double> x_data_input, std::vector<double> y_data_input) : 
+	x_data(x_data_input), 
+	y_data(y_data_input), 
+	num_data_pts(x_data_input.size()) 
+{
 	compute_coeffs();
-
-	
 }
 
 void Interp1d_linear::compute_coeffs() {

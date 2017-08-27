@@ -10,11 +10,19 @@
 #include <cmath>
 #include <stdlib.h>
 #include <complex>
+#include <algorithm>
+#include <string>
 
 #include "ind_dyn_model_description.hpp"
 #include "ind_compile_time_info.hpp"
 #include "sonic++.h"
 #include <sstream>
+
+
+#include "/home/argo/masterarbeit/code/tools/nurbs_interpolation_c++/nurbs.hpp"
+#include "/home/argo/masterarbeit/code/tools/nurbs_interpolation_c++/nurbs.cpp"
+#include "/home/argo/masterarbeit/code/tools/nurbs_interpolation_c++/Interp1d_linear.hpp"
+#include "/home/argo/masterarbeit/code/tools/nurbs_interpolation_c++/Interp1d_linear.cpp"
 
 
 using namespace std;
@@ -29,10 +37,15 @@ long N3[maxLevels];			// Number of discretization points PCM
 double dx_const[maxLevels];	// Mesh size Constantan
 double dx_pcm[maxLevels];	// Mesh size PCM
 double alpha;				// quotient for Constantan / PCM grid transition
+size_t num_cntrl_pts;		// number of NURBS control points
+const int nurbs_order = 4;	// NURBS curve will be in C^2 with nurbs_order=4
 
 template <typename T, long level>
 svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 {
+	static std::vector<double> cntrl_pts_x(num_cntrl_pts, 0.);
+	static std::vector<double> cntrl_pts_y(num_cntrl_pts, 0.);
+
 	const T* x = args.xd;  // pointer to constant T (read only!)
 	
 	// parameters
@@ -41,8 +54,62 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 	T rho_pcm    = args.p[2];		// density of pcm [mg/mm^3]
 	T heat_rate  = args.p[3];		// rate [K/min] with which oven temperature increases.
 
+
 	T c_p_pcm = 2.; // [mJ/(mg*K)]   (testweise konstant erstmal)
-	// TODO: Test-Verteilung fuer c_p(T) fuers PCM
+
+	// Versuche den double value aus dem adouble raus zu bekommen...
+	//T const * ptr = args.p;
+	//(*ptr).value();
+	// Hier gibts einen Konflikt weil value() weiterleitet zu getValue(), 
+	// welches eine const methode ist und der compiler angst hat man wuerde
+	// mit dem Pointer dann was aendern... obwohl es ein ptr auf konstantes adouble
+	// ist. 
+	// Ganz am Anfang der Errors sagt er, dass *ptr ein const double ist.
+
+	//const T test = args.p[0];
+	//test.value();
+	// Hier kommt in der fehlermeldung, dass test vom typ const double sei 
+	// (und daher keine methode .value() hat), aber es ist doch ein adouble....)
+
+	//T const * ptr = args.p;
+	//const double test = *ptr;
+	// Hier sagt er dann allerdings, dass *ptr ein const adouble ist, im Gegensatz zum 1. Versuch
+
+	std::ostringstream oss;
+	oss << a_const;
+	std:string s = oss.str();
+	double a_const_double = std::stod(s, NULL);
+	std::cout << a_const_double << std::endl;
+	// Workaround der ganz und garnicht schoen ist, aber es funktioniert... ;D
+
+
+	/*
+	bool changed_cntrl_pts = false;
+	for (size_t i=0; i<num_cntrl_pts; ++i) {
+		if (cntrl_pts_x[i] != (args.p[4+i]).value() || 
+			cntrl_pts_y[i] != (args.p[4+num_cntrl_pts+i]).value() ) {
+
+			changed_cntrl_pts = true;
+			break;
+		}
+	}
+
+	if (changed_cntrl_pts) {
+
+		// Replace control points by new parameter values
+		for (size_t i=0; i<num_cntrl_pts; ++i) {
+			cntrl_pts_x[i] = (args.p[4+i]).value();
+			cntrl_pts_y[i] = (args.p[4+num_cntrl_pts+i]).value();
+		}
+
+		// Build/Replace linear interpolation object for c_p(T) evaluation
+		Nurbs nurbs(num_cntrl_pts, nurbs_order);
+		nurbs.set_cntrl_pts_x(cntrl_pts_x);
+		nurbs.set_cntrl_pts_y(cntrl_pts_y);
+
+	}*/
+
+
 
 	// some pre-calculations
 	T heat_rate_s = heat_rate / 60; // [K/min] -> [K/s]
@@ -109,24 +176,22 @@ IDynamicModelDescription()
 		}
 		test1 >> L1;
 		test1 >> L3;
-		test1 >> N1[level];  // for chosen level before, set grid size N1
-		test1 >> N3[level];  // for chosen level before, set grid size N3
+		test1 >> N1[level];  	// for chosen level before, set grid size N1.
+		test1 >> N3[level];     // for chosen level before, set grid size N3.
+		test1 >> num_cntrl_pts; // number of control points of c_p parametrization with NURBES.
 	}
 	else  // standard choice of grid size
 	{
-		level = 0;
-		N1[level] = 200;
-		N3[level] = 50;
+		throw std::logic_error("Options string of importDynamicModelLib does not end with '-' !");
 	}
 
 	std::cout << "Using 1D heat equation with " << N1[level] <<" discretization points for Constantan." << std::endl;
-
 
 	dx_const[level] = L1 / static_cast<double>(N1[level]);
 	dx_pcm[level] = L3 / static_cast<double>(N3[level]);
 	alpha = L3/L1 * static_cast<double>(N1[level])/static_cast<double>(N3[level]);
 
-	std::cout << "alpha: " << sprinf('%0.3f', alpha) << std::endl;
+	std::cout << "alpha: " << alpha << std::endl;
 
 	m_dims. dim [ Component_T  ] = 1;
 	m_dims. dim [ Component_XD ] = N1[level] + N3[level];

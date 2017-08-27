@@ -15,6 +15,11 @@ rho_pcm = 0.8;       % [mg/mm^3]
 
 heat_rate = 10.;     % [K/min]
 
+% c_p parametrization with NURBS
+cntrl_pts_x = [0, 30, 60, 90, 120, 125, 130, 132., 135, 150, 160, 180];
+cntrl_pts_y = [1., 1,  1.1, 1.15, 1.2, 5., 10, 1.5, 1.51, 1.52, 1.53, 1.54];
+num_cntrl_pts = length(cntrl_pts_x);
+
 % some pre-calculations
 N = N1+N3;
 a_Const = lambda_Const/(rho_Const*c_p_Const);
@@ -24,7 +29,8 @@ solvind('importDynamicModelLib', '/home/argo/SOLVIND_SUITE/Packages/SOLVIND/Debu
 
 % Create model with grid specified by L1, L3, N1 and N3.
 % Afterwards create integrator and link integrator with model.
-model = solvind('createDynamicModel', 'heat1D_pcm', sprintf('0 %2.2f %2.2f %d %d -', L1, L3, N1, N3));
+model = solvind('createDynamicModel', 'heat1D_pcm', ...
+                sprintf('0 %2.2f %2.2f %d %d %d -', L1, L3, N1, N3, num_cntrl_pts));
 int = solvind('createIntegrator', 'daesol2_sparse_withCorrIters');
 solvind('setModel', int, model);
 

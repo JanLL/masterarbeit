@@ -18,16 +18,16 @@ int main(int argc, char** argv) {
 	std::vector<double> cntrl_pts_y(12);// = {1., 1,  1.1, 1.15, 1.2, 5., 10, 1.5, 1.51, 1.52, 1.53, 1.54};
 	int num_cntrl_pts = cntrl_pts_x.size();
 
-	cntrl_pts_x[0] = 0; 	cntrl_pts_y[0] = 1.;
-	cntrl_pts_x[1] = 30; 	cntrl_pts_y[1] = 1.;
-	cntrl_pts_x[2] = 60; 	cntrl_pts_y[2] = 1.1;
-	cntrl_pts_x[3] = 90; 	cntrl_pts_y[3] = 1.15;
-	cntrl_pts_x[4] = 120; 	cntrl_pts_y[4] = 1.2;
-	cntrl_pts_x[5] = 125; 	cntrl_pts_y[5] = 5.;
-	cntrl_pts_x[6] = 130; 	cntrl_pts_y[6] = 10.;
-	cntrl_pts_x[7] = 132; 	cntrl_pts_y[7] = 1.5;
-	cntrl_pts_x[8] = 135; 	cntrl_pts_y[8] = 1.51;
-	cntrl_pts_x[9] = 150; 	cntrl_pts_y[9] = 1.52;
+	cntrl_pts_x[0]  = 0; 	cntrl_pts_y[0]  = 1.;
+	cntrl_pts_x[1]  = 30; 	cntrl_pts_y[1]  = 1.;
+	cntrl_pts_x[2]  = 60; 	cntrl_pts_y[2]  = 1.1;
+	cntrl_pts_x[3]  = 90; 	cntrl_pts_y[3]  = 1.15;
+	cntrl_pts_x[4]  = 120; 	cntrl_pts_y[4]  = 1.2;
+	cntrl_pts_x[5]  = 125; 	cntrl_pts_y[5]  = 5.;
+	cntrl_pts_x[6]  = 130; 	cntrl_pts_y[6]  = 10.;
+	cntrl_pts_x[7]  = 132; 	cntrl_pts_y[7]  = 1.5;
+	cntrl_pts_x[8]  = 135; 	cntrl_pts_y[8]  = 1.51;
+	cntrl_pts_x[9]  = 150; 	cntrl_pts_y[9]  = 1.52;
 	cntrl_pts_x[10] = 160; 	cntrl_pts_y[10] = 1.53;
 	cntrl_pts_x[11] = 180; 	cntrl_pts_y[11] = 1.54;
 	
@@ -64,10 +64,6 @@ int main(int argc, char** argv) {
 
 	// 1D Interpolation part
 	Interp1d_linear interpolator(C_x, C_y);
-
-	interpolator(30.);
-
-
 
 	std::ofstream file_interp;
 	file_interp.open("curve_interp.txt");
