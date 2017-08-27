@@ -1,3 +1,16 @@
+figure(); hold on
+data_nurbs = importdata('curve_nurbes.txt');
+plot(data_nurbs(:,1), data_nurbs(:,2), '--');
+
+data_interp = importdata('curve_interp.txt');
+plot(data_interp(:,1), data_interp(:,2), '--')
+plot(data_interp(:,1), data_interp(:,3), '--')
+
+
+
+
+return;
+
 % rational splines testing
 
 nrb_order = 4; % nrb_order = 4 equates to C^2

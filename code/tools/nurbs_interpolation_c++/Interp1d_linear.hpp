@@ -11,13 +11,19 @@ class Interp1d_linear {
 	public:
 		Interp1d_linear(std::vector<double> x_data, std::vector<double> y_data);
 
-		double operator()(double x);
+		std::vector<double> operator()(double x);
 
-	//private:
+		double eval(double x);
+		double eval_d(double x);
+
+	private:
 		void compute_coeffs();
+		std::vector<double> get_coeffs(double x);
 
-		std::set<double> x_data;
-		std::set<double> y_data;
+		int num_data_pts;
+
+		std::vector<double> x_data;
+		std::vector<double> y_data;
 
 		std::map<double, std::vector<double> > coeffs_map;
 

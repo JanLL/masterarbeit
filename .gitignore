@@ -41,6 +41,7 @@ DSC204_F1_Phoenix_Messungen/
 code/tools/*
 !/code/tools/nurbs_c++/
 !/code/tools/interp1d_linear_c++/
+!/code/tools/nurbs_interpolation_c++/
 
 
 SOLVIND_SUITE/

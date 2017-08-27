@@ -120,7 +120,7 @@ std::vector<double> Nurbs::eval_nurbs_curve(double u) {
 }
 
 
-
+/*
 int main(int argc, char** argv) {
 
 	int nurbs_order = 4;
@@ -190,4 +190,4 @@ int main(int argc, char** argv) {
 
 	return 0;
 
-}
+}*/
