@@ -6,11 +6,11 @@ L3 = 0.5;  % [mm]
 N1 = 750;
 N3 = 50;
 
-lambda_Const = 23.;  % [mW/(mm*K)
+lambda_Const = 23.;  % [mW/(mm*K)]
 rho_Const = 8.9;     % [mg/mm^3]
 c_p_Const = 0.41;    % [mJ/(mg*K)]
 
-lambda_pcm = 0.96;   % [mW/(mm*K)
+lambda_pcm = 0.96;   % [mW/(mm*K)]
 rho_pcm = 0.8;       % [mg/mm^3]
 
 heat_rate = 10.;     % [K/min]
@@ -54,7 +54,7 @@ solvind('setContOutputConfig', int, ogrid);
 solvind('storeAdjSensAtGrid', int);
 
 T_0 = 30*ones(N,1);
-p = [a_Const, lambda_pcm, rho_pcm, heat_rate]';
+p = [a_Const, lambda_pcm, rho_pcm, heat_rate, cntrl_pts_x, cntrl_pts_y]';
 
 assert(num_params == length(p), ...
     'Number of paramters inconsistent in model and matlab code!');

@@ -12,6 +12,7 @@
 #include <complex>
 #include <algorithm>
 #include <string>
+#include <time.h>
 
 #include "ind_dyn_model_description.hpp"
 #include "ind_compile_time_info.hpp"
@@ -67,7 +68,7 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 	// Ganz am Anfang der Errors sagt er, dass *ptr ein const double ist.
 
 	//const T test = args.p[0];
-	//test.value();
+	//test.getValue();
 	// Hier kommt in der fehlermeldung, dass test vom typ const double sei 
 	// (und daher keine methode .value() hat), aber es ist doch ein adouble....)
 
@@ -75,12 +76,36 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 	//const double test = *ptr;
 	// Hier sagt er dann allerdings, dass *ptr ein const adouble ist, im Gegensatz zum 1. Versuch
 
-	std::ostringstream oss;
+	/*std::ostringstream oss;
 	oss << a_const;
-	std:string s = oss.str();
+	std::string s = oss.str();
 	double a_const_double = std::stod(s, NULL);
-	std::cout << a_const_double << std::endl;
+	std::cout << a_const_double << std::endl;*/
 	// Workaround der ganz und garnicht schoen ist, aber es funktioniert... ;D
+
+	std::vector<double> cntrl_pts_x_input(num_cntrl_pts);
+	std::vector<double> cntrl_pts_y_input(num_cntrl_pts);
+	double c_p_param_input;
+	std::ostringstream oss;
+	std::string str;
+
+	// Ist zwar echt nicht huebsch, aber laufzeittechnisch eig. kein Problem.
+	// Pro Aufruf der RHS braucht die folgende for-Schleife 35us. 
+	for (size_t i=0; i<num_cntrl_pts; ++i) {
+
+		oss.str("");
+		oss << args.p[4+i];
+		str = oss.str();
+		c_p_param_input = std::stod(str, NULL);
+		cntrl_pts_x_input[i] = c_p_param_input;
+
+		oss.str("");
+		oss << args.p[4+num_cntrl_pts+i];
+		str = oss.str();
+		c_p_param_input = std::stod(str, NULL);
+		cntrl_pts_y_input[i] = c_p_param_input;
+	}
+
 
 
 	/*
@@ -196,7 +221,7 @@ IDynamicModelDescription()
 	m_dims. dim [ Component_T  ] = 1;
 	m_dims. dim [ Component_XD ] = N1[level] + N3[level];
 	m_dims. dim [ Component_XA ] = 0;
-	m_dims. dim [ Component_P  ] = 4;
+	m_dims. dim [ Component_P  ] = 28;
 	m_dims. dim [ Component_U  ] = 0;
 	m_dims. dim [ Component_Q  ] = 0;
 	//m_dims. dim [ Component_H  ] = 1;
