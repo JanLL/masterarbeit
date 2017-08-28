@@ -66,12 +66,11 @@ pL = solvind('getPrintLevel', int);
 
 solvind('setRelTol', int, 1e-3);
 solvind('setMaxIntSteps', int, 2000);
-solvind('setCorrectorAccuracyFactor', int, 1e-7);
-solvind('setCorrectorAbsoluteAccuracy', int, 1e-13);
+solvind('setCorrectorAccuracyFactor', int, 1e-4);
+solvind('setCorrectorAbsoluteAccuracy', int, 1e-10);
 
 t_0 = 0.;
 t_end = (T_end - T_0) / heat_rate_s;
-% t_end = 200;
 
 solvind('setTimeHorizon', int, [t_0, t_end]);
 ogrid = linspace(t_0, t_end, int32((T_end - T_0)*20. + 1));
@@ -105,8 +104,7 @@ end
 
 
 plot(t, contsol(1, :)); hold on
-plot(t, contsol(50, :)); 
-plot(t, contsol(1000, :));
+plot(t, contsol(N1, :)); 
 
 % compute first order forward sensitivities
 % fwdSensDir = [zeros(1,N+num_params); eye(N+num_params)];
