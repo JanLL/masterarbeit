@@ -18,6 +18,7 @@
 #include "ind_compile_time_info.hpp"
 #include "sonic++.h"
 #include <sstream>
+#include <fstream>
 
 
 #include "/home/argo/masterarbeit/code/tools/nurbs_interpolation_c++/nurbs.hpp"
@@ -46,7 +47,7 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 {
 	static std::vector<double> cntrl_pts_x(num_cntrl_pts, 0.);
 	static std::vector<double> cntrl_pts_y(num_cntrl_pts, 0.);
-	static Interp1d_linear<T> c_p_interpolator = Interp1d_linear<T>();
+	static Interp1d_linear<double> c_p_interpolator = Interp1d_linear<double>();
 	
 
 	const T* x = args.xd;  // pointer to constant T (read only!)
@@ -58,7 +59,6 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 	T heat_rate  = args.p[3];		// rate [K/min] with which oven temperature increases.
 
 
-	//T c_p_pcm = 2.; // [mJ/(mg*K)]   (testweise konstant erstmal)
 
 	// Versuche den double value aus dem adouble raus zu bekommen...
 	//T const * ptr = args.p;
@@ -139,6 +139,8 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 	 	  std::equal(cntrl_pts_y.begin(), cntrl_pts_y.end(), cntrl_pts_y_input.begin()))) {
 		// Bem.: Dieser if-Block wird bei Aenderung der cntrl_pts 2 mal aufgerufen -> unklar warum
 
+		std::cout << "NURBS control points have been changed!" << std::endl;
+
 		// Replace internal control point vectors
 		cntrl_pts_x = cntrl_pts_x_input;
 		cntrl_pts_y = cntrl_pts_y_input;
@@ -149,8 +151,8 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 		nurbs.set_cntrl_pts_y(cntrl_pts_y);
 
 		double h = 0.001;
-		std::vector<T> C_x(int(1/h)+1);
-		std::vector<T> C_y(int(1/h)+1);
+		std::vector<double> C_x(int(1/h)+1);
+		std::vector<double> C_y(int(1/h)+1);
 
 		std::vector<double> C_temp(2);
 		int i=0;
@@ -165,19 +167,28 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 		// 1D Interpolation part
 		c_p_interpolator.set_data_pts(C_x, C_y);
 
+
 		// TEST interpolator
-		//std::vector<T> c_p_i(2);
-		//c_p_i = c_p_interpolator(130.);
-		//std::cout << c_p_i[0] << "\t" << c_p_i[1] << std::endl;
+		std::ofstream file_c_p;
+  		file_c_p.open ("/home/argo/masterarbeit/code/c_p.txt");
+
+		std::vector<double> c_p_v(2);
+		for (double d=30.; d < 160; d += 0.01) {
+			c_p_v = c_p_interpolator(d);
+
+			file_c_p << d << "\t" << c_p_v[0] << "\t" << c_p_v[1] << std::endl; 
+
+		}
+		file_c_p.close();
+
 	}
 
-
 	// some pre-calculations
-	T heat_rate_s = heat_rate / 60; // [K/min] -> [K/s]
-	T scale_Const = a_const / (dx_const[level]*dx_const[level]);
-	T scale_pcm   = lambda_pcm / rho_pcm;
+	T heat_rate_s  = heat_rate / 60; // [K/min] -> [K/s]
+	T scale_Const  = a_const / (dx_const[level]*dx_const[level]);
+	T scale_pcm    = lambda_pcm / (rho_pcm * dx_pcm[level]*dx_pcm[level]);
 
-
+	T c_p_pcm = 2.; // [mJ/(mg*K)]   (testweise konstant erstmal)
 
 
 	/******************* Building up RHS of ODE ********************/
@@ -192,25 +203,39 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 
 
 	// Intermediate area between Constantan and PCM, belongs to Constantan
-	int j = N1[level]-1;
+	long j = N1[level]-1;
 	args.rhs[j] = scale_Const * (2./(1.+alpha) * x[j-1] - 2./alpha * x[j] + 2./(alpha*(alpha+1.)) * x[j+1]);
 
 
 	// PCM
-	std::vector<T> c_p_vec(2);
+	double T_j;
+	std::vector<double> c_p_vec(2);
+	T c_p_j;
+	T dc_p_j;
 	for (long j = N1[level]; j <= N1[level]+N3[level]-2; j++)
 	{
+		// Temperature adouble -> double s.t. interpolator returns also a double
+		// Workaround... TODO: aendern wenn andere Loesung vorhanden!
+		oss.str("");
+		oss << x[j];
+		str = oss.str();
+		T_j = std::stod(str, NULL);
+
 		// compute c_p(T_j) and dc_p(T_j)/dT
-		// PROBLEM: args.rhs[i] gibt adouble zurueck, c_p_interpolator erwartet aber ein double...
-		c_p_vec = c_p_interpolator(x[j]);
-		T c_p_j = c_p_vec[0];
-		T dc_p_j = c_p_vec[1];
+		c_p_vec = c_p_interpolator(T_j);
+		c_p_j = c_p_vec[0];
+		dc_p_j = c_p_vec[1];
+
+
+		// PROBLEM: Hier besteht Problem das er nicht mehr integrieren kann wenn c_p_pcm durch c_p_j ersetzt wird...
+		// Input von c_p_interpolator(x) ist zwingend ein adouble, naemlich die Temperatur. Output, der c_p Wert
+		// ist auch ein adouble, allerdings offenbar irgendwie kaputt, so dass der Integrator nichts damit anfangen kann.
 
 		// linear part
 		args.rhs[j] = scale_pcm/c_p_j * (x[j-1] - 2.0 * x[j] + x[j+1]); 
 
 		// non-linear part (just c_p temperature dependent atm, lambda and rho constant)
-		args.rhs[j] -= lambda_pcm/(rho_pcm*c_p_j*c_p_j) * dc_p_j * ((x[j+1] - x[j])/dx_pcm[level])*((x[j+1] - x[j])/dx_pcm[level]);
+		args.rhs[j] -= scale_pcm/(c_p_j*c_p_j) * dc_p_j * (x[j+1] - x[j])*(x[j+1] - x[j]);
 	}
 
 	// RHS boundary, no flux
