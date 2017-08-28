@@ -90,7 +90,7 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 	std::string str;
 
 	// Ist zwar echt nicht huebsch, aber laufzeittechnisch eig. kein Problem.
-	// Pro Aufruf der RHS braucht die folgende for-Schleife 35us. 
+	// Pro Aufruf der RHS braucht die folgende for-Schleife 35us fuer 12 cntrl_pts.
 	for (size_t i=0; i<num_cntrl_pts; ++i) {
 
 		oss.str("");
@@ -107,9 +107,8 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 	}
 
 
-
-	/*
-	bool changed_cntrl_pts = false;
+	// OLD: problem das man nicht direkt auf die parameter zugreifen kann...
+	/*bool changed_cntrl_pts = false;
 	for (size_t i=0; i<num_cntrl_pts; ++i) {
 		if (cntrl_pts_x[i] != (args.p[4+i]).value() || 
 			cntrl_pts_y[i] != (args.p[4+num_cntrl_pts+i]).value() ) {
@@ -117,7 +116,6 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 			changed_cntrl_pts = true;
 			break;
 		}
-	}
 
 	if (changed_cntrl_pts) {
 
@@ -135,11 +133,51 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 	}*/
 
 
+	if (!(std::equal(cntrl_pts_x.begin(), cntrl_pts_x.end(), cntrl_pts_x_input.begin()) &&
+	 	  std::equal(cntrl_pts_y.begin(), cntrl_pts_y.end(), cntrl_pts_y_input.begin()))) {
+		// Bem.: Dieser if-Block wird bei Aenderung der cntrl_pts 2 mal aufgerufen -> unklar warum
+
+		// Replace internal control point vectors
+		cntrl_pts_x = cntrl_pts_x_input;
+		cntrl_pts_y = cntrl_pts_y_input;
+
+		// Build/Replace linear interpolation object for c_p(T) evaluation
+		Nurbs nurbs(num_cntrl_pts, nurbs_order);
+		nurbs.set_cntrl_pts_x(cntrl_pts_x);
+		nurbs.set_cntrl_pts_y(cntrl_pts_y);
+
+		double h = 0.001;
+		std::vector<double> C_x(int(1/h)+1);
+		std::vector<double> C_y(int(1/h)+1);
+
+		std::vector<double> C_temp(2);
+		int i=0;
+		for (double u=0. + 1e-8; u <= 1.; u+=h) {
+			C_temp = nurbs.eval_nurbs_curve(u);
+			C_x[i] = C_temp[0];
+			C_y[i] = C_temp[1];
+		
+			i++;
+		}
+
+		// 1D Interpolation part
+		Interp1d_linear c_p_interpolator(C_x, C_y);
+
+		// TEST interpolator
+		//std::vector<double> c_p_i(2);
+		//c_p_i = c_p_interpolator(130.);
+		//std::cout << c_p_i[0] << "\t" << c_p_i[1] << std::endl;
+	}
+
 
 	// some pre-calculations
 	T heat_rate_s = heat_rate / 60; // [K/min] -> [K/s]
 	T scale_Const = a_const / (dx_const[level]*dx_const[level]);
 	T scale_pcm   = lambda_pcm / (rho_pcm*c_p_pcm);
+
+	std::vector<T> c_p_pcm(N3[level]);
+	// TODO: c_p_pcm mit c_p_interpolator fuellen
+
 
 	/******************* Building up RHS of ODE ********************/
 	args.rhs[0] = heat_rate_s; // oven boundary with constant slope

@@ -15,23 +15,20 @@
 int main(int argc, char** argv) {
 
 
-	double a_const = 1.32313123213123; 
-	std::ostringstream oss;
+	std::vector<double> v1(3, 0.);
+	std::vector<double> v2(3, 6.);
+	
+	v1[0] = 1.;
+	v1[1] = 1.;
+	v1[2] = 1.;
+	
+	v2 = v1;
 
+	v1[0] = 999.;
 
-
-	double time_start, time_duration;
-
-	time_start = clock();  // start time measurement
-	for (size_t i=0; i<200; ++i) {
-		oss << a_const;
-		std::string s = oss.str();
-		double a_const_double = std::stod(s, NULL);
+	for (int i=0; i<3; ++i) {
+		std::cout << v1[i] << "\t" << v2[i] << std::endl;
 	}
-	time_duration = (clock() - time_start) / CLOCKS_PER_SEC;
-
-
-	std::cout << time_duration << " s\n";
 
 
 	return 0;
