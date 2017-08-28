@@ -175,31 +175,36 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 	T scale_Const = a_const / (dx_const[level]*dx_const[level]);
 	T scale_pcm   = lambda_pcm / (rho_pcm*c_p_pcm);
 
-	std::vector<T> c_p_pcm(N3[level]);
-	// TODO: c_p_pcm mit c_p_interpolator fuellen
 
 
 	/******************* Building up RHS of ODE ********************/
-	args.rhs[0] = heat_rate_s; // oven boundary with constant slope
+	// Oven boundary with constant slope of Temp.
+	args.rhs[0] = heat_rate_s;
 	
-	// Constantan linear part
-	for (long j = 1; j <= N1[level]-1; j++)
+	// Constantan (just linear part)
+	for (long j = 1; j <= N1[level]-2; j++)
 	{
 		args.rhs[j] = scale_Const * (x[j-1] - 2.0 * x[j] + x[j+1]); 
 	}
 
 
-	// intermediate area between Constantan and PCM
-	int j = N1[level];
-	args.rhs[N1[level]] = scale_Const * (2./(1.+alpha) * x[j-1] - 2./alpha * x[j] + 2./(alpha*(alpha+1.)) * x[j+1]);
+	// Intermediate area between Constantan and PCM, belongs to Constantan
+	int j = N1[level]-1;
+	args.rhs[j] = scale_Const * (2./(1.+alpha) * x[j-1] - 2./alpha * x[j] + 2./(alpha*(alpha+1.)) * x[j+1]);
 
 
-	// PCM linear part
-	for (long j = N1[level]+1; j < N1[level]+N3[level]-1; j++)
+	// PCM
+	//std::vector<T> c_p(2);
+	for (long j = N1[level]; j <= N1[level]+N3[level]-2; j++)
 	{
+		// compute c_p(T_j) and dc_p(T_j)/dT
+		// PROBLEM: args.rhs[i] gibt adouble zurueck, c_p_interpolator erwartet aber ein double...
+		//c_p = c_p_interpolator()
+
 		args.rhs[j] = scale_pcm * (x[j-1] - 2.0 * x[j] + x[j+1]); 
 	}
 
+	// RHS boundary, no flux
 	args.rhs[N1[level]+N3[level]-1] = scale_pcm * (x[N1[level]+N3[level]-2] - x[N1[level]+N3[level]-1]); // Neumann boundary (right)
 
 	return 0;
