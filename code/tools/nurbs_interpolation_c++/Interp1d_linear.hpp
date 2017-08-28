@@ -13,6 +13,7 @@ template<typename T>
 class Interp1d_linear {
 
 	public:
+		Interp1d_linear();
 		Interp1d_linear(std::vector<T> x_data, std::vector<T> y_data);
 
 		std::vector<T> operator()(T x);

@@ -8,6 +8,12 @@
 #include "Interp1d_linear.hpp"
 
 
+template<typename T>
+Interp1d_linear<T>::Interp1d_linear() {
+
+	// TODO: braucht man fuer static variable in der ODE RHS.
+}
+
 
 template<typename T>
 Interp1d_linear<T>::Interp1d_linear(std::vector<T> x_data_input, std::vector<T> y_data_input) : 

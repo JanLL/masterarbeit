@@ -46,6 +46,7 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 {
 	static std::vector<double> cntrl_pts_x(num_cntrl_pts, 0.);
 	static std::vector<double> cntrl_pts_y(num_cntrl_pts, 0.);
+	static Interp1d_linear<T> c_p_interpolator;
 
 	const T* x = args.xd;  // pointer to constant T (read only!)
 	
@@ -173,7 +174,7 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 	// some pre-calculations
 	T heat_rate_s = heat_rate / 60; // [K/min] -> [K/s]
 	T scale_Const = a_const / (dx_const[level]*dx_const[level]);
-	T scale_pcm   = lambda_pcm / (rho_pcm*c_p_pcm);
+	T scale_pcm   = lambda_pcm / rho_pcm;
 
 
 
@@ -194,14 +195,20 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 
 
 	// PCM
-	//std::vector<T> c_p(2);
+	std::vector<T> c_p(2);
 	for (long j = N1[level]; j <= N1[level]+N3[level]-2; j++)
 	{
 		// compute c_p(T_j) and dc_p(T_j)/dT
 		// PROBLEM: args.rhs[i] gibt adouble zurueck, c_p_interpolator erwartet aber ein double...
-		//c_p = c_p_interpolator()
+		c_p_vec = c_p_interpolator(x[j]);
+		T c_p_j = c_p_vec[0];
+		T dc_p_j = c_p_vec[1];
 
-		args.rhs[j] = scale_pcm * (x[j-1] - 2.0 * x[j] + x[j+1]); 
+		// linear part
+		args.rhs[j] = scale_pcm/c_p_j * (x[j-1] - 2.0 * x[j] + x[j+1]); 
+
+		// non-linear part (just c_p temperature dependent atm, lambda and rho constant)
+		//args.rhs[j] -= lambda_pcm/(rho_pcm*c_p_j*c_p_j) * dc_p_j * ((x[j+1] - x[j])/dx_pcm)*((x[j+1] - x[j])/dx_pcm);
 	}
 
 	// RHS boundary, no flux
