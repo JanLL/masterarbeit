@@ -63,23 +63,23 @@ initValues = [T_0; p];
 solvind('setInitVals', int, initValues);
 
 retval = solvind('evaluate', int);
-% 
-% if retval == 0
-% 	sol = solvind('getSolution', int);
-% 	contsol = solvind('getContOutput', int);
-% 
-% 	stats = solvind('getStats', int);
-% 	timings = solvind('getTimings', int);
-% end
+
+if retval == 0
+	sol = solvind('getSolution', int);
+	contsol = solvind('getContOutput', int);
+
+	stats = solvind('getStats', int);
+	timings = solvind('getTimings', int);
+end
 
 
-% % compute first order forward sensitivities
-% fwdSensDir = [zeros(1,N+num_params); eye(N+num_params)];
-% solvind('setForwardTaylorCoefficients', int, N+num_params, 1, fwdSensDir);
-% retval = solvind('forwardSensSweep', int);
-% if retval == 0
-% 	fwdSens = solvind('getFwdSens', int);
-% end
+% compute first order forward sensitivities
+fwdSensDir = [zeros(1,N+num_params); eye(N+num_params)];
+solvind('setForwardTaylorCoefficients', int, N+num_params, 1, fwdSensDir);
+retval = solvind('forwardSensSweep', int);
+if retval == 0
+	fwdSens = solvind('getFwdSens', int);
+end
 
 
 % compute first order adjoints

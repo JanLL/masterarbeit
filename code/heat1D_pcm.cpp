@@ -46,7 +46,8 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 {
 	static std::vector<double> cntrl_pts_x(num_cntrl_pts, 0.);
 	static std::vector<double> cntrl_pts_y(num_cntrl_pts, 0.);
-	static Interp1d_linear<T> c_p_interpolator;
+	static Interp1d_linear<T> c_p_interpolator = Interp1d_linear<T>();
+	
 
 	const T* x = args.xd;  // pointer to constant T (read only!)
 	
@@ -57,7 +58,7 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 	T heat_rate  = args.p[3];		// rate [K/min] with which oven temperature increases.
 
 
-	T c_p_pcm = 2.; // [mJ/(mg*K)]   (testweise konstant erstmal)
+	//T c_p_pcm = 2.; // [mJ/(mg*K)]   (testweise konstant erstmal)
 
 	// Versuche den double value aus dem adouble raus zu bekommen...
 	//T const * ptr = args.p;
@@ -162,7 +163,7 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 		}
 
 		// 1D Interpolation part
-		Interp1d_linear<T> c_p_interpolator(C_x, C_y);
+		c_p_interpolator.set_data_pts(C_x, C_y);
 
 		// TEST interpolator
 		//std::vector<T> c_p_i(2);
@@ -175,6 +176,7 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 	T heat_rate_s = heat_rate / 60; // [K/min] -> [K/s]
 	T scale_Const = a_const / (dx_const[level]*dx_const[level]);
 	T scale_pcm   = lambda_pcm / rho_pcm;
+
 
 
 
@@ -195,7 +197,7 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 
 
 	// PCM
-	std::vector<T> c_p(2);
+	std::vector<T> c_p_vec(2);
 	for (long j = N1[level]; j <= N1[level]+N3[level]-2; j++)
 	{
 		// compute c_p(T_j) and dc_p(T_j)/dT
@@ -208,7 +210,7 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 		args.rhs[j] = scale_pcm/c_p_j * (x[j-1] - 2.0 * x[j] + x[j+1]); 
 
 		// non-linear part (just c_p temperature dependent atm, lambda and rho constant)
-		//args.rhs[j] -= lambda_pcm/(rho_pcm*c_p_j*c_p_j) * dc_p_j * ((x[j+1] - x[j])/dx_pcm)*((x[j+1] - x[j])/dx_pcm);
+		args.rhs[j] -= lambda_pcm/(rho_pcm*c_p_j*c_p_j) * dc_p_j * ((x[j+1] - x[j])/dx_pcm[level])*((x[j+1] - x[j])/dx_pcm[level]);
 	}
 
 	// RHS boundary, no flux

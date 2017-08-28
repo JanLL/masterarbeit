@@ -16,6 +16,8 @@ class Interp1d_linear {
 		Interp1d_linear();
 		Interp1d_linear(std::vector<T> x_data, std::vector<T> y_data);
 
+		void set_data_pts(std::vector<T> x_data, std::vector<T> y_data);
+
 		std::vector<T> operator()(T x);
 
 		T eval(T x);

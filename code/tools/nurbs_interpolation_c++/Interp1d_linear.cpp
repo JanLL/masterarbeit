@@ -9,9 +9,11 @@
 
 
 template<typename T>
-Interp1d_linear<T>::Interp1d_linear() {
-
+Interp1d_linear<T>::Interp1d_linear() :
+	num_data_pts(-1)
+{
 	// TODO: braucht man fuer static variable in der ODE RHS.
+	// irgendwie dafuer sorgen dass anschliessend zwingend set_data_pts() aufgerufen wird...
 }
 
 
@@ -23,6 +25,18 @@ Interp1d_linear<T>::Interp1d_linear(std::vector<T> x_data_input, std::vector<T> 
 {
 	compute_coeffs();
 }
+
+template<typename T>
+void Interp1d_linear<T>::set_data_pts(std::vector<T> x_data_input, std::vector<T> y_data_input) {
+
+	x_data = x_data_input;
+	y_data = y_data_input;
+	num_data_pts = x_data.size();
+
+	compute_coeffs();
+
+}
+
 
 template<typename T>
 void Interp1d_linear<T>::compute_coeffs() {
