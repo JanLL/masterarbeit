@@ -9,8 +9,8 @@
 
 
 
-
-Interp1d_linear::Interp1d_linear(std::vector<double> x_data_input, std::vector<double> y_data_input) : 
+template<typename T>
+Interp1d_linear<T>::Interp1d_linear(std::vector<T> x_data_input, std::vector<T> y_data_input) : 
 	x_data(x_data_input), 
 	y_data(y_data_input), 
 	num_data_pts(x_data_input.size()) 
@@ -18,10 +18,11 @@ Interp1d_linear::Interp1d_linear(std::vector<double> x_data_input, std::vector<d
 	compute_coeffs();
 }
 
-void Interp1d_linear::compute_coeffs() {
+template<typename T>
+void Interp1d_linear<T>::compute_coeffs() {
 
-	double x_i, x_ip1, y_i, y_ip1;
-	std::vector<double> coeffs_i(2);
+	T x_i, x_ip1, y_i, y_ip1;
+	std::vector<T> coeffs_i(2);
 
 	for (int i=0; i < num_data_pts-1; ++i) {
 
@@ -40,26 +41,26 @@ void Interp1d_linear::compute_coeffs() {
 
 }
 
+template<typename T>
+std::vector<T> Interp1d_linear<T>::get_coeffs(T x) {
 
-std::vector<double> Interp1d_linear::get_coeffs(double x) {
-
-	std::map<double, std::vector<double> >::iterator it_i;
+	typename std::map<T, std::vector<T> >::iterator it_i;
 
 	it_i = coeffs_map.lower_bound(x);
 	it_i--;
 
-	std::vector<double> coeffs = (*it_i).second;
+	std::vector<T> coeffs = (*it_i).second;
 
 	return coeffs;
 }
 
 
+template<typename T>
+T Interp1d_linear<T>::eval(T x) {
 
-double Interp1d_linear::eval(double x) {
+	T y_interp;
 
-	double y_interp;
-
-	std::vector<double> coeffs = get_coeffs(x);
+	std::vector<T> coeffs = get_coeffs(x);
 
 	y_interp = coeffs[0] + coeffs[1]*x;
 
@@ -67,11 +68,12 @@ double Interp1d_linear::eval(double x) {
 }
 
 
-double Interp1d_linear::eval_d(double x) {
+template<typename T>
+T Interp1d_linear<T>::eval_d(T x) {
 
-	double yd_interp;
+	T yd_interp;
 
-	std::vector<double> coeffs = get_coeffs(x);
+	std::vector<T> coeffs = get_coeffs(x);
 
 	yd_interp = coeffs[1];
 
@@ -79,14 +81,15 @@ double Interp1d_linear::eval_d(double x) {
 }
 
 
-std::vector<double> Interp1d_linear::operator()(double x) {
+template<typename T>
+std::vector<T> Interp1d_linear<T>::operator()(T x) {
 
 	// Note: Currently x must be: x_data[0] < x <= x_data[end]
 
 
-	std::vector<double> values(2);
+	std::vector<T> values(2);
 
-	std::vector<double> coeffs = get_coeffs(x);
+	std::vector<T> coeffs = get_coeffs(x);
 
 
 	values[0] = coeffs[0] + coeffs[1]*x;

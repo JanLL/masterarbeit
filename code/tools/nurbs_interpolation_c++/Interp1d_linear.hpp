@@ -9,29 +9,29 @@
 
 
 
-
+template<typename T>
 class Interp1d_linear {
 
 	public:
-		Interp1d_linear(std::vector<double> x_data, std::vector<double> y_data);
+		Interp1d_linear(std::vector<T> x_data, std::vector<T> y_data);
 
-		std::vector<double> operator()(double x);
+		std::vector<T> operator()(T x);
 
-		double eval(double x);
-		double eval_d(double x);
+		T eval(T x);
+		T eval_d(T x);
 
 	private:
 		void compute_coeffs();
-		std::vector<double> get_coeffs(double x);
+		std::vector<T> get_coeffs(T x);
 
 
-		std::vector<double> x_data;
-		std::vector<double> y_data;
+		std::vector<T> x_data;
+		std::vector<T> y_data;
 
 		int num_data_pts;
 
 
-		std::map<double, std::vector<double> > coeffs_map;
+		std::map<T, std::vector<T> > coeffs_map;
 
 
 };

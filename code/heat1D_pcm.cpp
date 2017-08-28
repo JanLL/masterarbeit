@@ -147,8 +147,8 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 		nurbs.set_cntrl_pts_y(cntrl_pts_y);
 
 		double h = 0.001;
-		std::vector<double> C_x(int(1/h)+1);
-		std::vector<double> C_y(int(1/h)+1);
+		std::vector<T> C_x(int(1/h)+1);
+		std::vector<T> C_y(int(1/h)+1);
 
 		std::vector<double> C_temp(2);
 		int i=0;
@@ -161,10 +161,10 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 		}
 
 		// 1D Interpolation part
-		Interp1d_linear c_p_interpolator(C_x, C_y);
+		Interp1d_linear<T> c_p_interpolator(C_x, C_y);
 
 		// TEST interpolator
-		//std::vector<double> c_p_i(2);
+		//std::vector<T> c_p_i(2);
 		//c_p_i = c_p_interpolator(130.);
 		//std::cout << c_p_i[0] << "\t" << c_p_i[1] << std::endl;
 	}
