@@ -34,7 +34,7 @@ cntrl_pts_y = [1., 1,  1.1, 1.15, 1.2, 5., 10, 1.5, 1.51, 1.52, 1.53, 1.55];
 num_cntrl_pts = length(cntrl_pts_x);
 
 
-% compute analytical solution for T_ref
+%%%%%%%%%% Analytical solution for T_ref %%%%%%%%%%%%%%%%%%%%%%
 dt = 0.05 / heat_rate_s; % fct evaluation every 0.05K
 t = 0:dt:1/heat_rate_s*(T_end - T_0);
 n = 100;
@@ -100,7 +100,7 @@ if retval == 0
 	timings = solvind('getTimings', int);
 end
 
-
+return
 
 %plot(t, contsol(1, :)); hold on
 %plot(t, contsol(N1, :)); 
@@ -118,6 +118,46 @@ if retval == 0
 end
 
 
+
+
+dT_dp = fwdSens(:,N1+N3+1:end); 
+% Bem.: Schaetzung das links zu erst dT/dT_0 kommt und rechts daneben dT/dp
+% TODO: Verifizieren...
+
+spy(dT_dp)
+
+% Build dq_dT
+constant_factor = (lambda_pcm*m_pcm)/(rho_pcm*dx_pcm*N3);
+% Dense
+%dq_dT = zeros(num_meas, N1+N3);
+%dq_dT(:,N1+1) = 1 * constant_factor;
+%dq_dT(:,N1+2) = -1 * constant_factor;
+
+% Sparse
+row_index = [1:num_meas, 1:num_meas];
+col_index = [(N1+1)*ones(1, num_meas), (N1+2)*ones(1, num_meas)];
+values = [ones(1, num_meas), -1.*ones(1, num_meas)] * constant_factor;
+dq_dT_sparse = sparse(row_index, col_index, values, num_meas, N1+N3);
+
+Jac = dq_dT_sparse * dT_dp;
+
+image(Jac, 'CDataMapping', 'scaled');
+colorbar;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 % compute first order adjoints
 adjSensDir = eye(N);
 solvind('setForwardTaylorCoefficients', int, []);
@@ -131,6 +171,27 @@ end
 
 fprintf('Deviation of fwd and adj 1st order derivatives: %e\n', ...
 	norm(adjSens(2:end,:)' - fwdSens));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 % tape = solvind('getTape', int, 0);
 
