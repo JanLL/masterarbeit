@@ -13,7 +13,7 @@ T_end = 200.;
 
 L1 = 15;  % [mm]
 L3 = 0.5;  % [mm]
-N1 = 750;
+N1 = 200;
 N3 = 50;  % error if N3=0
  
 lambda_Const = 23.;  % [mW/(mm*K)]
@@ -64,7 +64,8 @@ solvind('setTapeStorageMode', int, 'values');
 solvind('setPrintLevel', int, 0);
 pL = solvind('getPrintLevel', int);
 
-solvind('setRelTol', int, 1e-3);
+solvind('setRelTol', int, 1e-3);  
+% abs. Differenz (der integrierten FUnktion) von 1e-2 zu 1e-3 weniger als ein Promille...
 solvind('setMaxIntSteps', int, 2000);
 solvind('setCorrectorAccuracyFactor', int, 1e-4);
 solvind('setCorrectorAbsoluteAccuracy', int, 1e-10);
@@ -99,38 +100,37 @@ if retval == 0
 	timings = solvind('getTimings', int);
 end
 
-%plot(t, contsol(1, :) - contsol(2, :))
-%return
 
 
-plot(t, contsol(1, :)); hold on
-plot(t, contsol(N1, :)); 
+%plot(t, contsol(1, :)); hold on
+%plot(t, contsol(N1, :)); 
+
+% dT = T_ref' - contsol(N1,:);
+% plot(T_ref, dT, 'DisplayName', num2str(heat_rate)); hold on
+
 
 % compute first order forward sensitivities
-% fwdSensDir = [zeros(1,N+num_params); eye(N+num_params)];
-% solvind('setForwardTaylorCoefficients', int, N+num_params, 1, fwdSensDir);
-% retval = solvind('forwardSensSweep', int);
-% if retval == 0
-% 	fwdSens = solvind('getFwdSens', int);
-% end
+fwdSensDir = [zeros(1,N+num_params); eye(N+num_params)];
+solvind('setForwardTaylorCoefficients', int, N+num_params, 1, fwdSensDir);
+retval = solvind('forwardSensSweep', int);
+if retval == 0
+	fwdSens = solvind('getFwdSens', int);
+end
 
 
 % compute first order adjoints
-% adjSensDir = eye(N);
-% solvind('setForwardTaylorCoefficients', int, []);
-% solvind('setAdjointTaylorCoefficients', int, N, 0, 1, adjSensDir);
-% retval = solvind('backwardSensSweep', int);
-% if retval == 0
-% 	adjSens = solvind('getAdjSens', int);
-% 	[gridT, gridAdj] = solvind('getAdjSensAtGrid', int);
-% end
+adjSensDir = eye(N);
+solvind('setForwardTaylorCoefficients', int, []);
+solvind('setAdjointTaylorCoefficients', int, N, 0, 1, adjSensDir);
+retval = solvind('backwardSensSweep', int);
+if retval == 0
+	adjSens = solvind('getAdjSens', int);
+	[gridT, gridAdj] = solvind('getAdjSensAtGrid', int);
+end
 
 
-
-
-
-% fprintf('Deviation of fwd and adj 1st order derivatives: %e\n', ...
-% 	norm(adjSens(2:end,:)' - fwdSens));
+fprintf('Deviation of fwd and adj 1st order derivatives: %e\n', ...
+	norm(adjSens(2:end,:)' - fwdSens));
 
 % tape = solvind('getTape', int, 0);
 
