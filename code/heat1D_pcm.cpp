@@ -177,7 +177,7 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 
 
 		// TEST interpolator
-		std::ofstream file_c_p;
+		/*std::ofstream file_c_p;
   		file_c_p.open ("/home/argo/masterarbeit/code/c_p.txt");
 
 		std::vector<double> c_p_v(2);
@@ -187,7 +187,7 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 			file_c_p << d << "\t" << c_p_v[0] << "\t" << c_p_v[1] << std::endl; 
 
 		}
-		file_c_p.close();
+		file_c_p.close();*/
 
 	}
 
@@ -195,9 +195,6 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 	T heat_rate_s  = heat_rate / 60; // [K/min] -> [K/s]
 	T scale_Const  = a_const / (dx_const[level]*dx_const[level]);
 	T scale_pcm    = lambda_pcm / (rho_pcm * dx_pcm[level]*dx_pcm[level]);
-
-	T c_p_pcm = 2.; // [mJ/(mg*K)]   (testweise konstant erstmal)
-
 
 	/******************* Building up RHS of ODE ********************/
 	// Oven boundary with constant slope of Temp.
@@ -234,7 +231,9 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 		c_p_j = c_p_vec[0];
 		dc_p_j = c_p_vec[1];
 
-
+		//c_p_vec = c_p_interpolator(x[j]);
+		//c_p_j = c_p_vec[0];
+		//dc_p_j = c_p_vec[1];
 		// PROBLEM: Hier besteht Problem das er nicht mehr integrieren kann wenn c_p_pcm durch c_p_j ersetzt wird...
 		// Input von c_p_interpolator(x) ist zwingend ein adouble, naemlich die Temperatur. Output, der c_p Wert
 		// ist auch ein adouble, allerdings offenbar irgendwie kaputt, so dass der Integrator nichts damit anfangen kann.

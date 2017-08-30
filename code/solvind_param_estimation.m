@@ -147,9 +147,9 @@ solvind_compute_residuum_expl = @(p_optim) ...
         p_optim_fixed, p_sim, int, q_dsc, ax1, ax2);
 
 % TEST INITIAL VALUE
-% solvind_compute_residuum_expl(p_optim_start(p_optim_estimable));
-% solvind('reset');
-% return
+solvind_compute_residuum_expl(p_optim_start(p_optim_estimable));
+solvind('reset');
+return
 
 
 %%%%%%%%%%%%%%%%%%%%%%% SOLVE OPTIMIZATION PROBLEM %%%%%%%%%%%%%%%%%%%%%%%

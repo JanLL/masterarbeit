@@ -90,62 +90,67 @@ which is equivalent to
 	T^1 \\
 	T^2 \\
 	\vdots \\
-	T^{N-2} \\
-	T^{N-1}
-	\end{bmatrix*} = & 
+	T^{N_1} \\
+	T^{N_1+1} \\
+	\vdots \\ 
+	T^{N_1+N_3-1}
+	\end{bmatrix*} =
 	\begin{bmatrix}
 		\beta \\
 		0 \\
-		\\
+		0 \\
+		0 \\
 		\vdots \\
-		\\
+		0 \\
+		0 \\
 		0
 	\end{bmatrix}
-	-
+	& -
 	\begin{bmatrix}
-			0 \\
-			\frac{\lambda}{(\rho(T^1))^2 c_p(T^1)} \frac{\partial \rho (T^1)}{\partial T^1} \frac{(T^2 - T^1)^2}{(\Delta x)^2} \\
-			\frac{\lambda}{(\rho(T^2))^2 c_p(T^2)} \frac{\partial \rho (T^2)}{\partial T^2} \frac{(T^3 - T^2)^2}{(\Delta x)^2} \\
-			\vdots \\
-			\frac{\lambda}{(\rho(T^{N-2}))^2 c_p(T^{N-2})} \frac{\partial \rho (T^{N-2})}{\partial T^{N-2}} \frac{(T^{N-1} - T^{N-2})^2}{(\Delta x)^2} \\	
-			0 \\			
-	\end{bmatrix}
-	- 
+	0 \\
+	\frac{\lambda}{(\rho(T^1))^2 c_p(T^1)} \frac{\partial \rho (T^1)}{\partial T^1} \frac{(T^2 - T^1)^2}{(\Delta x)^2} \\
+	\vdots \\
+	\frac{\lambda}{(\rho(T^{N_1-1}))^2 c_p(T^{N_1-1})} \frac{\partial \rho (T^{N_1-1})}{\partial T^{N_1-1}} \frac{(T^{N_1} - T^{N_1-1})^2}{(\Delta x)^2} \\
+	\frac{\lambda}{(\rho(T^{N_1}))^2 c_p(T^{N_1})} \frac{\partial \rho (T^{N_1})}{\partial T^{N_1}} \frac{(T^{N_1+1} - T^{N_1})^2}{(\Delta x)^2} \\
+	\vdots \\
+	\frac{\lambda}{(\rho(T^{N_1+N_3-2}))^2 c_p(T^{N_1+N_3-2})} \frac{\partial \rho (T^{N_1+N_3-2})}{\partial T^{N_1+N_3-2}} \frac{(T^{N_1+N_3-1} - T^{N_1+N_3-2})^2}{(\Delta x)^2} \\	
+	0 \\			
+	\end{bmatrix} \\
+	& -
 	\begin{bmatrix}
 		0 \\
 		\frac{\lambda}{\rho(T^1) (c_p(T^1))^2} \frac{\partial c_p (T^1)}{\partial T^1} \frac{(T^2 - T^1)^2}{(\Delta x)^2} \\
-		\frac{\lambda}{\rho(T^2) (c_p(T^2))^2} \frac{\partial c_p (T^2)}{\partial T^2} \frac{(T^3 - T^2)^2}{(\Delta x)^2} \\
 		\vdots \\
-		\frac{\lambda}{\rho(T^{N-2}) (c_p(T^{N-2}))^2} \frac{\partial c_p (T^{N-2})}{\partial T^{N-2}} \frac{(T^{N-1} - T^{N-2})^2}{(\Delta x)^2} \\	
+		\frac{\lambda}{\rho(T^{N_1-1}) (c_p(T^{N_1-1}))^2} \frac{\partial c_p (T^{N_1-1})}{\partial T^{N_1-1}} \frac{(T^{N_1} - T^{N_1-1})^2}{(\Delta x)^2} \\
+		\frac{\lambda}{\rho(T^{N_1}) (c_p(T^{N_1}))^2} \frac{\partial c_p (T^{N_1})}{\partial T^{N_1}} \frac{(T^{N_1+1} - T^{N_1})^2}{(\Delta x)^2} \\
+		\vdots \\
+		\frac{\lambda}{\rho(T^{N_1+N_3-2}) (c_p(T^{N_1+N_3-2}))^2} \frac{\partial c_p (T^{N_1+N_3-2})}{\partial T^{N_1+N_3-2}} \frac{(T^{N_1+N_3-1} - T^{N_1+N_3-2})^2}{(\Delta x)^2} \\	
 		0 \\			
 	\end{bmatrix} \\
-	+ & \frac{\lambda}{(\Delta x)^2}
+	& + 
 	\begin{bmatrix}
-		\frac{1}{c_p(T^0) \rho(T^0)} & 0 & & \dots & & 0 \\
-		0 & \frac{1}{c_p(T^1) \rho(T^1)} & 0 & & \dots & 0 \\
-		0 & \ddots & \ddots & \ddots & \ddots & 0 \\
-		0 & & \dots & & 0 & \frac{1}{c_p(T^{N-1}) \rho(T^{N-1)}} \\
-	\end{bmatrix}
+	0 \\
+	\frac{\lambda^{Const}}{c_p^{Const}(T^{1}) \cdot \rho^{Const}(T^{1})} \\
+	\vdots \\
+	\frac{\lambda^{Const}}{c_p^{Const}(T^{N_1-2}) \cdot \rho^{Const}(T^{N_1-2})} \\
+	\frac{\lambda^{Const}}{c_p^{Const}(T^{N_1-1}) \cdot \rho^{Const}(T^{N_1-1})} \\ 
+	\frac{\lambda^{PCM}}{c_p^{PCM}(T^{N_1}) \cdot \rho^{PCM}(T^{N_1})} \\
+	\vdots \\
+	\frac{\lambda^{PCM}}{c_p^{PCM}(T^{N_1+N_3-2}) \cdot \rho^{PCM}(T^{N_1+N_3-2})} \\
+	\frac{\lambda^{PCM}}{c_p^{PCM}(T^{N_1+N_3-1}) \cdot \rho^{PCM}(T^{N_1+N_3-1})}
+	\end{bmatrix}^T
+	\cdot
 	\begin{bmatrix}
-		0 & 0 & 0 & \dots & 0 & 0 \\
-		1 & -2 & 1 & & &  \\
-		& 1 & -2 & 1 & \\
-		\\
-		& & \ddots & \ddots & \ddots \\
-		\\
-		& 0 & &  1 & -2 & 1 \\
-		& & & & 1 & -1
+	0 \\
+	 \frac{T^{0} - 2 T^{1} + T{2}}{\Delta x_{\text{Const}}^2} \\
+	\vdots \\
+	\frac{T^{N_1-3} - 2 T^{N_1-2} + T{N_1-1}}{\Delta x_{\text{Const}}^2} \\
+	\frac{\frac{2}{1+\alpha} T^{N_1-2} - \frac{2}{\alpha} T^{N_1-1} + \frac{2}{\alpha (\alpha + 1)} T{N_1}}{\Delta x_{\text{Const}}^2} \\
+	\frac{T^{N_1-1} - 2 T^{N_1} + T{N_1+1}}{\Delta x_{\text{PCM}}^2} \\
+	\vdots \\
+	\frac{T^{N_1+N_3-3} - 2 T^{N_1+N_3-2} + T{N_1+N_3-1}}{\Delta x_{\text{PCM}}^2} \\
+	\frac{T^{N_1+N_3-2} - T^{N_1+N_3-1}}{\Delta x_{\text{PCM}}^2}
 	\end{bmatrix}
-	\begin{bmatrix*}
-		T^0 \\
-		T^1 \\
-		T^2 \\
-		\\
-		\vdots \\
-		\\
-		T^{N-2} \\
-		T^{N-1}
-	\end{bmatrix*} \\
 \end{align*}
 
 
