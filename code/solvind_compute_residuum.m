@@ -1,6 +1,5 @@
 function [residuum, dq_dp] = solvind_compute_residuum(...
-    p_optim_free, p_optim_estimable, p_optim_fixed, p_sim, int, q_dsc, ...
-    m_pcm, ax1, ax2)
+    p_optim_free, p_optim_estimable, p_optim_fixed, p_sim, int, q_dsc, ax1, ax2)
 
 % TODO: Description!
 
@@ -48,7 +47,7 @@ if retval == 0
 	%timings = solvind('getTimings', int);
 end
 
-constant_factor_heat_flux = (lambda_pcm*m_pcm)/(rho_pcm*dx_pcm*N3);
+constant_factor_heat_flux = (lambda_pcm*m_pcm)/(rho_pcm*dx_pcm*dx_pcm*N3);
 
 % Compute Residuum
 q_sim = -constant_factor_heat_flux * (T_sol(N1+2,:) - T_sol(N1+1,:));
@@ -76,6 +75,7 @@ residuum = q_dsc(:,2)' - q_sim;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% heat flux plot
 cla(ax1); % q_pcm_in plot
 hold(ax1, 'on')
 plot(ax1, q_dsc(:,1), q_sim, 'DisplayName', 'Simulation');
@@ -86,7 +86,22 @@ xlabel(ax1, 'T_{ref} [degC]');
 ylabel(ax1, 'q_{pcm}^{in} [mW]');
 drawnow;
 
+% c_p, first construct function
+nrb_order = 4; % nrb_order = 4 equates to C^2
+% equidistant knots
+knots = [zeros(1,nrb_order), ...
+         (1:num_cntrl_pts-nrb_order)/(num_cntrl_pts-nrb_order+1), ...
+         ones(1,nrb_order)];
+curve = nrbmak([cntrl_pts_x; cntrl_pts_y], knots);
+tt = 0:0.001:1;
+C = nrbeval(curve, tt);
 
-
+cla(ax2); % c_p plot
+hold(ax2, 'on')
+plot(ax2, C(1,:), C(2,:), 'DisplayName', 'c_p Simulation');
+legend(ax1, 'show', 'location', 'northoutside');
+xlabel(ax2, 'T [degC]');
+ylabel(ax2, 'c_p [mJ/(mg*K]');
+drawnow;
 
 end

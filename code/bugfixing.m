@@ -1,16 +1,3 @@
-figure(); hold on
-data_nurbs = importdata('curve_nurbes.txt');
-plot(data_nurbs(:,1), data_nurbs(:,2), '--');
-
-data_interp = importdata('curve_interp.txt');
-plot(data_interp(:,1), data_interp(:,2), '--')
-plot(data_interp(:,1), data_interp(:,3), '--')
-
-
-
-
-return;
-
 % rational splines testing
 
 nrb_order = 4; % nrb_order = 4 equates to C^2
@@ -35,23 +22,26 @@ assert(length(knots) - size(cntrl_pts, 2) == 4); % check for C^2 continuity
 
 curve = nrbmak(cntrl_pts, knots);
 dcurve = nrbderiv(curve);
-          
-% tt = 0:0.001:1;
-% tic;
-% [C,dC] = nrbdeval(curve, dcurve, tt);
-% toc
-% 
-% x = C(1,:);
-% y_real = real(C(2,:));
-% y_imag = imag(C(2,:));
-% 
-% plot(x, y_real, 'DisplayName', 'Real'); hold on
-% plot(x, y_imag, 'DisplayName', 'Imag'); 
 
 tt = 0:0.001:1;
-tic;
+C = nrbeval(curve, tt);
+
+c_p = interp1(C(1,:), C(2,:), 'linear', 'pp');
+dc_p = fnder(c_p, 1);
+
+T = 30:0.01:160;
+plot(T, ppval(c_p, T)); hold on
+plot(T, ppval(dc_p, T)); 
+
+
+
+return;
+
+
+
+
+tt = 0:0.001:1;
 [C,dC] = nrbdeval(curve, dcurve, tt);
-toc
 
 x = C(1,:);
 y = C(2,:);
