@@ -53,25 +53,37 @@ constant_factor_heat_flux = (lambda_pcm*m_pcm)/(rho_pcm*dx_pcm*dx_pcm*N3);
 q_sim = -constant_factor_heat_flux * (T_sol(N1+2,:) - T_sol(N1+1,:));
 residuum = q_dsc(:,2)' - q_sim;
 
+if nargout > 1
+    % Compute first order forward sensitivities
+    fprintf('Computing first order forward sensitivities.\n');
+    fwdSensDir = [zeros(1,N+num_params_all); eye(N+num_params_all)];
+    % Bem.: Wahrscheinlich unnoetig Sensitivitaeten bez. Anfangswerten 
+    % dT/dT_0 auszurechnen... 
+    solvind('setForwardTaylorCoefficients', int, N+num_params_all, 1, fwdSensDir);
+    retval = solvind('forwardSensSweep', int);
+    if retval == 0
+        fwdSens = solvind('getFwdSens', int);
+    end
 
-% Compute first order forward sensitivities
-% fprintf('Computing first order forward sensitivities.\n');
-% fwdSensDir = [zeros(1,N+num_params_all); eye(N+num_params_all)];
-% solvind('setForwardTaylorCoefficients', int, N+num_params_all, 1, fwdSensDir);
-% retval = solvind('forwardSensSweep', int);
-% if retval == 0
-% 	fwdSens = solvind('getFwdSens', int);
-% end
-% 
-% dT_dp = fwdSens(:,N1+N3+1:end); 
-% 
-% % Build Jacobian of resiidum w.r.t. free parameters
-% row_index = [1:num_meas, 1:num_meas];
-% col_index = [(N1+1)*ones(1, num_meas), (N1+2)*ones(1, num_meas)];
-% values = [ones(1, num_meas), -1.*ones(1, num_meas)] * constant_factor_heat_flux;
-% dq_dT_sparse = sparse(row_index, col_index, values, num_meas, N1+N3);
-% 
-% dq_dp = dq_dT_sparse * dT_dp;
+    dT_dp = fwdSens(:,N1+N3+4+num_cntrl_pts+1:end); 
+    % only sensitivities w.r.t. cntrl_pts_y
+    
+    figure()
+    image(fwdSens(:,1:N1+N3), 'CDataMapping', 'scaled')
+    colorbar
+
+
+
+    % Build Jacobian of resiidum w.r.t. free parameters
+    row_index = [1:num_meas, 1:num_meas];
+    col_index = [(N1+1)*ones(1, num_meas), (N1+2)*ones(1, num_meas)];
+    values = [ones(1, num_meas), -1.*ones(1, num_meas)] * constant_factor_heat_flux;
+    dq_dT_sparse = sparse(row_index, col_index, values, num_meas, N1+N3);
+
+    dq_dp = dq_dT_sparse * dT_dp;
+    
+end
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

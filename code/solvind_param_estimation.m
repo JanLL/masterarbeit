@@ -147,9 +147,22 @@ solvind_compute_residuum_expl = @(p_optim) ...
         p_optim_fixed, p_sim, int, q_dsc, ax1, ax2);
 
 % TEST INITIAL VALUE
-solvind_compute_residuum_expl(p_optim_start(p_optim_estimable));
-solvind('reset');
-return
+% solvind_compute_residuum_expl(p_optim_start(p_optim_estimable));
+% solvind('reset');
+% return
+
+
+%%%%%%%%%%%%%%%%%%%%%%% SOLVE OPTIMIZATION PROBLEM %%%%%%%%%%%%%%%%%%%%%%%
+lb = zeros(1,num_cntrl_pts);
+ub = ones(1,num_cntrl_pts)*200.;
+optim_con = {lb, ub};
+
+opt_options = optimoptions('lsqnonlin', ...
+                           'Display', 'iter-detailed', ...
+                           'OutputFcn', @disp_aux, ...
+                           'SpecifyObjectiveGradient', true);
+[p_optim,~,~,~,optim_output,~,jac_output] = lsqnonlin(...
+    solvind_compute_residuum_expl, p_optim_start(p_optim_estimable), optim_con{:}, opt_options);
 
 
 % tape = solvind('getTape', int, 0);

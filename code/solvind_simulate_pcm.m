@@ -100,7 +100,7 @@ if retval == 0
 	timings = solvind('getTimings', int);
 end
 
-return
+
 
 %plot(t, contsol(1, :)); hold on
 %plot(t, contsol(N1, :)); 
@@ -116,45 +116,6 @@ retval = solvind('forwardSensSweep', int);
 if retval == 0
 	fwdSens = solvind('getFwdSens', int);
 end
-
-
-
-
-dT_dp = fwdSens(:,N1+N3+1:end); 
-% Bem.: Schaetzung das links zu erst dT/dT_0 kommt und rechts daneben dT/dp
-% TODO: Verifizieren...
-
-spy(dT_dp)
-
-% Build dq_dT
-constant_factor = (lambda_pcm*m_pcm)/(rho_pcm*dx_pcm*N3);
-% Dense
-%dq_dT = zeros(num_meas, N1+N3);
-%dq_dT(:,N1+1) = 1 * constant_factor;
-%dq_dT(:,N1+2) = -1 * constant_factor;
-
-% Sparse
-row_index = [1:num_meas, 1:num_meas];
-col_index = [(N1+1)*ones(1, num_meas), (N1+2)*ones(1, num_meas)];
-values = [ones(1, num_meas), -1.*ones(1, num_meas)] * constant_factor;
-dq_dT_sparse = sparse(row_index, col_index, values, num_meas, N1+N3);
-
-Jac = dq_dT_sparse * dT_dp;
-
-image(Jac, 'CDataMapping', 'scaled');
-colorbar;
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -174,8 +135,13 @@ fprintf('Deviation of fwd and adj 1st order derivatives: %e\n', ...
 
 
 
+figure()
+image(fwdSens, 'CDataMapping', 'scaled')
+colorbar
 
-
+figure()
+image(adjSens(2:end,:)', 'CDataMapping', 'scaled')
+colorbar
 
 
 
