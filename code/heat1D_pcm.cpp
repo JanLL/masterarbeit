@@ -145,24 +145,32 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 		cntrl_pts_x = cntrl_pts_x_input;
 		cntrl_pts_y = cntrl_pts_y_input;
 
+
 		// Build/Replace linear interpolation object for c_p(T) evaluation
 		Nurbs nurbs(num_cntrl_pts, nurbs_order);
 		nurbs.set_cntrl_pts_x(cntrl_pts_x);
 		nurbs.set_cntrl_pts_y(cntrl_pts_y);
 
+
 		double h = 0.001;
 		std::vector<double> C_x(int(1/h)+1);
 		std::vector<double> C_y(int(1/h)+1);
+		
 
-		std::vector<double> C_temp(2);
-		int i=0;
+		//std::vector<double> C_temp(2);
+		size_t i=0;
 		for (double u=0. + 1e-8; u <= 1.; u+=h) {
-			C_temp = nurbs.eval_nurbs_curve(u);
+			
+			std::vector<double> C_temp(2);
+
+			nurbs.eval_nurbs_curve(u, C_temp);
+			
 			C_x[i] = C_temp[0];
 			C_y[i] = C_temp[1];
 		
 			i++;
 		}
+
 
 		// 1D Interpolation part
 		c_p_interpolator.set_data_pts(C_x, C_y);
@@ -298,7 +306,7 @@ IDynamicModelDescription()
 	m_dims. dim [ Component_T  ] = 1;
 	m_dims. dim [ Component_XD ] = N1[level] + N3[level];
 	m_dims. dim [ Component_XA ] = 0;
-	m_dims. dim [ Component_P  ] = 28;
+	m_dims. dim [ Component_P  ] = 4 + 2*num_cntrl_pts;
 	m_dims. dim [ Component_U  ] = 0;
 	m_dims. dim [ Component_Q  ] = 0;
 	//m_dims. dim [ Component_H  ] = 1;

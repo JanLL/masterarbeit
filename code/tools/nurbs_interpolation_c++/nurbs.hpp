@@ -24,7 +24,7 @@ class Nurbs
 		double eval_basis_fcn(double u, int i, int p);
 
 
-		std::vector<double> eval_nurbs_curve(double u);
+		void eval_nurbs_curve(double u, std::vector<double>& C);
 
 
 	private:

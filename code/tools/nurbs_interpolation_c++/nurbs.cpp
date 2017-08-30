@@ -91,19 +91,21 @@ double Nurbs::eval_basis_fcn(double u, int i, int p) {
 }
 
 
-std::vector<double> Nurbs::eval_nurbs_curve(double u) {
+void Nurbs::eval_nurbs_curve(double u, std::vector<double>& C) {
 
 	std::vector<double> N_vec(num_cntrl_pts);
 
-	for (int i=0; i <= num_cntrl_pts; ++i) {
-		N_vec[i] = eval_basis_fcn(u, i, nurbs_order-1);
+
+	for (int i=0; i < num_cntrl_pts; ++i) {
+		N_vec[i] = this->eval_basis_fcn(u, i, nurbs_order-1);
 	}
 
+	
 	double denominator = 0;
 	double numerator_x = 0;
 	double numerator_y = 0;
 
-	for (int i=0; i <= num_cntrl_pts; ++i) {
+	for (int i=0; i < num_cntrl_pts; ++i) {
 
 		numerator_x += N_vec[i] * weights[i] * cntrl_pts_x[i];
 		numerator_y += N_vec[i] * weights[i] * cntrl_pts_y[i];
@@ -111,11 +113,10 @@ std::vector<double> Nurbs::eval_nurbs_curve(double u) {
 
 	}
 
-	std::vector<double> C(2);
 	C[0] = numerator_x / denominator;
 	C[1] = numerator_y / denominator;
-	
-	return C;
+
+	return;
 
 }
 

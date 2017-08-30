@@ -105,8 +105,8 @@ return
 %plot(t, contsol(1, :)); hold on
 %plot(t, contsol(N1, :)); 
 
-% dT = T_ref' - contsol(N1,:);
-% plot(T_ref, dT, 'DisplayName', num2str(heat_rate)); hold on
+dT = T_ref' - contsol(N1,:);
+plot(T_ref, dT, 'DisplayName', num2str(heat_rate)); hold on
 
 
 % compute first order forward sensitivities
