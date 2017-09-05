@@ -18,7 +18,7 @@ lambda_test_setup = [23*1, 35.6000, 0.9600];
 nrb_order = 4; % nrb_order = 4 equates to C^2
 
 cntrl_pts = [10, 30, 60, 90, 120, 125, 130, 131, 135, 150, 160, 200; ...
-             1, 1,  1.1, 1.15, 1.2, 5., 10, 1.5, 1.51, 1.52, 1.53, 1.58];
+             1, 1,  1.1, 1.15, 1.2, 10, 10, 10, 10, 1.52, 1.53, 1.58];
 num_cntrl_pts = size(cntrl_pts,2);
 
 % equidistant knots
@@ -26,7 +26,50 @@ knots = [zeros(1,nrb_order), ...
          (1:num_cntrl_pts-nrb_order)/(num_cntrl_pts-nrb_order+1), ...
          ones(1,nrb_order)];
 
+nurbs = nrbmak(cntrl_pts, knots);
+dnurbs = nrbderiv(nurbs);                 
 
+tt = 0:0.01:1;
+[C, dC] = nrbdeval(nurbs, dnurbs, tt);
+     
+figure(1)
+clf;
+%plot(C(1,:), C(2,:))
+plot(tt, C(1,:)); hold on   
+%plot(tt, dC(1,:))
+
+
+%%% Newton Method
+t0 = 0.5;
+Tx = 31.;
+
+h = 0.1;
+
+tk = 0.5;
+err = inf;
+
+i = 0;  % iteration counter
+tic;
+while err > 1e-1
+    
+    [Tk, dTk] = nrbdeval(nurbs, dnurbs, tk); 
+    dt = -h*(Tk(1,1)-Tx)/dTk(1,1);
+    tk = tk + dt;
+
+
+    Tknew = nrbeval(nurbs, tk);
+    Tknew = Tknew(1,1);
+    err = abs(Tknew - Tx);
+    %fprintf('%g\t%e\n', tk, err);
+    
+    i = i+1;
+
+end
+toc
+fprintf('%d\n', i);
+    
+
+return
 
 
 c_p_sample = {'NURBS', [size(cntrl_pts,2), length(knots)]};

@@ -1,35 +1,38 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <set>
 #include <vector>
 #include <algorithm>
 #include <stdlib.h>
-#include <sstream>
-
+#include <cmath>
 
 #include <time.h>
 
+#include <adolc/adouble.h>
+
+
+
+template<typename T>
+T fraser_suzuki(T x, T h, T r, T wr, T sr, T z) {
+
+	T value;
+
+	T log_value = log(1 + (x-z)*(sr*sr-1)/(wr*sr));
+
+	return h*exp(-log(r)/(log(sr)*log(sr)) * log_value*log_value);
+
+} 
 
 
 int main(int argc, char** argv) {
 
 
-	std::vector<double> v1(3, 0.);
-	std::vector<double> v2(3, 6.);
-	
-	v1[0] = 1.;
-	v1[1] = 1.;
-	v1[2] = 1.;
-	
-	v2 = v1;
+	adouble x;
 
-	v1[0] = 999.;
+	x = 5.;
 
-	for (int i=0; i<3; ++i) {
-		std::cout << v1[i] << "\t" << v2[i] << std::endl;
-	}
 
+	//std::cout << x.val << std::endl;
 
 	return 0;
 

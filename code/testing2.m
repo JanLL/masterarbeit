@@ -1,32 +1,71 @@
-% comparison of c_p curves for fits with different heat_rate
+% testing of rational polynome function
 
-filename_root = '/home/argo/masterarbeit/fits_data/';
-filename_list = ...
-    {'2017-08-19_00:28:47_407_20Kmin_lsqnonlin', ...
-     '2017-08-17_12:52:24_407_10Kmin_lsqnonlin', ...
-     '2017-08-18_17:16:11_407_5Kmin_lsqnonlin', ...
-     '2017-08-18_17:38:20_407_2,5Kmin_lsqnonlin', ...
-     '2017-08-18_17:52:10_407_1,25Kmin_lsqnonlin', ...
-     '2017-08-18_17:57:47_407_0,6Kmin_lsqnonlin', ...
-     '2017-08-18_18:06:54_407_0,3Kmin_lsqnonlin'};
+P_coeffs = [0., 0.1, 0, 20.,  0, 1, 15, 3];
+Q_coeffs = [1., 0.05, 0, -20, 1, -10, 15, 3];
 
-num_files = length(filename_list);
- 
-figure(1);
-for n=1:num_files
- 
-fit_data_path = strjoin(strcat(filename_root, filename_list(n), '/fit_data.mat'));
 
- 
- fit_data = load(fit_data_path);
- p_sim = fit_data.simulation;
- 
- T = 30:0.01:160;
- plot(T, p_sim.eval_c_p(T), 'DisplayName', sprintf('heat rate %2.4g K/min', p_sim.heat_rate)); hold on
- 
-end
+x = 0.1:0.01:20;
 
-legend('show', 'location', 'northwest');
-title('Fit results for different heat rates');
-xlabel('Temp [degC]');
-ylabel('c_p [mJ/(mg K)]')
+y = polyval(P_coeffs, x) ./ polyval(Q_coeffs, x);
+
+figure(1)
+plot(x, y)
+
+
+
+return
+
+% testing of old own c_p parametrization with arctan
+
+syms T;
+p = sym('p', [6, 1]);
+dc_p_formula = matlabFunction(diff(c_p_formula(T, p), T), 'Vars', [T;p]);
+dc_p_formula = @(T,p) dc_p_formula(T,p(1),p(2),p(3),p(4),p(5),p(6));
+
+dc_p_derivation = @(T,p) -(p(2)*p(4)*exp(-p(3)*(T-p(1)).^2))./(1+(p(4)*(T-p(1))).^2) ...
+                         - 2*p(2)*p(3)*(T-p(1)).*exp(-p(3)*(T-p(1)).^2) ...
+                         .* (atan(-p(4)*(T-p(1)))+pi/2) + p(5);
+
+
+p = [130., 10, 0.01, 0.5, 0.003, 2];
+
+T = 30:0.01:160;
+c_p = c_p_formula(T, p);
+dc_p = dc_p_formula(T, p);
+
+dc_p_der = dc_p_derivation(T, p);
+
+figure(1)
+clf;
+plot(T, c_p); hold on
+plot(T, dc_p)
+plot(T, dc_p_der, '--')
+
+return
+
+
+
+
+
+
+
+
+
+
+
+% testing of frazer-suzuki parametrization
+
+r  =   20;
+h  =  40;
+z  = 120.0;
+wr =  25;
+sr =   0.4;
+x  = 3:0.2:250;
+
+
+[y, dy] = frazersuzuki(r, h, z, wr, sr, x);
+
+
+clf;
+plot(x, y); hold on
+plot(x, dy)

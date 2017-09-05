@@ -27,7 +27,7 @@ T_end = 200.;
 
 L1 = 15;  % [mm]
 L3 = 0.5;  % [mm]
-N1 = 200;
+N1 = 300;
 N3 = 50;  % error if N3=0
  
 lambda_Const = 23.;  % [mW/(mm*K)]
@@ -40,17 +40,19 @@ rho_pcm = 0.8;       % [mg/mm^3]
 heat_rate = 10.;     % [K/min]
 heat_rate_s = heat_rate / 60; % [K/min] -> [K/s]
 
+% c_p parametrization with Fraser-Suzuki-Peak
+h  =  50.0;
+r  =  35.0;
+wr =  15.0;
+sr =   0.2;
+z  = 125.0;
+b  =   2.0;
 
-% c_p parametrization with NURBS
-% cntrl_pts_x = [0, 30, 60, 90, 120, 125, 130, 132., 135, 150, 160, 180];
-% cntrl_pts_y = [1., 1,  1.1, 1.15, 1.2, 5., 10, 1.5, 1.51, 1.52, 1.53, 1.55];
+p_fraser_suzuki = [h, r, wr, sr, z, b];
 
+% c_p parametrization with old atan function
+p_atan_cp = [125., 10, 0.01, 10., 0.003, 2];
 
-% old best result for 10K/min, doesnt work in c++ step std::vector<double> C_temp = nurbs.eval_nurbs_curve(u);
-cntrl_pts_x = [0,30,60,90,100:2:150,160,180,200];
-cntrl_pts_y = [1.79858157644537,1.73123570378148,1.88939296848618,2.38582410198609,2.83324784260016,2.42651409950467,4.16171664906883,1.13860062268564,5.04919663138140,2.07976511011705,4.83068638838580,3.63392796870435,4.55952727527380,7.61255409096836,2.54742792701244,38.5762115714479,41.9573364402785,11.0500960538204,7.73154658124738,2.65644380692096,2.24473765106880,1.50806399242812,1.38297861923093,1.19283792707801,1.18634381049379,1.21363453226050,1.33993164075706,1.62786023313508,1.76526003655576,2.19534568189373,2.56165109798611,9.17894802559609,2];
-
-num_cntrl_pts = length(cntrl_pts_x);
 
 
 %%%%%%%%%% some pre-calculations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -94,13 +96,13 @@ p_sim.heat_rate = heat_rate;
 p_sim.T_0 = T_0;
 
 % Set optimization variables
-p_optim_start = [cntrl_pts_x, cntrl_pts_y];
+p_optim_start = p_fraser_suzuki;
 
 % choose free(true)/fixed(false) parameters to optimize
 p_optim_estimable = true(length(p_optim_start), 1);
-p_optim_estimable(1:num_cntrl_pts) = false; % fix x-position of control pts
-
 p_optim_fixed = p_optim_start(~p_optim_estimable);
+
+num_free_optim_params = sum(p_optim_estimable);
 
 
 %%%%%%%%%%% SolvIND initialization %%%%%%%%%%%%%%%%%%%%%%%
@@ -109,7 +111,7 @@ solvind('importDynamicModelLib', '/home/argo/SOLVIND_SUITE/Packages/SOLVIND/Debu
 % Create model with grid specified by L1, L3, N1 and N3.
 % Afterwards create integrator and link integrator with model.
 model = solvind('createDynamicModel', 'heat1D_pcm', ...
-                sprintf('0 %2.2f %2.2f %d %d %d -', L1, L3, N1, N3, num_cntrl_pts));
+                sprintf('0 %2.2f %2.2f %d %d -', L1, L3, N1, N3));
 int = solvind('createIntegrator', 'daesol2_sparse_withCorrIters');
 solvind('setModel', int, model);
 
@@ -121,10 +123,11 @@ solvind('setTapeStorageMode', int, 'values');
 solvind('setPrintLevel', int, 0);
 pL = solvind('getPrintLevel', int);
 
-solvind('setRelTol', int, 1e-5);  
-% abs. Differenz (der integrierten FUnktion) von 1e-2 zu 1e-3 weniger als ein Promille
+
+solvind('setMaxBDFOrder', int, 4);
+solvind('setRelTol', int, 1e-6);
 solvind('setMaxIntSteps', int, 2000);
-solvind('setCorrectorAccuracyFactor', int, 1e-3);
+solvind('setCorrectorAccuracyFactor', int, 1e-5);
 solvind('setCorrectorAbsoluteAccuracy', int, 1e-13);
 
 t_0 = 0.;
@@ -147,14 +150,15 @@ solvind_compute_residuum_expl = @(p_optim) ...
         p_optim_fixed, p_sim, int, q_dsc, ax1, ax2);
 
 % TEST INITIAL VALUE
-solvind_compute_residuum_expl(p_optim_start(p_optim_estimable));
+[res, Jac] = solvind_compute_residuum_expl(p_optim_start(p_optim_estimable));
 solvind('reset');
 return
 
 
 %%%%%%%%%%%%%%%%%%%%%%% SOLVE OPTIMIZATION PROBLEM %%%%%%%%%%%%%%%%%%%%%%%
-lb = zeros(1,num_cntrl_pts);
-ub = ones(1,num_cntrl_pts)*200.;
+lb = zeros(1,num_free_optim_params);
+ub = ones(1,num_free_optim_params)*300.;
+%ub(4) = 1.;  % sr < 1
 optim_con = {lb, ub};
 
 opt_options = optimoptions('lsqnonlin', ...

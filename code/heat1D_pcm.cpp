@@ -27,6 +27,55 @@
 #include "/home/argo/masterarbeit/code/tools/nurbs_interpolation_c++/Interp1d_linear.cpp"
 
 
+template<typename T>
+void fraser_suzuki(T x, T& c_p, T& dc_p, T h,T r,T wr,T sr,T z, T b) {
+
+
+	T c_p_case0;
+	T c_p_case1;
+	T dc_p_case0;
+	T dc_p_case1;
+	T condition;
+
+	T log_sr = log(sr);
+
+
+	condition = z - wr*sr/(sr*sr-1) - x;
+
+	T log_arg = (1 + (x-z)*(sr*sr-1)/(wr*sr));
+	T exp_arg = -log(r)/(log_sr*log_sr) * log(log_arg)*log(log_arg);
+	
+	c_p_case0 = b;
+	c_p_case1 = h*exp(exp_arg) + b;
+	condassign(c_p, condition, c_p_case1, c_p_case0);
+
+	dc_p_case0 = 0.;
+	dc_p_case1 = -2.*log(r)/(log_sr*log_sr) * (sr*sr - 1)/(wr*sr) * log(log_arg)/log_arg * h*exp(exp_arg);
+	condassign(dc_p, condition, dc_p_case1, dc_p_case0);
+
+	return;
+}
+
+
+template<typename T>
+void c_p_formula(T x, T& c_p, T& dc_p, T p0, T p1, T p2, T p3, T p4, T p5) {
+
+	T atan_arg = -p3*(x-p0);
+	T atan_value = atan(atan_arg);
+	T exp_arg = -p2*(x-p0)*(x-p0);
+	T exp_value = exp(exp_arg);
+
+	c_p = (atan_value + M_PI/2.)*(p1*exp_value) + p4*x + p5;
+
+	dc_p = -(p1*p3*exp_value)/(1+atan_value*atan_value) 
+	       -2*p1*p2*(x-p0)*exp_value * (atan_value + M_PI/2.) + p4;
+
+	return;
+}
+
+
+
+
 using namespace std;
 using namespace SolvInd;
 
@@ -39,157 +88,63 @@ long N3[maxLevels];			// Number of discretization points PCM
 double dx_const[maxLevels];	// Mesh size Constantan
 double dx_pcm[maxLevels];	// Mesh size PCM
 double alpha;				// quotient for Constantan / PCM grid transition
-size_t num_cntrl_pts;		// number of NURBS control points
-const int nurbs_order = 4;	// NURBS curve will be in C^2 with nurbs_order=4
 
 template <typename T, long level>
 svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 {
-	static std::vector<double> cntrl_pts_x(num_cntrl_pts, 0.);
-	static std::vector<double> cntrl_pts_y(num_cntrl_pts, 0.);
-	static Interp1d_linear<double> c_p_interpolator = Interp1d_linear<double>();
-	
 
-	const T* x = args.xd;  // pointer to constant T (read only!)
-	
 	// parameters
 	T a_const    = args.p[0];		// Temp.-conductivity (diffusion constant) of Constantan [mm^2/s] 
 	T lambda_pcm = args.p[1];		// heat conductivity of pcm [mW/(mm*K)]
 	T rho_pcm    = args.p[2];		// density of pcm [mg/mm^3]
 	T heat_rate  = args.p[3];		// rate [K/min] with which oven temperature increases.
 
+	T h          = args.p[4];
+	T r          = args.p[5];
+	T wr         = args.p[6];
+	T sr         = args.p[7];
+	T z          = args.p[8];
+	T b          = args.p[9];
 
-
-	// Versuche den double value aus dem adouble raus zu bekommen...
-	//T const * ptr = args.p;
-	//(*ptr).value();
-	// Hier gibts einen Konflikt weil value() weiterleitet zu getValue(), 
-	// welches eine const methode ist und der compiler angst hat man wuerde
-	// mit dem Pointer dann was aendern... obwohl es ein ptr auf konstantes adouble
-	// ist. 
-	// Ganz am Anfang der Errors sagt er, dass *ptr ein const double ist.
-
-	//const T test = args.p[0];
-	//test.getValue();
-	// Hier kommt in der fehlermeldung, dass test vom typ const double sei 
-	// (und daher keine methode .value() hat), aber es ist doch ein adouble....)
-
-	//T const * ptr = args.p;
-	//const double test = *ptr;
-	// Hier sagt er dann allerdings, dass *ptr ein const adouble ist, im Gegensatz zum 1. Versuch
-
-	/*std::ostringstream oss;
-	oss << a_const;
-	std::string s = oss.str();
-	double a_const_double = std::stod(s, NULL);
-	std::cout << a_const_double << std::endl;*/
-	// Workaround der ganz und garnicht schoen ist, aber es funktioniert... ;D
-
-	std::vector<double> cntrl_pts_x_input(num_cntrl_pts);
-	std::vector<double> cntrl_pts_y_input(num_cntrl_pts);
-	double c_p_param_input;
+	/*double fs_params[6];
 	std::ostringstream oss;
+	oss << std::setprecision(20);
 	std::string str;
 
-	// Ist zwar echt nicht huebsch, aber laufzeittechnisch eig. kein Problem.
-	// Pro Aufruf der RHS braucht die folgende for-Schleife 35us fuer 12 cntrl_pts.
-	for (size_t i=0; i<num_cntrl_pts; ++i) {
-
+	for (int i=0; i<=5; ++i) {
 		oss.str("");
 		oss << args.p[4+i];
 		str = oss.str();
-		c_p_param_input = std::stod(str, NULL);
-		cntrl_pts_x_input[i] = c_p_param_input;
-
-		oss.str("");
-		oss << args.p[4+num_cntrl_pts+i];
-		str = oss.str();
-		c_p_param_input = std::stod(str, NULL);
-		cntrl_pts_y_input[i] = c_p_param_input;
-	}
-
-
-	// OLD: problem das man nicht direkt auf die parameter zugreifen kann...
-	/*bool changed_cntrl_pts = false;
-	for (size_t i=0; i<num_cntrl_pts; ++i) {
-		if (cntrl_pts_x[i] != (args.p[4+i]).value() || 
-			cntrl_pts_y[i] != (args.p[4+num_cntrl_pts+i]).value() ) {
-
-			changed_cntrl_pts = true;
-			break;
-		}
-
-	if (changed_cntrl_pts) {
-
-		// Replace control points by new parameter values
-		for (size_t i=0; i<num_cntrl_pts; ++i) {
-			cntrl_pts_x[i] = (args.p[4+i]).value();
-			cntrl_pts_y[i] = (args.p[4+num_cntrl_pts+i]).value();
-		}
-
-		// Build/Replace linear interpolation object for c_p(T) evaluation
-		Nurbs nurbs(num_cntrl_pts, nurbs_order);
-		nurbs.set_cntrl_pts_x(cntrl_pts_x);
-		nurbs.set_cntrl_pts_y(cntrl_pts_y);
-
+		fs_params[i] = std::stod(str, NULL);
 	}*/
 
+	// TEST c_p(T) and dc_p/dT(T) functions
+	static bool one_time_call = true;
+	if (one_time_call) {
 
-	if (!(std::equal(cntrl_pts_x.begin(), cntrl_pts_x.end(), cntrl_pts_x_input.begin()) &&
-	 	  std::equal(cntrl_pts_y.begin(), cntrl_pts_y.end(), cntrl_pts_y_input.begin()))) {
-		// Bem.: Dieser if-Block wird bei Aenderung der cntrl_pts 2 mal aufgerufen -> unklar warum
-
-		std::cout << "NURBS control points have been changed!" << std::endl;
-
-		// Replace internal control point vectors
-		cntrl_pts_x = cntrl_pts_x_input;
-		cntrl_pts_y = cntrl_pts_y_input;
-
-
-		// Build/Replace linear interpolation object for c_p(T) evaluation
-		Nurbs nurbs(num_cntrl_pts, nurbs_order);
-		nurbs.set_cntrl_pts_x(cntrl_pts_x);
-		nurbs.set_cntrl_pts_y(cntrl_pts_y);
-
-
-		double h = 0.001;
-		std::vector<double> C_x(int(1/h)+1);
-		std::vector<double> C_y(int(1/h)+1);
-		
-
-		//std::vector<double> C_temp(2);
-		size_t i=0;
-		for (double u=0. + 1e-8; u <= 1.; u+=h) {
-			
-			std::vector<double> C_temp(2);
-
-			nurbs.eval_nurbs_curve(u, C_temp);
-			
-			C_x[i] = C_temp[0];
-			C_y[i] = C_temp[1];
-		
-			i++;
-		}
-
-
-		// 1D Interpolation part
-		c_p_interpolator.set_data_pts(C_x, C_y);
-
-
-		// TEST interpolator
-		/*std::ofstream file_c_p;
+		std::ofstream file_c_p;
   		file_c_p.open ("/home/argo/masterarbeit/code/c_p.txt");
 
-		std::vector<double> c_p_v(2);
-		for (double d=30.; d < 160; d += 0.01) {
-			c_p_v = c_p_interpolator(d);
+  		T c_p;
+  		T dc_p;
+		for (T d=5.; d < 170; d += 0.01) {
+			
+			fraser_suzuki(d, c_p, dc_p, h, r, wr, sr, z, b);
+			//c_p_formula(d, c_p, dc_p, args.p[4], args.p[5], args.p[6], args.p[7], args.p[8], args.p[9]);
 
-			file_c_p << d << "\t" << c_p_v[0] << "\t" << c_p_v[1] << std::endl; 
+			file_c_p << d << "\t" << c_p << "\t" << dc_p << std::endl; 
 
 		}
-		file_c_p.close();*/
+		file_c_p.close();
 
+		one_time_call = false;
 	}
+
+
+	const T* x = args.xd;  // pointer to constant T (read only!)
+	
+
+
 
 	// some pre-calculations
 	T heat_rate_s  = heat_rate / 60; // [K/min] -> [K/s]
@@ -213,36 +168,35 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 
 
 	// PCM
-	double T_j;
-	std::vector<double> c_p_vec(2);
 	T c_p_j;
 	T dc_p_j;
 	for (long j = N1[level]; j <= N1[level]+N3[level]-2; j++)
 	{
-		// Temperature adouble -> double s.t. interpolator returns also a double
-		// Workaround... TODO: aendern wenn andere Loesung vorhanden!
-		oss.str("");
+		// c_p calculation using Fraser-Suzuki Peak
+
+		/*oss.str("");
 		oss << x[j];
 		str = oss.str();
-		T_j = std::stod(str, NULL);
+		double T_j = std::stod(str, NULL);
+		double c_p_temp;
+		double dc_p_temp;
+		
+		fraser_suzuki(T_j, c_p_temp, dc_p_temp, fs_params[0], fs_params[1], fs_params[2], fs_params[3], fs_params[4], fs_params[5]);
+		c_p_j = c_p_temp;
+		dc_p_j = dc_p_temp;
 
-		// compute c_p(T_j) and dc_p(T_j)/dT
-		c_p_vec = c_p_interpolator(T_j);
-		c_p_j = c_p_vec[0];
-		dc_p_j = c_p_vec[1];
+		std::cout << T_j << "\t" << c_p_j << "\t" << dc_p_j << std::endl;*/
+		
+		fraser_suzuki(x[j], c_p_j, dc_p_j, h, r, wr, sr, z, b);
 
-		//c_p_vec = c_p_interpolator(x[j]);
-		//c_p_j = c_p_vec[0];
-		//dc_p_j = c_p_vec[1];
-		// PROBLEM: Hier besteht Problem das er nicht mehr integrieren kann wenn c_p_pcm durch c_p_j ersetzt wird...
-		// Input von c_p_interpolator(x) ist zwingend ein adouble, naemlich die Temperatur. Output, der c_p Wert
-		// ist auch ein adouble, allerdings offenbar irgendwie kaputt, so dass der Integrator nichts damit anfangen kann.
+		// c_p calculation using old atan formula
+		//c_p_formula(x[j], c_p_j, dc_p_j, args.p[4], args.p[5], args.p[6], args.p[7], args.p[8], args.p[9]);
 
-		// linear part
-		args.rhs[j] = scale_pcm/c_p_j * (x[j-1] - 2.0 * x[j] + x[j+1]); 
+		// linear part 
+		args.rhs[j] = scale_pcm/c_p_j * (x[j-1] - 2.0 * x[j] + x[j+1]);
 
 		// non-linear part (just c_p temperature dependent atm, lambda and rho constant)
-		args.rhs[j] -= scale_pcm/(c_p_j*c_p_j) * dc_p_j * (x[j+1] - x[j])*(x[j+1] - x[j]);
+		args.rhs[j] -= scale_pcm/(4.*c_p_j*c_p_j) * dc_p_j * (x[j+1] - x[j-1])*(x[j+1] - x[j-1]);
 	}
 
 	// RHS boundary, no flux
@@ -287,7 +241,6 @@ IDynamicModelDescription()
 		test1 >> L3;
 		test1 >> N1[level];  	// for chosen level before, set grid size N1.
 		test1 >> N3[level];     // for chosen level before, set grid size N3.
-		test1 >> num_cntrl_pts; // number of control points of c_p parametrization with NURBES.
 	}
 	else  // standard choice of grid size
 	{
@@ -305,7 +258,7 @@ IDynamicModelDescription()
 	m_dims. dim [ Component_T  ] = 1;
 	m_dims. dim [ Component_XD ] = N1[level] + N3[level];
 	m_dims. dim [ Component_XA ] = 0;
-	m_dims. dim [ Component_P  ] = 4 + 2*num_cntrl_pts;
+	m_dims. dim [ Component_P  ] = 4 + 6;
 	m_dims. dim [ Component_U  ] = 0;
 	m_dims. dim [ Component_Q  ] = 0;
 	//m_dims. dim [ Component_H  ] = 1;

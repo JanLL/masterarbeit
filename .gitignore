@@ -46,6 +46,7 @@ code/tools/*
 
 SOLVIND_SUITE/
 simulationen-data/
+informationen/
 fits_data/
 .ipynb_checkpoints/
 
