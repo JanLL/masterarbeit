@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <time.h>
+#include <math.h>
 
 #include "interpolation.h"
 
@@ -32,16 +33,6 @@ Nurbs::Nurbs(int num_cntrl_pts_in, int nurbs_order_in) :
 }
 
 
-int Nurbs::get_interval_index(double u) {
-
-	int i = nurbs_order-1;
-	for (int j=nurbs_order-1; j <= len_U-1-nurbs_order; ++j) {
-		i = (u - U[j] > 0) ? j : i;
-	}
-
-	return i;
-
-}
 
 
 std::vector<double> Nurbs::get_cntrl_pts_x() {
@@ -176,6 +167,16 @@ double Nurbs::compute_a_i_0(int i, double u) {
 	a_i_0 = (u - U[i])*(u - U[i])*(u - U[i]) / ((U[i+3] - U[i])*(U[i+2] - U[i])*(U[i+1] - U[i]));
 
 	return a_i_0;
+
+}
+
+
+int Nurbs::get_interval_index(double u) {
+
+	double du = U[nurbs_order] - U[nurbs_order-1];
+	int i = floor(u/du) + 3;
+
+	return i;
 
 }
 
