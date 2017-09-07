@@ -12,8 +12,8 @@
 //#include <adolc/adouble.h>
 
 
-
-Nurbs::Nurbs(int num_cntrl_pts_in, int nurbs_order_in) :
+template<typename T>
+Nurbs<T>::Nurbs(int num_cntrl_pts_in, int nurbs_order_in) :
 	num_cntrl_pts(num_cntrl_pts_in), 
 	nurbs_order(nurbs_order_in),
 	len_U(num_cntrl_pts + nurbs_order),
@@ -24,49 +24,52 @@ Nurbs::Nurbs(int num_cntrl_pts_in, int nurbs_order_in) :
 {
 
 	for (int i=0; i <= nurbs_order; ++i) {
-		U[i] = 0;
-		U[len_U-1-i] = 1;
+		U[i] = 0.;
+		U[len_U-1-i] = 1.;
 	}
 
 	for (int i=1; i <= num_cntrl_pts - nurbs_order; ++i) {
-		U[i + nurbs_order - 1] = i / float(num_cntrl_pts - nurbs_order + 1);
+		U[i + nurbs_order - 1] = i / double(num_cntrl_pts - nurbs_order + 1);
 	}
 }
 
 
-
-std::vector<double> Nurbs::get_cntrl_pts_x() {
+template<typename T>
+std::vector<T> Nurbs<T>::get_cntrl_pts_x() {
 	return cntrl_pts_x;
 }
 
-std::vector<double> Nurbs::get_cntrl_pts_y() {
+template<typename T>
+std::vector<T> Nurbs<T>::get_cntrl_pts_y() {
 	return cntrl_pts_y;
 }
 
-std::vector<double> Nurbs::get_weights() {
+template<typename T>
+std::vector<T> Nurbs<T>::get_weights() {
 	return weights;
 }
 
-std::vector<double> Nurbs::get_U() {
+template<typename T>
+std::vector<T> Nurbs<T>::get_U() {
 	return U;
 }
 
-
-void Nurbs::set_cntrl_pts_x(std::vector<double> cntrl_pts_x_in) {
+template<typename T>
+void Nurbs<T>::set_cntrl_pts_x(std::vector<T> cntrl_pts_x_in) {
 	for (int i=0; i <= num_cntrl_pts-1; ++i) {
 		cntrl_pts_x[i] = cntrl_pts_x_in[i];
 	}
 }
-
-void Nurbs::set_cntrl_pts_y(std::vector<double> cntrl_pts_y_in) {
+template<typename T>
+void Nurbs<T>::set_cntrl_pts_y(std::vector<T> cntrl_pts_y_in) {
 	for (int i=0; i <= num_cntrl_pts-1; ++i) {
 		cntrl_pts_y[i] = cntrl_pts_y_in[i];
 	}
 }
 
 
-
-double Nurbs::eval_basis_fcn(double u, int i, int p) {
+template<typename T>
+T Nurbs<T>::eval_basis_fcn(T u, int i, int p) {
 	if (p == 0) {
 		if (u >= U[i] && u <= U[i+1]) {
 			return 1.;
@@ -77,16 +80,16 @@ double Nurbs::eval_basis_fcn(double u, int i, int p) {
 	}
 	else {
 
-		double part1 = 0;
-		double part2 = 0;
+		T part1 = 0;
+		T part2 = 0;
 
 		// if denominator is zero, N is also zero, set then part1=0
-		double N_i_pm1 = this->eval_basis_fcn(u, i, p-1);
+		T N_i_pm1 = this->eval_basis_fcn(u, i, p-1);
 		if (N_i_pm1 != 0) {
 			part1 = (u - U[i]) / (U[i+p] - U[i]) * N_i_pm1;
 		}
 
-		double N_ip1_pm1 = this->eval_basis_fcn(u, i+1, p-1);
+		T N_ip1_pm1 = this->eval_basis_fcn(u, i+1, p-1);
 		if (N_ip1_pm1 != 0) {
 			part2 = (U[i+p+1] - u) / (U[i+p+1] - U[i+1]) * N_ip1_pm1;
 		}
@@ -96,9 +99,10 @@ double Nurbs::eval_basis_fcn(double u, int i, int p) {
 }
 
 
-std::vector<double> Nurbs::eval_nurbs_curve(double u) {
+template<typename T>
+std::vector<T> Nurbs<T>::eval_nurbs_curve(T u) {
 
-	std::vector<double> N_vec(num_cntrl_pts);
+	std::vector<T> N_vec(num_cntrl_pts);
 
 
 	for (int i=0; i < num_cntrl_pts; ++i) {
@@ -106,9 +110,9 @@ std::vector<double> Nurbs::eval_nurbs_curve(double u) {
 	}
 
 	
-	double denominator = 0;
-	double numerator_x = 0;
-	double numerator_y = 0;
+	T denominator = 0;
+	T numerator_x = 0;
+	T numerator_y = 0;
 
 	for (int i=0; i < num_cntrl_pts; ++i) {
 		numerator_x += N_vec[i] * weights[i] * cntrl_pts_x[i];
@@ -117,86 +121,89 @@ std::vector<double> Nurbs::eval_nurbs_curve(double u) {
 
 	}
 
-	std::vector<double> C(2);
+	std::vector<T> C(2);
 	C[0] = numerator_x / denominator;
 	C[1] = numerator_y / denominator;
 
 	return C;
-
 }
 
-double Nurbs::compute_a_i_m3(int i, double u) {
 
-	double a_i_m3;
+template<typename T>
+T Nurbs<T>::compute_a_i_m3(int i, T u) {
+
+	T a_i_m3;
 
 	a_i_m3 = (U[i+4] - u)*(U[i+4] - u)*(U[i+4] - u) / ((U[i+4] - U[i+1])*(U[i+4] - U[i+2])*(U[i+4] - U[i+3]));
 
 	return a_i_m3;
-
 }
 
 
-double Nurbs::compute_a_i_m2(int i, double u) {
+template<typename T>
+T Nurbs<T>::compute_a_i_m2(int i, T u) {
 
-	double a_i_m2;
+	T a_i_m2;
 
 	a_i_m2 = (u - U[i])/(U[i+3] - U[i]) * (U[i+3] - u)/(U[i+3] - U[i+1]) * (U[i+3] - u)/(U[i+3] - U[i+2]) + 
 			 (U[i+4] - u)/(U[i+4] - U[i+1]) * ( (u - U[i+1])/(U[i+3] - U[i+1]) * (U[i+3] - u)/(U[i+3] - U[i+2])
 			                                   +(U[i+4] - u)/(U[i+4] - U[i+2]) * (u - U[i+2])/(U[i+3] - U[i+2]) );
 
 	return a_i_m2;
-
 }
 
-double Nurbs::compute_a_i_m1(int i, double u) {
 
-	double a_i_m1;
+template<typename T>
+T Nurbs<T>::compute_a_i_m1(int i, T u) {
+
+	T a_i_m1;
 
 	a_i_m1 = (u - U[i])/(U[i+3] - U[i]) * ( (u - U[i])/(U[i+2] - U[i]) * (U[i+2] - u)/(U[i+2] - U[i+1])
 			                               +(U[i+3] - u)/(U[i+3] - U[i+1]) * (u - U[i+1])/(U[i+2] - U[i+1]) )
 	         + (U[i+4] - u)/(U[i+4] - U[i+1]) * (u - U[i+1])/(U[i+3] - U[i+1]) * (u - U[i+1])/(U[i+2] - U[i+1]);
 
 	return a_i_m1;
-
 }
 
-double Nurbs::compute_a_i_0(int i, double u) {
 
-	double a_i_0;
+template<typename T>
+T Nurbs<T>::compute_a_i_0(int i, T u) {
+
+	T a_i_0;
 
 	a_i_0 = (u - U[i])*(u - U[i])*(u - U[i]) / ((U[i+3] - U[i])*(U[i+2] - U[i])*(U[i+1] - U[i]));
 
 	return a_i_0;
-
 }
 
 
-int Nurbs::get_interval_index(double u) {
+template<typename T>
+int Nurbs<T>::get_interval_index(T u) {
 
-	double du = U[nurbs_order] - U[nurbs_order-1];
+	T du = U[nurbs_order] - U[nurbs_order-1];
 	int i = floor(u/du) + 3;
 
 	return i;
-
 }
 
 
-double Nurbs::eval_nurbs_curve_x(double u) {
+template<typename T>
+T Nurbs<T>::eval_nurbs_curve_x(T u) {
 
 	int i = this->get_interval_index(u);
 
-	double a_im3_m3 = this->compute_a_i_m3(i-3, u);
-	double a_im2_m2 = this->compute_a_i_m2(i-2, u);
-	double a_im1_m1 = this->compute_a_i_m1(i-1, u);
-	double a_i_0 = this->compute_a_i_0(i, u);
+	T a_im3_m3 = this->compute_a_i_m3(i-3, u);
+	T a_im2_m2 = this->compute_a_i_m2(i-2, u);
+	T a_im1_m1 = this->compute_a_i_m1(i-1, u);
+	T a_i_0 = this->compute_a_i_0(i, u);
 
 
-	double numerator_x = a_im3_m3 * weights[i-3] * cntrl_pts_x[i-3] +
+	T numerator_x = a_im3_m3 * weights[i-3] * cntrl_pts_x[i-3] +
 						 a_im2_m2 * weights[i-2] * cntrl_pts_x[i-2] +
 						 a_im1_m1 * weights[i-1] * cntrl_pts_x[i-1] +
 						 a_i_0    * weights[i-0] * cntrl_pts_x[i-0];
 
-	double denominator = a_im3_m3 * weights[i-3] +
+	T denominator = a_im3_m3 * weights[i-3] +
 						 a_im2_m2 * weights[i-2] +
 						 a_im1_m1 * weights[i-1] +
 						 a_i_0    * weights[i-0];
@@ -205,21 +212,22 @@ double Nurbs::eval_nurbs_curve_x(double u) {
 }	
 
 
-double Nurbs::eval_nurbs_curve_y(double u) {
+template<typename T>
+T Nurbs<T>::eval_nurbs_curve_y(T u) {
 
 	int i = this->get_interval_index(u);
 
-	double a_im3_m3 = this->compute_a_i_m3(i-3, u);
-	double a_im2_m2 = this->compute_a_i_m2(i-2, u);
-	double a_im1_m1 = this->compute_a_i_m1(i-1, u);
-	double a_i_0 = this->compute_a_i_0(i, u);
+	T a_im3_m3 = this->compute_a_i_m3(i-3, u);
+	T a_im2_m2 = this->compute_a_i_m2(i-2, u);
+	T a_im1_m1 = this->compute_a_i_m1(i-1, u);
+	T a_i_0 = this->compute_a_i_0(i, u);
 
-	double numerator_y = a_im3_m3 * weights[i-3] * cntrl_pts_y[i-3] +
+	T numerator_y = a_im3_m3 * weights[i-3] * cntrl_pts_y[i-3] +
 						 a_im2_m2 * weights[i-2] * cntrl_pts_y[i-2] +
 						 a_im1_m1 * weights[i-1] * cntrl_pts_y[i-1] +
 						 a_i_0    * weights[i-0] * cntrl_pts_y[i-0];
 
-	double denominator = a_im3_m3 * weights[i-3] +
+	T denominator = a_im3_m3 * weights[i-3] +
 						 a_im2_m2 * weights[i-2] +
 						 a_im1_m1 * weights[i-1] +
 						 a_i_0    * weights[i-0];
@@ -228,13 +236,14 @@ double Nurbs::eval_nurbs_curve_y(double u) {
 }
 
 
-double Nurbs::get_u_from_Cx(double Cx, double u_start, double TOL) {
+template<typename T>
+T Nurbs<T>::get_u_from_Cx(T Cx, T u_start, T TOL) {
 
-	double err = 1e8;
-	double u = u_start;
-	double Cx_newton;
-	double du;
-	double h = 0.005; 
+	T err = 1e8;
+	T u = u_start;
+	T Cx_newton;
+	T du;
+	T h = 0.005; 
 
 	while (err > TOL) {
 
@@ -267,7 +276,7 @@ int main(int argc, char** argv) {
 	int num_cntrl_pts = cntrl_pts_x.size();
 
 
-	Nurbs nurbs(num_cntrl_pts, nurbs_order);
+	Nurbs<double> nurbs(num_cntrl_pts, nurbs_order);
 	nurbs.set_cntrl_pts_x(cntrl_pts_x);
 	nurbs.set_cntrl_pts_y(cntrl_pts_y);
 
@@ -293,7 +302,6 @@ int main(int argc, char** argv) {
 
 
 	// TODO: Newton implementieren und Laufzeittest
-	double Ts = 170.;
 	double TOL = 0.1;
 	double u_start = 0.;
 
