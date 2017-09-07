@@ -33,7 +33,11 @@ class Nurbs
 		double compute_a_i_m1(int i, double u);
 		double compute_a_i_0(int i, double u);
 
-		std::vector<double> eval_nurbs_curve_mod(double u);
+		double eval_nurbs_curve_x(double u);
+		double eval_nurbs_curve_y(double u);
+
+		double get_u_from_Cx(double Cx, double u_start, double TOL);
+
 
 
 

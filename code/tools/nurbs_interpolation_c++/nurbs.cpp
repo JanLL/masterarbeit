@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <vector>
 #include <time.h>
@@ -31,7 +32,6 @@ Nurbs::Nurbs(int num_cntrl_pts_in, int nurbs_order_in) :
 		U[i + nurbs_order - 1] = i / float(num_cntrl_pts - nurbs_order + 1);
 	}
 }
-
 
 
 
@@ -181,7 +181,7 @@ int Nurbs::get_interval_index(double u) {
 }
 
 
-std::vector<double> Nurbs::eval_nurbs_curve_mod(double u) {
+double Nurbs::eval_nurbs_curve_x(double u) {
 
 	int i = this->get_interval_index(u);
 
@@ -196,6 +196,24 @@ std::vector<double> Nurbs::eval_nurbs_curve_mod(double u) {
 						 a_im1_m1 * weights[i-1] * cntrl_pts_x[i-1] +
 						 a_i_0    * weights[i-0] * cntrl_pts_x[i-0];
 
+	double denominator = a_im3_m3 * weights[i-3] +
+						 a_im2_m2 * weights[i-2] +
+						 a_im1_m1 * weights[i-1] +
+						 a_i_0    * weights[i-0];
+
+	return numerator_x / denominator;
+}	
+
+
+double Nurbs::eval_nurbs_curve_y(double u) {
+
+	int i = this->get_interval_index(u);
+
+	double a_im3_m3 = this->compute_a_i_m3(i-3, u);
+	double a_im2_m2 = this->compute_a_i_m2(i-2, u);
+	double a_im1_m1 = this->compute_a_i_m1(i-1, u);
+	double a_i_0 = this->compute_a_i_0(i, u);
+
 	double numerator_y = a_im3_m3 * weights[i-3] * cntrl_pts_y[i-3] +
 						 a_im2_m2 * weights[i-2] * cntrl_pts_y[i-2] +
 						 a_im1_m1 * weights[i-1] * cntrl_pts_y[i-1] +
@@ -206,13 +224,31 @@ std::vector<double> Nurbs::eval_nurbs_curve_mod(double u) {
 						 a_im1_m1 * weights[i-1] +
 						 a_i_0    * weights[i-0];
 
-	std::vector<double> C(2);
-	C[0] = numerator_x / denominator;
-	C[1] = numerator_y / denominator;
+	return numerator_y / denominator;
+}
 
-	return C;
 
-}	
+double Nurbs::get_u_from_Cx(double Cx, double u_start, double TOL) {
+
+	double err = 1e8;
+	double u = u_start;
+	double Cx_newton;
+	double du;
+	double h = 0.005; 
+
+	while (err > TOL) {
+
+		Cx_newton = this->eval_nurbs_curve_x(u);
+
+		du = -(Cx_newton - Cx);
+
+		u += h*du;
+
+		err = abs(Cx_newton - Cx);
+	}
+
+	return u;
+}
 
 
 
@@ -242,18 +278,39 @@ int main(int argc, char** argv) {
 	std::cout << std::endl;*/
 
 
-	std::ofstream file_nurbes;
+	/*std::ofstream file_nurbes;
   	file_nurbes.open ("curve_nurbes.txt");
 
   	for (double u=0.; u<1; u+=0.001) {
 
-		std::vector<double> C = nurbs.eval_nurbs_curve(u);
-		std::vector<double> D = nurbs.eval_nurbs_curve_mod(u);
+		std::vector<double> C = nurbs.eval_nurbs_curve_mod(u);
 		
-		file_nurbes << C[0] << "\t" << C[1] << "\t" << D[0] << "\t" << D[1] << std::endl;
+		file_nurbes << u << "\t" << C[0] << "\t" << C[1] << std::endl;
 
 	}
-	file_nurbes.close();
+	file_nurbes.close();*/
+
+
+
+	// TODO: Newton implementieren und Laufzeittest
+	double Ts = 170.;
+	double TOL = 0.1;
+	double u_start = 0.;
+
+  	double u = u_start;
+
+  	for (double Ts=50.; Ts < 55.; Ts+=0.1) {
+		clock_t begin = clock();
+		
+		u = nurbs.get_u_from_Cx(Ts, u, TOL);
+
+		clock_t end = clock();
+		std::cout << std::setprecision(20) << double(end - begin) / CLOCKS_PER_SEC << std::endl;
+	}
+	//clock_t end = clock();
+	//double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+	//std::cout << std::setprecision(20) << elapsed_secs << std::endl;
+
 
 	}/*
 	
