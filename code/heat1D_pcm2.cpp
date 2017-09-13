@@ -93,6 +93,10 @@ void c_p_formula(T x, T& c_p, T& dc_p, T p0, T p1, T p2, T p3, T p4, T p5) {
 }
 
 
+
+
+
+
 class TContFwdSensGetter : public IPlugin
 {
 public:
@@ -188,10 +192,10 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 	for (long j = N1; j <= N1+N3-2; j++)
 	{
 		// c_p calculation using Fraser-Suzuki Peak
-		//fraser_suzuki(x[j], c_p_j, dc_p_j, args.p[0], args.p[1], args.p[2], args.p[3], args.p[4], args.p[5]);
+		fraser_suzuki(x[j], c_p_j, dc_p_j, args.p[0], args.p[1], args.p[2], args.p[3], args.p[4], args.p[5]);
 	
 		// c_p calculation using old atan formula
-		c_p_formula(x[j], c_p_j, dc_p_j, args.p[0], args.p[1], args.p[2], args.p[3], args.p[4], args.p[5]);
+		//c_p_formula(x[j], c_p_j, dc_p_j, args.p[0], args.p[1], args.p[2], args.p[3], args.p[4], args.p[5]);
 
 		// linear part 
 		args.rhs[j] = scale_pcm/c_p_j * (x[j-1] - 2.0 * x[j] + x[j+1]);
@@ -210,10 +214,42 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 
 
 
+svLong adjInjector( const svULong idx, svULong& adjLeaDim, const double*& adjTrajIn )
+{
+	std::cout << "adjInjector: called with idx = " << idx << std::endl;
+
+	static Sonic::DMat injMat ( N1+N3, 2*solGrid.size() );
+	injMat.zero();
+
+	injMat(N1  ,2*idx  ) = 1;
+	injMat(N1+1,2*idx+1) = 1;
+
+	adjLeaDim = injMat.memDimRows();
+	adjTrajIn = injMat.getFVector();
+
+//	cout << "adjInjector: injection Matrix:\n" << injMat << endl;
+
+	return 0;
+} 
+
+
+
+
 
 int main( int argc, char* argv[] )
 {
 	svLong errorCode ( 0 );
+
+	// Get measurement timepoints for evaluation grid, NOTE: atm inaccurate because of std::stod
+	// Later: Forward them via mex-function argument.
+	std::string line;
+	std::ifstream t_meas_file("/home/argo/masterarbeit/num_data/t_meas_10Kmin_L1_15.txt");
+	if (t_meas_file.is_open()) {
+		while (getline(t_meas_file, line)) {
+			double t_meas = std::stod(line);
+			solGrid.push_back(t_meas);
+		}
+	}
 
 
 	// Set Parameters
@@ -243,9 +279,9 @@ int main( int argc, char* argv[] )
 	const double t_0 = 0.;
 	const double t_end = (T_end - T_0) / heat_rate_s;
 
-	for (double T=T_0; T < T_end; T += 0.1) {
-		solGrid.push_back ( (T - T_0) / heat_rate_s );
-	}
+	//for (double T=T_0; T < T_end; T += 0.01) {
+	//	solGrid.push_back ( (T - T_0) / heat_rate_s );
+	//}
 
 
 	// create a DAESOL-II instance
@@ -318,12 +354,22 @@ int main( int argc, char* argv[] )
 	}
 
 	double* params = new double [ np ];
-	params[0] = 125.;
+	// old atan peak test parameters
+	/*params[0] = 125.;
 	params[1] = 10.;
 	params[2] = 0.01;
 	params[3] = 10.;
 	params[4] = 0.003;
+	params[5] = 2.;*/
+
+	// fraser-suzuki Peak test parameters
+	params[0] = 50.;
+	params[1] = 15.;
+	params[2] = 25.;
+	params[3] = 0.2;
+	params[4] = 125.;
 	params[5] = 2.;
+
 
 	integrator->setInitialValues(
 			Component_XD,
@@ -344,6 +390,11 @@ int main( int argc, char* argv[] )
 	integrator->setMaxIntSteps       ( 1000   );
 	integrator->setTimeHorizon       ( t_0, t_end   );
 
+  	svULong nAdjDir = solGrid.size() * 2;
+	double* adjSensDir = new double [ nAdjDir * nxd ]; // in direction N1+1 and N1+2
+  	memset ( adjSensDir, 0, nAdjDir * nxd * sizeof ( double ) );
+ 
+
 	TContFwdSensGetter fwdSensGetter;
 	fwdSensGetter.m_fwdTCOrder = 1;
 	fwdSensGetter.m_nRays      = 6;  // unklar was das ist...
@@ -352,10 +403,67 @@ int main( int argc, char* argv[] )
 
 
     integrator->activateFeature( IIntegrator::Feature_Store_Grid );
-    integrator->activateFeature( IIntegrator::Feature_Store_Tape );    
+    integrator->activateFeature( IIntegrator::Feature_Store_Tape );  
+
+	integrator->activateFeature( IIntegrator::Feature_Adjoint_Sensitivity_Injection );  
+	integrator->setAdjointInjectionGrid( solGrid, &adjInjector );
+
 
     std::cout << "Integrate now...\n";
 	errorCode = integrator->evaluate();
+	std::cout << "Integrator return code : " << errorCode << "\n\n" << std::endl;
+	if ( errorCode < 0 ){
+		cout << "Error occured during evaluation, terminating now... \n" << errorCode<< std::endl;
+		return errorCode;
+	}
+	
+
+	std::ofstream file_output;
+  	file_output.open ("/home/argo/masterarbeit/code/output.txt");
+
+  	for (svULong i=0; i<solGrid.size(); ++i) {
+  		file_output << solGrid[i] << "\t" << (g_traj[i])(0,0) << "\t" << (g_traj[i])(N1-1,0) << std::endl;
+  	}
+  	file_output.close();
+
+
+  	std::cout << "Start backward sweep...\n";
+	integrator->setForwardTaylorCoefficients ( 0, 0, 0, 0 );
+	integrator->setAdjointTaylorCoefficients (
+			nAdjDir, // no of adj Dirs
+			0, // rays
+			1, // order
+			nxd, // leading Dim of adj Dirs
+			adjSensDir
+			);
+	errorCode = integrator->backwardSensitivitySweep();
+	std::cout << "Integrator return code : " << errorCode << "\n\n" << std::endl;
+	if ( errorCode < 0 ){
+		cout << "Error occured during beackward sweep, terminating now... \n" << errorCode<< std::endl;
+		return errorCode;
+	}
+	std::cout << "Finished backward Sweep\n";
+
+
+
+
+  	// Get Adjoint Sensitivities on solGrid
+	const double* sol;
+	svULong solLD;
+
+	for ( svULong ii = 0; ii < solGrid.size(); ii ++ ){
+		g_adjSens.push_back( Sonic::DMat ( np, 2 ) );
+		g_adjSens [ ii ].zero();
+	}
+
+	integrator->getAdjointSensitivities( 0, Component_P, solLD, sol );
+	for ( svULong ii = 0; ii < solGrid.size(); ii ++ ){
+		g_adjSens [ ii ] <<= Sonic::cDMat ( sol +  ii * 2 * solLD, solLD, np, 2 );
+	}
+
+	std::cout << g_adjSens[0] << std::endl;
+	std::cout << g_adjSens[500] << std::endl;
+
 
 
 
