@@ -39,7 +39,7 @@ void fraser_suzuki(T x, T& c_p, T& dc_p, T h,T r,T wr,T sr,T z, T b) {
 
 	T log_sr = log(sr);
 
-
+	// TODO: Mal mit fmin arbeiten statt komplett condition in condassign zu stecken...
 	condition = z - wr*sr/(sr*sr-1) - x;
 
 	T log_arg = (1 + (x-z)*(sr*sr-1)/(wr*sr));
@@ -92,6 +92,7 @@ double alpha;				// quotient for Constantan / PCM grid transition
 template <typename T, long level>
 svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 {
+	clock_t begin = clock();
 
 	// parameters
 	T a_const    = args.p[0];		// Temp.-conductivity (diffusion constant) of Constantan [mm^2/s] 
@@ -167,6 +168,7 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 	args.rhs[j] = scale_Const * (2./(1.+alpha) * x[j-1] - 2./alpha * x[j] + 2./(alpha*(alpha+1.)) * x[j+1]);
 
 
+	//clock_t duration_fs = 0;
 	// PCM
 	T c_p_j;
 	T dc_p_j;
@@ -186,9 +188,10 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 		dc_p_j = dc_p_temp;
 
 		std::cout << T_j << "\t" << c_p_j << "\t" << dc_p_j << std::endl;*/
-		
+		//clock_t begin_fs = clock();
 		fraser_suzuki(x[j], c_p_j, dc_p_j, h, r, wr, sr, z, b);
-
+		//clock_t end_fs = clock();
+		//duration_fs += (end_fs - begin_fs);
 		// c_p calculation using old atan formula
 		//c_p_formula(x[j], c_p_j, dc_p_j, args.p[4], args.p[5], args.p[6], args.p[7], args.p[8], args.p[9]);
 
@@ -201,6 +204,10 @@ svLong heat_eq_rhs(TArgs_ffcn<T> &args, TDependency *depends)
 
 	// RHS boundary, no flux
 	args.rhs[N1[level]+N3[level]-1] = scale_pcm * (x[N1[level]+N3[level]-2] - x[N1[level]+N3[level]-1]); // Neumann boundary (right)
+
+	clock_t end = clock();
+	//std::cout << std::setprecision(20) << double(end - begin) / CLOCKS_PER_SEC << std::endl;// "\t"
+	          						   //<< double(duration_fs) / CLOCKS_PER_SEC << std::endl;
 
 	return 0;
 }

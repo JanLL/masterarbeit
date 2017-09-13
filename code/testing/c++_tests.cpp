@@ -24,15 +24,26 @@ T fraser_suzuki(T x, T h, T r, T wr, T sr, T z) {
 } 
 
 
+namespace TEST {
+
+	enum Component {
+
+		Component_X = 0,
+		Component_Y = 1,
+		
+	};
+
+}
+
+
+//using namespace TEST;
+
+
 int main(int argc, char** argv) {
 
 
-	adouble x;
+	std::cout << Component_X << "\t" << Component_Y << std::endl;
 
-	x = 5.;
-
-
-	//std::cout << x.val << std::endl;
 
 	return 0;
 

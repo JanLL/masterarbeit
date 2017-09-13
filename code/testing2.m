@@ -1,17 +1,20 @@
-% testing of rational polynome function
+% testing of fraser-suzuki peak
+h  =  30.0;
+r  =  30.0;
+wr =  15.0;
+sr =   0.3;
+z  = 125.0;
+b  =   2.0;
 
-P_coeffs = [0., 0.1, 0, 20.,  0, 1, 15, 3];
-Q_coeffs = [1., 0.05, 0, -20, 1, -10, 15, 3];
+border = z - wr*sr/(sr^2 - 1)
 
+c_p = @(T) 30*exp(-log(30)/log(0.3)^2 * (log(1+(T-125)*(0.3^2-1)/(15*0.3))).^2);
 
-x = 0.1:0.01:20;
+syms T;
+dc_p = diff(c_p(T), T);
 
-y = polyval(P_coeffs, x) ./ polyval(Q_coeffs, x);
-
-figure(1)
-plot(x, y)
-
-
+T = (border-0.001):0.0001:(border-0.0001);
+plot(T, c_p(T))
 
 return
 

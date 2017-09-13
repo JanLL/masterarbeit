@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 if __name__ == '__main__':
 
 
-	filename = 'c_p.txt'
+	filename = 'output.txt'
 
 	T_list = []
 	cp_list = []
@@ -15,8 +15,8 @@ if __name__ == '__main__':
 	with open(filename) as f:
 		for line in f:
 
-			line = line.replace('(a)', '')
-			line = line.replace('\n', '')
+			#line = line.replace('(a)', '')
+			#line = line.replace('\n', '')
 			line = line.split('\t')
 			line = [float(x) for x in line]
 
@@ -27,8 +27,9 @@ if __name__ == '__main__':
 
 	fig = plt.figure()
 	ax = fig.add_subplot(111)
-	ax.plot(T_list, cp_list, label='c_p')
-	ax.plot(T_list, dcp_list, label='dc_p')
+	#ax.plot(T_list, cp_list, label='c_p')
+	#ax.plot(T_list, dcp_list, label='dc_p')
+	ax.plot(T_list, np.array(cp_list) - np.array(dcp_list))
 	ax.set_xlabel('T [degC]')
 	ax.legend(loc='upper left')
 	

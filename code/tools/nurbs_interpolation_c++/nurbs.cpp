@@ -9,7 +9,7 @@
 
 #include "nurbs.hpp"
 
-//#include <adolc/adouble.h>
+#include <adolc/adouble.h>
 
 
 template<typename T>
@@ -180,8 +180,20 @@ T Nurbs<T>::compute_a_i_0(int i, T u) {
 template<typename T>
 int Nurbs<T>::get_interval_index(T u) {
 
-	T du = U[nurbs_order] - U[nurbs_order-1];
-	int i = floor(u/du) + 3;
+	int i=3;  // NURBS order = 4
+	for (int j=3; j <= len_U-4; ++j) {
+
+		if (u - U[j] > 0) {
+			i = j;
+		}
+		else {
+			break;
+		}
+
+	}
+
+	//T du = U[nurbs_order] - U[nurbs_order-1];
+	//int i = floor(u/du) + 3;
 
 	return i;
 }
@@ -195,7 +207,7 @@ T Nurbs<T>::eval_nurbs_curve_x(T u) {
 	T a_im3_m3 = this->compute_a_i_m3(i-3, u);
 	T a_im2_m2 = this->compute_a_i_m2(i-2, u);
 	T a_im1_m1 = this->compute_a_i_m1(i-1, u);
-	T a_i_0 = this->compute_a_i_0(i, u);
+	T a_i_0    = this->compute_a_i_0 (i  , u);
 
 
 	T numerator_x = a_im3_m3 * weights[i-3] * cntrl_pts_x[i-3] +
@@ -264,42 +276,37 @@ T Nurbs<T>::get_u_from_Cx(T Cx, T u_start, T TOL) {
 
 int main(int argc, char** argv) {
 
+
 	int nurbs_order = 4;
 	int poly_order = nurbs_order - 1;
 
-	std::vector<double> cntrl_pts_x = {0, 30, 60, 90, 120, 125, 130, 132., 135, 150, 160, 180};
-	std::vector<double> cntrl_pts_y = {1., 1,  1.1, 1.15, 1.2, 5., 10, 1.5, 1.51, 1.52, 1.53, 1.54};
-	//std::vector<double> cntrl_pts_x = {0, 1, 2, 3, 4, 5, 6, 7};
-	//std::vector<double> cntrl_pts_y = {0, 1, 2, 3, 4, 5, 6, 7};
+	std::vector<adouble> cntrl_pts_x = {0, 30, 60, 90, 120, 125, 130, 132., 135, 150, 160, 180};
+	std::vector<adouble> cntrl_pts_y = {1., 1,  1.1, 1.15, 1.2, 5., 10, 1.5, 1.51, 1.52, 1.53, 1.54};
 	
 
 	int num_cntrl_pts = cntrl_pts_x.size();
 
 
-	Nurbs<double> nurbs(num_cntrl_pts, nurbs_order);
+	Nurbs<adouble> nurbs(num_cntrl_pts, nurbs_order);
 	nurbs.set_cntrl_pts_x(cntrl_pts_x);
 	nurbs.set_cntrl_pts_y(cntrl_pts_y);
 
-	/*std::vector<double> U = nurbs.get_U();
-	for (std::vector<double>::iterator it=U.begin(); it!=U.end(); ++it) {
-		std::cout << *it << "\t";
-	}
-	std::cout << std::endl;*/
 
-
-	/*std::ofstream file_nurbes;
+	std::ofstream file_nurbes;
   	file_nurbes.open ("curve_nurbes.txt");
 
-  	for (double u=0.; u<1; u+=0.001) {
+  	for (adouble u=0.; u<1; u+=0.001) {
 
-		std::vector<double> C = nurbs.eval_nurbs_curve_mod(u);
+		adouble Cx = nurbs.eval_nurbs_curve_x(u);
+		adouble Cy = nurbs.eval_nurbs_curve_y(u);
 		
-		file_nurbes << u << "\t" << C[0] << "\t" << C[1] << std::endl;
+		file_nurbes << u << "\t" << Cx << "\t" << Cy << std::endl;
 
 	}
-	file_nurbes.close();*/
+	file_nurbes.close();
 
-
+	return 0;
+	}/*
 
 	// TODO: Newton implementieren und Laufzeittest
 	double TOL = 0.1;
@@ -320,7 +327,7 @@ int main(int argc, char** argv) {
 	//std::cout << std::setprecision(20) << elapsed_secs << std::endl;
 
 
-	}/*
+	}
 	
 
 	double h = 0.01;

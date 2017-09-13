@@ -81,6 +81,12 @@ for i=1:length(q_dsc(:,1))
 end
 
 
+% fileID = fopen('/home/argo/masterarbeit/num_data/t_meas_10Kmin_L1_15.txt', 'w');
+% formatSpec = '%8.4f\n';
+% fprintf(fileID, formatSpec, meas_times');
+% fclose(fileID);
+% return
+
 % Create simulation parameter struct
 p_sim = struct();
 
@@ -135,6 +141,7 @@ t_end = (T_end - T_0) / heat_rate_s;  % vllt an meas_times(end) koppeln...
 
 solvind('setTimeHorizon', int, [t_0, t_end]);
 solvind('setContOutputConfig', int, meas_times);  
+solvind('storeAdjSensAtGrid', int);
 % just evaluate at times where also measurements were done to cpmpute residuum later
 
 %solvind('storeAdjSensAtGrid', int); % benutzen erstmal nur fwdSens

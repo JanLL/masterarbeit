@@ -1,4 +1,18 @@
-% rational splines testing
+% NURBS
+
+data = importdata('output.txt');
+
+figure(1)
+plot(data(:,1), data(:,2) - data(:,3)); hold on
+
+
+
+
+
+
+
+
+return
 
 nrb_order = 4; % nrb_order = 4 equates to C^2
 
