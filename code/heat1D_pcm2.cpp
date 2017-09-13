@@ -24,10 +24,26 @@
 #include <fstream>
 
 
-#include "/home/argo/masterarbeit/code/tools/nurbs_interpolation_c++/nurbs.hpp"
-#include "/home/argo/masterarbeit/code/tools/nurbs_interpolation_c++/nurbs.cpp"
-#include "/home/argo/masterarbeit/code/tools/nurbs_interpolation_c++/Interp1d_linear.hpp"
-#include "/home/argo/masterarbeit/code/tools/nurbs_interpolation_c++/Interp1d_linear.cpp"
+//#include "/home/argo/masterarbeit/code/tools/nurbs_interpolation_c++/nurbs.hpp"
+//#include "/home/argo/masterarbeit/code/tools/nurbs_interpolation_c++/nurbs.cpp"
+//#include "/home/argo/masterarbeit/code/tools/nurbs_interpolation_c++/Interp1d_linear.hpp"
+//#include "/home/argo/masterarbeit/code/tools/nurbs_interpolation_c++/Interp1d_linear.cpp"
+
+
+
+using namespace std;
+using namespace SolvInd;
+
+
+svLong INTEGRATOR_PRINT_LVL ( 0 );
+
+std::vector<double> solGrid;
+
+std::vector< Sonic::DMat> g_traj;
+std::vector< Sonic::DMat> g_fwdSens;
+std::vector< Sonic::DMat> g_adjSens;
+
+
 
 
 template<typename T>
@@ -77,15 +93,44 @@ void c_p_formula(T x, T& c_p, T& dc_p, T p0, T p1, T p2, T p3, T p4, T p5) {
 }
 
 
+class TContFwdSensGetter : public IPlugin
+{
+public:
 
+	TContFwdSensGetter()
+	:
+		IPlugin()
+	{
+		m_event_filter.reset();
+		m_event_filter.set ( IPlugin::Event_OutputGrid );
 
-using namespace std;
-using namespace SolvInd;
+		m_output_grid = solGrid;
 
+	}
 
-std::vector< Sonic::DMat> g_traj;
-std::vector< Sonic::DMat> g_fwdSens;
-std::vector< Sonic::DMat> g_adjSens;
+	virtual svLong atEvent (
+		const TEvent       event,
+		const TOutputData *data
+	)
+	{
+		//std::cout << "TContFwdSensGetter::atEvent called at time: " << data->m_time << std::endl;
+
+		g_traj.push_back( Sonic::DMat ( Sonic::cDMat ( data->m_solution_xd[0], data->m_dims [ Component_XD ], data->m_dims [ Component_XD ], 1 ) ) );
+
+		//std::cout << "TContFwdSensGetter: stored traj:\n" << g_traj[ g_traj.size() - 1 ];
+
+		//g_fwdSens.push_back( Sonic::DMat ( Sonic::cDMat ( data->m_fwdSensitivities[0], data->m_fwdSensLeaDim, data->m_dims [ Component_XD ], m_nRays * m_fwdTCOrder) ) );
+
+		//std::cout << "TContFwdSensGetter: stored fwdSens:\n" << g_fwdSens[ g_fwdSens.size() - 1 ];
+
+		return 0;
+	}
+
+	svULong m_fwdTCOrder;
+	svULong m_nRays;
+
+};
+
 
 
 double L1;				// Length of Constantan
@@ -105,6 +150,7 @@ double rho_pcm;
 double heat_rate;
 double T_0;
 double T_end;
+
 
 
 template <typename T>
@@ -186,10 +232,20 @@ int main( int argc, char* argv[] )
 	heat_rate    = 10.;     // Oven temp heat rate [K/min]   
 	T_0  	     = 10.;     // [degC]
 	T_end  	     = 200.;    // [degC]
-	
+
 
 	// Some pre-calculations
 	double heat_rate_s = heat_rate / 60.; // [K/min] -> [K/s]
+	dx_Const = L1 / static_cast<double>(N1);
+	dx_pcm = L3 / static_cast<double>(N3);
+	alpha = L3/L1 * static_cast<double>(N1)/static_cast<double>(N3);
+
+	const double t_0 = 0.;
+	const double t_end = (T_end - T_0) / heat_rate_s;
+
+	for (double T=T_0; T < T_end; T += 0.1) {
+		solGrid.push_back ( (T - T_0) / heat_rate_s );
+	}
 
 
 	// create a DAESOL-II instance
@@ -254,14 +310,10 @@ int main( int argc, char* argv[] )
 	integrator->setIntegratorPrintLevel( INTEGRATOR_PRINT_LVL );
 
 
-	const double t_0
-	const double t_end = (T_end - T_0) / heat_rate_s;
-
-	evaluator->setTimeHorizon( 0, t_end );
 
 
 	double* init_xd = new double [ nxd ];
-	for (int i=0; i<nxd; ++i) {
+	for (svULong i=0; i<nxd; ++i) {
 		init_xd[i] = T_0;
 	}
 
@@ -281,13 +333,29 @@ int main( int argc, char* argv[] )
 	integrator->setInitialValues(
 			Component_P ,
 			np,
-			&param
+			params
 			);
 
 
+	const double relTol ( 1e-06 );
+	integrator->setStepsizeBounds    ( 0, 0   );
+	integrator->setRelativeTolerance ( relTol );
+	integrator->setInitialStepsize   ( 1e-06  );
+	integrator->setMaxIntSteps       ( 1000   );
+	integrator->setTimeHorizon       ( t_0, t_end   );
+
+	TContFwdSensGetter fwdSensGetter;
+	fwdSensGetter.m_fwdTCOrder = 1;
+	fwdSensGetter.m_nRays      = 6;  // unklar was das ist...
+
+	integrator->registerPlugin( &fwdSensGetter);
 
 
+    integrator->activateFeature( IIntegrator::Feature_Store_Grid );
+    integrator->activateFeature( IIntegrator::Feature_Store_Tape );    
 
+    std::cout << "Integrate now...\n";
+	errorCode = integrator->evaluate();
 
 
 
