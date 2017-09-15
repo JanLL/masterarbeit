@@ -46,7 +46,6 @@ svULong nmp;
 svULong nxd;
 svULong np;
 
-std::vector< Sonic::DMat> g_traj;
 std::vector< Sonic::DMat> g_fwdSens;
 std::vector< Sonic::DMat> g_adjSens;
 
@@ -119,6 +118,8 @@ public:
 
 		m_output_grid = solGrid;
 
+		solGrid_idx = 0;
+
 	}
 
 	virtual svLong atEvent (
@@ -126,10 +127,7 @@ public:
 		const TOutputData *data
 	)
 	{
-		//std::cout << "TContFwdSensGetter::atEvent called at time: " << data->m_time << std::endl;
-
-		g_traj.push_back( Sonic::DMat ( Sonic::cDMat ( data->m_solution_xd[0], data->m_dims [ Component_XD ], data->m_dims [ Component_XD ], 1 ) ) );
-		
+		//std::cout << "TContFwdSensGetter::atEvent called at time: " << data->m_time << std::endl;		
 
 		const double* T_ptr = data->m_solution_xd[0];
 		for (svULong i=0; i<nxd; ++i) {
@@ -150,7 +148,7 @@ public:
 	svULong m_fwdTCOrder;
 	svULong m_nRays;
 
-	svULong solGrid_idx = 0;
+	svULong solGrid_idx;
 
 };
 
@@ -261,15 +259,14 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 {
 	svLong errorCode ( 0 );
 
-	// Get measurement timepoints for evaluation grid, NOTE: atm inaccurate because of std::stod
-	// Later: Forward them via mex-function argument.
-	std::string line;
-	std::ifstream t_meas_file("/home/argo/masterarbeit/num_data/t_meas_10Kmin_L1_15.txt");
-	if (t_meas_file.is_open()) {
-		while (getline(t_meas_file, line)) {
-			double t_meas = std::stod(line);
-			solGrid.push_back(t_meas);
-		}
+
+
+
+	svULong gridsize = mxGetN(prhs[0]);
+	const double* input_ptr = mxGetPr(prhs[0]);
+	for (svULong i=0; i<gridsize; ++i) {
+		solGrid.push_back(*input_ptr);
+		input_ptr++;
 	}
 	nmp = solGrid.size();  // number measure points
 
