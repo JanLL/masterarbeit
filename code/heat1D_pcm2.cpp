@@ -123,7 +123,7 @@ public:
 
 		//std::cout << "TContFwdSensGetter: stored traj:\n" << g_traj[ g_traj.size() - 1 ];
 
-		//g_fwdSens.push_back( Sonic::DMat ( Sonic::cDMat ( data->m_fwdSensitivities[0], data->m_fwdSensLeaDim, data->m_dims [ Component_XD ], m_nRays * m_fwdTCOrder) ) );
+		g_fwdSens.push_back( Sonic::DMat ( Sonic::cDMat ( data->m_fwdSensitivities[0], data->m_fwdSensLeaDim, data->m_dims [ Component_XD ], m_nRays * m_fwdTCOrder) ) );
 
 		//std::cout << "TContFwdSensGetter: stored fwdSens:\n" << g_fwdSens[ g_fwdSens.size() - 1 ];
 
@@ -216,7 +216,7 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 
 svLong adjInjector( const svULong idx, svULong& adjLeaDim, const double*& adjTrajIn )
 {
-	std::cout << "adjInjector: called with idx = " << idx << std::endl;
+	//std::cout << "adjInjector: called with idx = " << idx << std::endl;
 
 	static Sonic::DMat injMat ( N1+N3, 2*solGrid.size() );
 	injMat.zero();
@@ -390,17 +390,30 @@ int main( int argc, char* argv[] )
 	integrator->setMaxIntSteps       ( 1000   );
 	integrator->setTimeHorizon       ( t_0, t_end   );
 
-  	svULong nAdjDir = solGrid.size() * 2;
-	double* adjSensDir = new double [ nAdjDir * nxd ]; // in direction N1+1 and N1+2
-  	memset ( adjSensDir, 0, nAdjDir * nxd * sizeof ( double ) );
+	// Adjoint Sensivity generation
+	svULong nAdjDir = 2;
+  	svULong nAdjDirTotal = solGrid.size() * nAdjDir;
+	double* adjSensDir = new double [ nAdjDirTotal * nxd ]; // in direction N1+1 and N1+2
+  	memset ( adjSensDir, 0, nAdjDirTotal * nxd * sizeof ( double ) );
  
+  	// Forward Sensivity generation
+	svULong nFwdDir = np;
+  	double* fwdSensDir = new double [ (1 + nxd + np) * np ]; // in direction ( t,xd,(xa),q,p,h ), where the t part is in fact ignored
+	memset ( fwdSensDir, 0, (1 + nxd + np) * np * sizeof ( double ) );
+
+	for ( svULong i = 0; i < np; i++ ){
+		std::cout << i << "\t" << (1+nxd+np)*i + 1+nxd+i << std::endl;
+
+		fwdSensDir [ (1+nxd+np)*i + 1+nxd+i] = 1;
+	}
+
+
 
 	TContFwdSensGetter fwdSensGetter;
 	fwdSensGetter.m_fwdTCOrder = 1;
-	fwdSensGetter.m_nRays      = 6;  // unklar was das ist...
-
+	fwdSensGetter.m_nRays      = np;  // nicht sicher was das ist
 	integrator->registerPlugin( &fwdSensGetter);
-
+	
 
     integrator->activateFeature( IIntegrator::Feature_Store_Grid );
     integrator->activateFeature( IIntegrator::Feature_Store_Tape );  
@@ -408,15 +421,36 @@ int main( int argc, char* argv[] )
 	integrator->activateFeature( IIntegrator::Feature_Adjoint_Sensitivity_Injection );  
 	integrator->setAdjointInjectionGrid( solGrid, &adjInjector );
 
-
     std::cout << "Integrate now...\n";
+	integrator->setForwardTaylorCoefficients (
+			nFwdDir, // no of fwd Dirs
+			1, // order
+			1 + nxd + np, // leading Dim of fwd Dirs
+			fwdSensDir
+			);
+	integrator->setAdjointTaylorCoefficients ( 0, 0, 0, 0, 0 );
 	errorCode = integrator->evaluate();
 	std::cout << "Integrator return code : " << errorCode << "\n\n" << std::endl;
 	if ( errorCode < 0 ){
 		cout << "Error occured during evaluation, terminating now... \n" << errorCode<< std::endl;
 		return errorCode;
 	}
+
+	std::cout << g_fwdSens[0].nRows() << "\t" << g_fwdSens[0].nCols() << std::endl;
+
 	
+	//std::cout << g_fwdSens[0].refSubMatrix(N1,0, 1, np) << std::endl;
+	std::cout << g_fwdSens[0].refSubMatrix(N1  , 0, 1, 6) << std::endl;
+	std::cout << g_fwdSens[0].refSubMatrix(N1+1, 0, 1, 6) << std::endl;
+	std::cout << g_fwdSens[500].refSubMatrix(N1  , 0, 1, 6) << std::endl;
+	std::cout << g_fwdSens[500].refSubMatrix(N1+1, 0, 1, 6) << std::endl;
+	
+
+
+
+
+
+
 
 	std::ofstream file_output;
   	file_output.open ("/home/argo/masterarbeit/code/output.txt");
@@ -430,7 +464,7 @@ int main( int argc, char* argv[] )
   	std::cout << "Start backward sweep...\n";
 	integrator->setForwardTaylorCoefficients ( 0, 0, 0, 0 );
 	integrator->setAdjointTaylorCoefficients (
-			nAdjDir, // no of adj Dirs
+			nAdjDirTotal, // no of adj Dirs
 			0, // rays
 			1, // order
 			nxd, // leading Dim of adj Dirs
