@@ -123,7 +123,7 @@ public:
 
 		//std::cout << "TContFwdSensGetter: stored traj:\n" << g_traj[ g_traj.size() - 1 ];
 
-		g_fwdSens.push_back( Sonic::DMat ( Sonic::cDMat ( data->m_fwdSensitivities[0], data->m_fwdSensLeaDim, data->m_dims [ Component_XD ], m_nRays * m_fwdTCOrder) ) );
+		//g_fwdSens.push_back( Sonic::DMat ( Sonic::cDMat ( data->m_fwdSensitivities[0], data->m_fwdSensLeaDim, data->m_dims [ Component_XD ], m_nRays * m_fwdTCOrder) ) );
 
 		//std::cout << "TContFwdSensGetter: stored fwdSens:\n" << g_fwdSens[ g_fwdSens.size() - 1 ];
 
@@ -150,6 +150,8 @@ double rho_Const;
 double c_p_Const;
 double lambda_pcm;
 double rho_pcm;
+
+double m_pcm;			// mass of PCM sample [mg]
 
 double heat_rate;
 double T_0;
@@ -250,6 +252,7 @@ int main( int argc, char* argv[] )
 			solGrid.push_back(t_meas);
 		}
 	}
+	svULong nmp = solGrid.size();  // number measure points
 
 
 	// Set Parameters
@@ -264,6 +267,8 @@ int main( int argc, char* argv[] )
 
 	lambda_pcm   = 0.96;	// heat conductivity of pcm [mW/(mm*K)]
 	rho_pcm      = 0.85;	// density of pcm [mg/mm^3]
+
+	m_pcm 	     = 10.47;   // mass of pcm [mg], here: sample 407
 
 	heat_rate    = 10.;     // Oven temp heat rate [K/min]   
 	T_0  	     = 10.;     // [degC]
@@ -421,36 +426,23 @@ int main( int argc, char* argv[] )
 	integrator->activateFeature( IIntegrator::Feature_Adjoint_Sensitivity_Injection );  
 	integrator->setAdjointInjectionGrid( solGrid, &adjInjector );
 
-    std::cout << "Integrate now...\n";
-	integrator->setForwardTaylorCoefficients (
+    /*integrator->setForwardTaylorCoefficients (
 			nFwdDir, // no of fwd Dirs
 			1, // order
 			1 + nxd + np, // leading Dim of fwd Dirs
 			fwdSensDir
 			);
-	integrator->setAdjointTaylorCoefficients ( 0, 0, 0, 0, 0 );
+	integrator->setAdjointTaylorCoefficients ( 0, 0, 0, 0, 0 );*/
+
+	std::cout << "Integrate now...\n";
 	errorCode = integrator->evaluate();
-	std::cout << "Integrator return code : " << errorCode << "\n\n" << std::endl;
+	std::cout << "Integrator return code : " << errorCode << "\n" << std::endl;
 	if ( errorCode < 0 ){
 		cout << "Error occured during evaluation, terminating now... \n" << errorCode<< std::endl;
 		return errorCode;
 	}
-
-	std::cout << g_fwdSens[0].nRows() << "\t" << g_fwdSens[0].nCols() << std::endl;
-
 	
-	//std::cout << g_fwdSens[0].refSubMatrix(N1,0, 1, np) << std::endl;
-	std::cout << g_fwdSens[0].refSubMatrix(N1  , 0, 1, 6) << std::endl;
-	std::cout << g_fwdSens[0].refSubMatrix(N1+1, 0, 1, 6) << std::endl;
-	std::cout << g_fwdSens[500].refSubMatrix(N1  , 0, 1, 6) << std::endl;
-	std::cout << g_fwdSens[500].refSubMatrix(N1+1, 0, 1, 6) << std::endl;
 	
-
-
-
-
-
-
 
 	std::ofstream file_output;
   	file_output.open ("/home/argo/masterarbeit/code/output.txt");
@@ -461,7 +453,6 @@ int main( int argc, char* argv[] )
   	file_output.close();
 
 
-  	std::cout << "Start backward sweep...\n";
 	integrator->setForwardTaylorCoefficients ( 0, 0, 0, 0 );
 	integrator->setAdjointTaylorCoefficients (
 			nAdjDirTotal, // no of adj Dirs
@@ -470,18 +461,16 @@ int main( int argc, char* argv[] )
 			nxd, // leading Dim of adj Dirs
 			adjSensDir
 			);
+  	std::cout << "Start backward sweep...\n";
 	errorCode = integrator->backwardSensitivitySweep();
-	std::cout << "Integrator return code : " << errorCode << "\n\n" << std::endl;
+	std::cout << "Integrator return code : " << errorCode << "\n" << std::endl;
 	if ( errorCode < 0 ){
 		cout << "Error occured during beackward sweep, terminating now... \n" << errorCode<< std::endl;
 		return errorCode;
 	}
-	std::cout << "Finished backward Sweep\n";
 
 
-
-
-  	// Get Adjoint Sensitivities on solGrid
+  	// Get Adjoint Sensitivities on solGrid and save in g_adjSens
 	const double* sol;
 	svULong solLD;
 
@@ -495,10 +484,18 @@ int main( int argc, char* argv[] )
 		g_adjSens [ ii ] <<= Sonic::cDMat ( sol +  ii * 2 * solLD, solLD, np, 2 );
 	}
 
-	std::cout << g_adjSens[0] << std::endl;
-	std::cout << g_adjSens[500] << std::endl;
 
+	// Compute heat flux q between Constantan and PCM
+	const double scale_q = (lambda_pcm * m_pcm) / (rho_pcm * dx_pcm*dx_pcm * N3); // Note: rho_pcm atm NOT temp.-dependend! Change Later!
 
+	Sonic::DMat dq_dp (nmp, np);
+	for (svULong i=0; i<nmp; ++i) {
+		for (svULong j=0; j<np; ++j) {
+			dq_dp(i,j) = scale_q * ( (g_adjSens[i])(j,0) - (g_adjSens[i])(j,1) );
+		}
+	}
+
+	std::cout << dq_dp.refSubMatrix(0,0,10,np) << std::endl;
 
 
 	return errorCode;
