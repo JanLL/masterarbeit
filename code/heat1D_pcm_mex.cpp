@@ -31,17 +31,19 @@
 //#include "/home/argo/masterarbeit/code/tools/nurbs_interpolation_c++/nurbs.cpp"
 //#include "/home/argo/masterarbeit/code/tools/nurbs_interpolation_c++/Interp1d_linear.hpp"
 //#include "/home/argo/masterarbeit/code/tools/nurbs_interpolation_c++/Interp1d_linear.cpp"
+#include "/home/argo/masterarbeit/code/c_p_parametrizations.cpp"
 
 
 
 using namespace std;
 using namespace SolvInd;
 
-
-
 svLong INTEGRATOR_PRINT_LVL ( 0 );
 
-// SolvIND objects
+
+
+
+// Global SolvIND objects
 IIntegrator*          integrator;
 TIntegratorEvaluator* evaluator;
 TModelFunctions       model;
@@ -51,6 +53,8 @@ svULong nAdjDir;
 svULong nAdjDirTotal;
 double* adjSensDir;
 
+svULong nFwdDir;
+double* fwdSensDir;
 
 std::vector<double> solGrid;
 Sonic::DMat q_meas;
@@ -59,61 +63,32 @@ svULong nmp;
 svULong nxd;
 svULong np;
 
+Sonic::DMat g_traj;
 std::vector< Sonic::DMat> g_fwdSens;
 std::vector< Sonic::DMat> g_adjSens;
 
-Sonic::DMat g_traj2;
 
 
+// Global Simulation parameters
+double L1;				// Length of Constantan
+double L3;				// Length of PCM
+long N1;				// Number of discretization points Constantan
+long N3;				// Number of discretization points PCM
+double dx_Const;		// Mesh size Constantan
+double dx_pcm;			// Mesh size PCM
+double alpha;			// quotient for Constantan / PCM grid transition
 
+double lambda_Const;	// heat conductivity of Constantan [mW/(mm*K)]
+double rho_Const;		// density of Constantan [mg/mm^3]
+double c_p_Const;		// specific heat capacity of Constantan [mJ/(mg*K)]
+double lambda_pcm;		// heat conductivity of PCM [mW/(mm*K)]
+double rho_pcm;			// density of PCM [mg/mm^3]
 
-template<typename T>
-void fraser_suzuki(T x, T& c_p, T& dc_p, T h,T r,T wr,T sr,T z, T b) {
+double m_pcm;			// mass of PCM sample [mg]
 
-
-	T c_p_case0;
-	T c_p_case1;
-	T dc_p_case0;
-	T dc_p_case1;
-	T condition;
-
-	T log_sr = log(sr);
-
-	// TODO: Mal mit fmin arbeiten statt komplett condition in condassign zu stecken...
-	condition = z - wr*sr/(sr*sr-1) - x;
-
-	T log_arg = (1 + (x-z)*(sr*sr-1)/(wr*sr));
-	T exp_arg = -log(r)/(log_sr*log_sr) * log(log_arg)*log(log_arg);
-	
-	c_p_case0 = b;
-	c_p_case1 = h*exp(exp_arg) + b;
-	condassign(c_p, condition, c_p_case1, c_p_case0);
-
-	dc_p_case0 = 0.;
-	dc_p_case1 = -2.*log(r)/(log_sr*log_sr) * (sr*sr - 1)/(wr*sr) * log(log_arg)/log_arg * h*exp(exp_arg);
-	condassign(dc_p, condition, dc_p_case1, dc_p_case0);
-
-	return;
-}
-
-
-template<typename T>
-void c_p_formula(T x, T& c_p, T& dc_p, T p0, T p1, T p2, T p3, T p4, T p5) {
-
-	T atan_arg = -p3*(x-p0);
-	T atan_value = atan(atan_arg);
-	T exp_arg = -p2*(x-p0)*(x-p0);
-	T exp_value = exp(exp_arg);
-
-	c_p = (atan_value + M_PI/2.)*(p1*exp_value) + p4*x + p5;
-
-	dc_p = -(p1*p3*exp_value)/(1+atan_value*atan_value) 
-	       -2*p1*p2*(x-p0)*exp_value * (atan_value + M_PI/2.) + p4;
-
-	return;
-}
-
-
+double heat_rate;		// Oven heat rate [K/min]
+double T_0;				// Start temperature of Constantan & PCM
+double T_end;			// Integration ends when oven reaches T_end
 
 
 
@@ -138,16 +113,20 @@ public:
 
 	}
 
+	void resetSolGrid_idx() {
+		solGrid_idx = 0;
+	}
+
 	virtual svLong atEvent (
 		const TEvent       event,
 		const TOutputData *data
 	)
 	{
-		std::cout << "TContFwdSensGetter::atEvent called at time: " << data->m_time << std::endl;
+		//std::cout << "TContFwdSensGetter::atEvent called at time: " << data->m_time << std::endl;
 
 		const double* T_ptr = data->m_solution_xd[0];
 		for (svULong i=0; i<nxd; ++i) {
-			g_traj2(solGrid_idx, i) = *T_ptr;
+			g_traj(solGrid_idx, i) = *T_ptr;
 			T_ptr++;
 		}
 
@@ -168,30 +147,29 @@ public:
 
 };
 
+TContFwdSensGetter fwdSensGetter;  // aside other global variables because class declaration of TContFwdSensGetter needed first
 
 
-TContFwdSensGetter fwdSensGetter;
 
 
-double L1;				// Length of Constantan
-double L3;				// Length of PCM
-long N1;				// Number of discretization points Constantan
-long N3;				// Number of discretization points PCM
-double dx_Const;		// Mesh size Constantan
-double dx_pcm;			// Mesh size PCM
-double alpha;			// quotient for Constantan / PCM grid transition
+svLong adjInjector( const svULong idx, svULong& adjLeaDim, const double*& adjTrajIn )
+{
+	//std::cout << "adjInjector: called with idx = " << idx << "\n";
 
-double lambda_Const;
-double rho_Const;
-double c_p_Const;
-double lambda_pcm;
-double rho_pcm;
+	static Sonic::DMat injMat ( N1+N3, 2*solGrid.size() );
+	injMat.zero();
 
-double m_pcm;			// mass of PCM sample [mg]
+	injMat(N1  ,2*idx  ) = 1;
+	injMat(N1+1,2*idx+1) = 1;
 
-double heat_rate;
-double T_0;
-double T_end;
+	adjLeaDim = injMat.memDimRows();
+	adjTrajIn = injMat.getFVector();
+
+//	cout << "adjInjector: injection Matrix:\n" << injMat << endl;
+
+	return 0;
+} 
+
 
 
 
@@ -252,26 +230,6 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 
 
 
-svLong adjInjector( const svULong idx, svULong& adjLeaDim, const double*& adjTrajIn )
-{
-	//std::cout << "adjInjector: called with idx = " << idx << "\n";
-
-	static Sonic::DMat injMat ( N1+N3, 2*solGrid.size() );
-	injMat.zero();
-
-	injMat(N1  ,2*idx  ) = 1;
-	injMat(N1+1,2*idx+1) = 1;
-
-	adjLeaDim = injMat.memDimRows();
-	adjTrajIn = injMat.getFVector();
-
-//	cout << "adjInjector: injection Matrix:\n" << injMat << endl;
-
-	return 0;
-} 
-
-
-
 
 
 void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
@@ -300,23 +258,14 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		return;
 	}
 
-	
 
 	mxGetString(prhs[0], command, 99);
 
 	// For Testing purposes...
 	if (strncmp(command, "test", 99) == 0) {
 
-		svULong M = mxGetM(prhs[1]);
-		svULong N = mxGetN(prhs[1]);
-
-		const double* input_ptr = mxGetPr(prhs[1]);
-		for (svULong i=0; i<M*N; ++i) {
-			std::cout << *input_ptr << std::endl;
-			input_ptr++;
-		}
-
 	}
+
 
 
 
@@ -357,7 +306,7 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		T_end  	     = 200.;    // [degC]
 
 
-		g_traj2 = Sonic::DMat(nmp, N1+N3);
+		g_traj = Sonic::DMat(nmp, N1+N3);
 
 
 		// Some pre-calculations
@@ -459,8 +408,8 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 	  	memset ( adjSensDir, 0, nAdjDirTotal * nxd * sizeof ( double ) );
 	 
 	  	// Forward Sensivity generation
-		svULong nFwdDir = np;
-	  	double* fwdSensDir = new double [ (1 + nxd + np) * np ]; // in direction ( t,xd,(xa),q,p,h ), where the t part is in fact ignored
+		nFwdDir = np;
+	  	fwdSensDir = new double [ (1 + nxd + np) * np ]; // in direction ( t,xd,(xa),q,p,h ), where the t part is in fact ignored
 		memset ( fwdSensDir, 0, (1 + nxd + np) * np * sizeof ( double ) );
 
 		for ( svULong i = 0; i < np; i++ ){
@@ -482,6 +431,16 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 
 
 	} else if (strncmp(command, "optimization", 99) == 0) {
+
+		evaluator->resetStatistics();
+		fwdSensGetter.resetSolGrid_idx();
+		g_adjSens.clear();
+		g_fwdSens.clear();
+
+		integrator->setAdjointInjectionGrid(solGrid, &adjInjector); 
+		// Q: nicht ganz klar warum man das nochmal braucht? Sonst sind alle adjSens gleich 0...
+
+
 
 		double* params = new double [ np ];
 		// old atan peak test parameters
@@ -509,9 +468,9 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 				1, // order
 				1 + nxd + np, // leading Dim of fwd Dirs
 				fwdSensDir
-				);
-		integrator->setAdjointTaylorCoefficients ( 0, 0, 0, 0, 0 );*/
-
+				);*/
+		integrator->setForwardTaylorCoefficients ( 0, 0, 0, 0 );
+		integrator->setAdjointTaylorCoefficients ( 0, 0, 0, 0, 0 );
 		std::cout << "Integrate now...\n";
 		errorCode = integrator->evaluate();
 		std::cout << "Integrator return code : " << errorCode << "\n" << std::endl;
@@ -519,6 +478,7 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 			cout << "Error occured during evaluation, terminating now... \n" << errorCode<< std::endl;
 			return;
 		}
+
 
 		integrator->setForwardTaylorCoefficients ( 0, 0, 0, 0 );
 		integrator->setAdjointTaylorCoefficients (
@@ -536,20 +496,20 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 			return;
 		}
 
-
 	  	// Get Adjoint Sensitivities on solGrid and save in g_adjSens
 		const double* sol;
 		svULong solLD;
 
 		for ( svULong ii = 0; ii < solGrid.size(); ii ++ ){
-			g_adjSens.push_back( Sonic::DMat ( np, 2 ) );
+			g_adjSens.push_back( Sonic::DMat ( np, nAdjDir ) );
 			g_adjSens [ ii ].zero();
 		}
 
 		integrator->getAdjointSensitivities( 0, Component_P, solLD, sol );
 		for ( svULong ii = 0; ii < solGrid.size(); ii ++ ){
-			g_adjSens [ ii ] <<= Sonic::cDMat ( sol +  ii * 2 * solLD, solLD, np, 2 );
+			g_adjSens [ ii ] <<= Sonic::cDMat ( sol +  ii * nAdjDir * solLD, solLD, np, nAdjDir );
 		}
+
 
 
 		// Compute heat flux q between Constantan and PCM
@@ -569,10 +529,8 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		// Compute heat flux and residuum vector
 		Sonic::DMat heat_flux(nmp, 1);
 		for (svULong i=0; i<nmp; ++i) {
-			heat_flux(i,0) = -scale_q * (g_traj2(i,N1+1) - g_traj2(i,N1));
+			heat_flux(i,0) = -scale_q * (g_traj(i,N1+1) - g_traj(i,N1));
 		}
-
-		// TODO: Waermestrommessdaten von Matlab uebergeben und damit Residuum Vector bauen...
 		
 		Sonic::DMat residuum(nmp, 1);
 		for (svULong i=0; i<nmp; ++i) {
@@ -600,7 +558,7 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 
 		if (nlhs >= 3) {
 			// Temperature trajectory
-			const Sonic::cDMat& T_temp(g_traj2);
+			const Sonic::cDMat& T_temp(g_traj);
 			plhs[2] = mxCreateDoubleMatrix(T_temp.nRows(), T_temp.nCols(), mxREAL);
 			Sonic::DMat T_output(mxGetPr(plhs[2]), T_temp.nRows(),
 					T_temp.nRows(), T_temp.nCols(), Sonic::CreateReference);
@@ -608,6 +566,10 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		}
 
 		return;
+
+
+	} else if (strncmp(command, "reset", 99) == 0) {
+		// TODO!
 
 
 	}
