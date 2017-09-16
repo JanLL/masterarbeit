@@ -38,11 +38,24 @@ using namespace std;
 using namespace SolvInd;
 
 
+
 svLong INTEGRATOR_PRINT_LVL ( 0 );
 
-std::vector<double> solGrid;
-svULong nmp;
+// SolvIND objects
+IIntegrator*          integrator;
+TIntegratorEvaluator* evaluator;
+TModelFunctions       model;
 
+
+svULong nAdjDir;
+svULong nAdjDirTotal;
+double* adjSensDir;
+
+
+std::vector<double> solGrid;
+Sonic::DMat q_meas;
+
+svULong nmp;
 svULong nxd;
 svULong np;
 
@@ -108,7 +121,6 @@ void c_p_formula(T x, T& c_p, T& dc_p, T p0, T p1, T p2, T p3, T p4, T p5) {
 class TContFwdSensGetter : public IPlugin
 {
 public:
-
 	TContFwdSensGetter()
 	:
 		IPlugin()
@@ -116,9 +128,13 @@ public:
 		m_event_filter.reset();
 		m_event_filter.set ( IPlugin::Event_OutputGrid );
 
-		m_output_grid = solGrid;
-
 		solGrid_idx = 0;
+
+	}
+
+	void setGrid(std::vector<double>& grid) {
+
+		m_output_grid = grid;
 
 	}
 
@@ -127,7 +143,7 @@ public:
 		const TOutputData *data
 	)
 	{
-		//std::cout << "TContFwdSensGetter::atEvent called at time: " << data->m_time << std::endl;		
+		std::cout << "TContFwdSensGetter::atEvent called at time: " << data->m_time << std::endl;
 
 		const double* T_ptr = data->m_solution_xd[0];
 		for (svULong i=0; i<nxd; ++i) {
@@ -152,6 +168,9 @@ public:
 
 };
 
+
+
+TContFwdSensGetter fwdSensGetter;
 
 
 double L1;				// Length of Constantan
@@ -257,288 +276,348 @@ svLong adjInjector( const svULong idx, svULong& adjLeaDim, const double*& adjTra
 
 void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 {
+	/****************************************************
+	Function called by Matlab to run measurement simulation to get
+	heat flux residuum vector and Jacobian w.r.t. c_p parameters.
+
+	INPUT:
+		\param prhs[0]: string, function call mode, 
+			possible values: ["init", "evaluate", "optimization"]
+
+		\param prhs[0]: measurement grid where ODE is evaluated.
+		\param prhs[1]: simulation 
+
+	OUTPUT:
+		\param plhs[0]: 
+
+	*****************************************************/ 
+
+	char command[100];
 	svLong errorCode ( 0 );
-
-
-
-
-	svULong gridsize = mxGetN(prhs[0]);
-	const double* input_ptr = mxGetPr(prhs[0]);
-	for (svULong i=0; i<gridsize; ++i) {
-		solGrid.push_back(*input_ptr);
-		input_ptr++;
-	}
-	nmp = solGrid.size();  // number measure points
-
-
-	// Set Parameters
-	L1 = 15.;
-	L3 = 0.5;
-	N1 = 200;
-	N3 = 50;
-
-	lambda_Const = 23.;		
-	rho_Const    = 8.9;
-	c_p_Const    = 0.41;
-
-	lambda_pcm   = 0.96;	// heat conductivity of pcm [mW/(mm*K)]
-	rho_pcm      = 0.85;	// density of pcm [mg/mm^3]
-
-	m_pcm 	     = 10.47;   // mass of pcm [mg], here: sample 407
-
-	heat_rate    = 10.;     // Oven temp heat rate [K/min]   
-	T_0  	     = 10.;     // [degC]
-	T_end  	     = 200.;    // [degC]
-
-	
-
-	g_traj2 = Sonic::DMat(nmp, N1+N3);
-
-
-	// Some pre-calculations
-	double heat_rate_s = heat_rate / 60.; // [K/min] -> [K/s]
-	dx_Const = L1 / static_cast<double>(N1);
-	dx_pcm = L3 / static_cast<double>(N3);
-	alpha = L3/L1 * static_cast<double>(N1)/static_cast<double>(N3);
-
-	const double t_0 = 0.;
-	const double t_end = (T_end - T_0) / heat_rate_s;
-
-	//for (double T=T_0; T < T_end; T += 0.01) {
-	//	solGrid.push_back ( (T - T_0) / heat_rate_s );
-	//}
-
-
-	// create a DAESOL-II instance
-	IIntegrator * integrator = IIntegrator::create( IIntegrator::Impl_DAESOL_II );
-
-	// get corresponding integrator options and evaluator from the integrator instance
-	IOptions             *intOptions = integrator-> getOptions();
-	TIntegratorEvaluator *evaluator  = integrator-> getEvaluator();
-
-
-	// choose the modules used by DAESOL-II by passing the corresponding options (ATLAS or UMFPACK for linear algebra)
-	daesol2::CorrectorEqnSolverOptions* corrEqnSolvOpt = new daesol2::StdNewtonSolverATLASOptions();
-	daesol2::BDFStarterOptions* bdfStartOpt = new daesol2::SelfStarterATLASOptions();
-	//daesol2::CorrectorEqnSolverOptions* corrEqnSolvOpt = new daesol2::StdNewtonSolverUMFPACKOptions();
-	//daesol2::BDFStarterOptions* bdfStartOpt = new daesol2::SelfStarterUMFPACKOptions();
-	
-	daesol2::ConsistencySolverOptions *consOpt = new daesol2::NewtonConsistencySolverOptions();
-
-
-	intOptions->setOption(
-			IOptions::Option_DAESOL_CorrectorEquationSolver,
-			corrEqnSolvOpt
-			);
-	intOptions->setOption(
-			IOptions::Option_DAESOL_BDFStarter,
-			bdfStartOpt
-			);
-	intOptions->setOption(
-		IOptions::Option_DAESOL_ConsistencySolver,
-		consOpt
-		);
-
-	intOptions->setOption( IOptions::Option_DAESOL_INDMode, std::string("Iterative").c_str() );
-
-
-	// create and configure dimensions
-	TIntegratorDimensions dims;
-	dims. dim[ Component_XD ] = N1+N3;
-	dims. dim[ Component_XA ] = 0;
-	dims. dim[ Component_U  ] = 0;
-	dims. dim[ Component_P  ] = 6;
-	dims. dim[ Component_Q  ] = 0;
-	dims. dim[ Component_H  ] = 0;
-	dims. nTrajectories       = 1;
-
-
-
-	nxd = dims. dim [ Component_XD ];
-	np  = dims. dim [ Component_P  ];
-
-
-	// pass problem dimensions to evaluator and integrator
-	evaluator->  setDimensions ( dims );
-	integrator-> setDimensions ( dims );
-
-	// create model function class and fill it with the rhs pointer and pass it to the evaluator
-	TModelFunctions model;
-	model. setFunction < Function_ffcn > ( diffRHS <double>  );
-	model. setFunction < Function_ffcn > ( diffRHS <adouble>  );
-
-	evaluator->setModelFunctions ( &model );
-	integrator->setIntegratorPrintLevel( INTEGRATOR_PRINT_LVL );
-
-
-
-
-	double* init_xd = new double [ nxd ];
-	for (svULong i=0; i<nxd; ++i) {
-		init_xd[i] = T_0;
-	}
-
-	double* params = new double [ np ];
-	// old atan peak test parameters
-	/*params[0] = 125.;
-	params[1] = 10.;
-	params[2] = 0.01;
-	params[3] = 10.;
-	params[4] = 0.003;
-	params[5] = 2.;*/
-
-	// fraser-suzuki Peak test parameters
-	params[0] = 50.;
-	params[1] = 15.;
-	params[2] = 25.;
-	params[3] = 0.2;
-	params[4] = 125.;
-	params[5] = 2.;
-
-
-	integrator->setInitialValues(
-			Component_XD,
-			nxd, // leading dim of init_xd
-			init_xd
-			);
-	integrator->setInitialValues(
-			Component_P ,
-			np,
-			params
-			);
-
-
-	const double relTol ( 1e-06 );
-	integrator->setStepsizeBounds    ( 0, 0   );
-	integrator->setRelativeTolerance ( relTol );
-	integrator->setInitialStepsize   ( 1e-06  );
-	integrator->setMaxIntSteps       ( 1000   );
-	integrator->setTimeHorizon       ( t_0, t_end   );
-
-	// Adjoint Sensivity generation
-	svULong nAdjDir = 2;
-  	svULong nAdjDirTotal = solGrid.size() * nAdjDir;
-	double* adjSensDir = new double [ nAdjDirTotal * nxd ]; // in direction N1+1 and N1+2
-  	memset ( adjSensDir, 0, nAdjDirTotal * nxd * sizeof ( double ) );
- 
-  	// Forward Sensivity generation
-	svULong nFwdDir = np;
-  	double* fwdSensDir = new double [ (1 + nxd + np) * np ]; // in direction ( t,xd,(xa),q,p,h ), where the t part is in fact ignored
-	memset ( fwdSensDir, 0, (1 + nxd + np) * np * sizeof ( double ) );
-
-	for ( svULong i = 0; i < np; i++ ){
-		fwdSensDir [ (1+nxd+np)*i + 1+nxd+i] = 1;
-	}
-
-
-
-	TContFwdSensGetter fwdSensGetter;
-	fwdSensGetter.m_fwdTCOrder = 1;
-	fwdSensGetter.m_nRays      = np;  // nicht sicher was das ist
-	integrator->registerPlugin( &fwdSensGetter);
-	
-
-    integrator->activateFeature( IIntegrator::Feature_Store_Grid );
-    integrator->activateFeature( IIntegrator::Feature_Store_Tape );  
-
-	integrator->activateFeature( IIntegrator::Feature_Adjoint_Sensitivity_Injection );  
-	integrator->setAdjointInjectionGrid( solGrid, &adjInjector );
-
-    /*integrator->setForwardTaylorCoefficients (
-			nFwdDir, // no of fwd Dirs
-			1, // order
-			1 + nxd + np, // leading Dim of fwd Dirs
-			fwdSensDir
-			);
-	integrator->setAdjointTaylorCoefficients ( 0, 0, 0, 0, 0 );*/
-
-	std::cout << "Integrate now...\n";
-	errorCode = integrator->evaluate();
-	std::cout << "Integrator return code : " << errorCode << "\n" << std::endl;
-	if ( errorCode < 0 ){
-		cout << "Error occured during evaluation, terminating now... \n" << errorCode<< std::endl;
-		return;
-	}
-	
-
-	integrator->setForwardTaylorCoefficients ( 0, 0, 0, 0 );
-	integrator->setAdjointTaylorCoefficients (
-			nAdjDirTotal, // no of adj Dirs
-			0, // rays
-			1, // order
-			nxd, // leading Dim of adj Dirs
-			adjSensDir
-			);
-  	std::cout << "Start backward sweep...\n";
-	errorCode = integrator->backwardSensitivitySweep();
-	std::cout << "Integrator return code : " << errorCode << "\n" << std::endl;
-	if ( errorCode < 0 ){
-		cout << "Error occured during beackward sweep, terminating now... \n" << errorCode<< std::endl;
+	if (nrhs < 1)
+	{
+		mexErrMsgTxt("heat1D_pcm cannot be called without command string as first argument!");
 		return;
 	}
 
+	
 
-  	// Get Adjoint Sensitivities on solGrid and save in g_adjSens
-	const double* sol;
-	svULong solLD;
+	mxGetString(prhs[0], command, 99);
 
-	for ( svULong ii = 0; ii < solGrid.size(); ii ++ ){
-		g_adjSens.push_back( Sonic::DMat ( np, 2 ) );
-		g_adjSens [ ii ].zero();
-	}
+	// For Testing purposes...
+	if (strncmp(command, "test", 99) == 0) {
 
-	integrator->getAdjointSensitivities( 0, Component_P, solLD, sol );
-	for ( svULong ii = 0; ii < solGrid.size(); ii ++ ){
-		g_adjSens [ ii ] <<= Sonic::cDMat ( sol +  ii * 2 * solLD, solLD, np, 2 );
-	}
+		svULong M = mxGetM(prhs[1]);
+		svULong N = mxGetN(prhs[1]);
 
-
-	// Compute heat flux q between Constantan and PCM
-	const double scale_q = (lambda_pcm * m_pcm) / (rho_pcm * dx_pcm*dx_pcm * N3); // Note: rho_pcm atm NOT temp.-dependend! Change Later!
-
-	Sonic::DMat dq_dp (nmp, np);
-	for (svULong i=0; i<nmp; ++i) {
-		for (svULong j=0; j<np; ++j) {
-			dq_dp(i,j) = scale_q * ( (g_adjSens[i])(j,0) - (g_adjSens[i])(j,1) );
+		const double* input_ptr = mxGetPr(prhs[1]);
+		for (svULong i=0; i<M*N; ++i) {
+			std::cout << *input_ptr << std::endl;
+			input_ptr++;
 		}
+
+	}
+
+
+
+	if (strncmp(command, "init", 99) == 0) {
+		
+		nmp = mxGetM(prhs[1]);
+		const double* input_ptr = mxGetPr(prhs[1]);
+		// Time grid of measurements (= for value and sensitivity extraction of ODE solution)
+		for (svULong i=0; i<nmp; ++i) {
+			solGrid.push_back(*input_ptr);
+			input_ptr++;
+		}
+		// Heat flux measurement values
+		q_meas = Sonic::DMat(nmp,1);
+		for (svULong i=0; i<nmp; ++i) {
+			q_meas(i,0) = *input_ptr;
+			input_ptr++;
+		}
+		
+
+		// Set Parameters
+		L1 = 15.;
+		L3 = 0.5;
+		N1 = 200;
+		N3 = 50;
+
+		lambda_Const = 23.;		
+		rho_Const    = 8.9;
+		c_p_Const    = 0.41;
+
+		lambda_pcm   = 0.96;	// heat conductivity of pcm [mW/(mm*K)]
+		rho_pcm      = 0.85;	// density of pcm [mg/mm^3]
+
+		m_pcm 	     = 10.47;   // mass of pcm [mg], here: sample 407
+
+		heat_rate    = 10.;     // Oven temp heat rate [K/min]   
+		T_0  	     = 10.;     // [degC]
+		T_end  	     = 200.;    // [degC]
+
+
+		g_traj2 = Sonic::DMat(nmp, N1+N3);
+
+
+		// Some pre-calculations
+		double heat_rate_s = heat_rate / 60.; // [K/min] -> [K/s]
+		dx_Const = L1 / static_cast<double>(N1);
+		dx_pcm = L3 / static_cast<double>(N3);
+		alpha = L3/L1 * static_cast<double>(N1)/static_cast<double>(N3);
+
+		const double t_0 = 0.;
+		const double t_end = (T_end - T_0) / heat_rate_s;
+
+		// create a DAESOL-II instance
+		integrator = IIntegrator::create( IIntegrator::Impl_DAESOL_II );
+
+		// get corresponding integrator options and evaluator from the integrator instance
+		IOptions             *intOptions = integrator-> getOptions();
+		evaluator 				         = integrator-> getEvaluator();
+
+
+		// choose the modules used by DAESOL-II by passing the corresponding options (ATLAS or UMFPACK for linear algebra)
+		daesol2::CorrectorEqnSolverOptions* corrEqnSolvOpt = new daesol2::StdNewtonSolverATLASOptions();
+		daesol2::BDFStarterOptions* bdfStartOpt = new daesol2::SelfStarterATLASOptions();
+		//daesol2::CorrectorEqnSolverOptions* corrEqnSolvOpt = new daesol2::StdNewtonSolverUMFPACKOptions();
+		//daesol2::BDFStarterOptions* bdfStartOpt = new daesol2::SelfStarterUMFPACKOptions();
+		
+		daesol2::ConsistencySolverOptions *consOpt = new daesol2::NewtonConsistencySolverOptions();
+
+
+		intOptions->setOption(
+				IOptions::Option_DAESOL_CorrectorEquationSolver,
+				corrEqnSolvOpt
+				);
+		intOptions->setOption(
+				IOptions::Option_DAESOL_BDFStarter,
+				bdfStartOpt
+				);
+		intOptions->setOption(
+			IOptions::Option_DAESOL_ConsistencySolver,
+			consOpt
+			);
+
+		intOptions->setOption( IOptions::Option_DAESOL_INDMode, std::string("Iterative").c_str() );
+
+
+		// create and configure dimensions
+		TIntegratorDimensions dims;
+		dims. dim[ Component_XD ] = N1+N3;
+		dims. dim[ Component_XA ] = 0;
+		dims. dim[ Component_U  ] = 0;
+		dims. dim[ Component_P  ] = 6;
+		dims. dim[ Component_Q  ] = 0;
+		dims. dim[ Component_H  ] = 0;
+		dims. nTrajectories       = 1;
+
+
+
+		nxd = dims. dim [ Component_XD ];
+		np  = dims. dim [ Component_P  ];
+
+
+		// pass problem dimensions to evaluator and integrator
+		evaluator->  setDimensions ( dims );
+		integrator-> setDimensions ( dims );
+
+		// create model function class and fill it with the rhs pointer and pass it to the evaluator
+		model. setFunction < Function_ffcn > ( diffRHS <double>  );
+		model. setFunction < Function_ffcn > ( diffRHS <adouble>  );
+
+		evaluator->setModelFunctions ( &model );
+		integrator->setIntegratorPrintLevel( INTEGRATOR_PRINT_LVL );
+
+
+
+
+		double* init_xd = new double [ nxd ];
+		for (svULong i=0; i<nxd; ++i) {
+			init_xd[i] = T_0;
+		}
+
+
+		integrator->setInitialValues(
+				Component_XD,
+				nxd, // leading dim of init_xd
+				init_xd
+				);
+
+
+		const double relTol ( 1e-06 );
+		integrator->setStepsizeBounds    ( 0, 0   );
+		integrator->setRelativeTolerance ( relTol );
+		integrator->setInitialStepsize   ( 1e-06  );
+		integrator->setMaxIntSteps       ( 1000   );
+		integrator->setTimeHorizon       ( t_0, t_end   );
+
+		// Adjoint Sensivity generation
+		nAdjDir = 2;
+	  	nAdjDirTotal = solGrid.size() * nAdjDir;
+		adjSensDir = new double [ nAdjDirTotal * nxd ]; // in direction N1+1 and N1+2
+	  	memset ( adjSensDir, 0, nAdjDirTotal * nxd * sizeof ( double ) );
+	 
+	  	// Forward Sensivity generation
+		svULong nFwdDir = np;
+	  	double* fwdSensDir = new double [ (1 + nxd + np) * np ]; // in direction ( t,xd,(xa),q,p,h ), where the t part is in fact ignored
+		memset ( fwdSensDir, 0, (1 + nxd + np) * np * sizeof ( double ) );
+
+		for ( svULong i = 0; i < np; i++ ){
+			fwdSensDir [ (1+nxd+np)*i + 1+nxd+i] = 1;
+		}
+
+
+		fwdSensGetter.setGrid(solGrid);
+		fwdSensGetter.m_fwdTCOrder = 1;
+		fwdSensGetter.m_nRays      = np;
+		integrator->registerPlugin( &fwdSensGetter);
+		
+
+	    integrator->activateFeature( IIntegrator::Feature_Store_Grid );
+	    integrator->activateFeature( IIntegrator::Feature_Store_Tape );  
+
+		integrator->activateFeature( IIntegrator::Feature_Adjoint_Sensitivity_Injection );  
+		integrator->setAdjointInjectionGrid( solGrid, &adjInjector );
+
+
+	} else if (strncmp(command, "optimization", 99) == 0) {
+
+		double* params = new double [ np ];
+		// old atan peak test parameters
+		/*params[0] = 125.;
+		params[1] = 10.;
+		params[2] = 0.01;
+		params[3] = 10.;
+		params[4] = 0.003;
+		params[5] = 2.;*/
+
+		// fraser-suzuki Peak test parameters
+		params[0] = 50.;
+		params[1] = 15.;
+		params[2] = 25.;
+		params[3] = 0.2;
+		params[4] = 125.;
+		params[5] = 2.;
+
+
+		integrator->setInitialValues(Component_P, np, params);
+
+
+	    /*integrator->setForwardTaylorCoefficients (
+				nFwdDir, // no of fwd Dirs
+				1, // order
+				1 + nxd + np, // leading Dim of fwd Dirs
+				fwdSensDir
+				);
+		integrator->setAdjointTaylorCoefficients ( 0, 0, 0, 0, 0 );*/
+
+		std::cout << "Integrate now...\n";
+		errorCode = integrator->evaluate();
+		std::cout << "Integrator return code : " << errorCode << "\n" << std::endl;
+		if ( errorCode < 0 ){
+			cout << "Error occured during evaluation, terminating now... \n" << errorCode<< std::endl;
+			return;
+		}
+
+		integrator->setForwardTaylorCoefficients ( 0, 0, 0, 0 );
+		integrator->setAdjointTaylorCoefficients (
+				nAdjDirTotal, // no of adj Dirs
+				0, // rays
+				1, // order
+				nxd, // leading Dim of adj Dirs
+				adjSensDir
+				);
+	  	std::cout << "Start backward sweep...\n";
+		errorCode = integrator->backwardSensitivitySweep();
+		std::cout << "Integrator return code : " << errorCode << "\n" << std::endl;
+		if ( errorCode < 0 ){
+			cout << "Error occured during beackward sweep, terminating now... \n" << errorCode<< std::endl;
+			return;
+		}
+
+
+	  	// Get Adjoint Sensitivities on solGrid and save in g_adjSens
+		const double* sol;
+		svULong solLD;
+
+		for ( svULong ii = 0; ii < solGrid.size(); ii ++ ){
+			g_adjSens.push_back( Sonic::DMat ( np, 2 ) );
+			g_adjSens [ ii ].zero();
+		}
+
+		integrator->getAdjointSensitivities( 0, Component_P, solLD, sol );
+		for ( svULong ii = 0; ii < solGrid.size(); ii ++ ){
+			g_adjSens [ ii ] <<= Sonic::cDMat ( sol +  ii * 2 * solLD, solLD, np, 2 );
+		}
+
+
+		// Compute heat flux q between Constantan and PCM
+		const double scale_q = (lambda_pcm * m_pcm) / (rho_pcm * dx_pcm*dx_pcm * N3); // Note: rho_pcm atm NOT temp.-dependend! Change Later!
+
+
+		// TODO: in snmatrix.h steht, dass man den ()operator nicht fuer effiziente Berechnungen verwenden soll,
+		// warscheinlich also ziemlich langsam. Man soll eher BLAS funktionen verwenden... wie geht das?
+		Sonic::DMat dq_dp (nmp, np);
+		for (svULong i=0; i<nmp; ++i) {
+			for (svULong j=0; j<np; ++j) {
+				dq_dp(i,j) = scale_q * ( (g_adjSens[i])(j,0) - (g_adjSens[i])(j,1) );
+			}
+		}
+
+
+		// Compute heat flux and residuum vector
+		Sonic::DMat heat_flux(nmp, 1);
+		for (svULong i=0; i<nmp; ++i) {
+			heat_flux(i,0) = -scale_q * (g_traj2(i,N1+1) - g_traj2(i,N1));
+		}
+
+		// TODO: Waermestrommessdaten von Matlab uebergeben und damit Residuum Vector bauen...
+		
+		Sonic::DMat residuum(nmp, 1);
+		for (svULong i=0; i<nmp; ++i) {
+			residuum(i,0) = heat_flux(i,0) - q_meas(i,0);
+		}
+
+
+
+		/******************** Output to Matlab *********************/
+		// Residuum Vector
+		const Sonic::cDMat& residuum_temp(residuum);
+		plhs[0] = mxCreateDoubleMatrix(residuum_temp.nRows(), residuum_temp.nCols(), mxREAL);
+		Sonic::DMat residuum_output(mxGetPr(plhs[0]), residuum_temp.nRows(),
+				residuum_temp.nRows(), residuum_temp.nCols(), Sonic::CreateReference);
+		residuum_output <<= residuum_temp;
+
+
+		// Jacobian dq/dp
+		const Sonic::cDMat& dq_dp_temp(dq_dp);
+		plhs[1] = mxCreateDoubleMatrix(dq_dp_temp.nRows(), dq_dp_temp.nCols(), mxREAL);
+		Sonic::DMat dq_dp_output(mxGetPr(plhs[1]), dq_dp_temp.nRows(),
+				dq_dp_temp.nRows(), dq_dp_temp.nCols(), Sonic::CreateReference);
+		dq_dp_output <<= dq_dp_temp;
+
+
+		if (nlhs >= 3) {
+			// Temperature trajectory
+			const Sonic::cDMat& T_temp(g_traj2);
+			plhs[2] = mxCreateDoubleMatrix(T_temp.nRows(), T_temp.nCols(), mxREAL);
+			Sonic::DMat T_output(mxGetPr(plhs[2]), T_temp.nRows(),
+					T_temp.nRows(), T_temp.nCols(), Sonic::CreateReference);
+			T_output <<= T_temp;
+		}
+
+		return;
+
+
 	}
 
 
 
 
 
-	/******************** Output to Matlab *********************/
-	// Temperature trajectory
-	/*Sonic::DMat T_traj(nmp, N1+N3);
-	for (svULong i=0; i<nmp; ++i) {
-		T_traj.refRow(i) = g_traj[i].transpose();
-	}
-	const Sonic::cDMat& T_temp(T_traj);
-	plhs[0] = mxCreateDoubleMatrix(T_temp.nRows(), T_temp.nCols(), mxREAL);
-	Sonic::DMat T_output(mxGetPr(plhs[0]), T_temp.nRows(),
-			T_temp.nRows(), T_temp.nCols(), Sonic::CreateReference);
-	T_output <<= T_temp;*/
 
-	const Sonic::cDMat& T_temp(g_traj2);
-	plhs[0] = mxCreateDoubleMatrix(T_temp.nRows(), T_temp.nCols(), mxREAL);
-	Sonic::DMat T_output(mxGetPr(plhs[0]), T_temp.nRows(),
-			T_temp.nRows(), T_temp.nCols(), Sonic::CreateReference);
-	T_output <<= T_temp;
+	
 
 
-	// Residuum Vector
-
-
-
-
-	// Jacobian dq/dp
-	const Sonic::cDMat& dq_dp_temp(dq_dp);
-	plhs[1] = mxCreateDoubleMatrix(dq_dp_temp.nRows(), dq_dp_temp.nCols(), mxREAL);
-	Sonic::DMat dq_dp_output(mxGetPr(plhs[1]), dq_dp_temp.nRows(),
-			dq_dp_temp.nRows(), dq_dp_temp.nCols(), Sonic::CreateReference);
-	dq_dp_output <<= dq_dp_temp;
-
-
-
-	return;
 }
