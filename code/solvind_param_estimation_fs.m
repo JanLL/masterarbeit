@@ -112,13 +112,15 @@ num_free_optim_params = sum(p_optim_estimable);
 
 
 %%%%%%%%%%% SolvIND initialization %%%%%%%%%%%%%%%%%%%%%%%
+solvind('reset');
 solvind('importDynamicModelLib', '/home/argo/SOLVIND_SUITE/Packages/SOLVIND/Debug/TEST/MODELS/libdynModelDesc_heat1D_pcm.so');
 
 % Create model with grid specified by L1, L3, N1 and N3.
 % Afterwards create integrator and link integrator with model.
 model = solvind('createDynamicModel', 'heat1D_pcm', ...
                 sprintf('0 %2.2f %2.2f %d %d -', L1, L3, N1, N3));
-int = solvind('createIntegrator', 'daesol2_sparse_withCorrIters');
+%int = solvind('createIntegrator', 'daesol2_sparse_withCorrIters');
+int = solvind('createIntegrator', 'daesol2_sparse');
 solvind('setModel', int, model);
 
 model_dims = solvind('getDims', model);
@@ -130,7 +132,7 @@ solvind('setPrintLevel', int, 0);
 pL = solvind('getPrintLevel', int);
 
 
-solvind('setMaxBDFOrder', int, 4);
+%solvind('setMaxBDFOrder', int, 4);
 solvind('setRelTol', int, 1e-6);
 solvind('setMaxIntSteps', int, 2000);
 solvind('setCorrectorAccuracyFactor', int, 1e-5);
@@ -141,7 +143,7 @@ t_end = (T_end - T_0) / heat_rate_s;  % vllt an meas_times(end) koppeln...
 
 solvind('setTimeHorizon', int, [t_0, t_end]);
 solvind('setContOutputConfig', int, meas_times);  
-solvind('storeAdjSensAtGrid', int);
+%solvind('storeAdjSensAtGrid', int);
 % just evaluate at times where also measurements were done to cpmpute residuum later
 
 %solvind('storeAdjSensAtGrid', int); % benutzen erstmal nur fwdSens
@@ -158,7 +160,8 @@ solvind_compute_residuum_expl = @(p_optim) ...
 
 % TEST INITIAL VALUE
 [res, Jac] = solvind_compute_residuum_expl(p_optim_start(p_optim_estimable));
-solvind('reset');
+tape = solvind('getTape', int, 0);
+%solvind('reset');
 return
 
 
@@ -179,5 +182,5 @@ opt_options = optimoptions('lsqnonlin', ...
 % tape = solvind('getTape', int, 0);
 
 % free memory
-solvind('reset');
+%solvind('reset');
 

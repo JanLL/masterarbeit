@@ -218,7 +218,7 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 
 svLong adjInjector( const svULong idx, svULong& adjLeaDim, const double*& adjTrajIn )
 {
-	//std::cout << "adjInjector: called with idx = " << idx << std::endl;
+	//std::cout << "adjInjector: called with idx = " << idx << "\n";
 
 	static Sonic::DMat injMat ( N1+N3, 2*solGrid.size() );
 	injMat.zero();

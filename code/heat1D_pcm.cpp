@@ -40,7 +40,7 @@ void fraser_suzuki(T x, T& c_p, T& dc_p, T h,T r,T wr,T sr,T z, T b) {
 	T log_sr = log(sr);
 
 	// TODO: Mal mit fmin arbeiten statt komplett condition in condassign zu stecken...
-	condition = z - wr*sr/(sr*sr-1) - x;
+	condition = z - wr*sr/(sr*sr-1) - x - 1e-8;
 
 	T log_arg = (1 + (x-z)*(sr*sr-1)/(wr*sr));
 	T exp_arg = -log(r)/(log_sr*log_sr) * log(log_arg)*log(log_arg);
