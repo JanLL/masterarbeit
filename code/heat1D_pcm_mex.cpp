@@ -41,6 +41,15 @@ using namespace SolvInd;
 svLong INTEGRATOR_PRINT_LVL ( 0 );
 
 
+enum c_p_param_types {
+
+	old_atan_formula = 1,
+	fraser_suzuki    = 2,
+	NURBS 			 = 3
+
+};
+
+c_p_param_types c_p_param_type;
 
 
 // Global SolvIND objects
@@ -67,6 +76,7 @@ Sonic::DMat g_traj;
 std::vector< Sonic::DMat> g_fwdSens;
 std::vector< Sonic::DMat> g_adjSens;
 
+bool initialized = false;
 
 
 // Global Simulation parameters
@@ -90,6 +100,8 @@ double heat_rate;		// Oven heat rate [K/min]
 double T_0;				// Start temperature of Constantan & PCM
 double T_end;			// Integration ends when oven reaches T_end
 
+// Global optimization parameter
+double* c_p_params;
 
 
 
@@ -180,11 +192,12 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 
 	const T* x = args.xd;
 
-	// some pre-calculations
+	// some pre-processing
 	T a_Const      = lambda_Const / (c_p_Const * rho_Const);
 	T heat_rate_s  = heat_rate / 60; // [K/min] -> [K/s]
 	T scale_Const  = a_Const / (dx_Const*dx_Const);
 	T scale_pcm    = lambda_pcm / (rho_pcm * dx_pcm*dx_pcm);
+
 
 	/******************* Building up RHS of ODE ********************/
 	// Oven boundary with constant slope of Temp.
@@ -207,11 +220,21 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 	T dc_p_j;
 	for (long j = N1; j <= N1+N3-2; j++)
 	{
-		// c_p calculation using Fraser-Suzuki Peak
-		fraser_suzuki(x[j], c_p_j, dc_p_j, args.p[0], args.p[1], args.p[2], args.p[3], args.p[4], args.p[5]);
-	
-		// c_p calculation using old atan formula
-		//c_p_formula(x[j], c_p_j, dc_p_j, args.p[0], args.p[1], args.p[2], args.p[3], args.p[4], args.p[5]);
+		switch (c_p_param_type)
+			{
+				case old_atan_formula:
+					c_p_formula(x[j], c_p_j, dc_p_j, args.p[0], args.p[1], args.p[2], args.p[3], args.p[4], args.p[5]);
+					break;
+				case fraser_suzuki: 
+					fraser_suzuki_formula(x[j], c_p_j, dc_p_j, args.p[0], args.p[1], args.p[2], args.p[3], args.p[4], args.p[5]);
+					break;
+				case NURBS:
+					mexErrMsgTxt( "NURBS c_p parametrization not implemented yet!" );
+					break;
+				default:
+					mexErrMsgTxt( "Wrong c_p parametrization type!" );
+			}
+
 
 		// linear part 
 		args.rhs[j] = scale_pcm/c_p_j * (x[j-1] - 2.0 * x[j] + x[j+1]);
@@ -270,6 +293,10 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 
 
 	if (strncmp(command, "init", 99) == 0) {
+
+		if (initialized == true) {
+			mexErrMsgTxt("Initialization was already done! You need to \"reset\" before reapply \"init\"!");
+		}
 		
 		nmp = mxGetM(prhs[1]);
 		const double* input_ptr = mxGetPr(prhs[1]);
@@ -284,6 +311,20 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 			q_meas(i,0) = *input_ptr;
 			input_ptr++;
 		}
+
+		mxGetString(prhs[2], command, 99);
+		if (strncmp(command, "old_atan_formula", 99) == 0) {
+			c_p_param_type = old_atan_formula;
+			np = 6;
+		} else if (strncmp(command, "fraser-suzuki", 99) == 0) {
+			c_p_param_type = fraser_suzuki;
+			np = 6;
+		} else if (strncmp(command, "NURBS", 99) == 0) {
+			mexErrMsgTxt( "NURBS c_p parametrization not implemented yet!" ); // TODO!
+			c_p_param_type = NURBS;
+		}
+		c_p_params = new double [ np ];
+
 		
 
 		// Set Parameters
@@ -292,7 +333,7 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		N1 = 200;
 		N3 = 50;
 
-		lambda_Const = 23.;		
+		lambda_Const = 23.;
 		rho_Const    = 8.9;
 		c_p_Const    = 0.41;
 
@@ -356,15 +397,13 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		dims. dim[ Component_XD ] = N1+N3;
 		dims. dim[ Component_XA ] = 0;
 		dims. dim[ Component_U  ] = 0;
-		dims. dim[ Component_P  ] = 6;
+		dims. dim[ Component_P  ] = np;
 		dims. dim[ Component_Q  ] = 0;
 		dims. dim[ Component_H  ] = 0;
 		dims. nTrajectories       = 1;
 
 
-
 		nxd = dims. dim [ Component_XD ];
-		np  = dims. dim [ Component_P  ];
 
 
 		// pass problem dimensions to evaluator and integrator
@@ -429,8 +468,21 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		integrator->activateFeature( IIntegrator::Feature_Adjoint_Sensitivity_Injection );  
 		integrator->setAdjointInjectionGrid( solGrid, &adjInjector );
 
+		initialized = true;
+
 
 	} else if (strncmp(command, "optimization", 99) == 0) {
+
+		if (np != mxGetN(prhs[1])) {
+			mexErrMsgTxt(" Wrong number of c_p input parameters! ");
+		}
+		const double* input_ptr = mxGetPr(prhs[1]);
+		// Time grid of measurements (= for value and sensitivity extraction of ODE solution)
+		for (svULong i=0; i<np; ++i) {
+			c_p_params[i] = *input_ptr;
+			input_ptr++;
+		}
+
 
 		evaluator->resetStatistics();
 		fwdSensGetter.resetSolGrid_idx();
@@ -442,14 +494,13 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 
 
 
-		double* params = new double [ np ];
 		// old atan peak test parameters
 		/*params[0] = 125.;
 		params[1] = 10.;
 		params[2] = 0.01;
 		params[3] = 10.;
 		params[4] = 0.003;
-		params[5] = 2.;*/
+		params[5] = 2.;
 
 		// fraser-suzuki Peak test parameters
 		params[0] = 50.;
@@ -457,10 +508,10 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		params[2] = 25.;
 		params[3] = 0.2;
 		params[4] = 125.;
-		params[5] = 2.;
+		params[5] = 2.;*/
 
 
-		integrator->setInitialValues(Component_P, np, params);
+		integrator->setInitialValues(Component_P, np, c_p_params);
 
 
 	    /*integrator->setForwardTaylorCoefficients (
@@ -564,6 +615,7 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 					T_temp.nRows(), T_temp.nCols(), Sonic::CreateReference);
 			T_output <<= T_temp;
 		}
+
 
 		return;
 
