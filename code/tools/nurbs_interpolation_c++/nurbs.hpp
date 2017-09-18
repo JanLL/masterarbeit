@@ -33,8 +33,16 @@ class Nurbs
 		T compute_a_i_m1(int i, T u);
 		T compute_a_i_0(int i, T u);
 
+
+		T compute_da_i_m3(int i, T u);
+		T compute_da_i_m2(int i, T u);
+		T compute_da_i_m1(int i, T u);
+		T compute_da_i_0(int i, T u);
+
 		T eval_nurbs_curve_x(T u);
 		T eval_nurbs_curve_y(T u);
+
+		T eval_dCy_dCx(T u);
 
 		T get_u_from_Cx(T Cx, T u_start, T TOL);
 

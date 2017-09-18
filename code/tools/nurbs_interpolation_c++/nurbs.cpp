@@ -177,6 +177,10 @@ T Nurbs<T>::compute_a_i_0(int i, T u) {
 }
 
 
+
+
+
+
 template<typename T>
 int Nurbs<T>::get_interval_index(T u) {
 
@@ -248,6 +252,116 @@ T Nurbs<T>::eval_nurbs_curve_y(T u) {
 }
 
 
+
+/*************** Derivatives w.r.t. u *********************/
+template<typename T>
+T Nurbs<T>::compute_da_i_0(int i, T u) {
+
+	T da_i_0;
+
+	da_i_0 = 3*(u-U[i])*(u-U[i]) / ((U[i+3] - U[i]) * (U[i+2] - U[i]) * (U[i+1] - U[i]));
+
+	return da_i_0;
+}
+
+
+template<typename T>
+T Nurbs<T>::compute_da_i_m1(int i, T u) {
+
+	T da_i_m1;
+
+	da_i_m1 = (-3*u*u + 2*(2*U[i] + U[i+2])*u + (-U[i]*U[i] - 2*U[i]*U[i+2])) / 
+				((U[i+3] - U[i]) * (U[i+2] - U[i]) * (U[i+2] - U[i+1]))
+	         +(-3*u*u + 2*(U[i] + U[i+1] + U[i+3])*u + (-U[i]*U[i+1] - U[i]*U[i+3] - U[i+1]*U[i+3])) / 
+	         	((U[i+3] - U[i]) * (U[i+3] - U[i+1]) * (U[i+2] - U[i+1]))
+	         +(-3*u*u + 2*(2*U[i+1] + U[i+4])*u + (-U[i+1]*U[i+1] - 2*U[i+1]*U[i+4])) / 
+	         	((U[i+4] - U[i+1]) * (U[i+3] - U[i+1]) * (U[i+2] - U[i+1]));
+
+	return da_i_m1;
+}
+
+
+template<typename T>
+T Nurbs<T>::compute_da_i_m2(int i, T u) {
+
+	T da_i_m2;
+
+	da_i_m2 = (3*u*u + 2*(-U[i] - 2*U[i+3])*u + (2*U[i]*U[i+3] + U[i+3]*U[i+3])) / 
+				((U[i+3] - U[i]) * (U[i+3] - U[i+1]) * (U[i+3] - U[i+2]))
+	         +(3*u*u + 2*(-U[i+1] - U[i+3] - U[i+4])*u + (U[i+1]*U[i+3] + U[i+1]*U[i+4] + U[i+3]*U[i+4])) / 
+	         	((U[i+4] - U[i+1]) * (U[i+3] - U[i+1]) * (U[i+3] - U[i+2]))
+	         +(3*u*u + 2*(-U[i+2] - 2*U[i+4])*u + (2*U[i+2]*U[i+4] + U[i+4]*U[i+4])) / 
+	         	((U[i+4] - U[i+1]) * (U[i+4] - U[i+2]) * (U[i+3] - U[i+2]));
+
+	return da_i_m2;
+}
+
+
+template<typename T>
+T Nurbs<T>::compute_da_i_m3(int i, T u) {
+
+	T da_i_m3;
+
+	da_i_m3 = -3*(U[i+4]-u)*(U[i+4]-u) / ((U[i+4] - U[i+1]) * (U[i+4] - U[i+2]) * (U[i+4] - U[i+3]));
+
+	return da_i_m3;
+}
+
+
+
+template<typename T>
+T Nurbs<T>::eval_dCy_dCx(T u) {
+
+	int i = this->get_interval_index(u);
+
+	T a_im3_m3 = this->compute_a_i_m3(i-3, u);
+	T a_im2_m2 = this->compute_a_i_m2(i-2, u);
+	T a_im1_m1 = this->compute_a_i_m1(i-1, u);
+	T a_i_0    = this->compute_a_i_0 (i  , u);
+
+	T numerator_x = a_im3_m3 * weights[i-3] * cntrl_pts_x[i-3] +
+				    a_im2_m2 * weights[i-2] * cntrl_pts_x[i-2] +
+				    a_im1_m1 * weights[i-1] * cntrl_pts_x[i-1] +
+				    a_i_0    * weights[i-0] * cntrl_pts_x[i-0];
+
+	T numerator_y = a_im3_m3 * weights[i-3] * cntrl_pts_y[i-3] +
+				    a_im2_m2 * weights[i-2] * cntrl_pts_y[i-2] +
+				    a_im1_m1 * weights[i-1] * cntrl_pts_y[i-1] +
+				    a_i_0    * weights[i-0] * cntrl_pts_y[i-0];
+
+	T denominator = a_im3_m3 * weights[i-3] +
+				    a_im2_m2 * weights[i-2] +
+				    a_im1_m1 * weights[i-1] +
+				    a_i_0    * weights[i-0];
+
+	// Derivatives
+	T da_im3_m3 = this->compute_da_i_m3(i-3, u);
+	T da_im2_m2 = this->compute_da_i_m2(i-2, u);
+	T da_im1_m1 = this->compute_da_i_m1(i-1, u);
+	T da_i_0    = this->compute_da_i_0 (i  , u);
+
+	T dnum_dt_x = da_im3_m3 * weights[i-3] * cntrl_pts_x[i-3] +
+				  da_im2_m2 * weights[i-2] * cntrl_pts_x[i-2] +
+				  da_im1_m1 * weights[i-1] * cntrl_pts_x[i-1] +
+				  da_i_0    * weights[i-0] * cntrl_pts_x[i-0];
+
+	T dnum_dt_y = da_im3_m3 * weights[i-3] * cntrl_pts_y[i-3] +
+				  da_im2_m2 * weights[i-2] * cntrl_pts_y[i-2] +
+				  da_im1_m1 * weights[i-1] * cntrl_pts_y[i-1] +
+				  da_i_0    * weights[i-0] * cntrl_pts_y[i-0];
+
+	T dden_dt = da_im3_m3 * weights[i-3] +
+				da_im2_m2 * weights[i-2] +
+				da_im1_m1 * weights[i-1] +
+				da_i_0    * weights[i-0];
+
+	T dCy_dCx = (dnum_dt_y * denominator - numerator_y * dden_dt) /
+				(dnum_dt_x * denominator - numerator_x * dden_dt);
+
+	return dCy_dCx;
+}	
+
+
 template<typename T>
 T Nurbs<T>::get_u_from_Cx(T Cx, T u_start, T TOL) {
 
@@ -280,14 +394,14 @@ int main(int argc, char** argv) {
 	int nurbs_order = 4;
 	int poly_order = nurbs_order - 1;
 
-	std::vector<adouble> cntrl_pts_x = {0, 30, 60, 90, 120, 125, 130, 132., 135, 150, 160, 180};
-	std::vector<adouble> cntrl_pts_y = {1., 1,  1.1, 1.15, 1.2, 5., 10, 1.5, 1.51, 1.52, 1.53, 1.54};
+	std::vector<double> cntrl_pts_x = {0, 30, 60, 90, 120, 125, 130, 132., 135, 150, 160, 180};
+	std::vector<double> cntrl_pts_y = {1., 1,  1.1, 1.15, 1.2, 5., 10, 1.5, 1.51, 1.52, 1.53, 1.54};
 	
 
 	int num_cntrl_pts = cntrl_pts_x.size();
 
 
-	Nurbs<adouble> nurbs(num_cntrl_pts, nurbs_order);
+	Nurbs<double> nurbs(num_cntrl_pts, nurbs_order);
 	nurbs.set_cntrl_pts_x(cntrl_pts_x);
 	nurbs.set_cntrl_pts_y(cntrl_pts_y);
 
@@ -295,12 +409,13 @@ int main(int argc, char** argv) {
 	std::ofstream file_nurbes;
   	file_nurbes.open ("curve_nurbes.txt");
 
-  	for (adouble u=0.; u<1; u+=0.001) {
+  	for (double u=0.; u<1; u+=0.001) {
 
-		adouble Cx = nurbs.eval_nurbs_curve_x(u);
-		adouble Cy = nurbs.eval_nurbs_curve_y(u);
+		double Cx = nurbs.eval_nurbs_curve_x(u);
+		double Cy = nurbs.eval_nurbs_curve_y(u);
+		double dCy_dCx = nurbs.eval_dCy_dCx(u);
 		
-		file_nurbes << u << "\t" << Cx << "\t" << Cy << std::endl;
+		file_nurbes << u << "\t" << Cx << "\t" << Cy << "\t" << dCy_dCx << std::endl;
 
 	}
 	file_nurbes.close();
