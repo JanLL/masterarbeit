@@ -12,6 +12,50 @@
 #include <adolc/adouble.h>
 
 
+
+template<typename T>
+Nurbs<T>::Nurbs(int nurbs_order_in) :
+	num_cntrl_pts(-1), 
+	nurbs_order(nurbs_order_in),
+	len_U(-1),
+	cntrl_pts_x(),
+	cntrl_pts_y(),
+	weights(),
+	U()
+{
+
+}
+
+
+template<typename T>
+void Nurbs<T>::set_num_cntrl_pts(int num_cntrl_pts_in) {
+
+	num_cntrl_pts = num_cntrl_pts_in;
+	len_U = num_cntrl_pts + nurbs_order;
+	cntrl_pts_x.resize(num_cntrl_pts);
+	cntrl_pts_y.resize(num_cntrl_pts);
+	weights.resize(num_cntrl_pts);
+	U.resize(num_cntrl_pts + nurbs_order);
+
+
+	for (int i=0; i < num_cntrl_pts; ++i) {
+		weights[i] = 1.;
+	}
+
+
+	for (int i=0; i <= nurbs_order; ++i) {
+		U[i] = 0.;
+		U[len_U-1-i] = 1.;
+	}
+
+	for (int i=1; i <= num_cntrl_pts - nurbs_order; ++i) {
+		U[i + nurbs_order - 1] = i / double(num_cntrl_pts - nurbs_order + 1);
+	}
+}
+
+
+
+
 template<typename T>
 Nurbs<T>::Nurbs(int num_cntrl_pts_in, int nurbs_order_in) :
 	num_cntrl_pts(num_cntrl_pts_in), 
@@ -39,8 +83,19 @@ std::vector<T> Nurbs<T>::get_cntrl_pts_x() {
 	return cntrl_pts_x;
 }
 
+
+template<typename T>
+std::vector<T>& Nurbs<T>::get_cntrl_pts_x_ref() {
+	return cntrl_pts_x;
+}
+
 template<typename T>
 std::vector<T> Nurbs<T>::get_cntrl_pts_y() {
+	return cntrl_pts_y;
+}
+
+template<typename T>
+std::vector<T>& Nurbs<T>::get_cntrl_pts_y_ref() {
 	return cntrl_pts_y;
 }
 
@@ -60,12 +115,30 @@ void Nurbs<T>::set_cntrl_pts_x(std::vector<T> cntrl_pts_x_in) {
 		cntrl_pts_x[i] = cntrl_pts_x_in[i];
 	}
 }
+
 template<typename T>
 void Nurbs<T>::set_cntrl_pts_y(std::vector<T> cntrl_pts_y_in) {
 	for (int i=0; i <= num_cntrl_pts-1; ++i) {
 		cntrl_pts_y[i] = cntrl_pts_y_in[i];
 	}
 }
+
+template<typename T>
+void Nurbs<T>::set_cntrl_pts_x(const T* cntrl_pts_x_ptr) {
+	for (int i=0; i < num_cntrl_pts; ++i) {
+		cntrl_pts_x[i] = *cntrl_pts_x_ptr;
+		cntrl_pts_x_ptr++;
+	}
+}
+
+template<typename T>
+void Nurbs<T>::set_cntrl_pts_y(const T* cntrl_pts_y_ptr) {
+	for (int i=0; i < num_cntrl_pts; ++i) {
+		cntrl_pts_y[i] = *cntrl_pts_y_ptr;
+		cntrl_pts_y_ptr++;
+	}
+}
+
 
 
 template<typename T>
@@ -193,11 +266,11 @@ int Nurbs<T>::get_interval_index(T u) {
 		else {
 			break;
 		}
-
 	}
 
 	//T du = U[nurbs_order] - U[nurbs_order-1];
 	//int i = floor(u/du) + 3;
+	// funktioniert auch nicht... cast adouble -> integer geht nicht
 
 	return i;
 }
@@ -363,7 +436,56 @@ T Nurbs<T>::eval_dCy_dCx(T u) {
 
 
 template<typename T>
-T Nurbs<T>::get_u_from_Cx(T Cx, T u_start, T TOL) {
+T Nurbs<T>::eval_dCx_dt(T u) {
+
+	int i = this->get_interval_index(u);
+
+	T a_im3_m3 = this->compute_a_i_m3(i-3, u);
+	T a_im2_m2 = this->compute_a_i_m2(i-2, u);
+	T a_im1_m1 = this->compute_a_i_m1(i-1, u);
+	T a_i_0    = this->compute_a_i_0 (i  , u);
+
+	T numerator_x = a_im3_m3 * weights[i-3] * cntrl_pts_x[i-3] +
+				    a_im2_m2 * weights[i-2] * cntrl_pts_x[i-2] +
+				    a_im1_m1 * weights[i-1] * cntrl_pts_x[i-1] +
+				    a_i_0    * weights[i-0] * cntrl_pts_x[i-0];
+
+	T denominator = a_im3_m3 * weights[i-3] +
+				    a_im2_m2 * weights[i-2] +
+				    a_im1_m1 * weights[i-1] +
+				    a_i_0    * weights[i-0];
+
+	// Derivatives
+	T da_im3_m3 = this->compute_da_i_m3(i-3, u);
+	T da_im2_m2 = this->compute_da_i_m2(i-2, u);
+	T da_im1_m1 = this->compute_da_i_m1(i-1, u);
+	T da_i_0    = this->compute_da_i_0 (i  , u);
+
+	T dnum_dt_x = da_im3_m3 * weights[i-3] * cntrl_pts_x[i-3] +
+				  da_im2_m2 * weights[i-2] * cntrl_pts_x[i-2] +
+				  da_im1_m1 * weights[i-1] * cntrl_pts_x[i-1] +
+				  da_i_0    * weights[i-0] * cntrl_pts_x[i-0];
+
+
+	T dden_dt = da_im3_m3 * weights[i-3] +
+				da_im2_m2 * weights[i-2] +
+				da_im1_m1 * weights[i-1] +
+				da_i_0    * weights[i-0];
+
+	T dCx_dt = (dnum_dt_x * denominator - numerator_x * dden_dt) / 
+			   (denominator*denominator);
+				
+
+	return dCx_dt;
+}	
+
+
+
+
+
+
+template<typename T>
+T Nurbs<T>::get_u_from_Cx(T Cx, T u_start, double TOL) {
 
 	T err = 1e8;
 	T u = u_start;
@@ -379,7 +501,7 @@ T Nurbs<T>::get_u_from_Cx(T Cx, T u_start, T TOL) {
 
 		u += h*du;
 
-		err = abs(Cx_newton - Cx);
+		err = fabs(Cx_newton - Cx);
 	}
 
 	return u;
@@ -397,11 +519,11 @@ int main(int argc, char** argv) {
 	std::vector<double> cntrl_pts_x = {0, 30, 60, 90, 120, 125, 130, 132., 135, 150, 160, 180};
 	std::vector<double> cntrl_pts_y = {1., 1,  1.1, 1.15, 1.2, 5., 10, 1.5, 1.51, 1.52, 1.53, 1.54};
 	
-
 	int num_cntrl_pts = cntrl_pts_x.size();
 
 
-	Nurbs<double> nurbs(num_cntrl_pts, nurbs_order);
+	Nurbs<double> nurbs(nurbs_order);
+	nurbs.set_num_cntrl_pts(num_cntrl_pts);
 	nurbs.set_cntrl_pts_x(cntrl_pts_x);
 	nurbs.set_cntrl_pts_y(cntrl_pts_y);
 

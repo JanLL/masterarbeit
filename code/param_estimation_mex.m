@@ -36,18 +36,23 @@ heat_rate = 10.;     % [K/min]
 heat_rate_s = heat_rate / 60; % [K/min] -> [K/s]
 
 % c_p parametrization with Fraser-Suzuki-Peak
-h  =  50.0;
+h  =  40.0;
 r  =  35.0;
 wr =  15.0;
 sr =   0.2;
 z  = 125.0;
-b  =   2.0;
+b  =   10.0;
 
 p_fraser_suzuki = [h, r, wr, sr, z, b];
 
-% c_p parametrization with old atan function
 p_atan_cp = [125., 10, 0.01, 10., 0.003, 2];
 
+p_gauss_lin_comb = [10, 0.1, 130, ...
+                    1,  1,   128, ...
+                    0.5,  1,   126, ...
+                    0.1,  1,   124, ...
+                    0.05, 1,   122, ...
+                    2.];
 
 
 %%%%%%%%%% some pre-calculations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -77,17 +82,12 @@ end
 
 meas_data(:,2) = q_dsc;
 
-heat1D_pcm('init', meas_data, 'fraser-suzuki');
 
+heat1D_pcm('init', meas_data, 'gauss_linear_comb');
 
-
-figure(1); % q_pcm_in plot
-ax1 = gca();
-figure(2); % c_p plot
-ax2 = gca();
 
 % Set optimization variables
-p_optim_start = p_fraser_suzuki;
+p_optim_start = p_gauss_lin_comb;
 
 % choose free(true)/fixed(false) parameters to optimize
 p_optim_estimable = true(length(p_optim_start), 1);
@@ -96,14 +96,40 @@ p_optim_fixed = p_optim_start(~p_optim_estimable);
 num_free_optim_params = sum(p_optim_estimable);
 
 
+
+figure(1); % q_pcm_in plot
+ax1 = gca();
+figure(2); % c_p plot
+ax2 = gca();
+figure(3); % dqdp plot
+ax3 = gca();
+
 compute_q_dqdp_mex_expl = @(p_optim) compute_q_dqdp_mex(...
-    p_optim, p_optim_estimable, p_optim_fixed, T_ref_dsc, q_dsc, ax1, ax2);
+    p_optim, p_optim_estimable, p_optim_fixed, T_ref_dsc, q_dsc, ax1, ax2, ax3);
 
 
-%%%% INITIAL VALUE TEST %%%%%%%%%%%%
-compute_q_dqdp_mex_expl(p_optim_start);
+%%%%%%%%%%%%%% INITIAL VALUE TEST %%%%%%%%%%%%%%%%%%%%
+[res, dqdp] = compute_q_dqdp_mex_expl(p_optim_start);
 return;
 
+% Jacobian via finite differences
+% [x,~,~,~,~,~,dqdp_finite_diff] = lsqnonlin(...
+%     compute_q_dqdp_mex_expl, p_optim_start(p_optim_estimable), [], [], optimset('MaxIter',0));
+% return;
+
+
+%%%%%%%%%%%%%%%%%%%%%%% SOLVE OPTIMIZATION PROBLEM %%%%%%%%%%%%%%%%%%%%%%%
+lb = zeros(1,num_free_optim_params);
+ub = ones(1,num_free_optim_params)*500.;
+%ub(4) = 1.;  % sr < 1
+optim_con = {lb, ub};
+
+opt_options = optimoptions('lsqnonlin', ...
+                           'Display', 'iter-detailed', ...
+                           'OutputFcn', @disp_aux, ...
+                           'SpecifyObjectiveGradient', true);
+[p_optim,~,~,~,optim_output,~,jac_output] = lsqnonlin(...
+    compute_q_dqdp_mex_expl, p_optim_start(p_optim_estimable), optim_con{:}, opt_options);
 
 
 

@@ -27,10 +27,8 @@
 #include "mex.h"
 
 
-//#include "/home/argo/masterarbeit/code/tools/nurbs_interpolation_c++/nurbs.hpp"
-//#include "/home/argo/masterarbeit/code/tools/nurbs_interpolation_c++/nurbs.cpp"
-//#include "/home/argo/masterarbeit/code/tools/nurbs_interpolation_c++/Interp1d_linear.hpp"
-//#include "/home/argo/masterarbeit/code/tools/nurbs_interpolation_c++/Interp1d_linear.cpp"
+#include "/home/argo/masterarbeit/code/tools/nurbs_interpolation_c++/nurbs.hpp"
+#include "/home/argo/masterarbeit/code/tools/nurbs_interpolation_c++/nurbs.cpp"
 #include "/home/argo/masterarbeit/code/c_p_parametrizations.cpp"
 
 
@@ -43,9 +41,10 @@ svLong INTEGRATOR_PRINT_LVL ( 0 );
 
 enum c_p_param_types {
 
-	old_atan_formula = 1,
-	fraser_suzuki    = 2,
-	NURBS 			 = 3
+	old_atan_formula  = 1,
+	fraser_suzuki     = 2,
+	gauss_linear_comb = 3,
+	NURBS 			  = 4
 
 };
 
@@ -102,6 +101,10 @@ double T_end;			// Integration ends when oven reaches T_end
 
 // Global optimization parameter
 double* c_p_params;
+
+std::vector<double> cntrl_pts_x;
+svULong num_cntrl_pts;
+svULong nurbs_order = 4;
 
 
 
@@ -189,6 +192,31 @@ template <typename T>
 svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 {
 
+	/*static Nurbs<T> nurbs(num_cntrl_pts, nurbs_order);
+	static bool init_nurbs = false;
+	//static T u_N1 = 0.
+
+	if (init_nurbs == false) {
+		std::vector<T>& cntrl_pts_x_ref = nurbs.get_cntrl_pts_x_ref();
+
+		for (svULong i=0; i<num_cntrl_pts; ++i) {
+			cntrl_pts_x_ref[i] = cntrl_pts_x[i];
+		}
+
+	}
+
+	bool cntrl_pts_changed = false;
+	std::vector<T> cntrl_pts_y = nurbs.get_cntrl_pts_y();
+	for (svULong i=0; i<num_cntrl_pts; ++i) {
+		if (cntrl_pts_y[i] != args.p[i]) {
+			cntrl_pts_changed = true;
+			break;
+		}
+	}
+
+	if (cntrl_pts_changed) {
+		nurbs.set_cntrl_pts_y(args.p);
+	}*/
 
 	const T* x = args.xd;
 
@@ -215,6 +243,24 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 	args.rhs[j] = scale_Const * (2./(1.+alpha) * x[j-1] - 2./alpha * x[j] + 2./(alpha*(alpha+1.)) * x[j+1]);
 
 
+	// NURBS aux params
+	//double TOL = 0.1;  // [K]
+	/*T u   = 0.;    // start value for Newton
+	T du;
+	T Cx_newton;
+	T dCx_newton;
+
+	for (svULong i=0; i<50; ++i) {
+
+		Cx_newton = nurbs.eval_nurbs_curve_x(u);
+		dCx_newton = nurbs.eval_dCx_dt(u);
+
+		du = -(Cx_newton - x[N1])/dCx_newton;
+
+		u += 1.*du;
+	}*/
+
+
 	// PCM
 	T c_p_j;
 	T dc_p_j;
@@ -228,8 +274,31 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 				case fraser_suzuki: 
 					fraser_suzuki_formula(x[j], c_p_j, dc_p_j, args.p[0], args.p[1], args.p[2], args.p[3], args.p[4], args.p[5]);
 					break;
+				case gauss_linear_comb:
+					gauss_linear_comb_formula(x[j], c_p_j, dc_p_j, args.p[0],  args.p[1],  args.p[2],
+																   args.p[3],  args.p[4],  args.p[5],
+																   args.p[6],  args.p[7],  args.p[8],
+																   args.p[9],  args.p[10], args.p[11],
+																   args.p[12], args.p[13], args.p[14],
+																   args.p[15]);
+
+					break;
+
 				case NURBS:
-					mexErrMsgTxt( "NURBS c_p parametrization not implemented yet!" );
+					// Note: ADOL-C Index problem...
+					/*Cx_newton = nurbs.eval_nurbs_curve_x(u);
+					dCx_newton = nurbs.eval_dCx_dt(u);
+
+					du = -(Cx_newton - x[j])/dCx_newton;
+
+					u += 1.*du;
+
+					c_p_j = nurbs.eval_nurbs_curve_y(u);
+					dc_p_j = nurbs.eval_dCy_dCx(u);
+
+					std::cout << u << "\t" << x[j] << "\t" << c_p_j << "\t" << dc_p_j << std::endl;*/
+
+					//mexErrMsgTxt( "NURBS c_p parametrization not implemented yet!" );
 					break;
 				default:
 					mexErrMsgTxt( "Wrong c_p parametrization type!" );
@@ -316,11 +385,26 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		if (strncmp(command, "old_atan_formula", 99) == 0) {
 			c_p_param_type = old_atan_formula;
 			np = 6;
-		} else if (strncmp(command, "fraser-suzuki", 99) == 0) {
+		} else if (strncmp(command, "fraser_suzuki", 99) == 0) {
 			c_p_param_type = fraser_suzuki;
 			np = 6;
+		} else if (strncmp(command, "gauss_linear_comb", 99) == 0) {
+			c_p_param_type = gauss_linear_comb;
+			np = 3*5 + 1;
+
 		} else if (strncmp(command, "NURBS", 99) == 0) {
-			mexErrMsgTxt( "NURBS c_p parametrization not implemented yet!" ); // TODO!
+			mexErrMsgTxt( "NURBS problem with index unsolved..." ); // TODO!
+
+			num_cntrl_pts = mxGetN(prhs[3]);
+			cntrl_pts_x.resize(num_cntrl_pts);
+			const double* input_ptr = mxGetPr(prhs[3]);
+			for (svULong i=0; i<num_cntrl_pts; ++i) {
+				cntrl_pts_x[i] = *input_ptr;
+				input_ptr++;
+			}
+			np = num_cntrl_pts;
+
+			
 			c_p_param_type = NURBS;
 		}
 		c_p_params = new double [ np ];
@@ -494,23 +578,6 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 
 
 
-		// old atan peak test parameters
-		/*params[0] = 125.;
-		params[1] = 10.;
-		params[2] = 0.01;
-		params[3] = 10.;
-		params[4] = 0.003;
-		params[5] = 2.;
-
-		// fraser-suzuki Peak test parameters
-		params[0] = 50.;
-		params[1] = 15.;
-		params[2] = 25.;
-		params[3] = 0.2;
-		params[4] = 125.;
-		params[5] = 2.;*/
-
-
 		integrator->setInitialValues(Component_P, np, c_p_params);
 
 
@@ -523,8 +590,12 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		integrator->setForwardTaylorCoefficients ( 0, 0, 0, 0 );
 		integrator->setAdjointTaylorCoefficients ( 0, 0, 0, 0, 0 );
 		std::cout << "Integrate now...\n";
+		clock_t t_begin = clock();
 		errorCode = integrator->evaluate();
-		std::cout << "Integrator return code : " << errorCode << "\n" << std::endl;
+		clock_t t_end = clock();
+		clock_t t_duration = t_end - t_begin;
+		std::cout << "Integrator return code : " << errorCode << std::endl;
+		std::cout << "Integration took " << double(t_duration) / CLOCKS_PER_SEC << " seconds." << std::endl;
 		if ( errorCode < 0 ){
 			cout << "Error occured during evaluation, terminating now... \n" << errorCode<< std::endl;
 			return;
@@ -540,8 +611,12 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 				adjSensDir
 				);
 	  	std::cout << "Start backward sweep...\n";
+		t_begin = clock();
 		errorCode = integrator->backwardSensitivitySweep();
-		std::cout << "Integrator return code : " << errorCode << "\n" << std::endl;
+		t_end = clock();
+		t_duration = t_end - t_begin;
+		std::cout << "Integrator return code : " << errorCode << std::endl;
+		std::cout << "Backward Sweep took " << double(t_duration) / CLOCKS_PER_SEC << " seconds." << std::endl;
 		if ( errorCode < 0 ){
 			cout << "Error occured during beackward sweep, terminating now... \n" << errorCode<< std::endl;
 			return;
@@ -625,13 +700,6 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 
 
 	}
-
-
-
-
-
-
-	
 
 
 }

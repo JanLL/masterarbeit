@@ -9,15 +9,26 @@ template<typename T>
 class Nurbs
 {
 	public:
+		Nurbs(int nurbs_order);
 		Nurbs(int num_cntrl_pts, int nurbs_order);
+
+
+		void set_num_cntrl_pts(int num_cntrl_pts_in);
 
 		std::vector<T> get_cntrl_pts_x();
 		std::vector<T> get_cntrl_pts_y();
 		std::vector<T> get_weights();
 		std::vector<T> get_U();
+
+		std::vector<T>& get_cntrl_pts_x_ref();
+		std::vector<T>& get_cntrl_pts_y_ref();
+		
 		
 		void set_cntrl_pts_x(std::vector<T> cntrl_pts_x);
 		void set_cntrl_pts_y(std::vector<T> cntrl_pts_y);
+		void set_cntrl_pts_x(const T* cntrl_pts_x_ptr);
+		void set_cntrl_pts_y(const T* cntrl_pts_y_ptr);
+
 		//void set_U(std::vector<T> U);
 		//void set_weights(std::vector<T> weights);
 
@@ -44,7 +55,10 @@ class Nurbs
 
 		T eval_dCy_dCx(T u);
 
-		T get_u_from_Cx(T Cx, T u_start, T TOL);
+		T eval_dCx_dt(T u);
+
+
+		T get_u_from_Cx(T Cx, T u_start, double TOL);
 
 
 
