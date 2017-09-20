@@ -41,14 +41,16 @@ svLong INTEGRATOR_PRINT_LVL ( 0 );
 
 enum c_p_param_types {
 
+	uninitialized	  = 0,
 	old_atan_formula  = 1,
 	fraser_suzuki     = 2,
 	gauss_linear_comb = 3,
 	NURBS 			  = 4
 
 };
-
 c_p_param_types c_p_param_type;
+
+
 
 
 // Global SolvIND objects
@@ -81,8 +83,8 @@ bool initialized = false;
 // Global Simulation parameters
 double L1;				// Length of Constantan
 double L3;				// Length of PCM
-long N1;				// Number of discretization points Constantan
-long N3;				// Number of discretization points PCM
+svULong N1;				// Number of discretization points Constantan
+svULong N3;				// Number of discretization points PCM
 double dx_Const;		// Mesh size Constantan
 double dx_pcm;			// Mesh size PCM
 double alpha;			// quotient for Constantan / PCM grid transition
@@ -101,10 +103,6 @@ double T_end;			// Integration ends when oven reaches T_end
 
 // Global optimization parameter
 double* c_p_params;
-
-std::vector<double> cntrl_pts_x;
-svULong num_cntrl_pts;
-svULong nurbs_order = 4;
 
 
 
@@ -172,6 +170,17 @@ svLong adjInjector( const svULong idx, svULong& adjLeaDim, const double*& adjTra
 	//std::cout << "adjInjector: called with idx = " << idx << "\n";
 
 	static Sonic::DMat injMat ( N1+N3, 2*solGrid.size() );
+	static svULong N1_static = N1;
+	static svULong N3_static = N3;
+	static svULong solGridSize_static = solGrid.size();
+
+	if (!(N1_static == N1 && N3_static == N3 && solGridSize_static == solGrid.size())) {
+		injMat = Sonic::DMat( N1+N3, 2*solGrid.size() );
+		N1_static = N1;
+		N3_static = N3;
+		solGridSize_static = solGrid.size();
+	}
+	
 	injMat.zero();
 
 	injMat(N1  ,2*idx  ) = 1;
@@ -192,32 +201,6 @@ template <typename T>
 svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 {
 
-	/*static Nurbs<T> nurbs(num_cntrl_pts, nurbs_order);
-	static bool init_nurbs = false;
-	//static T u_N1 = 0.
-
-	if (init_nurbs == false) {
-		std::vector<T>& cntrl_pts_x_ref = nurbs.get_cntrl_pts_x_ref();
-
-		for (svULong i=0; i<num_cntrl_pts; ++i) {
-			cntrl_pts_x_ref[i] = cntrl_pts_x[i];
-		}
-
-	}
-
-	bool cntrl_pts_changed = false;
-	std::vector<T> cntrl_pts_y = nurbs.get_cntrl_pts_y();
-	for (svULong i=0; i<num_cntrl_pts; ++i) {
-		if (cntrl_pts_y[i] != args.p[i]) {
-			cntrl_pts_changed = true;
-			break;
-		}
-	}
-
-	if (cntrl_pts_changed) {
-		nurbs.set_cntrl_pts_y(args.p);
-	}*/
-
 	const T* x = args.xd;
 
 	// some pre-processing
@@ -232,39 +215,23 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 	args.rhs[0] = heat_rate_s;
 	
 	// Constantan (just linear part)
-	for (long j = 1; j <= N1-2; j++)
+	for (svULong j = 1; j <= N1-2; j++)
 	{
 		args.rhs[j] = scale_Const * (x[j-1] - 2.0 * x[j] + x[j+1]); 
 	}
 
 
 	// Intermediate area between Constantan and PCM, belongs to Constantan
-	long j = N1-1;
+	svULong j = N1-1;
 	args.rhs[j] = scale_Const * (2./(1.+alpha) * x[j-1] - 2./alpha * x[j] + 2./(alpha*(alpha+1.)) * x[j+1]);
 
 
-	// NURBS aux params
-	//double TOL = 0.1;  // [K]
-	/*T u   = 0.;    // start value for Newton
-	T du;
-	T Cx_newton;
-	T dCx_newton;
-
-	for (svULong i=0; i<50; ++i) {
-
-		Cx_newton = nurbs.eval_nurbs_curve_x(u);
-		dCx_newton = nurbs.eval_dCx_dt(u);
-
-		du = -(Cx_newton - x[N1])/dCx_newton;
-
-		u += 1.*du;
-	}*/
 
 
 	// PCM
 	T c_p_j;
 	T dc_p_j;
-	for (long j = N1; j <= N1+N3-2; j++)
+	for (svULong j = N1; j <= N1+N3-2; j++)
 	{
 		switch (c_p_param_type)
 			{
@@ -286,19 +253,7 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 
 				case NURBS:
 					// Note: ADOL-C Index problem...
-					/*Cx_newton = nurbs.eval_nurbs_curve_x(u);
-					dCx_newton = nurbs.eval_dCx_dt(u);
-
-					du = -(Cx_newton - x[j])/dCx_newton;
-
-					u += 1.*du;
-
-					c_p_j = nurbs.eval_nurbs_curve_y(u);
-					dc_p_j = nurbs.eval_dCy_dCx(u);
-
-					std::cout << u << "\t" << x[j] << "\t" << c_p_j << "\t" << dc_p_j << std::endl;*/
-
-					//mexErrMsgTxt( "NURBS c_p parametrization not implemented yet!" );
+					mexErrMsgTxt( "NURBS c_p parametrization not implemented yet!" );
 					break;
 				default:
 					mexErrMsgTxt( "Wrong c_p parametrization type!" );
@@ -366,9 +321,38 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		if (initialized == true) {
 			mexErrMsgTxt("Initialization was already done! You need to \"reset\" before reapply \"init\"!");
 		}
-		
-		nmp = mxGetM(prhs[1]);
+		else {
+			std::cout << "Initializing..." << std::endl;
+		}
+
+		// Simulation Parameters
+		int n_sim_params = mxGetN(prhs[1]);
+		if (n_sim_params != 13) {
+			mexErrMsgTxt("Simulation parameter number inconstistent in C++ and Matlab!");
+		}
 		const double* input_ptr = mxGetPr(prhs[1]);
+		L1 = *input_ptr; input_ptr++;
+		L3 = *input_ptr; input_ptr++;
+		N1 = *input_ptr; input_ptr++;
+		N3 = *input_ptr; input_ptr++;
+
+		lambda_Const = *input_ptr; input_ptr++;
+		rho_Const    = *input_ptr; input_ptr++;
+		c_p_Const    = *input_ptr; input_ptr++;
+
+		lambda_pcm   = *input_ptr; input_ptr++;	  	// heat conductivity of pcm [mW/(mm*K)]
+		rho_pcm      = *input_ptr; input_ptr++;	  	// density of pcm [mg/mm^3]
+
+		m_pcm 	     = *input_ptr; input_ptr++;     // mass of pcm [mg], here: sample 407
+
+		heat_rate    = *input_ptr; input_ptr++;     // Oven temp heat rate [K/min]   
+		T_0  	     = *input_ptr; input_ptr++;     // [degC]
+		T_end  	     = *input_ptr; input_ptr++;     // [degC]
+
+
+		// Measurement time grid and corresponding heat flux values
+		nmp = mxGetM(prhs[2]);
+		input_ptr = mxGetPr(prhs[2]);
 		// Time grid of measurements (= for value and sensitivity extraction of ODE solution)
 		for (svULong i=0; i<nmp; ++i) {
 			solGrid.push_back(*input_ptr);
@@ -381,7 +365,7 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 			input_ptr++;
 		}
 
-		mxGetString(prhs[2], command, 99);
+		mxGetString(prhs[3], command, 99);
 		if (strncmp(command, "old_atan_formula", 99) == 0) {
 			c_p_param_type = old_atan_formula;
 			np = 6;
@@ -395,9 +379,9 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		} else if (strncmp(command, "NURBS", 99) == 0) {
 			mexErrMsgTxt( "NURBS problem with index unsolved..." ); // TODO!
 
-			num_cntrl_pts = mxGetN(prhs[3]);
+			/*num_cntrl_pts = mxGetN(prhs[4]);
 			cntrl_pts_x.resize(num_cntrl_pts);
-			const double* input_ptr = mxGetPr(prhs[3]);
+			const double* input_ptr = mxGetPr(prhs[4]);
 			for (svULong i=0; i<num_cntrl_pts; ++i) {
 				cntrl_pts_x[i] = *input_ptr;
 				input_ptr++;
@@ -405,36 +389,18 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 			np = num_cntrl_pts;
 
 			
-			c_p_param_type = NURBS;
+			c_p_param_type = NURBS;*/
 		}
 		c_p_params = new double [ np ];
 
 		
 
-		// Set Parameters
-		L1 = 15.;
-		L3 = 0.5;
-		N1 = 200;
-		N3 = 50;
-
-		lambda_Const = 23.;
-		rho_Const    = 8.9;
-		c_p_Const    = 0.41;
-
-		lambda_pcm   = 0.96;	// heat conductivity of pcm [mW/(mm*K)]
-		rho_pcm      = 0.85;	// density of pcm [mg/mm^3]
-
-		m_pcm 	     = 10.47;   // mass of pcm [mg], here: sample 407
-
-		heat_rate    = 10.;     // Oven temp heat rate [K/min]   
-		T_0  	     = 10.;     // [degC]
-		T_end  	     = 200.;    // [degC]
 
 
+
+		// Some pre-calculations / auxiliary variables
 		g_traj = Sonic::DMat(nmp, N1+N3);
 
-
-		// Some pre-calculations
 		double heat_rate_s = heat_rate / 60.; // [K/min] -> [K/s]
 		dx_Const = L1 / static_cast<double>(N1);
 		dx_pcm = L3 / static_cast<double>(N3);
@@ -556,6 +522,11 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 
 
 	} else if (strncmp(command, "optimization", 99) == 0) {
+
+		if (initialized == false) {
+			mexErrMsgTxt("Not yet initialized. Use first command \"init\" before perform optimization!");
+		}
+
 
 		if (np != mxGetN(prhs[1])) {
 			mexErrMsgTxt(" Wrong number of c_p input parameters! ");
@@ -691,14 +662,65 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 			T_output <<= T_temp;
 		}
 
-
 		return;
 
 
 	} else if (strncmp(command, "reset", 99) == 0) {
-		// TODO!
+		// Reset all global variables
+
+		std::cout << "Resetting..." << std::endl;
+
+		delete integrator;
+		//delete evaluator;
+
+		nAdjDir = 0;
+		nAdjDirTotal = 0;
+
+		delete adjSensDir;
+
+		nFwdDir = 0;
+
+		delete fwdSensDir;
+
+		solGrid.clear();
+
+		q_meas = Sonic::DMat();
+
+		nmp = 0;
+		nxd = 0;
+		np = 0;
+
+		g_traj = Sonic::DMat();
+		g_fwdSens.clear();
+		g_adjSens.clear();
 
 
+		// Simulation parameters
+		L1 = 0;				
+		L3 = 0;				
+		N1 = 0;				
+		N3 = 0;				
+		dx_Const = 0;		
+		dx_pcm = 0;			
+		alpha = 0;			
+
+		lambda_Const = 0;	
+		rho_Const = 0;		
+		c_p_Const = 0;		
+		lambda_pcm = 0;	
+		rho_pcm = 0;			
+
+		m_pcm = 0;			
+
+		heat_rate = 0;		
+		T_0 = 0;				
+		T_end = 0;			
+
+		// Global optimization parameter
+		c_p_param_type = uninitialized;
+		c_p_params = NULL;
+
+		initialized = false;
 	}
 
 

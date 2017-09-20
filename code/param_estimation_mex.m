@@ -17,9 +17,6 @@ num_meas = length(q_dsc);
 
 
 %%%%%%%%%% Set Simulation parameters %%%%%%%%%%%%%%%%%
-T_0 = 10.;
-T_end = 200.;
-
 L1 = 15;  % [mm]
 L3 = 0.5;  % [mm]
 N1 = 300;
@@ -30,9 +27,16 @@ rho_Const = 8.9;     % [mg/mm^3]
 c_p_Const = 0.41;    % [mJ/(mg*K)]
 
 lambda_pcm = 0.96;   % [mW/(mm*K)]
-rho_pcm = 0.8;       % [mg/mm^3]
+rho_pcm = 0.85;      % [mg/mm^3]
 
 heat_rate = 10.;     % [K/min]
+T_0 = 10.;           % Start temperature oven [degC]
+T_end = 200.;        % End temperature oven [degC]
+
+sim_params_vec = [L1, L3, N1, N3, lambda_Const, rho_Const, c_p_Const, ...
+                  lambda_pcm, rho_pcm, m_pcm, ...
+                  heat_rate, T_0, T_end];
+
 heat_rate_s = heat_rate / 60; % [K/min] -> [K/s]
 
 % c_p parametrization with Fraser-Suzuki-Peak
@@ -42,7 +46,6 @@ wr =  15.0;
 sr =   0.2;
 z  = 125.0;
 b  =   10.0;
-
 p_fraser_suzuki = [h, r, wr, sr, z, b];
 
 p_atan_cp = [125., 10, 0.01, 10., 0.003, 2];
@@ -53,6 +56,13 @@ p_gauss_lin_comb = [10, 0.1, 130, ...
                     0.1,  1,   124, ...
                     0.05, 1,   122, ...
                     2.];
+                
+p_gauss_lin_comb = [37.2793,    1.2498,  123.0044, ...
+                    1.1022,   13.2169,  104.8824, ...
+                    15.6769,    3.7355,  124.3034, ...
+                    2.8868, 7.1009,  118.2194, ...
+                    0.5846,   30.5770,   76.8653, ...
+                    1.6483];
 
 
 %%%%%%%%%% some pre-calculations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -83,10 +93,8 @@ end
 meas_data(:,2) = q_dsc;
 
 
-heat1D_pcm('init', meas_data, 'gauss_linear_comb');
-
-
 % Set optimization variables
+c_p_param_type = 'gauss_linear_comb';
 p_optim_start = p_gauss_lin_comb;
 
 % choose free(true)/fixed(false) parameters to optimize
@@ -95,6 +103,10 @@ p_optim_fixed = p_optim_start(~p_optim_estimable);
 
 num_free_optim_params = sum(p_optim_estimable);
 
+
+
+heat1D_pcm('reset');
+heat1D_pcm('init', sim_params_vec, meas_data, 'gauss_linear_comb');
 
 
 figure(1); % q_pcm_in plot
