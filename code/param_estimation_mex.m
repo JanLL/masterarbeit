@@ -19,7 +19,7 @@ num_meas = length(q_dsc);
 %%%%%%%%%% Set Simulation parameters %%%%%%%%%%%%%%%%%
 L1 = 15;  % [mm]
 L3 = 0.5;  % [mm]
-N1 = 300;
+N1 = 200;
 N3 = 50;  % error if N3=0
  
 lambda_Const = 23.;  % [mW/(mm*K)]
@@ -55,14 +55,14 @@ p_gauss_lin_comb = [10, 0.1, 130, ...
                     0.5,  1,   126, ...
                     0.1,  1,   124, ...
                     0.05, 1,   122, ...
-                    2.];
+                    0., 2.];
                 
 p_gauss_lin_comb = [37.2793,    1.2498,  123.0044, ...
                     1.1022,   13.2169,  104.8824, ...
-                    15.6769,    3.7355,  124.3034, ...
+                    -0.3,    3.7355,  124.3034, ...
                     2.8868, 7.1009,  118.2194, ...
                     0.5846,   30.5770,   76.8653, ...
-                    1.6483];
+                    0., 1.6483];
 
 
 %%%%%%%%%% some pre-calculations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -127,12 +127,17 @@ return;
 % Jacobian via finite differences
 % [x,~,~,~,~,~,dqdp_finite_diff] = lsqnonlin(...
 %     compute_q_dqdp_mex_expl, p_optim_start(p_optim_estimable), [], [], optimset('MaxIter',0));
+% figure()
+% image(dqdp_finite_diff, 'CDataMapping', 'scaled');
+% colorbar
 % return;
 
 
 %%%%%%%%%%%%%%%%%%%%%%% SOLVE OPTIMIZATION PROBLEM %%%%%%%%%%%%%%%%%%%%%%%
-lb = zeros(1,num_free_optim_params);
-ub = ones(1,num_free_optim_params)*500.;
+lb = ones(1,num_free_optim_params) * -1;
+ub = ones(1,num_free_optim_params) * 500.;
+
+
 %ub(4) = 1.;  % sr < 1
 optim_con = {lb, ub};
 

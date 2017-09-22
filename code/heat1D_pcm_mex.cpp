@@ -247,7 +247,7 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 																   args.p[6],  args.p[7],  args.p[8],
 																   args.p[9],  args.p[10], args.p[11],
 																   args.p[12], args.p[13], args.p[14],
-																   args.p[15]);
+																   args.p[15], args.p[16]);
 
 					break;
 
@@ -374,7 +374,7 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 			np = 6;
 		} else if (strncmp(command, "gauss_linear_comb", 99) == 0) {
 			c_p_param_type = gauss_linear_comb;
-			np = 3*5 + 1;
+			np = 3*5 + 2;
 
 		} else if (strncmp(command, "NURBS", 99) == 0) {
 			mexErrMsgTxt( "NURBS problem with index unsolved..." ); // TODO!

@@ -57,7 +57,7 @@ void gauss_linear_comb_formula(T x, T& c_p, T& dc_p,
 		T ampl_2, T sigma_2, T shift_2,
 		T ampl_3, T sigma_3, T shift_3,
 		T ampl_4, T sigma_4, T shift_4,
-		T b)
+		T m, T b)
 {
 
 	T scale_0 = -1./(sigma_0*sigma_0);
@@ -72,13 +72,14 @@ void gauss_linear_comb_formula(T x, T& c_p, T& dc_p,
 	T c_p_3 = ampl_3 * exp(scale_3 * (x - shift_3)*(x - shift_3));
 	T c_p_4 = ampl_4 * exp(scale_4 * (x - shift_4)*(x - shift_4));
 
-	c_p = c_p_0 + c_p_1 + c_p_2 + c_p_3 + c_p_4 + b;
+	c_p = c_p_0 + c_p_1 + c_p_2 + c_p_3 + c_p_4 + m*x + b;
 
-	dc_p = 2*scale_0 * (x-shift_0) * c_p_0 +
-		   2*scale_1 * (x-shift_1) * c_p_1 +
-		   2*scale_2 * (x-shift_2) * c_p_2 +
-		   2*scale_3 * (x-shift_3) * c_p_3 +
-		   2*scale_4 * (x-shift_4) * c_p_4;
+	dc_p = 	 2*scale_0 * (x-shift_0) * c_p_0
+		   + 2*scale_1 * (x-shift_1) * c_p_1
+		   + 2*scale_2 * (x-shift_2) * c_p_2
+		   + 2*scale_3 * (x-shift_3) * c_p_3
+		   + 2*scale_4 * (x-shift_4) * c_p_4
+		   + m;
 
 	return;
 
