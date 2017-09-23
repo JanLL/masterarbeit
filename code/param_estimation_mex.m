@@ -117,7 +117,7 @@ figure(3); % dqdp plot
 ax3 = gca();
 
 compute_q_dqdp_mex_expl = @(p_optim) compute_q_dqdp_mex(...
-    p_optim, p_optim_estimable, p_optim_fixed, T_ref_dsc, q_dsc, ax1, ax2, ax3);
+    p_optim, p_optim_estimable, p_optim_fixed, c_p_param_type, T_ref_dsc, q_dsc, ax1, ax2, ax3);
 
 
 %%%%%%%%%%%%%% INITIAL VALUE TEST %%%%%%%%%%%%%%%%%%%%

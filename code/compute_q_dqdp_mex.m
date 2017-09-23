@@ -1,5 +1,5 @@
 function [residuum, Jac] = compute_q_dqdp_mex(...
-    p_optim_free, p_optim_estimable, p_optim_fixed, T_ref_dsc, q_dsc, ax1, ax2, ax3)
+    p_optim_free, p_optim_estimable, p_optim_fixed, c_p_param_type, T_ref_dsc, q_dsc, ax1, ax2, ax3)
 % TODO: description!
 
 % build vector of all (free and fixed) optimization parameters
@@ -10,6 +10,9 @@ p_optim_all(~p_optim_estimable) = p_optim_fixed;
 
 [residuum, Jac] = heat1D_pcm('optimization', p_optim_all);
  
+Jac = Jac(:,p_optim_estimable);
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % heat flux plot
@@ -26,10 +29,14 @@ drawnow;
 
 % c_p plot
 T_plot = 30:0.01:160;
-%c_p_plot = c_p_fs(T_plot, p_optim_all);
-%c_p_plot = c_p_formula(T_plot, p_optim_all(1:6));
-c_p_plot = c_p_gauss_linear_comb(T_plot, p_optim_all);
-
+switch c_p_param_type
+    case 'old_atan_formula'
+        c_p_plot = c_p_formula(T_plot, p_optim_all(1:6));
+    case 'fraser_suzuki'
+        c_p_plot = c_p_fs(T_plot, p_optim_all);
+    case 'gauss_linear_comb'
+        c_p_plot = c_p_gauss_linear_comb(T_plot, p_optim_all);
+end
 
 cla(ax2); 
 hold(ax2, 'on')

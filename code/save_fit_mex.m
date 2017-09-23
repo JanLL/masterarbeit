@@ -39,13 +39,12 @@ dsc_fileSpec = dsc_data_struct.fileSpec;
 datetime_cell = num2cell(int32(clock));
 datetime_str = sprintf('%04i-%02i-%02i_%02i:%02i:%02i', datetime_cell{:});
 
-heat_rate_str = num2str(p_sim.heat_rate);
-heat_rate_str = strrep(heat_rate_str, '.', ',');
+heat_rate_str = num2str(dsc_data_struct.Tinfo.Tstep);
 
 mass_code_str = dsc_fileSpec(11:13);
 
 generic_fit_info_str = strcat(datetime_str, '_', mass_code_str, '_', heat_rate_str, ...
-                   'Kmin_', optim_solverName);
+                   'Kmin');
 path_fit_data_dir = strcat(path_root, generic_fit_info_str, '/');
 mkdir(path_fit_data_dir);
 
@@ -53,28 +52,37 @@ path_data_file = strcat(path_fit_data_dir, 'fit_data.mat');
 save(path_data_file, '-struct', 'fit_data');
 
 %%%%%%%%%%%%%%%%%%% PLOTS %%%%%%%%%%%%%%%%%%%%%
-figure();
-% c_p(T)
+fig = figure();
+% c_p(T) plot
 T_plot = 30:0.01:160;
-%c_p_plot = c_p_fs(T_plot, p_optim_all);
-%c_p_plot = c_p_formula(T_plot, p_optim_all(1:6));
-c_p_plot = c_p_gauss_linear_comb(T_plot, p_optim_all);
-plot(aT_plot, c_p_plot, 'DisplayName', 'c_p Simulation');
+p_optim_all = optimization_data_struct.start_values;
+p_optim_all(optimization_data_struct.p_optim_estimable) = p_optim_end;
+
+% TODO: automatisch richtige c_p funktion waehlen...
+switch optimization_data_struct.c_p_param_type
+    case 'old_atan_formula'
+        c_p_plot = c_p_formula(T_plot, p_optim_all(1:6));
+    case 'fraser_suzuki'
+        c_p_plot = c_p_fs(T_plot, p_optim_all);
+    case 'gauss_linear_comb'
+        c_p_plot = c_p_gauss_linear_comb(T_plot, p_optim_all);
+end
+
+plot(T_plot, c_p_plot, 'DisplayName', 'c_p Simulation');
 legend('show', 'location', 'northoutside');
 xlabel('T [degC]');
 ylabel('c_p [mJ/(mg*K]');
 path_plot_c_p = strcat(path_fit_data_dir, 'c_p(T).fig');
 savefig(fig, path_plot_c_p); 
 
-% q_pcm_in(T_ref)
-dsc = simulation_data_struct;
-T_ref_dsc = dsc.data(index_T_dsc(1):index_T_dsc(2),1);
-q_dsc = (dsc.data(index_T_dsc(1):index_T_dsc(2),3) ...
-      ./ dsc.data(index_T_dsc(1):index_T_dsc(2),4)) * m_pcm;
+% q_pcm_in(T_ref) plot
+T_ref_dsc = dsc_data_struct.data(index_T_dsc(1):index_T_dsc(2),1);
+q_dsc = (dsc_data_struct.data(index_T_dsc(1):index_T_dsc(2),3) ...
+      ./ dsc_data_struct.data(index_T_dsc(1):index_T_dsc(2),4)) * dsc_data_struct.mass;
 q_sim = residuum_end + q_dsc;
 
 clf;
-plot(T_ref_dsc, q_sim, 'DisplayName', 'Simulation');
+plot(T_ref_dsc, q_sim, 'DisplayName', 'Simulation'); hold on
 plot(T_ref_dsc, q_dsc, 'DisplayName', 'Measurement');
 plot(T_ref_dsc, residuum_end, 'DisplayName', 'Residuum');
 legend('show', 'location', 'northoutside');
@@ -83,17 +91,18 @@ ylabel('q_{pcm}^{in} [mW]');
 path_plot_q_pcm_in = strcat(path_fit_data_dir, 'q_pcm_in(T_ref).fig');
 savefig(fig, path_plot_q_pcm_in); 
 
-% dqdp 
+% dqdp plot
 clf;
 image(Jacobian_end, 'CDataMapping', 'scaled');
 colorbar();
 title('dq/dp')
 xlabel('c_p parameters');
 ylabel('T_{ref}');
+set(gca,'Ydir','Normal')
 path_plot_dqdp = strcat(path_fit_data_dir, 'dqdp.fig');
 savefig(fig, path_plot_dqdp); 
 
-close();
+close(fig);
 
 
 
