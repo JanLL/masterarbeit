@@ -247,7 +247,12 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 																   args.p[6],  args.p[7],  args.p[8],
 																   args.p[9],  args.p[10], args.p[11],
 																   args.p[12], args.p[13], args.p[14],
-																   args.p[15], args.p[16]);
+																   args.p[15], args.p[16], args.p[17],
+																   args.p[18], args.p[19], args.p[20],
+																   args.p[21], args.p[22], args.p[23],
+																   args.p[24], args.p[25], args.p[26],
+																   args.p[27], args.p[28], args.p[29],
+																   args.p[30], args.p[31]);
 
 					break;
 
@@ -374,7 +379,7 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 			np = 6;
 		} else if (strncmp(command, "gauss_linear_comb", 99) == 0) {
 			c_p_param_type = gauss_linear_comb;
-			np = 3*5 + 2;
+			np = 3*10 + 2;
 
 		} else if (strncmp(command, "NURBS", 99) == 0) {
 			mexErrMsgTxt( "NURBS problem with index unsolved..." ); // TODO!
@@ -526,7 +531,6 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		if (initialized == false) {
 			mexErrMsgTxt("Not yet initialized. Use first command \"init\" before perform optimization!");
 		}
-
 
 		if (np != mxGetN(prhs[1])) {
 			mexErrMsgTxt(" Wrong number of c_p input parameters! ");
