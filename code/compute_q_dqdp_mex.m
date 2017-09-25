@@ -8,10 +8,14 @@ p_optim_all(p_optim_estimable) = p_optim_free;
 p_optim_all(~p_optim_estimable) = p_optim_fixed;
 
 
-[residuum, Jac] = heat1D_pcm('optimization', p_optim_all);
- 
+[residuum, Jac] = heat1D_pcm('optimization', p_optim_all); 
 Jac = Jac(:,p_optim_estimable);
 
+
+% [residuum, Jac_fwd, Jac_adj] = heat1D_pcm('optimization', p_optim_all);
+% Jac = struct();
+% Jac.fwd = Jac_fwd;
+% Jac.adj = Jac_adj;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% PLOTS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

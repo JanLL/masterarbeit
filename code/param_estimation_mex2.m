@@ -83,20 +83,21 @@ compute_q_dqdp_mex_expl = @(p_optim) compute_q_dqdp_mex(...
 
 %%%%%%%%%%%%%% INITIAL VALUE TEST %%%%%%%%%%%%%%%%%%%%
 if options.init_value_test
-    compute_q_dqdp_mex_expl(optimization.start_values);
+    [res, Jac] = compute_q_dqdp_mex_expl(optimization.start_values);
     fit_data = false;
     return;
 end
 
 
 %%%%%%%%%%%%%% SOLVE OPTIMIZATION PROBLEM %%%%%%%%%%%%
+global p_optim_process;
 opt_constraints = {optimization.lb, optimization.ub};
 
 opt_options = optimoptions('lsqnonlin', ...
                            'Display', 'iter-detailed', ...
                            'OutputFcn', @disp_aux, ...
                            'SpecifyObjectiveGradient', true, ...
-                           'MaxIter', 1);
+                           'MaxIter', 5);
 
 
 tic;
@@ -115,7 +116,7 @@ save_path_root = '/home/argo/masterarbeit/fits_data/';
 fit_data = save_fit_mex(...
     save_path_root, simulation, dsc_measurement, index_T_dsc, ...
     optimization, p_optim, optim_output, optim_duration, ...
-    residuum_end, jac_output);
+    residuum_end, jac_output, p_optim_process);
 
 
 end

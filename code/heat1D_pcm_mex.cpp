@@ -27,8 +27,8 @@
 #include "mex.h"
 
 
-#include "/home/argo/masterarbeit/code/tools/nurbs_interpolation_c++/nurbs.hpp"
-#include "/home/argo/masterarbeit/code/tools/nurbs_interpolation_c++/nurbs.cpp"
+//#include "/home/argo/masterarbeit/code/tools/nurbs_interpolation_c++/nurbs.hpp"
+//#include "/home/argo/masterarbeit/code/tools/nurbs_interpolation_c++/nurbs.cpp"
 #include "/home/argo/masterarbeit/code/c_p_parametrizations.cpp"
 
 
@@ -67,13 +67,13 @@ svULong nFwdDir;
 double* fwdSensDir;
 
 std::vector<double> solGrid;
-Sonic::DMat q_meas;
+Sonic::DMat* q_meas;
 
 svULong nmp;
 svULong nxd;
 svULong np;
 
-Sonic::DMat g_traj;
+Sonic::DMat* g_traj;
 std::vector< Sonic::DMat> g_fwdSens;
 std::vector< Sonic::DMat> g_adjSens;
 
@@ -139,13 +139,13 @@ public:
 
 		const double* T_ptr = data->m_solution_xd[0];
 		for (svULong i=0; i<nxd; ++i) {
-			g_traj(solGrid_idx, i) = *T_ptr;
+			(*g_traj)(solGrid_idx, i) = *T_ptr;
 			T_ptr++;
 		}
 
 		//std::cout << "TContFwdSensGetter: stored traj:\n" << g_traj[ g_traj.size() - 1 ];
 
-		//g_fwdSens.push_back( Sonic::DMat ( Sonic::cDMat ( data->m_fwdSensitivities[0], data->m_fwdSensLeaDim, data->m_dims [ Component_XD ], m_nRays * m_fwdTCOrder) ) );
+		g_fwdSens.push_back( Sonic::DMat ( Sonic::cDMat ( data->m_fwdSensitivities[0], data->m_fwdSensLeaDim, data->m_dims [ Component_XD ], m_nRays * m_fwdTCOrder) ) );
 
 		//std::cout << "TContFwdSensGetter: stored fwdSens:\n" << g_fwdSens[ g_fwdSens.size() - 1 ];
 
@@ -364,9 +364,9 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 			input_ptr++;
 		}
 		// Heat flux measurement values
-		q_meas = Sonic::DMat(nmp,1);
+		q_meas = new Sonic::DMat(nmp,1);
 		for (svULong i=0; i<nmp; ++i) {
-			q_meas(i,0) = *input_ptr;
+			(*q_meas)(i,0) = *input_ptr;
 			input_ptr++;
 		}
 
@@ -404,7 +404,7 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 
 
 		// Some pre-calculations / auxiliary variables
-		g_traj = Sonic::DMat(nmp, N1+N3);
+		g_traj = new Sonic::DMat(nmp, N1+N3);
 
 		double heat_rate_s = heat_rate / 60.; // [K/min] -> [K/s]
 		dx_Const = L1 / static_cast<double>(N1);
@@ -488,7 +488,7 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 				);
 
 
-		const double relTol ( 1e-06 );
+		const double relTol ( 1e-8 );
 		integrator->setStepsizeBounds    ( 0, 0   );
 		integrator->setRelativeTolerance ( relTol );
 		integrator->setInitialStepsize   ( 1e-06  );
@@ -556,13 +556,13 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		integrator->setInitialValues(Component_P, np, c_p_params);
 
 
-	    /*integrator->setForwardTaylorCoefficients (
-				nFwdDir, // no of fwd Dirs
-				1, // order
+	    integrator->setForwardTaylorCoefficients (
+				nFwdDir,      // no of fwd Dirs
+				1,            // order
 				1 + nxd + np, // leading Dim of fwd Dirs
-				fwdSensDir
-				);*/
-		integrator->setForwardTaylorCoefficients ( 0, 0, 0, 0 );
+				fwdSensDir    // (1+nxd+np)x(np) matrix with np fwdDirections
+				);
+		//integrator->setForwardTaylorCoefficients ( 0, 0, 0, 0 );
 		integrator->setAdjointTaylorCoefficients ( 0, 0, 0, 0, 0 );
 		std::cout << "Integrate now...\n";
 		clock_t t_begin = clock();
@@ -577,7 +577,9 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		}
 
 
-		integrator->setForwardTaylorCoefficients ( 0, 0, 0, 0 );
+
+
+		/*integrator->setForwardTaylorCoefficients ( 0, 0, 0, 0 );
 		integrator->setAdjointTaylorCoefficients (
 				nAdjDirTotal, // no of adj Dirs
 				0, // rays
@@ -609,33 +611,53 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		integrator->getAdjointSensitivities( 0, Component_P, solLD, sol );
 		for ( svULong ii = 0; ii < solGrid.size(); ii ++ ){
 			g_adjSens [ ii ] <<= Sonic::cDMat ( sol +  ii * nAdjDir * solLD, solLD, np, nAdjDir );
-		}
+		}*/
 
 
 
 		// Compute heat flux q between Constantan and PCM
 		const double scale_q = (lambda_pcm * m_pcm) / (rho_pcm * dx_pcm*dx_pcm * N3); // Note: rho_pcm atm NOT temp.-dependend! Change Later!
 
-
-		// TODO: in snmatrix.h steht, dass man den ()operator nicht fuer effiziente Berechnungen verwenden soll,
-		// warscheinlich also ziemlich langsam. Man soll eher BLAS funktionen verwenden... wie geht das?
-		Sonic::DMat dq_dp (nmp, np);
+		// Computation of dq/dp = dq/dT * dT/dp with adjoint Sensitivities
+		/*Sonic::DMat dq_dp_adj (nmp, np);
 		for (svULong i=0; i<nmp; ++i) {
 			for (svULong j=0; j<np; ++j) {
-				dq_dp(i,j) = scale_q * ( (g_adjSens[i])(j,0) - (g_adjSens[i])(j,1) );
+				dq_dp_adj(i,j) = scale_q * ( (g_adjSens[i])(j,0) - (g_adjSens[i])(j,1) );
+			}
+		}*/
+
+		// Computation of dq/dp = dq/dT * dT/dp with forward Sensitivities
+		Sonic::DMat dq_dp_fwd (nmp, np);
+		for (svULong i=0; i<nmp; ++i) {
+			for (svULong j=0; j<np; ++j) {
+				dq_dp_fwd(i,j) = scale_q * ( (g_fwdSens[i])(N1,j) - (g_fwdSens[i])(N1+1,j) );
 			}
 		}
+
+		// Vergleich fwdSens und adjSens
+		/*std::ofstream file_diff_sens;
+  		file_diff_sens.open ("/home/argo/masterarbeit/diff_sens.txt");
+		for (svULong i=0; i<nmp; ++i) {
+			for (svULong j=0; j<np; ++j) {
+		
+				double diff1 = fabs((g_adjSens[i])(j,0) - (g_fwdSens[i])(N1,j));
+				double diff2 = fabs((g_adjSens[i])(j,1) - (g_fwdSens[i])(N1+1,j));
+				file_diff_sens << diff1 << "\t" << diff2 << "\t";
+			}
+			file_diff_sens << std::endl;
+		}
+		file_diff_sens.close();*/
 
 
 		// Compute heat flux and residuum vector
 		Sonic::DMat heat_flux(nmp, 1);
 		for (svULong i=0; i<nmp; ++i) {
-			heat_flux(i,0) = -scale_q * (g_traj(i,N1+1) - g_traj(i,N1));
+			heat_flux(i,0) = -scale_q * ((*g_traj)(i,N1+1) - (*g_traj)(i,N1));
 		}
 		
 		Sonic::DMat residuum(nmp, 1);
 		for (svULong i=0; i<nmp; ++i) {
-			residuum(i,0) = heat_flux(i,0) - q_meas(i,0);
+			residuum(i,0) = heat_flux(i,0) - (*q_meas)(i,0);
 		}
 
 
@@ -650,16 +672,23 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 
 
 		// Jacobian dq/dp
-		const Sonic::cDMat& dq_dp_temp(dq_dp);
+		const Sonic::cDMat& dq_dp_temp(dq_dp_fwd);
 		plhs[1] = mxCreateDoubleMatrix(dq_dp_temp.nRows(), dq_dp_temp.nCols(), mxREAL);
 		Sonic::DMat dq_dp_output(mxGetPr(plhs[1]), dq_dp_temp.nRows(),
 				dq_dp_temp.nRows(), dq_dp_temp.nCols(), Sonic::CreateReference);
 		dq_dp_output <<= dq_dp_temp;
 
+		// Jacobian dq/dp
+		/*const Sonic::cDMat& dq_dp_temp2(dq_dp_adj);
+		plhs[2] = mxCreateDoubleMatrix(dq_dp_temp2.nRows(), dq_dp_temp2.nCols(), mxREAL);
+		Sonic::DMat dq_dp_output2(mxGetPr(plhs[2]), dq_dp_temp2.nRows(),
+				dq_dp_temp2.nRows(), dq_dp_temp2.nCols(), Sonic::CreateReference);
+		dq_dp_output2 <<= dq_dp_temp2;*/
+
 
 		if (nlhs >= 3) {
 			// Temperature trajectory
-			const Sonic::cDMat& T_temp(g_traj);
+			const Sonic::cDMat& T_temp(*g_traj);
 			plhs[2] = mxCreateDoubleMatrix(T_temp.nRows(), T_temp.nCols(), mxREAL);
 			Sonic::DMat T_output(mxGetPr(plhs[2]), T_temp.nRows(),
 					T_temp.nRows(), T_temp.nCols(), Sonic::CreateReference);
@@ -680,21 +709,21 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		nAdjDir = 0;
 		nAdjDirTotal = 0;
 
-		delete adjSensDir;
+		delete[] adjSensDir;
 
 		nFwdDir = 0;
 
-		delete fwdSensDir;
+		delete[] fwdSensDir;
 
 		solGrid.clear();
 
-		q_meas = Sonic::DMat();
+		delete q_meas;
 
 		nmp = 0;
 		nxd = 0;
 		np = 0;
 
-		g_traj = Sonic::DMat();
+		delete g_traj;
 		g_fwdSens.clear();
 		g_adjSens.clear();
 
