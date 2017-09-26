@@ -14,7 +14,6 @@ rho_Const    = simulation.rho_Const;
 c_p_Const    = simulation.c_p_Const;   
 
 lambda_pcm = simulation.lambda_pcm;  
-rho_pcm    = simulation.rho_pcm;    
 
 T_0       = simulation.T_0;
 T_end     = simulation.T_end;
@@ -61,7 +60,7 @@ p_optim_fixed = optimization.start_values(~optimization.p_optim_estimable);
 
 % Initialize Mex File
 sim_params_vec = [L1, L3, N1, N3, lambda_Const, rho_Const, c_p_Const, ...
-                  lambda_pcm, rho_pcm, m_pcm, ...
+                  lambda_pcm, m_pcm, ...
                   heat_rate, T_0, T_end];
 
 heat1D_pcm('reset');
@@ -84,7 +83,12 @@ compute_q_dqdp_mex_expl = @(p_optim) compute_q_dqdp_mex(...
 %%%%%%%%%%%%%% INITIAL VALUE TEST %%%%%%%%%%%%%%%%%%%%
 if options.init_value_test
     [res, Jac] = compute_q_dqdp_mex_expl(optimization.start_values);
-    fit_data = false;
+    
+    
+    fit_data = struct();
+    fit_data.res = res;
+    fit_data.Jac = Jac;
+  
     return;
 end
 
@@ -97,7 +101,7 @@ opt_options = optimoptions('lsqnonlin', ...
                            'Display', 'iter-detailed', ...
                            'OutputFcn', @disp_aux, ...
                            'SpecifyObjectiveGradient', true, ...
-                           'MaxIter', 5);
+                           'MaxIter', 1000);
 
 
 tic;

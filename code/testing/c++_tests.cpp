@@ -24,25 +24,46 @@ T fraser_suzuki(T x, T h, T r, T wr, T sr, T z) {
 } 
 
 
-namespace TEST {
+template <typename T>
+void rho_pcm_formula(T x, T& rho, T& drho) {
+// Formula and parameter from PCM_rho.m from Robert
 
-	enum Component {
+	T p0 = 167.2182;
+	T p1 = 129.9861;
+	T p2 = 760.8218;
+	T p3 = 0.078916;
 
-		Component_X = 0,
-		Component_Y = 1,
-		
-	};
+	T exp_val = exp(p3*(x-p1));
+
+	rho = p0 / (1 + exp_val) + p2;
+	rho *= 1e-3;  // rescale to [mg/mm^3]
+
+	drho = -p0*p3*exp_val / ((1+exp_val)*(1+exp_val));
+	drho *= 1e-3; // rescale to [mg/mm^3]
+
+	return;
 
 }
 
 
-//using namespace TEST;
+
+
 
 
 int main(int argc, char** argv) {
 
+	std::ofstream rho_test;
+  	rho_test.open ("/home/argo/masterarbeit/rho_test.txt");
 
-	std::cout << Component_X << "\t" << Component_Y << std::endl;
+  	double rho;
+  	double drho;
+
+  	for (double d=30.; d<200.; d += 0.01) {
+  		rho_pcm_formula(d, rho, drho);
+  		rho_test << d << "\t" << rho << "\t" << drho << std::endl;
+  	}
+
+  	rho_test.close();
 
 
 	return 0;

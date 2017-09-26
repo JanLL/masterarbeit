@@ -49,8 +49,47 @@ void c_p_formula(T x, T& c_p, T& dc_p, T p0, T p1, T p2, T p3, T p4, T p5) {
 }
 
 
-
 template<typename T>
+void gauss_linear_comb_formula(T x, T& c_p, T& dc_p, const T* params)
+{
+	const int n_gauss = 10;
+
+	T p_ampl;
+	T p_sigma;
+	T p_offset;
+
+	T scale_i;
+	T gauss_i;
+
+	c_p  = 0;
+	dc_p = 0;
+	
+	for (int i=0; i<n_gauss; ++i) {
+		p_ampl   = *params; params++;
+		p_sigma  = *params; params++;
+		p_offset = *params; params++;
+
+		scale_i = -1./(p_sigma*p_sigma);
+		gauss_i = p_ampl * exp(scale_i * (x - p_offset)*(x - p_offset));
+
+		c_p  += gauss_i;
+		dc_p += 2*scale_i * (x - p_offset) * gauss_i;
+	}
+
+	T p_linear = *params; params++;
+	T p_const  = *params; params++;
+
+	c_p  += 0.01*p_linear*x + p_const;
+	dc_p += 0.01*p_linear;
+
+	return;
+
+}
+
+
+
+
+/*template<typename T>
 void gauss_linear_comb_formula(T x, T& c_p, T& dc_p, 
 		T ampl_0, T sigma_0, T shift_0,
 		T ampl_1, T sigma_1, T shift_1,
@@ -103,4 +142,4 @@ void gauss_linear_comb_formula(T x, T& c_p, T& dc_p,
 
 	return;
 
-}
+}*/

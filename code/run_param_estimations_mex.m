@@ -11,7 +11,6 @@ simulation.rho_Const = 8.9;
 simulation.c_p_Const = 0.41;   
 
 simulation.lambda_pcm = 0.96;  
-simulation.rho_pcm = 0.85;    
 
 simulation.T_0 = 10.;
 simulation.T_end = 200.;
@@ -23,6 +22,7 @@ dsc_measurement = DSC204_readFile(dsc_filename);
 % Optimization
 optimization = struct();
 optimization.c_p_param_type = 'gauss_linear_comb';
+%optimization.start_values = fit_data.optimization.p_optim_end;
 optimization.start_values = [37.2793,    1.2498,  123.0044, ...
                              1.1022,   13.2169,  104.8824, ...
                              -0.3,    3.7355,  124.3034, ...
@@ -43,7 +43,7 @@ optimization.ub = ones(num_opt_params, 1) * 500.;
 
 
 % General options
-options.init_value_test = false;
+options.init_value_test = true;
 
 % Run optimization #1
 fit_data = param_estimation_mex2(simulation, dsc_measurement, optimization, options);

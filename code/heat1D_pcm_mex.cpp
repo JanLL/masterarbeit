@@ -195,6 +195,28 @@ svLong adjInjector( const svULong idx, svULong& adjLeaDim, const double*& adjTra
 } 
 
 
+template <typename T>
+void rho_pcm_formula(T x, T& rho, T& drho) {
+// Formula and parameter from PCM_rho.m from Robert
+
+	T p0 = 167.2182;
+	T p1 = 129.9861;
+	T p2 = 760.8218;
+	T p3 = 0.078916;
+
+	T exp_val = exp(p3*(x-p1));
+
+	rho = p0 / (1 + exp_val) + p2;
+	rho *= 1e-3;  // rescale to [mg/mm^3]
+
+	drho = -p0*p3*exp_val / ((1+exp_val)*(1+exp_val));
+	drho *= 1e-3; // rescale to [mg/mm^3]
+
+	return;
+
+}
+
+
 
 
 template <typename T>
@@ -207,7 +229,7 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 	T a_Const      = lambda_Const / (c_p_Const * rho_Const);
 	T heat_rate_s  = heat_rate / 60; // [K/min] -> [K/s]
 	T scale_Const  = a_Const / (dx_Const*dx_Const);
-	T scale_pcm    = lambda_pcm / (rho_pcm * dx_pcm*dx_pcm);
+	T scale_pcm    = lambda_pcm / (dx_pcm*dx_pcm);
 
 
 	/******************* Building up RHS of ODE ********************/
@@ -226,9 +248,9 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 	args.rhs[j] = scale_Const * (2./(1.+alpha) * x[j-1] - 2./alpha * x[j] + 2./(alpha*(alpha+1.)) * x[j+1]);
 
 
-
-
 	// PCM
+	T rho_j;
+	T drho_j;
 	T c_p_j;
 	T dc_p_j;
 	for (svULong j = N1; j <= N1+N3-2; j++)
@@ -242,7 +264,7 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 					fraser_suzuki_formula(x[j], c_p_j, dc_p_j, args.p[0], args.p[1], args.p[2], args.p[3], args.p[4], args.p[5]);
 					break;
 				case gauss_linear_comb:
-					gauss_linear_comb_formula(x[j], c_p_j, dc_p_j, args.p[0],  args.p[1],  args.p[2],
+					/*gauss_linear_comb_formula(x[j], c_p_j, dc_p_j, args.p[0],  args.p[1],  args.p[2],
 																   args.p[3],  args.p[4],  args.p[5],
 																   args.p[6],  args.p[7],  args.p[8],
 																   args.p[9],  args.p[10], args.p[11],
@@ -252,7 +274,8 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 																   args.p[21], args.p[22], args.p[23],
 																   args.p[24], args.p[25], args.p[26],
 																   args.p[27], args.p[28], args.p[29],
-																   args.p[30], args.p[31]);
+																   args.p[30], args.p[31]);*/
+					gauss_linear_comb_formula(x[j], c_p_j, dc_p_j, args.p);
 
 					break;
 
@@ -264,15 +287,20 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 					mexErrMsgTxt( "Wrong c_p parametrization type!" );
 			}
 
+		// compute density of pcm
+		rho_pcm_formula(x[j], rho_j, drho_j);
 
 		// linear part 
-		args.rhs[j] = scale_pcm/c_p_j * (x[j-1] - 2.0 * x[j] + x[j+1]);
+		args.rhs[j] = scale_pcm/(c_p_j*rho_j) * (x[j-1] - 2.0 * x[j] + x[j+1]);
 
 		// non-linear part (just c_p temperature dependent atm, lambda and rho constant)
-		args.rhs[j] -= scale_pcm/(4.*c_p_j*c_p_j) * dc_p_j * (x[j+1] - x[j-1])*(x[j+1] - x[j-1]);
+		args.rhs[j] -= scale_pcm/(4.*c_p_j*c_p_j * rho_j) * dc_p_j * (x[j+1] - x[j-1])*(x[j+1] - x[j-1]);
+		args.rhs[j] -= scale_pcm/(4.*rho_j*rho_j * c_p_j) * drho_j * (x[j+1] - x[j-1])*(x[j+1] - x[j-1]);
+		
 	}
 
 	// RHS boundary, no flux
+	// TODO: hier fehlt noch c_p und rho zum scaling faktor...
 	args.rhs[N1+N3-1] = scale_pcm * (x[N1+N3-2] - x[N1+N3-1]); // Neumann boundary (right)
 
 
@@ -332,7 +360,7 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 
 		// Simulation Parameters
 		int n_sim_params = mxGetN(prhs[1]);
-		if (n_sim_params != 13) {
+		if (n_sim_params != 12) {
 			mexErrMsgTxt("Simulation parameter number inconstistent in C++ and Matlab!");
 		}
 		const double* input_ptr = mxGetPr(prhs[1]);
@@ -346,8 +374,6 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		c_p_Const    = *input_ptr; input_ptr++;
 
 		lambda_pcm   = *input_ptr; input_ptr++;	  	// heat conductivity of pcm [mW/(mm*K)]
-		rho_pcm      = *input_ptr; input_ptr++;	  	// density of pcm [mg/mm^3]
-
 		m_pcm 	     = *input_ptr; input_ptr++;     // mass of pcm [mg], here: sample 407
 
 		heat_rate    = *input_ptr; input_ptr++;     // Oven temp heat rate [K/min]   
@@ -488,7 +514,7 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 				);
 
 
-		const double relTol ( 1e-8 );
+		const double relTol ( 1e-7 );
 		integrator->setStepsizeBounds    ( 0, 0   );
 		integrator->setRelativeTolerance ( relTol );
 		integrator->setInitialStepsize   ( 1e-06  );
@@ -614,10 +640,6 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		}*/
 
 
-
-		// Compute heat flux q between Constantan and PCM
-		const double scale_q = (lambda_pcm * m_pcm) / (rho_pcm * dx_pcm*dx_pcm * N3); // Note: rho_pcm atm NOT temp.-dependend! Change Later!
-
 		// Computation of dq/dp = dq/dT * dT/dp with adjoint Sensitivities
 		/*Sonic::DMat dq_dp_adj (nmp, np);
 		for (svULong i=0; i<nmp; ++i) {
@@ -629,6 +651,15 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		// Computation of dq/dp = dq/dT * dT/dp with forward Sensitivities
 		Sonic::DMat dq_dp_fwd (nmp, np);
 		for (svULong i=0; i<nmp; ++i) {
+
+			double rho_pcm;
+			double drho_pcm;
+
+			double T_N1_i = (*g_traj)(i, N1);
+			rho_pcm_formula(T_N1_i, rho_pcm, drho_pcm);
+
+			double scale_q = (lambda_pcm * m_pcm) / (rho_pcm * dx_pcm*dx_pcm * N3);
+
 			for (svULong j=0; j<np; ++j) {
 				dq_dp_fwd(i,j) = scale_q * ( (g_fwdSens[i])(N1,j) - (g_fwdSens[i])(N1+1,j) );
 			}
@@ -652,6 +683,16 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		// Compute heat flux and residuum vector
 		Sonic::DMat heat_flux(nmp, 1);
 		for (svULong i=0; i<nmp; ++i) {
+
+			double rho_pcm;
+			double drho_pcm;
+
+			double T_N1_i = (*g_traj)(i, N1);
+			rho_pcm_formula(T_N1_i, rho_pcm, drho_pcm);
+
+			double scale_q = (lambda_pcm * m_pcm) / (rho_pcm * dx_pcm*dx_pcm * N3);
+
+
 			heat_flux(i,0) = -scale_q * ((*g_traj)(i,N1+1) - (*g_traj)(i,N1));
 		}
 		
