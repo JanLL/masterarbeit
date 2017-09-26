@@ -34,7 +34,7 @@ T_0 = 10.;           % Start temperature oven [degC]
 T_end = 200.;        % End temperature oven [degC]
 
 sim_params_vec = [L1, L3, N1, N3, lambda_Const, rho_Const, c_p_Const, ...
-                  lambda_pcm, rho_pcm, m_pcm, ...
+                  lambda_pcm, m_pcm, ...
                   heat_rate, T_0, T_end];
 
 heat_rate_s = heat_rate / 60; % [K/min] -> [K/s]
@@ -111,7 +111,7 @@ num_free_optim_params = sum(p_optim_estimable);
 
 
 heat1D_pcm('reset');
-heat1D_pcm('init', sim_params_vec, meas_data, 'gauss_linear_comb');
+heat1D_pcm('init', sim_params_vec, meas_data, c_p_param_type);
 
 
 figure(1); % q_pcm_in plot
@@ -127,6 +127,7 @@ compute_q_dqdp_mex_expl = @(p_optim) compute_q_dqdp_mex(...
 
 %%%%%%%%%%%%%% INITIAL VALUE TEST %%%%%%%%%%%%%%%%%%%%
 [res, dqdp] = compute_q_dqdp_mex_expl(p_optim_start);
+return
 
 close all;
 

@@ -258,25 +258,13 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 		switch (c_p_param_type)
 			{
 				case old_atan_formula:
-					c_p_formula(x[j], c_p_j, dc_p_j, args.p[0], args.p[1], args.p[2], args.p[3], args.p[4], args.p[5]);
+					c_p_formula(x[j], c_p_j, dc_p_j, args.p);
 					break;
 				case fraser_suzuki: 
-					fraser_suzuki_formula(x[j], c_p_j, dc_p_j, args.p[0], args.p[1], args.p[2], args.p[3], args.p[4], args.p[5]);
+					fraser_suzuki_formula(x[j], c_p_j, dc_p_j, args.p);
 					break;
 				case gauss_linear_comb:
-					/*gauss_linear_comb_formula(x[j], c_p_j, dc_p_j, args.p[0],  args.p[1],  args.p[2],
-																   args.p[3],  args.p[4],  args.p[5],
-																   args.p[6],  args.p[7],  args.p[8],
-																   args.p[9],  args.p[10], args.p[11],
-																   args.p[12], args.p[13], args.p[14],
-																   args.p[15], args.p[16], args.p[17],
-																   args.p[18], args.p[19], args.p[20],
-																   args.p[21], args.p[22], args.p[23],
-																   args.p[24], args.p[25], args.p[26],
-																   args.p[27], args.p[28], args.p[29],
-																   args.p[30], args.p[31]);*/
 					gauss_linear_comb_formula(x[j], c_p_j, dc_p_j, args.p);
-
 					break;
 
 				case NURBS:
