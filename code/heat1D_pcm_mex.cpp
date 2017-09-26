@@ -248,6 +248,29 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 	args.rhs[j] = scale_Const * (2./(1.+alpha) * x[j-1] - 2./alpha * x[j] + 2./(alpha*(alpha+1.)) * x[j+1]);
 
 
+	// Set function pointer to chosen c_p parametrization function
+	void (*c_p_fct)(T, T&, T&, const T*);
+	switch (c_p_param_type)
+		{
+			case old_atan_formula:
+				c_p_fct = &c_p_formula;
+				break;
+			case fraser_suzuki: 
+				c_p_fct = &fraser_suzuki_formula;
+				break;
+			case gauss_linear_comb:
+				c_p_fct = &gauss_linear_comb_formula;
+				break;
+
+			case NURBS:
+				// Note: ADOL-C Index problem...
+				mexErrMsgTxt( "NURBS c_p parametrization not implemented yet!" );
+				break;
+			default:
+				mexErrMsgTxt( "Wrong c_p parametrization type!" );
+		}
+
+
 	// PCM
 	T rho_j;
 	T drho_j;
@@ -255,7 +278,7 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 	T dc_p_j;
 	for (svULong j = N1; j <= N1+N3-2; j++)
 	{
-		switch (c_p_param_type)
+		/*switch (c_p_param_type)
 			{
 				case old_atan_formula:
 					c_p_formula(x[j], c_p_j, dc_p_j, args.p);
@@ -273,7 +296,8 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 					break;
 				default:
 					mexErrMsgTxt( "Wrong c_p parametrization type!" );
-			}
+			}*/
+		c_p_fct(x[j], c_p_j, dc_p_j, args.p);
 
 		// compute density of pcm
 		rho_pcm_formula(x[j], rho_j, drho_j);
@@ -288,8 +312,10 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 	}
 
 	// RHS boundary, no flux
-	// TODO: hier fehlt noch c_p und rho zum scaling faktor...
-	args.rhs[N1+N3-1] = scale_pcm * (x[N1+N3-2] - x[N1+N3-1]); // Neumann boundary (right)
+	c_p_fct(x[N1+N3-2], c_p_j, dc_p_j, args.p);
+	rho_pcm_formula(x[N1+N3-2], rho_j, drho_j);
+	
+	args.rhs[N1+N3-1] = scale_pcm/(c_p_j * rho_j) * (x[N1+N3-2] - x[N1+N3-1]); // Neumann boundary (right)
 
 
 	return 0;
