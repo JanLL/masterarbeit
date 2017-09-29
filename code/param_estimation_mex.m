@@ -131,14 +131,18 @@ return
 
 close all;
 
+relErr_dqdp = abs(1 - dqdp.fwd ./ dqdp.adj);
+relErr_dqdp(isnan(relErr_dqdp)) = 0.;
 figure()
-imagesc(abs(dqdp.fwd - dqdp.adj), [0 1e-7]);
+image(relErr_dqdp, 'CDataMapping', 'scaled')
 colorbar
+
 
 figure()
 sens_diff = load('/home/argo/masterarbeit/diff_sens.txt');
 max(max(abs(sens_diff)))
-imagesc(sens_diff, [0, 1e-12]);
+%imagesc(sens_diff, [0, 1e-12]);
+image(sens_diff, 'CDataMapping', 'scaled')
 colorbar
 
 return;

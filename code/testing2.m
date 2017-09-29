@@ -1,4 +1,35 @@
-% testing of fraser-suzuki peak
+% Convergence Rate Plots
+fit_data = load('fit_data.mat');
+
+
+%  || x_i - x^* ||^2
+n_optim_process = size(fit_data.optimization.p_optim_process,1);
+p_optim_process_norm1 = zeros(n_optim_process,1);
+for i=1:n_optim_process
+    
+    p_optim_process_norm1(i) = sum((fit_data.optimization.p_optim_process(i,:) - fit_data.optimization.p_optim_end).^2);
+    
+end
+
+figure();
+plot(p_optim_process_norm1, 'x'); hold on
+
+c = zeros(n_optim_process-1,1);
+for i=1:n_optim_process-1
+   
+    c(i) = p_optim_process_norm1(i+1) / p_optim_process_norm1(i);
+    
+end
+
+figure();
+plot(c, 'x')
+
+
+
+
+
+
+% Testing of fraser-suzuki peak
 h  =  30.0;
 r  =  30.0;
 wr =  15.0;

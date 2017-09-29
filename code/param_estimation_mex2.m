@@ -9,11 +9,11 @@ L3 = simulation.L3;
 N1 = simulation.N1;
 N3 = simulation.N3; 
  
-lambda_Const = simulation.lambda_Const; 
-rho_Const    = simulation.rho_Const;    
-c_p_Const    = simulation.c_p_Const;   
+lambda_Const = simulation.lambda_Const;
+rho_Const    = simulation.rho_Const;
+c_p_Const    = simulation.c_p_Const;
 
-lambda_pcm = simulation.lambda_pcm;  
+lambda_pcm = simulation.lambda_pcm;
 
 T_0       = simulation.T_0;
 T_end     = simulation.T_end;
@@ -101,7 +101,8 @@ opt_options = optimoptions('lsqnonlin', ...
                            'Display', 'iter-detailed', ...
                            'OutputFcn', @disp_aux, ...
                            'SpecifyObjectiveGradient', true, ...
-                           'MaxIter', 1000);
+                           'MaxIter', 1000, ...
+                           'StepTolerance', 1e-8);
 
 
 tic;

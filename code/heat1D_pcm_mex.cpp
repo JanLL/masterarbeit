@@ -278,25 +278,6 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 	T dc_p_j;
 	for (svULong j = N1; j <= N1+N3-2; j++)
 	{
-		/*switch (c_p_param_type)
-			{
-				case old_atan_formula:
-					c_p_formula(x[j], c_p_j, dc_p_j, args.p);
-					break;
-				case fraser_suzuki: 
-					fraser_suzuki_formula(x[j], c_p_j, dc_p_j, args.p);
-					break;
-				case gauss_linear_comb:
-					gauss_linear_comb_formula(x[j], c_p_j, dc_p_j, args.p);
-					break;
-
-				case NURBS:
-					// Note: ADOL-C Index problem...
-					mexErrMsgTxt( "NURBS c_p parametrization not implemented yet!" );
-					break;
-				default:
-					mexErrMsgTxt( "Wrong c_p parametrization type!" );
-			}*/
 		c_p_fct(x[j], c_p_j, dc_p_j, args.p);
 
 		// compute density of pcm
@@ -651,16 +632,26 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		integrator->getAdjointSensitivities( 0, Component_P, solLD, sol );
 		for ( svULong ii = 0; ii < solGrid.size(); ii ++ ){
 			g_adjSens [ ii ] <<= Sonic::cDMat ( sol +  ii * nAdjDir * solLD, solLD, np, nAdjDir );
-		}*/
-
+		}
 
 		// Computation of dq/dp = dq/dT * dT/dp with adjoint Sensitivities
-		/*Sonic::DMat dq_dp_adj (nmp, np);
+		Sonic::DMat dq_dp_adj (nmp, np);
 		for (svULong i=0; i<nmp; ++i) {
+			
+			double rho_pcm;
+			double drho_pcm;
+
+			double T_N1_i = (*g_traj)(i, N1);
+			rho_pcm_formula(T_N1_i, rho_pcm, drho_pcm);
+
+			double scale_q = (lambda_pcm * m_pcm) / (rho_pcm * dx_pcm*dx_pcm * N3);
+
+
 			for (svULong j=0; j<np; ++j) {
 				dq_dp_adj(i,j) = scale_q * ( (g_adjSens[i])(j,0) - (g_adjSens[i])(j,1) );
 			}
 		}*/
+
 
 		// Computation of dq/dp = dq/dT * dT/dp with forward Sensitivities
 		Sonic::DMat dq_dp_fwd (nmp, np);
@@ -685,9 +676,21 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		for (svULong i=0; i<nmp; ++i) {
 			for (svULong j=0; j<np; ++j) {
 		
-				double diff1 = fabs((g_adjSens[i])(j,0) - (g_fwdSens[i])(N1,j));
-				double diff2 = fabs((g_adjSens[i])(j,1) - (g_fwdSens[i])(N1+1,j));
-				file_diff_sens << diff1 << "\t" << diff2 << "\t";
+				double relErr1;
+				if ((g_adjSens[i])(j,0) == 0. || (g_fwdSens[i])(N1,j) == 0.) {
+					relErr1 = 0.;
+				} else {
+					relErr1 = fabs(1 - (g_fwdSens[i])(N1,j) / (g_adjSens[i])(j,0));
+				}
+
+				double relErr2;
+				if ((g_adjSens[i])(j,1) == 0. || (g_fwdSens[i])(N1+1,j) == 0.) {
+					relErr2 = 0.;
+				} else {
+					relErr2 = fabs(1 - (g_fwdSens[i])(N1+1,j) / (g_adjSens[i])(j,1));
+				}
+
+				file_diff_sens << relErr1 << "\t" << relErr2 << "\t";
 			}
 			file_diff_sens << std::endl;
 		}

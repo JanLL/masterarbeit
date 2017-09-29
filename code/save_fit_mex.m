@@ -70,9 +70,10 @@ switch optimization_data_struct.c_p_param_type
 end
 
 plot(T_plot, c_p_plot, 'DisplayName', 'c_p Simulation');
-legend('show', 'location', 'northoutside');
+legend('show', 'location', 'northwest');
 xlabel('T [degC]');
 ylabel('c_p [mJ/(mg*K]');
+title(sprintf('Heat rate: %s', heat_rate_str));
 path_plot_c_p = strcat(path_fit_data_dir, 'c_p(T).fig');
 savefig(fig, path_plot_c_p); 
 
@@ -86,9 +87,10 @@ clf;
 plot(T_ref_dsc, q_sim, 'DisplayName', 'Simulation'); hold on
 plot(T_ref_dsc, q_dsc, 'DisplayName', 'Measurement');
 plot(T_ref_dsc, residuum_end, 'DisplayName', 'Residuum');
-legend('show', 'location', 'northoutside');
+legend('show', 'location', 'northwest');
 xlabel('T_{ref} [degC]');
 ylabel('q_{pcm}^{in} [mW]');
+title(sprintf('Heat rate: %s', heat_rate_str));
 path_plot_q_pcm_in = strcat(path_fit_data_dir, 'q_pcm_in(T_ref).fig');
 savefig(fig, path_plot_q_pcm_in); 
 

@@ -83,6 +83,8 @@ void gauss_linear_comb_formula(T x, T& c_p, T& dc_p, const T* params)
 		p_offset = *params; params++;
 
 		scale_i = -1./(p_sigma*p_sigma);
+		//scale_i = -1./(p_sigma);
+		
 		gauss_i = p_ampl * exp(scale_i * (x - p_offset)*(x - p_offset));
 
 		c_p  += gauss_i;
