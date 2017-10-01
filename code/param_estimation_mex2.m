@@ -83,11 +83,11 @@ compute_q_dqdp_mex_expl = @(p_optim) compute_q_dqdp_mex(...
 %%%%%%%%%%%%%% INITIAL VALUE TEST %%%%%%%%%%%%%%%%%%%%
 if options.init_value_test
     [res, Jac] = compute_q_dqdp_mex_expl(optimization.start_values);
+    fit_data = false;
     
-    
-    fit_data = struct();
-    fit_data.res = res;
-    fit_data.Jac = Jac;
+%     fit_data = struct();
+%     fit_data.res = res;
+%     fit_data.Jac = Jac;
   
     return;
 end

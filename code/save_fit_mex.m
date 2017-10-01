@@ -40,12 +40,17 @@ dsc_fileSpec = dsc_data_struct.fileSpec;
 datetime_cell = num2cell(int32(clock));
 datetime_str = sprintf('%04i-%02i-%02i_%02i:%02i:%02i', datetime_cell{:});
 
-heat_rate_str = num2str(dsc_data_struct.Tinfo.Tstep);
+heat_rate_str = strrep(num2str(dsc_data_struct.Tinfo.Tstep), '.', ',');
 
 mass_code_str = dsc_fileSpec(11:13);
 
-generic_fit_info_str = strcat(datetime_str, '_', mass_code_str, '_', heat_rate_str, ...
-                   'Kmin');
+L1_str = strrep(num2str(simulation_data_struct.L1), '.', ',');
+L3_str = strrep(num2str(simulation_data_struct.L3), '.', ',');
+
+
+generic_fit_info_str = strcat(datetime_str, '_', mass_code_str, ...
+                              '_', heat_rate_str, 'Kmin', ...
+                              '_L1=', L1_str, '_L3=', L3_str);
 path_fit_data_dir = strcat(path_root, generic_fit_info_str, '/');
 mkdir(path_fit_data_dir);
 
