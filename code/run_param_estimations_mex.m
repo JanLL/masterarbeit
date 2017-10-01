@@ -50,6 +50,7 @@ optimization.start_values = fit_data.optimization.p_optim_end;
 num_opt_params = length(optimization.start_values);
 
 optimization.p_optim_estimable = true(length(optimization.start_values), 1);
+optimization.p_optim_estimable(19:21) = false;
 
 optimization.lb = zeros(num_opt_params,1);
 optimization.lb(1:3:30) = -2.;
@@ -69,6 +70,7 @@ catch Err
     fprintf(errLogFileID, '%s\tError %s occured with heat_rate=%2.4g.\n', ...
         datetime('now'), Err.identifier, dsc_measurement.Tinfo.Tstep);
 end
+
 
 
 % Optimization #2 settings

@@ -1,6 +1,6 @@
 function [fit_data] = save_fit_mex(...
     path_root, simulation_data_struct, dsc_data_struct, index_T_dsc, ...
-    optimization_data_struct, p_optim_end, optim_output, optim_duration, ...
+    optimization_data_struct, p_optim_end_all, optim_output, optim_duration, ...
     residuum_end, Jacobian_end, p_optim_process)
 % TODO: description!
 
@@ -27,7 +27,7 @@ fit_data.measurement.index_T_dsc = index_T_dsc;
 for fn = fieldnames(optimization_data_struct)'
    fit_data.optimization.(fn{1}) = optimization_data_struct.(fn{1});
 end
-fit_data.optimization.p_optim_end = p_optim_end;
+fit_data.optimization.p_optim_end = p_optim_end_all;
 fit_data.optimization.optim_output = optim_output;
 fit_data.optimization.optim_duration = optim_duration;
 fit_data.optimization.dqdp_end = Jacobian_end;
@@ -61,17 +61,17 @@ save(path_data_file, '-struct', 'fit_data');
 fig = figure();
 % c_p(T) plot
 T_plot = 30:0.01:160;
-p_optim_all = optimization_data_struct.start_values;
-p_optim_all(optimization_data_struct.p_optim_estimable) = p_optim_end;
+%p_optim_all = optimization_data_struct.start_values;
+%p_optim_all(optimization_data_struct.p_optim_estimable) = p_optim_end;
 
 % TODO: automatisch richtige c_p funktion waehlen...
 switch optimization_data_struct.c_p_param_type
     case 'old_atan_formula'
-        c_p_plot = c_p_formula(T_plot, p_optim_all(1:6));
+        c_p_plot = c_p_formula(T_plot, p_optim_end_all(1:6));
     case 'fraser_suzuki'
-        c_p_plot = c_p_fs(T_plot, p_optim_all);
+        c_p_plot = c_p_fs(T_plot, p_optim_end_all);
     case 'gauss_linear_comb'
-        c_p_plot = c_p_gauss_linear_comb(T_plot, p_optim_all);
+        c_p_plot = c_p_gauss_linear_comb(T_plot, p_optim_end_all);
 end
 
 plot(T_plot, c_p_plot, 'DisplayName', 'c_p Simulation');
