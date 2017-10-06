@@ -7,6 +7,7 @@
 \usepackage{float}
 \usepackage{graphicx}
 \usepackage{color}
+\usepackage{booktabs}
 
 
 \usepackage{caption}
@@ -235,6 +236,33 @@ In order to illustrate this algorithm we will apply it onto the example function
 
 
 \paragraph{Adjoint Mode}\mbox{}\\
+Beside the forward mode there is the adjoint mode where the adjoint directional derivative $\bar{x}^T$ is computed for a given adjoint direction $\bar{y}^T$ at the evaluation point $x$. 
+
+\begin{equation}
+	\bar{x}^T = \bar{y}^T \frac{\partial f}{\partial x}(x)
+\end{equation}
+
+The algorithm is shown in Table \ref{tab:first_order_adjoint_sweep}. In contrary to the forward mode we need here an additional set of adjoint intermediate variables $\bar{v}_i$. These contain the adjoint sensitivity information which are initialized to zero in the first step. \\
+The following forward sweep is analog to the one shown in Table \ref{tab:first_order_forward_sweep}, however here we compute just the intermediate function evaluations without derivatives. We need these function values in the next part. \\
+The actual adjoint directional derivatives are now computed in the reverse sweep which consists of three sub-steps. First of all the adjoint directions $\bar{y}$ is chosen. So for example, if we want the second row of the Jacobian $\frac{\partial f_2}{\partial x}$ we need to set $\bar{y} = \begin{bmatrix}
+0 & 1 & 0 & \dots & 0
+\end{bmatrix}^T$.
+
+
+\begin{table}[H]
+\begin{tabular}{| c | l c l | l |} \hline
+	Initialization & $\bar{v}_i$ & $=$ & $0$ & $i=1-n,...,k-m$ \\ \hline
+	& $v_{i-n}$ & $=$ & $x_i$ & $i=1,...,n$ \\
+	Forward Sweep & $v_{i}$ & $=$ & $\varphi_i(v_j)_{j \prec i}$ & $i=1,...,k$ \\
+	& $y_{m-i}$ & $=$ & $v_{k-i}$ & $i=m-1,...,0$ \\ \hline
+	& $\bar{v}_{k-i}$ & $=$ & $\bar{y}_{m-i}$ & $i=0,...,m-1$ \\
+	Reverse Sweep & $\bar{v}_j$ & $+ \hspace{-0.1cm} =$ & $\bar{v}_i \frac{\partial \varphi_i}{\partial v_j}(v_j) \quad \forall \ j \prec i$ & $i=k,...,1$ \\
+	& $\bar{x}_i$ & $=$ & $\bar{v}_{i-n}$ & $i=n,...,1$ \\ \hline
+\end{tabular}
+\caption{First order adjoint sweep}
+\label{tab:first_order_adjoint_sweep}
+\end{table}
+
 
 
 
