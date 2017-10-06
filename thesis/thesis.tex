@@ -178,7 +178,7 @@ One can distinguish the forward and reverse mode which will be explained in more
 \begin{equation}
 	F(x) = 
 	\begin{bmatrix}
-	\exp((1+x_1)^2 + x_3) \\
+	\exp((1+x_1)^2) + x_3 \\
 	x_2 \cdot \sin(1+x_1)
 	\end{bmatrix}
 \end{equation}
@@ -188,9 +188,50 @@ In the forward mode the directional derivative $\dot{y}$ is computed for a given
 
 \begin{equation}
 	\dot{y} = \frac{\partial f}{\partial x}(x) \cdot \dot{x}
+	\label{eq:AD_example}
 \end{equation}
 
-The algorithm called first order forward sweep 
+The algorithm called first order forward sweep is structured into three parts. First the auxiliary variables $v_{1-n},...,v_0$ and $\dot{v}_{1-n},...,\dot{v}_0$ are initialized with the evaluation point $x$ and the direction of the directional derivative $\dot{x}$. So if we want to get $\frac{\partial f}{\partial x_2}$ we would need to set $\dot{x} = \begin{bmatrix}
+0 & 1 & 0 & \dots & 0
+\end{bmatrix}^T$. One can see here that with one forward sweep we get one column of the Jacobian $ \frac{\partial f}{\partial x}$. 
+After the initialization the actual forward sweep begins where the $k$ elemental functions of $f$ are evaluated and saved in the intermediate values $v_i$. Simultaneously their derivatives  $\dot{v}_i$ are computed using previously calculated intermediate values. E.g. for $v_2 = \varphi_2(v_0, v_1)$ it would hold $\dot{v}_2 = \frac{\partial \varphi_2}{\partial v_0} \dot{v_0} + \frac{\partial \varphi_2}{\partial v_1} \dot{v_1}$. \\
+The last $m$ intermediate variables represent the solution vector. So finally this values and derivatives are extracted.
+
+
+\todo{Q: Ist das hier eine totale Ableitung?}
+
+
+\begin{table}[H]
+\begin{tabular}{|c | l c l | l |} \hline
+	 Initialization & $[v_{i-n}, \dot{v}_{i-n}]$ & $=$ & $[x_i, \dot{x}_i]$ & $i=1,...,n$ \\ \hline
+	Intermediate steps & $[v_{i}, \dot{v}_{i}]$ & $=$ & $[\varphi_i(v_j)_{j \prec i}, \sum_{j \prec i} \frac{\partial \varphi_i}{\partial v_j}(v_j) \cdot \dot{v}_j]$ & $i=1,...,k$ \\ \hline
+	Extract solution & $[y_{m-i}, \dot{y}_{m-i}]$ & $=$ & $[v_{k-i}, \dot{v}_{k-i}]$ & $i=m-1,...,0$ \\ \hline
+\end{tabular}
+\caption{First order forward sweep}
+\label{tab:first_order_forward_sweep}
+\end{table}
+
+In order to illustrate this algorithm we will apply it onto the example function \eqref{eq:AD_example}:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{| c | l | l |} \hline
+	Initialization & $v_{-2} = x_1$ & $\dot{v}_{-2} = \dot{x_1}$ \\
+	& $v_{-1} = x_2$ & $\dot{v}_{-1} = \dot{x}_2$ \\
+	& $v_{0} = x_3$ & $\dot{v_{0}} = \dot{x}_3$ \\ \hline
+	Intermediate Steps & $v_1 = 1+v_{-2}$ & $\dot{v_1} = 1 \cdot \dot{v}_{-2}$ \\
+	& $v_2 = v_{1}^2$ & $\dot{v_2} = 2 v_1 \cdot \dot{v}_{1}$ \\
+    & $v_3 = \exp(v_{2})$ & $\dot{v_3} = \exp(v_2) \cdot \dot{v}_{2}$ \\
+    & $v_4 = \sin(v_{1})$ & $\dot{v_4} = \cos(v_1) \cdot \dot{v}_{1}$ \\
+	& $v_{5} = v_3 + v_0$ & $\dot{v_{5}} = 1 \cdot \dot{v}_3 + 1 \cdot \dot{v}_0$ \\
+	& $v_{6} = v_{-1} + v_4$ & $\dot{v_{6}} = v_4 \cdot \dot{v}_{-1} + v_4 \cdot \dot{v}_{-1}$ \\ \hline
+	Extract  solution & $y_1 = v_5$ & $\dot{y}_1 = \dot{v}_5$ \\
+	& $y_2 = v_6$ & $\dot{y}_2 = \dot{v}_6$ \\ \hline
+\end{tabular}
+\caption{First order forward sweep applied on \eqref{eq:AD_example}.}
+\end{table}
+
+
 
 
 \paragraph{Adjoint Mode}\mbox{}\\
