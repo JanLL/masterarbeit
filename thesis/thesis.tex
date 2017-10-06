@@ -88,7 +88,7 @@ As we are dealing with heat transport the central equation in this thesis is the
 \newpage
 \section{Mathematical Background}
 \subsection{Numerical integration of ODE systems}
-
+\subsection{PDE discretization: Method of lines}
 
 \subsection{Derivative generation}
 In the context of continuous optimization we are dependent on derivative information in order to minimize some function. There are several possibilities to gain these derivatives. We will introduce here the concept of finite differences and automatic differentiation which were used in this thesis. Beside them the methods of symbolic- and complex step-differentiation exist and are explained in detail in \cite{diss_jan}.
@@ -108,10 +108,14 @@ Reordering gives the one-sided derivative approximation
 
 Regarding the Taylor series up to order two in both directions of the domain of definition,
 
+\begin{subequations}
+\label{eq:finite_differences_taylor_exp}
 \begin{align}
-	f(x+h) = f(x) + h \cdot \frac{\partial f}{\partial x}(x) + \frac{h^2}{2} \cdot \frac{\partial^2 f}{\partial^2 x}(x) + \mathcal{O}(h^3) \\
-	f(x-h) = f(x) - h \cdot \frac{\partial f}{\partial x}(x) + \frac{h^2}{2} \cdot \frac{\partial^2 f}{\partial^2 x}(x) + \mathcal{O}(h^3)	
+	f(x+h) = f(x) + h \cdot \frac{\partial f}{\partial x}(x) + \frac{h^2}{2} \cdot \frac{\partial^2 f}{\partial^2 x}(x) + \mathcal{O}(h^3) \label{eq:finite_differences_taylor_exp_+} \\
+	f(x-h) = f(x) - h \cdot \frac{\partial f}{\partial x}(x) + \frac{h^2}{2} \cdot \frac{\partial^2 f}{\partial^2 x}(x) + \mathcal{O}(h^3)  \label{eq:finite_differences_taylor_exp_-}	
 \end{align}
+\end{subequations}
+
 
 subtract both equations and reorder again we get
 
@@ -119,10 +123,77 @@ subtract both equations and reorder again we get
 	\frac{\partial f}{\partial x}(x) = \frac{f(x+h) - f(x-h)}{2 h^2} + \mathcal{O}(h^3)
 \end{equation}
 
-which has a higher error order but at the expense of two function evaluations.
+which has a higher error order but at the expense of two function evaluations. \\
+
+Second order derivatives can be gained analogously by adding \eqref{eq:finite_differences_taylor_exp_+} and \eqref{eq:finite_differences_taylor_exp_-}:
+
+\begin{equation}
+	\frac{\partial^2 f}{\partial^2 x}(x) = \frac{f(x-h) - 2 \cdot f(x) + f(x+h)}{h^2} + \mathcal{O}(h^3)
+	\label{eq:finite_difference_2nd_der}
+\end{equation}
 
 
-\subsubsection{Automatic Differentiation and IND}
+\todo{Hier noch ne kleine Skizze einfuegen mit dem Diskretisierungsschema mit $\alpha$, und text vervollstaendigen} \\
+In the spatial discretization of partial differential equations one often choose a finer grid for areas ...
+
+\begin{subequations}
+	\label{eq:finite_differences_taylor_exp_non-homogenous}
+	\begin{align}
+	f(x-h) = & f(x) - h \cdot \frac{\partial f}{\partial x}(x) + \frac{h^2}{2} \cdot \frac{\partial^2 f}{\partial^2 x}(x) + \mathcal{O}(h^3) \label{eq:finite_differences_taylor_exp_non-homogenous_1} \\
+	f(x+\alpha h) = & f(x) - \alpha h \cdot \frac{\partial f}{\partial x}(x) + \frac{\alpha^2 h^2}{2} \cdot \frac{\partial^2 f}{\partial^2 x}(x) + \mathcal{O}(h^3)  \label{eq:finite_differences_taylor_exp_non-homogenous_2}
+	\end{align}
+\end{subequations}
+
+Multiplying \eqref{eq:finite_differences_taylor_exp_non-homogenous_1} with $\alpha$ and adding \eqref{eq:finite_differences_taylor_exp_non-homogenous_2} gives
+
+\begin{align}
+	\alpha f(x-h) + f(x+\alpha h) = \alpha f(x) + \alpha \frac{h^2}{2} \frac{\partial^2 f}{\partial^2 x}(x) + f(x) + \frac{\alpha^2 h^2}{2} \frac{\partial^2 f}{\partial^2 x}(x) \\
+	\Leftrightarrow (\alpha+1) \frac{\alpha h^2}{2} \frac{\partial^2 f}{\partial^2 x}(x) = \alpha f(x-h) - (\alpha+1) f(x) + f(x+\alpha h)
+\end{align}
+
+\begin{equation}
+	\Leftrightarrow \frac{\partial^2 f}{\partial^2 x}(x) = \frac{1}{h^2} \left[ \frac{2}{1+\alpha} f(x-h) - \frac{2}{\alpha} f(x) + \frac{2}{\alpha (\alpha+1)} f(x+\alpha h) \right]
+\end{equation}
+
+Note that for a homogeneous grid ($\alpha=1$) this is obviously equal to \eqref{eq:finite_difference_2nd_der}. \\
+
+For simplicity we restricted the function argument $x \in \mathcal{R}$. In the case $x \in \mathcal{R}^n$ the Jacobian is gained by performing directional derivatives. So e.g. for the one-sided first derivative $n+1$ function evaluations are necessary.
+
+\todo{Vor-/Nachteile...} 
+
+
+
+\subsubsection{Automatic Differentiation and Internal Numerical Differentiation}
+The basic idea of Automatic Differentiation (AD) is to subdivide a function $f: \mathcal{R}^n \rightarrow \mathcal{R}^m$ into so called elementary functions $\varphi_i$ from which the derivative is known. 
+
+The evaluation of these elementary functions give intermediate values $v_i = \varphi(v_j)_{j \prec i}$ where the dependency relation $\prec$ is defined as
+
+\begin{equation}
+	j \prec i \Leftrightarrow v_j \text{\textit{ is an argument of }} \varphi_i.
+\end{equation}
+
+By successively applying the chain rule one obtains the derivative of $f$.
+One can distinguish the forward and reverse mode which will be explained in more detail now and exemplified by means of the example function
+
+\begin{equation}
+	F(x) = 
+	\begin{bmatrix}
+	\exp((1+x_1)^2 + x_3) \\
+	x_2 \cdot \sin(1+x_1)
+	\end{bmatrix}
+\end{equation}
+
+\paragraph{Forward Mode}\mbox{}\\
+In the forward mode the directional derivative $\dot{y}$ is computed for a given direction in the function arguments $\dot{x}$ at a evaluation point $x$:
+
+\begin{equation}
+	\dot{y} = \frac{\partial f}{\partial x}(x) \cdot \dot{x}
+\end{equation}
+
+The algorithm called first order forward sweep 
+
+
+\paragraph{Adjoint Mode}\mbox{}\\
 
 
 
