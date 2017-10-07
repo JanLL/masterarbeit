@@ -184,6 +184,8 @@ One can distinguish the forward and reverse mode which will be explained in more
 	\end{bmatrix}
 \end{equation}
 
+\todo{Graph mit den einzelnen Berechnungsverzweigungen noch einfuegen?}
+
 \paragraph{Forward Mode}\mbox{}\\
 In the forward mode the directional derivative $\dot{y}$ is computed for a given direction in the function arguments $\dot{x}$ at a evaluation point $x$:
 
@@ -288,7 +290,16 @@ Again we apply this algorithm on the exemplary function \eqref{eq:AD_example}:
 	& & $\bar{x}_1 = \bar{v}_{-2}$	\\ \hline
 \end{tabular}
 \caption{First order adjoint sweep applied on \eqref{eq:AD_example}}
-\end{table}
+\end{table} 
+
+
+Until now the fundamental principles of AD have been explained, i.e. just the first order derivative in forward and adjoint mode. Higher derivatives of arbitrary order can be obtained by using the method of Taylor coefficient propagation which is based on the propagation of a Taylor polynomial through a function evaluation. The higher derivatives can then be extracted by scaling of the polynomial coefficients. \\
+
+In this thesis we are actually interested in the sensitivities $\frac{\partial y}{\partial p}$ of an differential equation $\dot{y}=f(t,y;p)$ with respect to parameters $p$. The application of AD on differential equations is called Internal Numerical Differentiation (IND). The principle is based on the fact that solving numerically a differential equation consists of many elemental operations from which the derivatives are known. So it is straight forward to apply the chain rule on all these elemental operations in order to get the derivative $\frac{\partial y}{\partial p}$ just as explained above. \\
+A detailed explanation on taylor coefficient propagation for higher derivatives and IND can be found in \cite{diss_jan}. \todo{Reicht das... mehr?}
+
+
+\paragraph{}\mbox{}\\
 
 
 
