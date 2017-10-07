@@ -247,6 +247,7 @@ The following forward sweep is analog to the one shown in Table \ref{tab:first_o
 The actual adjoint directional derivatives are now computed in the reverse sweep which consists of three sub-steps. First of all the adjoint directions $\bar{y}$ is chosen. So for example, if we want the second row of the Jacobian $\frac{\partial f_2}{\partial x}$ we need to set $\bar{y} = \begin{bmatrix}
 0 & 1 & 0 & \dots & 0
 \end{bmatrix}^T$.
+Next all contributions to the adjoint intermediate variables will be successively summed up by applying the adjoint equation $\bar{y}^T \dot{y} = \bar{y}^T J \dot{x} = \bar{x}^T \dot{x}$ in a reverse scheme (that is why we need the forward sweep and hence the intermediate value evaluations first). Finally we can extract the solution $\bar{x}$ which corresponds to a row in $\frac{\partial f}{\partial x}$.
 
 
 \begin{table}[H]
