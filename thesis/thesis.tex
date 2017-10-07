@@ -250,6 +250,7 @@ The actual adjoint directional derivatives are now computed in the reverse sweep
 
 
 \begin{table}[H]
+\centering
 \begin{tabular}{| c | l c l | l |} \hline
 	Initialization & $\bar{v}_i$ & $=$ & $0$ & $i=1-n,...,k-m$ \\ \hline
 	& $v_{i-n}$ & $=$ & $x_i$ & $i=1,...,n$ \\
@@ -263,6 +264,30 @@ The actual adjoint directional derivatives are now computed in the reverse sweep
 \label{tab:first_order_adjoint_sweep}
 \end{table}
 
+Again we apply this algorithm on the exemplary function \eqref{eq:AD_example}:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{| c | l | l |} \hline
+	Initializiation & $\bar{v}_{-2}=\dots=\bar{v}_4=0$ & \\ \hline
+	& \textbf{Forward Sweep} & \textbf{Reverse Sweep} \\ \hline
+	Initialization & $v_{-2}=x_1$ & $\bar{v}_6=\bar{y}_2$ \\
+	& $v_{-1}=x_2$ & $\bar{v}_5=\bar{y}_1$ \\
+	& $v_{0}=x_3$ &  \\	\hline
+	Sweep & $v_1=1+v_{-2}$ & $\bar{v}_{-1} +\hspace{-0.1cm}= \bar{v}_6 \cdot v_4$ \\
+	& $v_2=v_{1}^2$ & $\bar{v}_{4} +\hspace{-0.1cm}= \bar{v}_6 \cdot v_{-1} $ \\
+	& $v_3=\exp(v_2)$ & $\bar{v}_{3} +\hspace{-0.1cm}= \bar{v}_5 \cdot 1 $ \\
+	& $v_4= \sin(v_1)$ & $\bar{v}_{0} +\hspace{-0.1cm}= \bar{v}_5 \cdot 1 $ \\
+	& $v_5=v_{3} + v_0$ & $\bar{v}_{1} +\hspace{-0.1cm}= \bar{v}_4 \cdot \cos(v_1) $ \\
+	& $v_6=v_{-1} \cdot v_4$ & $\bar{v}_{2} +\hspace{-0.1cm}= \bar{v}_3 \cdot \exp(v_2) $ \\
+	& & $\bar{v_1} +\hspace{-0.1cm}= \bar{v}_2 \cdot 2 v_1$ \\
+	& & $\bar{v_{-2}} +\hspace{-0.1cm}= \bar{v}_1 \cdot 1$	\\ \hline
+	Extract solution & $y_1 = v_5$ & $\bar{x}_3 = \bar{v}_0$ \\
+	& $y_2 = v_6$ & $\bar{x}_2 = \bar{v}_{-1}$ \\
+	& & $\bar{x}_1 = \bar{v}_{-2}$	\\ \hline
+\end{tabular}
+\caption{First order adjoint sweep applied on \eqref{eq:AD_example}}
+\end{table}
 
 
 
