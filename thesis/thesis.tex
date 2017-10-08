@@ -80,10 +80,33 @@ blubb !
 As we are dealing with heat transport the central equation in this thesis is the
 
 
-
 \subsection{Differential Scanning Calorimetry}
+The measuring method of a heat flux into a sample over a certain temperature range is called Differential Scanning Calorimetry (DSC). 
 
-\todo{Die 2 Bilder der prinzipiellen Wirkungsweise von DTA/DSC vom DSC Buch einfuegen...}
+
+\subsubsection{power compensated DSC}
+
+\begin{wrapfigure}{r}[-2cm]{0.4\textwidth}
+	\includegraphics[width=0.3\textwidth]{/home/argo/masterarbeit/thesis/images/DSC_principle.jpg}
+	\caption{Working principle of power compensated DSC}
+\end{wrapfigure}
+
+In the case of a power compensated DSC (Fig. \ref{fig:DTA_principle}) there are 2 seperated chambers for a reference and the sample. Both have individual heaters and temperature sensors such that a feedback control system keep the temperature in both chambers on the same value. Since we know the electrical power for heating we can deduce on the heat flux due to energy conservation. \todo{Fuer was genau brauchen wir die Referenz?}
+
+
+
+
+\subsubsection{heat flux DSC}
+
+\begin{wrapfigure}{l}{0.4\textwidth}
+	\includegraphics[width=0.3\textwidth]{/home/argo/masterarbeit/thesis/images/DTA_principle.jpg}
+	\caption{Working principle DTA}
+	\label{fig:DTA_principle}
+\end{wrapfigure}
+
+The heat flux DSC is based on differential thermal analysis (DTA, see Fig. \ref{fig:DTA_principle}). In DTA there is just one chamber in which both reference and sample are heated equally. Due to differences in the heat capacity of reference and sample a temperature difference dependent on their temperature will appear. This can be used to find typical temperatures of known substances to identify the sample's components.
+
+
 
 
 
@@ -318,7 +341,7 @@ A detailed explanation on taylor coefficient propagation for higher derivatives 
 \section{Simulation of DSC measuring process and parameter estimation of specific heat capacity $c_p$}
 \subsection{Mathematical model}
 
-\begin{figure}
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/discretization_grid.png}
 	\caption{blubb}
@@ -339,6 +362,10 @@ A detailed explanation on taylor coefficient propagation for higher derivatives 
 	 Adjoint-based algorithms and numerical methods for sensitivity generation and optimization of large scale dynamic systems, 
 	 Jan Albersmeyer, 2010,
 	 http://www.ub.uni-heidelberg.de/archiv/11651
+\bibitem{DSC_buch}
+	Differential Scanning Calorimetry of Polymers: physics, chemistry, analysis, technology,
+	Vladimir A. Bershtein, Victor M. Egorov,
+	1994
 
   
 \end{thebibliography}
