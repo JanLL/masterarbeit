@@ -77,7 +77,36 @@ blubb !
 
 \section{Physical Background}
 \subsection{Heat equation}
-As we are dealing with heat transport the central equation in this thesis is the
+Since we are dealing with heat transport in the measuring process the central equation in this thesis is the heat equation. \\
+For the derivation we start with the continuity equation with sources and sinks
+
+\begin{equation}
+	\frac{\partial \rho_h}{\partial t} + \nabla \cdot J_q = 0
+\end{equation}
+
+where $\rho_h$ is the enthalpy density and $J_q$ is the heat flux density. We assume a constant pressure so it holds $dH = dQ$ such that a heat flux will only change the enthalpy.
+
+\begin{equation}
+	J_q = - \lambda \cdot \nabla T
+	\label{eq:fouriers_law}
+\end{equation}
+
+The enthalpy density $\rho_h = \rho h$ expressed with the mass density $\rho$ and specific enthalpy $h$ and Fourier's law inserted in the continuity equation gives us
+
+\begin{align}
+	\frac{\partial (\rho h)}{\partial t} = \nabla \cdot \left[\lambda \cdot \nabla T\right] \\
+	\Leftrightarrow \frac{\partial \rho}{\partial T} \frac{\partial T}{\partial t} h + \rho \frac{\partial h}{\partial T} \frac{\partial T}{\partial t} = \nabla \cdot \left[\lambda \cdot \nabla T\right] \\
+	\Leftrightarrow \left( \frac{\partial \rho}{\partial T} h + \rho \frac{\partial h}{\partial T} \right) \frac{\partial T}{\partial t} = \nabla \cdot \left[\lambda \cdot \nabla T\right]
+\end{align}
+
+Using the definition of the specific heat capacity $c_p := \frac{dh}{dT}$ we get the final heat equation
+
+\begin{equation}
+	\left( \frac{\partial \rho}{\partial T} h + \rho c_p \right) \frac{\partial T}{\partial t} = \nabla \cdot \left[\lambda \cdot \nabla T\right]
+\end{equation}
+
+\todo{Pruefen lassen ob das physikalisch alles so stimmt...}
+
 
 
 \subsection{Differential Scanning Calorimetry}
@@ -122,6 +151,7 @@ The area of this peak is assumed to be proportional with constant $sens$ called 
 
 This is done for a set of calibration materials such that we get a mapping $sens(T)$ by interpolating the data points $(T_{\text{Kal}_i}, sens_i)$, see Fig. \textcolor{red}{XXX}.
 
+\todo{Grafiken von $\Delta U(t)$ mit Peak und $sens(T)$ machen und einfuegen!}
 
 
 
