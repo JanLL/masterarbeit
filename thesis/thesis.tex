@@ -166,8 +166,41 @@ This is done for a set of calibration materials such that we get a mapping $sens
 
 \newpage
 \section{Mathematical Background}
-\subsection{Numerical integration of ODE systems}
+\subsection{Numerical solution of initial value problems (IVP)}
+In this section numerical methods will be introduced to solve initial value problems of the form
+
+\begin{align}
+	\dot{x} & = f(t,x(t)) \\
+	x(t_0) & = x_0 \nonumber
+\end{align}
+
+where $t_0$ is the initial time and $x_0$ the initial value. \\
+
+There are a lot of different numerical methods like explicit/implicit Euler, Runge-Kutta (RK) or linear multistep methods (LMM). The solver we used in this thesis applies the method of Backward Differentiation Formulas (BDF) which will be explained further now.
+
+The basic idea of the BDF method of order $k$ is to interpolate the last $(k+1)$ solution points $x_m,...,x_{m+k}$ with an polynomial such that the unknown point $x_{m+k}$ satisfies the ODE at $t_{m+k}$. 
+It is defined as
+
+\begin{equation}
+	\sum_{i=0}^{k} \alpha_{im} x_{m+i} = h_{m+k-1} f(t_{m+k},x_{m+k})
+	\label{eq:bdf_formula}
+\end{equation}
+
+where $\alpha \in \mathbb{R}$, $\alpha_{0m},\alpha_{km} \ne 0 \ \forall \ m$ are the coefficients which can be computed by multiplying the step width with the derivative of the interpolation polynomial.  \\
+BDF methods up to order 6 are used in practice because these are zero-stable \cite{numerik1_skript_koerkel}. \\
+Since \eqref{eq:bdf_formula} is a non-linear system of equations it is solved iteratively using Newton's method. In order to obtain a good starting point a so called predictor is used, which is the integration polynomial of the previous integration step. With this initial guess for $x_{m+k}$ the Newton method can be applied to get the so called corrector polynomial, which satisfies the differential equation at $t_{m+k}$. \\
+As we want the numerical integrator both to perform large integration steps to minimize the required time to solve the IVP and limit the inevitable numerical errors on a predefined value we are dependent on a strategy to choose the step width $h_{m+k-1}$ accordingly. This is done by estimating the local error in each integration step. Either the local error is smaller than some tolerance then the step width will be increased, otherwise decreased until the local error tolerance is satisfied. \\
+
+
+
+
+
+
+
 \subsection{PDE discretization: Method of lines}
+
+
+
 
 \subsection{Derivative generation}
 In the context of continuous optimization we are dependent on derivative information in order to minimize some function. There are several possibilities to gain these derivatives. We will introduce here the concept of finite differences and automatic differentiation which were used in this thesis. Beside them the methods of symbolic- and complex step-differentiation exist and are explained in detail in \cite{diss_jan}.
@@ -418,6 +451,10 @@ A detailed explanation on taylor coefficient propagation for higher derivatives 
 	der Enthalpie von Latentwärmespeichermaterialien
 	während des Phasenübergangs,
 	Stefan Hiebler, Dissertation an der technischen Universität München, 2006
+	
+\bibitem{numerik1_skript_koerkel}
+	Numerische Mathematik 1 Vorlesungsskript, 
+	Prof. Dr. Stefan Körkel, 2015
 
   
 \end{thebibliography}
