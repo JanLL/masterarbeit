@@ -83,28 +83,45 @@ As we are dealing with heat transport the central equation in this thesis is the
 \subsection{Differential Scanning Calorimetry}
 The measuring method of a heat flux into a sample over a certain temperature range is called Differential Scanning Calorimetry (DSC). 
 
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}{0.49\textwidth}
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/DSC_principle.jpg}
+		\caption{}
+		\label{fig:DSC_power_compensated_principle}
+	\end{subfigure}
+	\begin{subfigure}{0.49\textwidth}
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/DTA_principle.jpg}
+		\caption{}
+		\label{fig:DTA_principle}
+	\end{subfigure}
+\end{figure}
+
 
 \subsubsection{power compensated DSC}
-
-\begin{wrapfigure}{r}[-2cm]{0.4\textwidth}
-	\includegraphics[width=0.3\textwidth]{/home/argo/masterarbeit/thesis/images/DSC_principle.jpg}
-	\caption{Working principle of power compensated DSC}
-\end{wrapfigure}
-
-In the case of a power compensated DSC (Fig. \ref{fig:DTA_principle}) there are 2 seperated chambers for a reference and the sample. Both have individual heaters and temperature sensors such that a feedback control system keep the temperature in both chambers on the same value. Since we know the electrical power for heating we can deduce on the heat flux due to energy conservation. \todo{Fuer was genau brauchen wir die Referenz?}
+In the case of a power compensated DSC (Fig. \ref{fig:DSC_power_compensated_principle}) there are 2 seperated chambers for a reference and the sample. Both have individual heaters and temperature sensors such that a feedback control system keep the temperature in both chambers on the same value. Since we know the electrical power for heating we can deduce on the heat flux due to energy conservation. \\
+\todo{Fuer was genau brauchen wir die Referenz?}
 
 
 
 
 \subsubsection{heat flux DSC}
+The heat flux DSC is based on differential thermal analysis (DTA, see Fig. \ref{fig:DTA_principle}). 
+In DTA there is just one chamber in which both reference and sample are heated equally. 
+Due to differences in the heat capacity of reference and sample a temperature difference dependent on their temperature will appear.
+This can be used to find typical temperatures of known substances to identify the sample's components. \\
+Unfortunately calorimetric properties like melting enthalpy are not accessible just from the temperature difference measurement. 
+Note that the physical quantity measured is an electrical potential difference $\Delta U$ which is assumed to be proportional to the temperature difference due to the Seebeck effect. \\
+The heat flux DSC extends now DTA by computing the heat flux from the temperature difference using an additional calibration. 
+Pure materials with known melting temperature $T_{\text{Kal}}$ and melting heat $\Delta Q_{\text{Kal}}$ are measured, giving the measuring signal $\Delta U(t)$ with a peak at the phase change. 
+The area of this peak is assumed to be proportional with constant $sens$ called sensitivity to the melting heat due to
 
-\begin{wrapfigure}{l}{0.4\textwidth}
-	\includegraphics[width=0.3\textwidth]{/home/argo/masterarbeit/thesis/images/DTA_principle.jpg}
-	\caption{Working principle DTA}
-	\label{fig:DTA_principle}
-\end{wrapfigure}
+\begin{equation}
+	A_{\Delta U} \propto \Delta Q_{\text{Kal}} \quad \Rightarrow \quad sens = \frac{A_{\Delta U}}{\Delta Q_{\text{Kal}}}
+\end{equation} 
 
-The heat flux DSC is based on differential thermal analysis (DTA, see Fig. \ref{fig:DTA_principle}). In DTA there is just one chamber in which both reference and sample are heated equally. Due to differences in the heat capacity of reference and sample a temperature difference dependent on their temperature will appear. This can be used to find typical temperatures of known substances to identify the sample's components.
+This is done for a set of calibration materials such that we get a mapping $sens(T)$ by interpolating the data points $(T_{\text{Kal}_i}, sens_i)$, see Fig. \textcolor{red}{XXX}.
+
 
 
 
@@ -366,6 +383,11 @@ A detailed explanation on taylor coefficient propagation for higher derivatives 
 	Differential Scanning Calorimetry of Polymers: physics, chemistry, analysis, technology,
 	Vladimir A. Bershtein, Victor M. Egorov,
 	1994
+\bibitem{diss_DSC}
+	Kalorimetrische Methoden zur Bestimmung
+	der Enthalpie von Latentwärmespeichermaterialien
+	während des Phasenübergangs,
+	Stefan Hiebler, Dissertation an der technischen Universität München, 2006
 
   
 \end{thebibliography}
