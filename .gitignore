@@ -37,6 +37,7 @@ sonic.log
 *.jpg
 *.mat
 *.txt
+*.gnuplot
 DSC204_F1_Phoenix_Messungen/
 code/tools/*
 !/code/tools/nurbs_c++/
