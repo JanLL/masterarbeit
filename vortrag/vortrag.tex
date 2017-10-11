@@ -1,0 +1,102 @@
+\documentclass{beamer}
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{amsmath,amsfonts,amssymb}
+
+
+\usepackage{subcaption}
+
+\usepackage[absolute,overlay]{textpos}
+
+
+
+
+
+\newcommand{\todo}[1]{\textcolor{red}{TODO: #1}}
+
+\addtobeamertemplate{navigation symbols}{}{%
+    \usebeamerfont{footline}%
+    \usebeamercolor[fg]{footline}%
+    \hspace{1em}%
+    \insertframenumber/\inserttotalframenumber
+}
+
+\setbeamertemplate{bibliography item}[text]
+\bibliographystyle{unsrt}
+
+
+\usetheme{Luebeck}
+\usecolortheme{orchid}
+
+\title{Current state of master thesis}
+\subtitle{Simulation of DSC measuring process and \\ parameter estimation of specific heat capacity $c_p$}
+\author{Jan Lammel}
+
+\begin{document}
+	
+\frame{\titlepage}
+
+\frame{
+	\frametitle{Table of contents}
+	\tableofcontents[hideallsubsections]
+	
+}
+
+\section{Introduction}
+\frame{
+\frametitle{Introduction}
+
+}
+
+\section{Physics}
+\subsection{Physical quantities}
+\subsection{Differential Scanning Calorimetry (DSC)}
+
+\section{Parameter Estimation}
+\subsection{Mathematical model}
+\subsection{Parametrization}
+\subsection{Results}
+\frame{
+	\frametitle{Results}
+
+	\begin{itemize}
+		\item Waermestrom-Fit Residuum + zugehoeriges $c_p$ fuer vllt 2, 3 versch. Heizraten
+		\item In einem plot alle $c_p$ Kurven fuer alle Heizraten um Shift zu zeigen
+	\end{itemize}
+	
+}
+
+
+\section{Next potential steps}
+\frame{
+	\frametitle{Next potential steps}
+	
+	\begin{itemize}
+		\item Heat equation with $\rho=\rho(T)$ \\
+		$\rightarrow$ problem with value of absolute enthalpy term
+		\item $L_1$ and $L_3$ as optimization variable. \\
+		$\rightarrow$ huge programming effort
+	\end{itemize}
+	
+}
+
+
+
+\section{Open Questions}
+\frame{
+	\frametitle{Open Questions}
+	
+	\begin{itemize}
+		\item Heat equation derivation with $\rho=\rho(T)$ correct?
+	\end{itemize}
+	
+}
+
+
+
+
+
+	
+	
+\end{document}

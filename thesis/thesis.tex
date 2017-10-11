@@ -495,12 +495,19 @@ The function value of $u_0$ is already defined by $u_1$ so $\dot{u}_0$ is not ne
 
 
 
-
-\paragraph{}\mbox{}\\
-
-
-
 \subsection{Optimization Task: Parameter Estimation}
+In this section we treat the least squares problem of the form
+
+\begin{align}
+	\min_{x(t),p} \ & \frac{1}{2} ||F(x(t;x_0,p),p)||_2^2 \\
+	s.t. \quad & \dot{x} = f(x,t;p) \quad \forall t \in [t_0, t_f] \nonumber \\
+	& x(0) = x_0 \nonumber
+\end{align}
+
+where $F \in \mathbb{R}^{n_{MP}}$ is the residuum vector of the measurement points, $x \in \mathbb{R}^{n_x}$ are the differential variables satisfying the embedded initial value problem and $p \in \mathbb{R}^{n_p}$ are the parameters being optimized. \\
+
+
+\todo{Frage ist ob man es sehr allgemein erklaert mit NOC und SOC von sehr allgemeinem gleichungsbeschraenken Optimierungsproblem. Oder aber eher fuer uns relevanten Fall von least squares problemen und Loesung dann mit Gauss-Newton. Problem ist das wir momentan gar kein Gauss-Newton Verfahren benutzen... fragen!!}
 
 
 \newpage
