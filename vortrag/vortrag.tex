@@ -118,11 +118,8 @@
 	
 	\begin{textblock}{14}(1, 9)
 	
-	\begin{equation*}
-	\rho c_p \frac{\partial T}{\partial t}(x,t) = \nabla \cdot \left[ \lambda \cdot \nabla T(x,t) \right]
-	\end{equation*}
-	
 		\begin{itemize}
+			\item Heat equation: \quad $\rho c_p \frac{\partial T}{\partial t}(x,t) = \nabla \cdot \left[ \lambda \cdot \nabla T(x,t) \right]$
 			\item $\rho$, $\lambda$ constant
 			\item Boundary Conditions: 
 				\begin{itemize}
@@ -140,11 +137,11 @@
 
 \frame{
 	\frametitle{Mathematical model}
-	
-	\begin{textblock}{14}(1, 4.)
+
+	\begin{textblock}{14}(1, 5.)
 
 	\begin{itemize}
-		\item 
+		\item \todo{fehlt noch was zum modell?}
 	\end{itemize}
 
 	\end{textblock}
@@ -154,9 +151,9 @@
 }
 
 
-\subsection{Parametrization}
+\subsection{Parametrization $c_p$}
 \frame{
-	\frametitle{Parametrization}
+	\frametitle{Parametrization $c_p$}
 	
 	\begin{textblock}{14}(1,5)
 		
@@ -172,15 +169,57 @@
 }
 
 
+\subsection{Heat flux computation}
+\frame{
+	\frametitle{Heat flux computation}	
+
+	\begin{textblock}{14}(1,5)
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/discretization_grid.png}
+	\end{textblock}
+	
+	\begin{textblock}{14}(1, 10)
+		\begin{itemize}
+			\item Heat flux into PCM: $\Phi_{q}^{PCM,in} = \bar{\lambda} \frac{T^{N_1} - T^{N_1-1}}{dx_{PCM}} \approx \lambda_{PCM} \frac{T^{N_1+1} - T^{N_1}}{dx_{PCM}}$
+		\end{itemize}
+	\end{textblock}
+
+
+}
+
+\subsection{Optimization problem}
+\frame{
+	\frametitle{Optimization problem}	
+
+	\begin{textblock}{14}(1,5)
+	\begin{align*}
+		\min_{p_{c_p}} \ & \sum_{i=1}^{n_{MP}} \left|\left|  \Phi_{q}^{PCM,in}(T(t_i;T_0,p_{c_p})) - \eta_i^{\Phi} \right|\right|_2^2 \\
+		s.t. \ & \quad \  \dot{T} = f(T,t;p_{c_p}) \\
+		       & T(0) = T_0
+	\end{align*}
+	
+	\begin{itemize}
+		\item $\eta_i^{\Phi}$: heat flux measurement value at time $t_i$
+	\end{itemize}
+	
+	\end{textblock}
+
+	
+}
+
+
+
+
 
 \subsection{Results}
 \frame{
 	\frametitle{Results}
 
+
 	\begin{itemize}
 		\item Waermestrom-Fit Residuum + zugehoeriges $c_p$ fuer vllt 2, 3 versch. Heizraten
 		\item In einem plot alle $c_p$ Kurven fuer alle Heizraten um Shift zu zeigen
 	\end{itemize}
+
 	
 }
 
