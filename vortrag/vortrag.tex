@@ -179,7 +179,10 @@
 	
 	\begin{textblock}{14}(1, 10)
 		\begin{itemize}
-			\item Heat flux into PCM: $\Phi_{q}^{PCM,in} = \bar{\lambda} \frac{T^{N_1} - T^{N_1-1}}{dx_{PCM}} \approx \lambda_{PCM} \frac{T^{N_1+1} - T^{N_1}}{dx_{PCM}}$
+			\item Heat flux into PCM: \\ \vspace{0.15cm}
+			$\Phi_{q}^{PCM,in} = - \bar{\lambda} \frac{T^{N_1} - T^{N_1-1}}{dx_{PCM}} \cdot A_{PCM}
+			\approx - \lambda_{PCM} \frac{T^{N_1+1} - T^{N_1}}{dx_{PCM}} \cdot A_{PCM}$ \\ \vspace{0.15cm}
+			 where for the cross section $A_{PCM}$ we used $m_i = \rho \cdot A \cdot dx_i$
 		\end{itemize}
 	\end{textblock}
 
@@ -213,15 +216,89 @@
 \subsection{Results}
 \frame{
 	\frametitle{Results}
-
-
-	\begin{itemize}
-		\item Waermestrom-Fit Residuum + zugehoeriges $c_p$ fuer vllt 2, 3 versch. Heizraten
-		\item In einem plot alle $c_p$ Kurven fuer alle Heizraten um Shift zu zeigen
-	\end{itemize}
-
+	\begin{textblock}{14}(1,5)
+		\centering
+		Heat rate: $20\frac{K}{min}$
+	\end{textblock}
 	
+	\begin{textblock}{14}(1,6)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-15_22:45:49_407_20Kmin_L1=50_L3=0,1/c_p(T).png}
+	\end{textblock}
+	
+	\begin{textblock}{14}(8,6)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-15_22:45:49_407_20Kmin_L1=50_L3=0,1/q_pcm_in(T_ref).png}
+	\end{textblock}	
 }
+
+
+\frame{
+	\frametitle{Results}
+	\begin{textblock}{14}(1,5)
+		\centering
+		Heat rate: $10\frac{K}{min}$
+	\end{textblock}
+	
+	\begin{textblock}{14}(1,6)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-15_22:51:25_407_10Kmin_L1=50_L3=0,1/c_p(T).png}
+	\end{textblock}
+	
+	\begin{textblock}{14}(8,6)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-15_22:51:25_407_10Kmin_L1=50_L3=0,1/q_pcm_in(T_ref).png}
+	\end{textblock}	
+}
+
+
+\frame{
+	\frametitle{Results}
+	\begin{textblock}{14}(1,5)
+		\centering
+		Heat rate: $5\frac{K}{min}$
+	\end{textblock}
+	
+	\begin{textblock}{14}(1,6)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-15_22:57:27_407_5Kmin_L1=50_L3=0,1/c_p(T).png}
+	\end{textblock}
+	
+	\begin{textblock}{14}(8,6)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-15_22:57:27_407_5Kmin_L1=50_L3=0,1/q_pcm_in(T_ref).png}
+	\end{textblock}	
+}
+
+
+\frame{
+	\frametitle{Results}
+	\begin{textblock}{14}(1,5)
+		\centering
+		Heat rate: $0.3\frac{K}{min}$
+	\end{textblock}
+	
+	\begin{textblock}{14}(1,6)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-15_23:26:52_407_0,3Kmin_L1=50_L3=0,1/c_p(T).png}
+	\end{textblock}
+	
+	\begin{textblock}{14}(8,6)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-15_23:26:52_407_0,3Kmin_L1=50_L3=0,1/q_pcm_in(T_ref).png}
+	\end{textblock}	
+}
+
+
+\frame{
+	\frametitle{Results}
+	\begin{textblock}{14}(1,5)
+		\centering
+		$c_p$ curves for all heat rates
+	\end{textblock}
+	
+	\begin{textblock}{14}(1,6)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-15_22:45:49_407_20Kmin_L1=50_L3=0,1/c_p_all(T).png}
+	\end{textblock}
+	
+	\begin{textblock}{14}(8,6)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-15_22:45:49_407_20Kmin_L1=50_L3=0,1/c_p_all_zoom(T).png}
+	\end{textblock}	
+}
+
+
 
 
 \section{Next potential steps}
@@ -232,11 +309,9 @@
 		\item Heat equation with $\rho=\rho(T)$ \\
 		$\rightarrow$ problem with value of absolute enthalpy term
 		\item $L_1$ and $L_3$ as optimization variable. \\
-		$\rightarrow$ huge programming effort
+		$\rightarrow$ huge time effort
 		\item Crucible part between Constantan and PCM. \\
 		$\rightarrow$ We do not know $L_2$
-		\item Solve Reference and PCM part in one system. \\
-		$\rightarrow$ Implementation of sensitivity generation unclear.
 	\end{itemize}
 	
 }
@@ -249,8 +324,9 @@
 	
 	\begin{itemize}
 		\item Reason for shift in $c_p$ fits?
-		\item Heat equation derivation with $\rho=\rho(T)$ correct?
-		\item How to get $L_1$ and $L_3$ except from optimization?
+		\item Heat equation derivation with $\rho=\rho(T)$ correct? \\
+		$\rightarrow$ How to get enthalpy $h$?
+		\item How to get $L_1$ and $L_3$ except as optimization variable?
 	\end{itemize}
 	
 }
