@@ -31,15 +31,16 @@ fit_list = {'2017-09-30_15:06:16_407_0.3Kmin_L1=15_L3=0,5', ...
 figure();
 hold on;
 T_domain = 30:0.01:170;
+enthalpies = zeros(1,7);
 for i=1:length(fit_list)
-   
-    disp(fit_list{i})
     
     filepath = strcat('/home/argo/masterarbeit/fits_data/', fit_list{i}, '/fit_data.mat');
     fit_data = load(filepath);
     
     c_p = c_p_gauss_linear_comb(T_domain, fit_data.optimization.p_optim_end);
     plot(T_domain, c_p, 'DisplayName', num2str(fit_data.measurement.dsc_data.Tinfo.Tstep))
+    
+    enthalpies(i) = integral(@(x)c_p_gauss_linear_comb(x, fit_data.optimization.p_optim_end), 100, 160);
     
 end
 legend('show', 'location', 'northwest');
@@ -211,5 +212,94 @@ for i=1:length(fit_list)
     
 end
 legend('show', 'location', 'northwest');
+
+
+%%%%%%%%%%% AB HIER KEINE NICHT-LINEARE ANTEILE MEHR %%%%%%%%%%%%%%%%%%%%%%
+%% Plot c_p curves for setting L1=15, L3=0.5 for all heat rates
+fit_list = {'2017-10-04_23:28:39_407_0,3Kmin_L1=15_L3=0,5', ...
+            '2017-10-04_23:23:20_407_0,6Kmin_L1=15_L3=0,5', ...
+            '2017-10-04_23:14:23_407_1,25Kmin_L1=15_L3=0,5', ...
+            '2017-10-04_23:06:46_407_2,5Kmin_L1=15_L3=0,5', ...
+            '2017-10-04_22:59:41_407_5Kmin_L1=15_L3=0,5', ...
+            '2017-10-04_22:55:27_407_10Kmin_L1=15_L3=0,5', ...
+            '2017-10-04_22:46:06_407_20Kmin_L1=15_L3=0,5'};
+        
+figure();
+hold on;
+T_domain = 30:0.01:170;
+enthalpies = zeros(1,7);
+for i=1:length(fit_list)
+   
+    disp(fit_list{i})
+    
+    filepath = strcat('/home/argo/masterarbeit/fits_data/', fit_list{i}, '/fit_data.mat');
+    fit_data = load(filepath);
+    
+    c_p = c_p_gauss_linear_comb(T_domain, fit_data.optimization.p_optim_end);
+    plot(T_domain, c_p, 'DisplayName', num2str(fit_data.measurement.dsc_data.Tinfo.Tstep))
+    
+    enthalpies(i) = integral(@(x)c_p_gauss_linear_comb(x, fit_data.optimization.p_optim_end), 100, 160);
+    
+end
+legend('show', 'location', 'northwest');
+disp(enthalpies)
+
+
+%% Plot c_p curves for setting L1=15, L3=0.35 for all heat rates
+fit_list = {'2017-10-05_00:14:13_407_0,3Kmin_L1=15_L3=0,35', ...
+            '2017-10-05_00:08:31_407_0,6Kmin_L1=15_L3=0,35', ...
+            '2017-10-05_00:01:39_407_1,25Kmin_L1=15_L3=0,35', ...
+            '2017-10-04_23:57:29_407_2,5Kmin_L1=15_L3=0,35', ...
+            '2017-10-04_23:53:54_407_5Kmin_L1=15_L3=0,35', ...
+            '2017-10-04_23:46:08_407_10Kmin_L1=15_L3=0,35', ...
+            '2017-10-04_23:35:46_407_20Kmin_L1=15_L3=0,35'};
+        
+figure();
+hold on;
+T_domain = 30:0.01:170;
+enthalpies = zeros(1,7);
+for i=1:length(fit_list)
+   
+    disp(fit_list{i})
+    
+    filepath = strcat('/home/argo/masterarbeit/fits_data/', fit_list{i}, '/fit_data.mat');
+    fit_data = load(filepath);
+    
+    c_p = c_p_gauss_linear_comb(T_domain, fit_data.optimization.p_optim_end);
+    plot(T_domain, c_p, 'DisplayName', num2str(fit_data.measurement.dsc_data.Tinfo.Tstep))
+    
+    enthalpies(i) = integral(@(x)c_p_gauss_linear_comb(x, fit_data.optimization.p_optim_end), 100, 160);
+    
+end
+legend('show', 'location', 'northwest');
+disp(enthalpies)
+
             
-            
+%% Plot c_p curves for setting L1=15, L3=0.65 for all heat rates
+fit_list = {'2017-10-05_11:19:42_407_0,3Kmin_L1=15_L3=0,65', ...
+            '2017-10-05_11:10:55_407_0,6Kmin_L1=15_L3=0,65', ...
+            '2017-10-05_11:01:23_407_1,25Kmin_L1=15_L3=0,65', ...
+            '2017-10-05_10:50:01_407_2,5Kmin_L1=15_L3=0,65', ...
+            '2017-10-05_10:41:51_407_5Kmin_L1=15_L3=0,65', ...
+            '2017-10-05_10:33:35_407_10Kmin_L1=15_L3=0,65', ...
+            '2017-10-05_10:23:51_407_20Kmin_L1=15_L3=0,65'};
+        
+figure();
+hold on;
+T_domain = 30:0.01:170;
+enthalpies = zeros(1,7);
+for i=1:length(fit_list)
+   
+    disp(fit_list{i})
+    
+    filepath = strcat('/home/argo/masterarbeit/fits_data/', fit_list{i}, '/fit_data.mat');
+    fit_data = load(filepath);
+    
+    c_p = c_p_gauss_linear_comb(T_domain, fit_data.optimization.p_optim_end);
+    plot(T_domain, c_p, 'DisplayName', num2str(fit_data.measurement.dsc_data.Tinfo.Tstep))
+    
+    enthalpies(i) = integral(@(x)c_p_gauss_linear_comb(x, fit_data.optimization.p_optim_end), 100, 160);
+    
+end
+legend('show', 'location', 'northwest');
+disp(enthalpies)

@@ -5,20 +5,20 @@ fprintf(errLogFileID, '\n\nStart new Set of parameter estimations at %s...\n', d
 
 % Simulation
 simulation = struct();
-simulation.L1 = 15.;
-simulation.L3 = 0.5;
+simulation.L1 = 50.;
+simulation.L3 = 0.1;
 simulation.N1 = 200;
 simulation.N3 = 50;
 
 % Constantan
-simulation.lambda_Const = 23.; 
-simulation.rho_Const = 8.9;    
-simulation.c_p_Const = 0.41;  
+% simulation.lambda_Const = 23.; 
+% simulation.rho_Const = 8.9;    
+% simulation.c_p_Const = 0.41;  
 
 % Silver
-% simulation.lambda_Const = 430.; 
-% simulation.rho_Const = 10.49;    
-% simulation.c_p_Const = 0.235; 
+simulation.lambda_Const = 430.; 
+simulation.rho_Const = 10.49;    
+simulation.c_p_Const = 0.235; 
 
 simulation.lambda_pcm = 0.96;  
 
@@ -33,24 +33,24 @@ dsc_measurement = DSC204_readFile(dsc_filename);
 optimization = struct();
 optimization.c_p_param_type = 'gauss_linear_comb';
 
-fit_data = load('/home/argo/masterarbeit/fits_data/2017-09-30_16:49:07_407_10Kmin_L1=5_L3=0,5/fit_data.mat');
-optimization.start_values = fit_data.optimization.p_optim_end;
+fit_data = load('/home/argo/masterarbeit/fits_data/2017-10-15_22:45:49_407_20Kmin_L1=50_L3=0,1/fit_data.mat');
 
-% optimization.start_values = [10.,    1.,  123.0044, ...
-%                              0.,    1.,  104.8824, ...
-%                              0.,    1.,  124.3034, ...
-%                              0.,    1.,  118.2194, ...
-%                              0.,    1.,   76.8653, ...
-%                              0.1, 1., 125., ...
-%                              0.1, 1., 127., ...
-%                              0.1, 1., 129., ...
-%                              -1., 1., 133., ...
-%                              0.1, 1., 80., ...
-%                              0.5, 3.];
+optimization.start_values = fit_data.optimization.p_optim_end;
+% optimization.start_values = [10.,   1.,  123.0, ...
+%                              1.,    1.,  115.0, ...
+%                              1.,    1.,  125.0, ...
+%                              1.,    1.,  127.0, ...
+%                              -0.1,    1.,  129.0, ...
+%                              0., 1., 0., ...
+%                              0., 1., 0., ...
+%                              0., 1., 0., ...
+%                              0., 1., 0., ...
+%                              0., 1., 0., ...
+%                              0.1, 2.];
 num_opt_params = length(optimization.start_values);
 
 optimization.p_optim_estimable = true(length(optimization.start_values), 1);
-optimization.p_optim_estimable(19:21) = false;
+%optimization.p_optim_estimable(16:30) = false;  %  fix 5 Gaussians
 
 optimization.lb = zeros(num_opt_params,1);
 optimization.lb(1:3:30) = -2.;
@@ -62,6 +62,31 @@ optimization.ub = ones(num_opt_params,1) * inf;
 % General options
 options.init_value_test = false;
 
+datetime_cell = num2cell(int32(clock));
+datetime_str = sprintf('%04i-%02i-%02i_%02i:%02i:%02i', datetime_cell{:});
+
+mass_code_str = dsc_measurement.fileSpec(11:13);
+L1_str = num2str(simulation.L1);
+L3_str = num2str(simulation.L3);
+N1_str = num2str(simulation.N1);
+N3_str = num2str(simulation.N3);
+
+save_path_root_str = strcat('/home/argo/masterarbeit/fits_data/', ...
+                            datetime_str, '_', ...
+                            mass_code_str, '_', ...
+                            'L1=', L1_str, '_', ...
+                            'L3=', L3_str, '_', ...
+                            'N1=', N1_str, '_', ...
+                            'N3=', N3_str, ...
+                            '/');
+
+if exist(save_path_root_str, 'dir') == 0
+    disp('Creating root directory');
+    mkdir(save_path_root_str);
+end
+
+options.save_path_root = save_path_root_str;
+
 
 % Run optimization #1
 try
@@ -70,6 +95,7 @@ catch Err
     fprintf(errLogFileID, '%s\tError %s occured with heat_rate=%2.4g.\n', ...
         datetime('now'), Err.identifier, dsc_measurement.Tinfo.Tstep);
 end
+
 
 
 

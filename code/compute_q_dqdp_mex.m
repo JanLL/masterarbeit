@@ -27,12 +27,14 @@ xlabel(ax2, 'T [degC]');
 ylabel(ax2, 'c_p [mJ/(mg*K]');
 drawnow;
 
-
-[residuum, Jac] = heat1D_pcm('optimization', p_optim_all); 
+%[residuum, Jac] = heat1D_pcm('optimization', p_optim_all); 
+[residuum, Jac, T] = heat1D_pcm('optimization', p_optim_all); 
 Jac = Jac(:,p_optim_estimable);
 
 
+% residuum = heat1D_pcm('optimization', p_optim_all); 
 
+% Fuer Vergleich Fwd/Adj Sensitivities...
 % [residuum, Jac_fwd, Jac_adj] = heat1D_pcm('optimization', p_optim_all);
 % Jac = struct();
 % Jac.fwd = Jac_fwd;

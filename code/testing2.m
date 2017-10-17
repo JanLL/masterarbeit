@@ -1,3 +1,44 @@
+c_p_fig = open('c_p(T).fig');
+h1=get(gca,'title');
+title_str=get(h1,'string');
+title('');
+print(c_p_fig, 'c_p(T)', '-dpng');
+title(title_str);
+close;
+
+c_p_fig = open('q_pcm_in(T_ref).fig');
+h1=get(gca,'title');
+title_str=get(h1,'string');
+title('');
+print(c_p_fig, 'q_pcm_in(T_ref)', '-dpng');
+title(title_str);
+close;
+
+
+return
+
+
+% Read 
+
+dsc_list = DSC204_readFiles('DSC204_F1_Phoenix_Messungen/Messungen/Messungen/ExpDat_16-407-3_mitKorr_*Kmin_H.csv');
+
+figure(5); hold on
+for i=1:length(dsc_list)
+
+    dsc = dsc_list(i);
+    plot(dsc.data(:,1), dsc.data(:,3) ./ dsc.Tinfo.Tstep, 'DisplayName', num2str(dsc.Tinfo.Tstep));
+    
+    
+end
+
+
+return
+
+
+
+
+
+
 % Convergence Rate Plots
 fit_data = load('fit_data.mat');
 

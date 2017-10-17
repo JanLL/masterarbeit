@@ -287,15 +287,16 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 		args.rhs[j] = scale_pcm/(c_p_j*rho_j) * (x[j-1] - 2.0 * x[j] + x[j+1]);
 
 		// non-linear part (just c_p temperature dependent atm, lambda and rho constant)
-		args.rhs[j] -= scale_pcm/(4.*c_p_j*c_p_j * rho_j) * dc_p_j * (x[j+1] - x[j-1])*(x[j+1] - x[j-1]);
-		args.rhs[j] -= scale_pcm/(4.*rho_j*rho_j * c_p_j) * drho_j * (x[j+1] - x[j-1])*(x[j+1] - x[j-1]);
+		//args.rhs[j] -= scale_pcm/(4.*c_p_j*c_p_j * rho_j) * dc_p_j * (x[j+1] - x[j-1])*(x[j+1] - x[j-1]);
+		//args.rhs[j] -= scale_pcm/(4.*rho_j*rho_j * c_p_j) * drho_j * (x[j+1] - x[j-1])*(x[j+1] - x[j-1]);
 		
 	}
 
 	// RHS boundary, no flux
 	c_p_fct(x[N1+N3-2], c_p_j, dc_p_j, args.p);
-	rho_pcm_formula(x[N1+N3-2], rho_j, drho_j);
-	
+	//rho_pcm_formula(x[N1+N3-2], rho_j, drho_j);
+	rho_j = 0.85; //  [mg/mm^3]
+
 	args.rhs[N1+N3-1] = scale_pcm/(c_p_j * rho_j) * (x[N1+N3-2] - x[N1+N3-1]); // Neumann boundary (right)
 
 
@@ -670,31 +671,55 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 			}
 		}
 
-		// Vergleich fwdSens und adjSens
-		/*std::ofstream file_diff_sens;
+		// Vergleich fwdSens und adjSens (und speichern in .txt file)
+		/*double TOL = 1e-13;
+		std::ofstream file_diff_sens;
   		file_diff_sens.open ("/home/argo/masterarbeit/diff_sens.txt");
+  		std::ofstream file_sens;
+  		file_sens.open ("/home/argo/masterarbeit/sens.txt");
+  		file_sens << std::scientific;
+  		file_sens.precision(16);
 		for (svULong i=0; i<nmp; ++i) {
 			for (svULong j=0; j<np; ++j) {
 		
+				file_sens << (g_fwdSens[i])(N1,j) << "\t" << (g_adjSens[i])(j,0) << "\t" 
+					      << (g_fwdSens[i])(N1+1,j) << "\t" << (g_adjSens[i])(j,1) << "\t";
+
 				double relErr1;
-				if ((g_adjSens[i])(j,0) == 0. || (g_fwdSens[i])(N1,j) == 0.) {
-					relErr1 = 0.;
-				} else {
+				double fwdSens_temp = (g_fwdSens[i])(N1,j);
+				double adjSens_temp = (g_adjSens[i])(j,0);
+				if ( (fwdSens_temp > TOL && adjSens_temp > TOL) ||
+					 (fwdSens_temp > TOL && adjSens_temp < TOL) ||
+					 (fwdSens_temp < TOL && adjSens_temp > TOL) ){
 					relErr1 = fabs(1 - (g_fwdSens[i])(N1,j) / (g_adjSens[i])(j,0));
+				} else if ( fwdSens_temp < TOL || adjSens_temp < TOL ) {
+					relErr1 = 0.;
+				}
+				else {
+					relErr1 = 666.666;
 				}
 
 				double relErr2;
-				if ((g_adjSens[i])(j,1) == 0. || (g_fwdSens[i])(N1+1,j) == 0.) {
+				fwdSens_temp = (g_fwdSens[i])(N1+1,j);
+				adjSens_temp = (g_adjSens[i])(j,1);
+				if ( (fwdSens_temp > TOL && adjSens_temp > TOL) ||
+					 (fwdSens_temp > TOL && adjSens_temp < TOL) ||
+					 (fwdSens_temp < TOL && adjSens_temp > TOL) ){
+					relErr2 = fabs(1 - (g_fwdSens[i])(N1,j) / (g_adjSens[i])(j,0));
+				} else if ( fwdSens_temp < TOL || adjSens_temp < TOL ) {
 					relErr2 = 0.;
-				} else {
-					relErr2 = fabs(1 - (g_fwdSens[i])(N1+1,j) / (g_adjSens[i])(j,1));
+				}
+				else {
+					relErr2 = 666.666;
 				}
 
 				file_diff_sens << relErr1 << "\t" << relErr2 << "\t";
 			}
 			file_diff_sens << std::endl;
+			file_sens << std::endl;
 		}
-		file_diff_sens.close();*/
+		file_diff_sens.close();
+		file_sens.close();*/
 
 
 		// Compute heat flux and residuum vector
@@ -744,8 +769,8 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		dq_dp_output2 <<= dq_dp_temp2;*/
 
 
+		// Temperature trajectory
 		if (nlhs >= 3) {
-			// Temperature trajectory
 			const Sonic::cDMat& T_temp(*g_traj);
 			plhs[2] = mxCreateDoubleMatrix(T_temp.nRows(), T_temp.nCols(), mxREAL);
 			Sonic::DMat T_output(mxGetPr(plhs[2]), T_temp.nRows(),

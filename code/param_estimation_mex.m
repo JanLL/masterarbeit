@@ -19,7 +19,7 @@ num_meas = length(q_dsc);
 %%%%%%%%%% Set Simulation parameters %%%%%%%%%%%%%%%%%
 L1 = 15;  % [mm]
 L3 = 0.5;  % [mm]
-N1 = 200;
+N1 = 500;
 N3 = 50;  % error if N3=0
  
 lambda_Const = 23.;  % [mW/(mm*K)]
@@ -29,7 +29,7 @@ c_p_Const = 0.41;    % [mJ/(mg*K)]
 lambda_pcm = 0.96;   % [mW/(mm*K)]
 rho_pcm = 0.85;      % [mg/mm^3]
 
-heat_rate = 10.;     % [K/min]
+heat_rate = 20.;     % [K/min]
 T_0 = 10.;           % Start temperature oven [degC]
 T_end = 200.;        % End temperature oven [degC]
 
@@ -40,12 +40,12 @@ sim_params_vec = [L1, L3, N1, N3, lambda_Const, rho_Const, c_p_Const, ...
 heat_rate_s = heat_rate / 60; % [K/min] -> [K/s]
 
 % c_p parametrization with Fraser-Suzuki-Peak
-h  =  40.0;
-r  =  35.0;
+h  =  10.0;
+r  =  100.0;
 wr =  15.0;
-sr =   0.2;
-z  = 125.0;
-b  =   10.0;
+sr =   0.1;
+z  = 100.0;
+b  =   2.0;
 p_fraser_suzuki = [h, r, wr, sr, z, b];
 
 p_atan_cp = [125., 10, 0.01, 10., 0.003, 2];
@@ -57,17 +57,19 @@ p_gauss_lin_comb = [10, 0.1, 130, ...
                     0.05, 1,   122, ...
                     0., 2.];
                 
-p_gauss_lin_comb = [38.2793,    1.2498,  123.0044, ...
-                    1.1022,   13.2169,  104.8824, ...
-                    0.,    3.7355,  124.3034, ...
-                    3.8868, 7.1009,  118.2194, ...
-                    0.5846,   30.5770,   76.8653, ...
-                    0., 1., 0., ...
-                    0., 1., 0., ...
-                    0., 1., 0., ...
-                    0., 1., 0., ...
-                    0., 1., 0., ...
-                    1., 1.6483];
+fit_data = load('/home/argo/masterarbeit/fits_data/2017-10-15_23:26:52_407_0,3Kmin_L1=50_L3=0,1/fit_data.mat');
+p_gauss_lin_comb = fit_data.optimization.p_optim_end;
+% p_gauss_lin_comb = [38.2793,    1.2498,  123.0044, ...
+%                     1.1022,   13.2169,  104.8824, ...
+%                     0.,    3.7355,  124.3034, ...
+%                     3.8868, 7.1009,  118.2194, ...
+%                     0.5846,   30.5770,   76.8653, ...
+%                     0., 1., 0., ...
+%                     0., 1., 0., ...
+%                     0., 1., 0., ...
+%                     0., 1., 0., ...
+%                     0., 1., 0., ...
+%                     1., 1.6483];
 
 
 %%%%%%%%%% some pre-calculations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -127,23 +129,44 @@ compute_q_dqdp_mex_expl = @(p_optim) compute_q_dqdp_mex(...
 
 %%%%%%%%%%%%%% INITIAL VALUE TEST %%%%%%%%%%%%%%%%%%%%
 [res, dqdp] = compute_q_dqdp_mex_expl(p_optim_start);
+
+q_sim_500 = res + q_dsc;
+
 return
 
-close all;
+% close all;
+% relErr_dqdp = abs(1 - dqdp.fwd ./ dqdp.adj);
+% relErr_dqdp(isnan(relErr_dqdp)) = 0.;
+% figure()
+% image(relErr_dqdp, 'CDataMapping', 'scaled')
+% colorbar
 
-relErr_dqdp = abs(1 - dqdp.fwd ./ dqdp.adj);
-relErr_dqdp(isnan(relErr_dqdp)) = 0.;
-figure()
-image(relErr_dqdp, 'CDataMapping', 'scaled')
-colorbar
-
-
+close all
 figure()
 sens_diff = load('/home/argo/masterarbeit/diff_sens.txt');
 max(max(abs(sens_diff)))
 %imagesc(sens_diff, [0, 1e-12]);
 image(sens_diff, 'CDataMapping', 'scaled')
 colorbar
+
+
+sens = load('/home/argo/masterarbeit/sens.txt');
+fwdSens_N1 = sens(:,1:4:end);
+adjSens_N1 = sens(:,2:4:end);
+fwdSens_N1p1 = sens(:,3:4:end);
+adjSens_N1p1 = sens(:,4:4:end);
+
+figure()
+image(fwdSens_N1, 'CDataMapping', 'scaled'); colorbar
+figure()
+image(adjSens_N1, 'CDataMapping', 'scaled'); colorbar
+figure()
+image(fwdSens_N1p1, 'CDataMapping', 'scaled'); colorbar
+figure()
+image(adjSens_N1p1, 'CDataMapping', 'scaled'); colorbar
+
+fwdSens_N1(772,2) / adjSens_N1(772,2) - 1
+
 
 return;
 
