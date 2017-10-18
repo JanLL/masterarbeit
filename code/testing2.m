@@ -2,7 +2,7 @@ c_p_fig = open('c_p(T).fig');
 h1=get(gca,'title');
 title_str=get(h1,'string');
 title('');
-print(c_p_fig, 'c_p(T)', '-dpng');
+print(c_p_fig, 'c_p(T)', '-dpng', '-r500');
 title(title_str);
 close;
 
@@ -10,7 +10,7 @@ c_p_fig = open('q_pcm_in(T_ref).fig');
 h1=get(gca,'title');
 title_str=get(h1,'string');
 title('');
-print(c_p_fig, 'q_pcm_in(T_ref)', '-dpng');
+print(c_p_fig, 'q_pcm_in(T_ref)', '-dpng', '-r500');
 title(title_str);
 close;
 

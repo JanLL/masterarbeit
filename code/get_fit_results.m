@@ -1,4 +1,4 @@
-function [enthalpies] = get_fit_results(fit_dir)
+function [fig, enthalpies] = get_fit_results(fit_dir)
 %
 
 
@@ -11,10 +11,11 @@ nameSubDirs = {file_list(isub).name}';
 nameSubDirs(ismember(nameSubDirs,{'.','..'})) = [];
 
 
-figure();
+fig = figure();
 hold on;
 T_domain = 30:0.01:170;
 enthalpies = zeros(1,7);
+
 for i=1:length(nameSubDirs)
    
     disp(nameSubDirs{i})

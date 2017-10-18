@@ -5,9 +5,9 @@ fprintf(errLogFileID, '\n\nStart new Set of parameter estimations at %s...\n', d
 
 % Simulation
 simulation = struct();
-simulation.L1 = 50.;
+simulation.L1 = 40.;
 simulation.L3 = 0.1;
-simulation.N1 = 200;
+simulation.N1 = 500;
 simulation.N3 = 50;
 
 % Constantan
@@ -33,7 +33,9 @@ dsc_measurement = DSC204_readFile(dsc_filename);
 optimization = struct();
 optimization.c_p_param_type = 'gauss_linear_comb';
 
-fit_data = load('/home/argo/masterarbeit/fits_data/2017-10-15_22:45:49_407_20Kmin_L1=50_L3=0,1/fit_data.mat');
+fit_data = load(['/home/argo/masterarbeit/fits_data/', ...
+                 '2017-10-16_04:45:00_407_L1=40_L3=0.1_N1=200_N3=50/', ...
+                 '2017-10-16_04:45:34_407_20Kmin_L1=40_L3=0,1/fit_data.mat']);
 
 optimization.start_values = fit_data.optimization.p_optim_end;
 % optimization.start_values = [10.,   1.,  123.0, ...
