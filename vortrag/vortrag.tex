@@ -4,6 +4,8 @@
 \usepackage[utf8x]{inputenc}
 \usepackage{amsmath,amsfonts,amssymb}
 
+\usepackage{mathtools}
+
 
 \usepackage{subcaption}
 
@@ -111,12 +113,12 @@
 \frame{
 	\frametitle{Mathematical model}
 	
-	\begin{textblock}{14}(1, 4.)
+	\begin{textblock}{14}(1, 4.6)
 		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/discretization_grid.png}
 	\end{textblock}
 	
 	
-	\begin{textblock}{14}(1, 9)
+	\begin{textblock}{14}(1, 9.5)
 	
 		\begin{itemize}
 			\item Heat equation: \quad $\rho c_p(T(x,t)) \frac{\partial T}{\partial t}(x,t) = \nabla \cdot \left[ \lambda \cdot \nabla T(x,t) \right]$
@@ -135,20 +137,43 @@
 }
 
 
-\frame{
-	\frametitle{Mathematical model}
+%\frame{
+%	\frametitle{Mathematical Model}
+%
+%	\begin{textblock}{14}(1, 3.8)
+%	
+%		\begin{align*}
+%		\hspace{-1cm}
+%		\frac{d}{dt} \begin{bmatrix*}
+%		T^0 \\
+%		T^1 \\
+%		\vdots \\
+%		T^{N_1-2} \\
+%		T^{N_1-1} \\
+%		T^{N_1} \\
+%		\vdots \\ 
+%		T^{N_1+N_3-2} \\
+%		T^{N_1+N_3-1}
+%		\end{bmatrix*} =
+%		\begin{bmatrix}
+%		\beta \\
+%		\frac{\lambda^{\text{PCM}}}{\rho^{\text{PCM}} \ c_p^{\text{PCM}}(T^1) } \cdot \frac{T^{0} - 2 T^{1} + T{2}}{\Delta x_{\text{Ag}}^2} \\
+%		\vdots \\
+%		\frac{\lambda^{\text{PCM}}}{\rho^{\text{PCM}} \ c_p^{\text{PCM}}(T^{N_1 - 2}) } \cdot \frac{T^{N_1-3} - 2 T^{N_1-2} + T{N_1-1}}{\Delta x_{\text{Ag}}^2} \\
+%		\frac{\lambda^{\text{Ag}}}{\rho^{\text{Ag}} \ c_p^{\text{Ag}}} \cdot \frac{\frac{2}{1+\alpha} T^{N_1-2} - \frac{2}{\alpha} T^{N_1-1} + \frac{2}{\alpha (\alpha + 1)} T^{N_1}}{\Delta x_{\text{Ag}}^2} \\
+%		\frac{\lambda^{\text{Ag}}}{\rho^{\text{Ag}} \ c_p^{\text{Ag}}} \cdot \frac{T^{N_1-1} - 2 T^{N_1} + T{N_1+1}}{\Delta x_{\text{PCM}}^2} \\
+%		\vdots \\
+%		\frac{\lambda^{\text{Ag}}}{\rho^{\text{Ag}} \ c_p^{\text{Ag}}} \cdot \frac{T^{N_1+N_3-3} - 2 T^{N_1+N_3-2} + T{N_1+N_3-1}}{\Delta x_{\text{PCM}}^2} \\
+%		\frac{\lambda^{\text{Ag}}}{\rho^{\text{Ag}} \ c_p^{\text{Ag}}} \cdot \frac{T^{N_1+N_3-2} - T^{N_1+N_3-1}}{\Delta x_{\text{PCM}}^2}
+%		\end{bmatrix}
+%	\end{align*}
+%
+%	\end{textblock}
+%}
 
-	\begin{textblock}{14}(1, 5.)
 
-	\begin{itemize}
-		\item \todo{fehlt noch was zum modell?}
-	\end{itemize}
 
-	\end{textblock}
-	
-	
-	
-}
+
 
 
 \subsection{Parametrization $c_p$}
@@ -169,10 +194,26 @@
 }
 
 
-\subsection{Heat flux computation}
+
+\frame{
+	\frametitle{Numerical Solution of heat equation}
+	
+	\begin{textblock}{14}(1,5)
+		\begin{itemize}
+			\item Spatial discretization by method of lines
+			\item Software: SolvIND using integrator DAESOL-II \\ \vspace{0.15cm}
+			$\rightarrow$ Gives as well needed sensitivities $\frac{\partial T}{\partial p}$ for optimization \\
+			\qquad via IND forward mode
+			\item Used Relative Tolerance: $10^{-7}$
+		\end{itemize}
+	\end{textblock}	
+}
+
+
+\subsection{Optimization problem}
 \frame{
 	\frametitle{Heat flux computation}	
-
+	
 	\begin{textblock}{14}(1,5)
 		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/discretization_grid.png}
 	\end{textblock}
@@ -182,14 +223,15 @@
 			\item Heat flux into PCM: \\ \vspace{0.15cm}
 			$\Phi_{q}^{PCM,in} = - \bar{\lambda} \frac{T^{N_1} - T^{N_1-1}}{dx_{PCM}} \cdot A_{PCM}
 			\approx - \lambda_{PCM} \frac{T^{N_1+1} - T^{N_1}}{dx_{PCM}} \cdot A_{PCM}$ \\ \vspace{0.15cm}
-			 where for the cross section $A_{PCM}$ we used $m_i = \rho \cdot A \cdot dx_i$
+			where for the cross section $A_{PCM}$ we used $m_i = \rho \cdot A \cdot dx_i$
 		\end{itemize}
 	\end{textblock}
-
-
+	
 }
 
-\subsection{Optimization problem}
+
+
+
 \frame{
 	\frametitle{Optimization problem}	
 
