@@ -1,3 +1,47 @@
+%% Compare c_p fits for heat rate 0,3 K/min for different L1/L3/N1/N3
+
+fit_path_root_list = {'2017-10-18_12:11:40_407_L1=40_L3=0.01_N1=200_N3=50', ...
+                      '2017-10-16_04:45:00_407_L1=40_L3=0.1_N1=200_N3=50', ...
+                      '2017-10-18_14:41:19_407_L1=40_L3=0.2_N1=200_N3=50', ...
+                      '2017-10-18_13:28:22_407_L1=5_L3=0.01_N1=200_N3=50', ...
+                      '2017-10-18_10:59:34_407_L1=80_L3=0.1_N1=200_N3=50'};
+
+                  
+T_domain = 100:0.005:160;
+figure(); hold on
+
+for j=1:length(fit_path_root_list)
+
+    fit_path_root = strcat('/home/argo/masterarbeit/fits_data/', fit_path_root_list{j}, '/');
+
+    
+    file_list = dir(fit_path_root);
+
+    isub = [file_list(:).isdir]; %# returns logical vector
+    nameSubDirs = {file_list(isub).name}';
+    nameSubDirs(ismember(nameSubDirs,{'.','..'})) = [];
+
+
+    for i=1:length(nameSubDirs)
+
+        if contains(nameSubDirs{i}, '0,3Kmin')
+
+            fit_data_path = strcat(fit_path_root, nameSubDirs{i}, '/fit_data.mat');
+            
+            fit_data = open(fit_data_path);
+
+            c_p = c_p_gauss_linear_comb(T_domain, fit_data.optimization.p_optim_end);
+            plot(T_domain, c_p, 'DisplayName', strcat(num2str(fit_data.measurement.dsc_data.Tinfo.Tstep), ' K/min'))
+
+        end
+
+    end
+
+end
+
+
+return
+
 c_p_fig = open('c_p(T).fig');
 h1=get(gca,'title');
 title_str=get(h1,'string');
