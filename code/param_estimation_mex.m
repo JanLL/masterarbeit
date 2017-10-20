@@ -17,14 +17,20 @@ num_meas = length(q_dsc);
 
 
 %%%%%%%%%% Set Simulation parameters %%%%%%%%%%%%%%%%%
-L1 = 15;  % [mm]
-L3 = 0.5;  % [mm]
-N1 = 500;
+L1 = 40;  % [mm]
+L3 = 0.1;  % [mm]
+N1 = 200;
 N3 = 50;  % error if N3=0
  
-lambda_Const = 23.;  % [mW/(mm*K)]
-rho_Const = 8.9;     % [mg/mm^3]
-c_p_Const = 0.41;    % [mJ/(mg*K)]
+% Constantan
+% lambda_Const = 23.;  % [mW/(mm*K)]
+% rho_Const = 8.9;     % [mg/mm^3]
+% c_p_Const = 0.41;    % [mJ/(mg*K)]
+
+% Silver
+lambda_Const = 430.; 
+rho_Const = 10.49;    
+c_p_Const = 0.235; 
 
 lambda_pcm = 0.96;   % [mW/(mm*K)]
 rho_pcm = 0.85;      % [mg/mm^3]
@@ -57,7 +63,9 @@ p_gauss_lin_comb = [10, 0.1, 130, ...
                     0.05, 1,   122, ...
                     0., 2.];
                 
-fit_data = load('/home/argo/masterarbeit/fits_data/2017-10-15_23:26:52_407_0,3Kmin_L1=50_L3=0,1/fit_data.mat');
+fit_data = load(['/home/argo/masterarbeit/fits_data/', ...
+                '2017-10-15_22:45:00_407_L1=50_L3=0.1_N1=200_N3=50/', ...
+                '2017-10-15_23:26:52_407_0,3Kmin_L1=50_L3=0,1/fit_data.mat']);
 p_gauss_lin_comb = fit_data.optimization.p_optim_end;
 % p_gauss_lin_comb = [38.2793,    1.2498,  123.0044, ...
 %                     1.1022,   13.2169,  104.8824, ...
@@ -130,7 +138,7 @@ compute_q_dqdp_mex_expl = @(p_optim) compute_q_dqdp_mex(...
 %%%%%%%%%%%%%% INITIAL VALUE TEST %%%%%%%%%%%%%%%%%%%%
 [res, dqdp] = compute_q_dqdp_mex_expl(p_optim_start);
 
-q_sim_500 = res + q_dsc;
+q_sim_200 = res + q_dsc;
 
 return
 
@@ -146,7 +154,7 @@ figure()
 sens_diff = load('/home/argo/masterarbeit/diff_sens.txt');
 max(max(abs(sens_diff)))
 %imagesc(sens_diff, [0, 1e-12]);
-image(sens_diff, 'CDataMapping', 'scaled')
+image(sens_diff(:,[1:2,5:8,11:end]), 'CDataMapping', 'scaled')
 colorbar
 
 

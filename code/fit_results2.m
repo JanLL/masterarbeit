@@ -1,8 +1,6 @@
 % In diesem File ist bei den Simulationen rho_pcm = 0.85 fixiert.
 % Und es wird Silber statt Constantan benutzt.
 
-%get_fit_results('2017-10-14_19:36:00_407_L1=5_L3=0.5_N1=200_N3=50');
-
 [fig, enthalpies] = get_fit_results('2017-10-15_21:08:00_407_L1=5_L3=0.1_N1=200_N3=50');
 
 
@@ -30,9 +28,20 @@
 [fig, enthalpies] = get_fit_results('2017-10-18_16:40:21_407_L1=40_L3=0.1_N1=500_N3=50');
 
 
+set(gcf, 'units', 'normalized', 'outerposition', [0 0 0.66 1]);
+children = get(gca, 'Children');
+num_children = length(children);
+for i=1:num_children; children(i).LineWidth = 1.5; end
+set(gca,'FontSize',24)
+set(gca,'xlim', [20 160]);
+ylabel('c_p [mJ/(mg*K)]');
+print(fig, 'c_p_all', '-dpng', '-r200');
 
-print(fig, 'c_p_all', '-dpng', '-r500');
-print(fig, 'c_p_all_zoom', '-dpng', '-r500');
+set(gca,'xlim', [110 160]);
+%set(gca,'ylim', [0 330]);
+print(fig, 'c_p_all_zoom', '-dpng', '-r200');
+close();
+
 
 
 print(fig, 'c_p_L1=40_L3=0,01', '-dpng', '-r500');
@@ -49,7 +58,7 @@ return
 
 
 %% Plot heat fluxes for 407 sample
-dsc_files = DSC204_readFiles('*407*mitKorr*H.csv');
+dsc_files = DSC204_readFiles('*417*mitKorr*H.csv');
 figure(); hold on
 for i=1:7
     

@@ -31,8 +31,9 @@
 \usetheme{Luebeck}
 \usecolortheme{orchid}
 
-\title{Current state of master thesis}
-\subtitle{Parameter estimation of specific heat capacity $c_p$ at phase change using a 1D model of a heat flux DSC.}
+\title{Parameter estimation of specific heat capacity $c_p$ at phase change using a model \\ of a heat flux DSC.}
+\subtitle{Current state of master thesis}
+
 \author{Jan Lammel}
 
 \begin{document}
@@ -50,20 +51,21 @@
 \frametitle{Introduction}
 
 	\begin{textblock}{7}(1,5)
-		\includegraphics[width=1.0\textwidth]{/home/argo/masterarbeit/thesis/images/handwaermer[wiki].jpg}
+		\includegraphics[width=1.0\textwidth]{/home/argo/masterarbeit/thesis/images/handwaermer[wiki].jpg} \\
+		\qquad \quad Source: Wikipedia
 	\end{textblock}
 	
 	\begin{textblock}{8}(8,5)
 	\begin{itemize}
-		\item We examine so called phase change materials (PCM).
+		\item We examine so called phase change materials (PCM)
 		\item Important property is the heat capacity $c_p$: When does it melt and how much energy fits into?
 	\end{itemize}
 	\end{textblock}
 
-	\begin{textblock}{14}(1,11.5)
-	\begin{itemize}
-		\item \textbf{Goal:} Simulation of measuring process to obtain specific heat capacity $c_p$ of phase change material (PCM) by parameter estimation.
-	\end{itemize}
+	\begin{textblock}{14}(1,12.5)
+
+	\textbf{Goal:} Simulation of measuring process to obtain specific heat capacity $c_p$ of phase change material (PCM) by parameter estimation.
+
 	\end{textblock}
 	
 
@@ -81,7 +83,7 @@
 			\item heat flux density $\Phi_q$, \qquad$[\Phi_q] = \frac{W}{m^2}$ \\
 			Rate of energy transferred per unit area \vspace{0.2cm}
 			\item specific heat capacity $c_p$, \qquad $[c_p] = \frac{J}{kg \cdot K}$ \\
-			Material specific amount of energy needed to raise the temperature of $1kg$ by $1K$.
+			Material specific amount of energy needed to raise the temperature of $1kg$ by $1K$
 			
 		\end{itemize}
 	\end{textblock}
@@ -89,18 +91,18 @@
 }
 
 
-\subsection{Differential Scanning Calorimetry (DSC)}
+\subsection{Heat flux differential scanning calorimetry (DSC)}
 \frame{
-	\frametitle{Differential Scanning Calorimetry (DSC)}
+	\frametitle{Heat flux differential scanning calorimetry (DSC)}
 	
 	\begin{textblock}{15}(0.4,4)
 		\centering
 		\includegraphics[width=0.7\textwidth]{/home/argo/masterarbeit/thesis/images/dsc_funktionsprinzip.png}
 		
 		\begin{itemize}
-			\item Empty reference crucible and crucible with PCM are heated equally.
-			\item Due to thermal properties differences (mainly $c_p$) of reference and PCM a temperature difference $\Delta T$ is induced.
-			\item A calibration measurement with known thermal properties provides mapping $\Delta T \rightarrow \Phi_q$
+			\item Empty reference crucible and crucible with PCM are heated equally
+			\item Due to thermal properties differences (mainly $c_p$) of reference and PCM a temperature difference $\Delta T$ is induced
+			\item Sensitivity calibration with materials of known thermal properties provides mapping $\Delta T \rightarrow \Phi_q$
 		\end{itemize}
 		
 	\end{textblock}
@@ -123,7 +125,7 @@
 		\begin{itemize}
 			\item Heat equation: \quad $\rho c_p(T(x,t)) \frac{\partial T}{\partial t}(x,t) = \nabla \cdot \left[ \lambda \cdot \nabla T(x,t) \right]$
 			\item $\rho$, $\lambda$ constant
-			\item Boundary Conditions: 
+			\item Boundary conditions: 
 				\begin{itemize}
 				\item $T^0 = T_{\text{start}} + \beta \cdot t$ \\
 				\item No flux outside PCM
@@ -362,17 +364,17 @@
 	\frametitle{Results}
 	\begin{textblock}{14}(1,5)
 		\centering
-		Modifying Silver / PCM length $L_1$ / $L_3$
+		Modifying silver / PCM length $L_1$ / $L_3$
 	\end{textblock}
 	
 	\begin{textblock}{14}(1,6)
-		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-18_10:59:34_407_L1=80_L3=0.1_N1=200_N3=50/c_p_L1=80_L3=0,1.png} \\
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-18_10:59:34_407_L1=80_L3=0.1_N1=200_N3=50/c_p_all_zoom.png} \\
 		
 		\qquad \qquad  $L_1 = 80$, $L_3 = 0.1$
 	\end{textblock}
 	
 	\begin{textblock}{14}(8,6)
-		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-18_14:41:19_407_L1=40_L3=0.2_N1=200_N3=50/c_p_L1=40_L3=0,2.png} \\
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-18_14:41:19_407_L1=40_L3=0.2_N1=200_N3=50/c_p_all_zoom.png} \\
 		
 		\qquad \qquad  $L_1 = 40$, $L_3 = 0.2$
 	\end{textblock}	
@@ -384,17 +386,17 @@
 	\frametitle{Results}
 	\begin{textblock}{14}(1,5)
 		\centering
-		Modifying Silver / PCM length $L_1$ / $L_3$
+		Modifying silver / PCM length $L_1$ / $L_3$
 	\end{textblock}
 	
 	\begin{textblock}{14}(1,6)
-		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-15_21:08:00_407_L1=5_L3=0.1_N1=200_N3=50/c_p_L1=5_L3=0,1.png} \\
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-15_21:08:00_407_L1=5_L3=0.1_N1=200_N3=50/c_p_all_zoom.png} \\
 		
 		\qquad \qquad  $L_1 = 5$, $L_3 = 0.1$
 	\end{textblock}
 	
 	\begin{textblock}{14}(8,6)
-		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-18_12:11:40_407_L1=40_L3=0.01_N1=200_N3=50/c_p_L1=40_L3=0,01.png} \\
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-18_12:11:40_407_L1=40_L3=0.01_N1=200_N3=50/c_p_all_zoom.png} \\
 		
 		\qquad \qquad  $L_1 = 40$, $L_3 = 0.01$
 	\end{textblock}	
@@ -409,13 +411,13 @@
 	\frametitle{Next potential steps}
 	
 	\begin{itemize}
-		\item Discretization transition from Silver to PCM softer.
+		\item Discretization transition from silver to PCM softer
 		\item Heat equation with $\rho=\rho(T)$ \\
 		$\rightarrow$ problem with value of absolute enthalpy term
-		\item $L_1$ and $L_3$ as optimization variable. \\
+		\item $L_1$ and $L_3$ as optimization variable \\
 		$\rightarrow$ high programming effort
-		\item Crucible part between Constantan and PCM. \\
-		$\rightarrow$ we do not know $L_2$ (overfitting) \\
+		\item Crucible part between silver and PCM \\
+		$\rightarrow$ we do not know $L_2$ (risk of overfitting) \\
 	\end{itemize}
 	
 }
