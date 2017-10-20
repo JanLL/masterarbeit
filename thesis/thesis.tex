@@ -11,6 +11,8 @@
 
 \usepackage{pgfplots}
 \usepackage{tikz}
+\usetikzlibrary{external}
+%\tikzexternalize % activate!
 \usetikzlibrary{patterns}
 
     \tikzset{
@@ -634,23 +636,23 @@ where $F \in \mathbb{R}^{n_{MP}}$ is the residuum vector of the measurement poin
 	xtick={25},
 	xticklabels={$t_i$},
 	ytick={0.7, 2.25},
-	yticklabels={$T_0$, $T_{ref_i}^{\eta}$},
+	yticklabels={$T_0$, $T_{ref}^{\eta_i}$},
 	xlabel=$time$, xlabel style={at=(current axis.right of origin), anchor=west},
 	ylabel=\empty
 	]
 	
 	\addplot+[color=black, mark=none] {0.7 + 0.1*x}
-	node[pos=0.95, below, sloped] {$T_{\text{furnace}}$};
+	node[pos=0.95, below, sloped] {$T_{{furnace}}$};
 	
 	\addplot+[color=black, mark=none] {0.7 + 0.1*x - (1 - exp(-0.11*x)}
-	node[pos=0.95, below, sloped] {$T_{\text{ref}}^{\text{sim}}$};
+	node[pos=0.95, below, sloped] {$T_{{ref}}^{{sim}}$};
 	
 	\addplot[only marks, mark=x, color=black] 
 	table {25 2.25
 	};	
 	
-	\draw [loosely dashed] (0, 224) -- (250, 224);
-	\draw [loosely dashed] (250, 0) -- (250, 224);	
+	\draw [loosely dashed] (0, 225) -- (250, 225);
+	\draw [loosely dashed] (250, 0) -- (250, 225);	
 
 	\end{axis}
 	\end{tikzpicture}

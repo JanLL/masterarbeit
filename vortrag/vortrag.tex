@@ -7,6 +7,9 @@
 \usepackage{mathtools}
 
 
+
+
+
 \usepackage{subcaption}
 
 \usepackage[absolute,overlay]{textpos}
@@ -260,7 +263,18 @@
 \frame{
 	\frametitle{Measurement times computation}
 	
+	\begin{textblock}{8.5}(0.5,5)
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/measurement_time_computation.png}
+	\end{textblock}
 	
+	\begin{textblock}{6.8}(8.5,5.)
+	\begin{itemize}
+		\item Reference side $T_{ref}^{sim}(t)$ is solved analytically \\[2ex]
+		\item Given measurement values of reference temperatures $T_{ref}^{\eta_i}$ \\[1ex]
+		$\rightarrow$ For fixed $T_0$ we can compute points in time $t_i$ where measurements were done using Newton's method
+	\end{itemize}
+	\end{textblock}
+
 	
 }
 
@@ -272,7 +286,7 @@
 
 	\begin{textblock}{10}(0.5,4.)
 	\begin{align*}
-		\min_{p_{c_p}} \ & \sum_{i=1}^{n_{MP}} \left|\left|  \Phi_{q}^{PCM,in}(T(t_i;T_0,p_{c_p})) - \eta_i^{\Phi} \right|\right|_2^2 \\
+		\min_{p_{c_p}} \ & \sum_{i=1}^{n_{MP}} \left|\left|  \Phi_{q}^{PCM,in}(T(t_i;T_0,p_{c_p})) - \Phi_q^{\eta_i} \right|\right|_2^2 \\
 		s.t. \ & \quad \  \dot{T} = f(T,t;p_{c_p}) \\
 		       & T(0) = T_0
 	\end{align*}
