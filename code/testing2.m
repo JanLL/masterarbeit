@@ -42,6 +42,9 @@
 % 
 % return
 
+
+%% Plots c_p and heat flux from fit in an appropriate way
+
 c_p_fig = open('c_p(T).fig');
 set(gcf, 'units', 'normalized', 'outerposition', [0 0 0.66 1]);
 children = get(gca, 'Children');
@@ -236,15 +239,7 @@ return
 
 
 
-
-
-
-
-
-
-
-
-% testing of frazer-suzuki parametrization
+%% testing of frazer-suzuki parametrization
 
 r  =   20;
 h  =  40;
@@ -260,3 +255,19 @@ x  = 3:0.2:250;
 clf;
 plot(x, y); hold on
 plot(x, dy)
+
+
+
+%% Plotting relative error of discretization grid size in a pretty way
+fig = open('relError_comparison_hetero_grid_200_2500_Ag.fig');
+set(gcf, 'units', 'normalized', 'outerposition', [0 0 0.66 1]);
+children = get(gca, 'Children');
+children.LineWidth = 2;
+set(gca,'FontSize',24);
+xlabel('measurement points');
+ylabel('Abs. Relative Error of \Phi_q^{PCM, in}')
+print(fig, 'relErr_discretization_grid_200_2500', '-dpng', '-r200');
+close();
+
+
+
