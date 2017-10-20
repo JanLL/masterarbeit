@@ -129,6 +129,29 @@ return
 
 
 
+%% Plot analytical solution of reference temperature
+%  (wird in Vortrag/Thesis genutzt als Illustration wie man von
+%  Referenztemperaturen mittels Newton-Verfahren auf Messzeitpunkte kommt.)
+L1 = 20.;
+t = 0:0.1:1500;
+n = 1;
+T_0 = 10.;
+heat_rate_s = 10/60;
+a_Const = 1.;
+
+T_ref = analytical_sol(L1,t,n,T_0, heat_rate_s, a_Const);
+T_furnace = T_0 + heat_rate_s * t;
+
+figure(1); hold on
+
+plot(t, T_furnace, 'DisplayName', 'T_{furnace}', 'linewidth', 2.);
+plot(t, T_ref, 'DisplayName', 'T_{ref}', 'linewidth', 2.)
+xlabel('time')
+ylabel('Temp')
+legend('show', 'location', 'northwest')
+
+
+
 
 
 %% Convergence Rate Plots

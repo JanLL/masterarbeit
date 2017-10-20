@@ -622,6 +622,46 @@ where $F \in \mathbb{R}^{n_{MP}}$ is the residuum vector of the measurement poin
 
 
 \subsection{Analytical solution of reference side}
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}
+	\begin{axis}[domain=0:35,
+	samples=100,
+	xmin=0, xmax=40,
+	ymin=0.,	 
+	axis lines=left,
+	xtick={25},
+	xticklabels={$t_i$},
+	ytick={0.7, 2.25},
+	yticklabels={$T_0$, $T_{ref_i}^{\eta}$},
+	xlabel=$time$, xlabel style={at=(current axis.right of origin), anchor=west},
+	ylabel=\empty
+	]
+	
+	\addplot+[color=black, mark=none] {0.7 + 0.1*x}
+	node[pos=0.95, below, sloped] {$T_{\text{furnace}}$};
+	
+	\addplot+[color=black, mark=none] {0.7 + 0.1*x - (1 - exp(-0.11*x)}
+	node[pos=0.95, below, sloped] {$T_{\text{ref}}^{\text{sim}}$};
+	
+	\addplot[only marks, mark=x, color=black] 
+	table {25 2.25
+	};	
+	
+	\draw [loosely dashed] (0, 224) -- (250, 224);
+	\draw [loosely dashed] (250, 0) -- (250, 224);	
+
+	\end{axis}
+	\end{tikzpicture}
+	\caption{}
+	\label{fig:}
+\end{figure}
+
+
+
+
+
 \subsection{Parametrizations of $c_p$}
 \subsection{Influence of spatial discretization grid}
 
