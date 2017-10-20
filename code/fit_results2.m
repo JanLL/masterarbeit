@@ -44,7 +44,7 @@ close();
 
 
 
-print(fig, 'c_p_L1=40_L3=0,01', '-dpng', '-r500');
+print(fig, 'c_p_L1=40_L3=0,01', '-dpng', '-r200');
 
 
 

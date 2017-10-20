@@ -31,7 +31,7 @@
 \usetheme{Luebeck}
 \usecolortheme{orchid}
 
-\title{Parameter estimation of specific heat capacity $c_p$ at phase change using a model \\ of a heat flux DSC.}
+\title[Current state of master thesis]{Parameter estimation of specific heat capacity $c_p$ at phase change using a model \\ of a heat flux DSC.}
 \subtitle{Current state of master thesis}
 
 \author{Jan Lammel}
@@ -105,6 +105,31 @@
 			\item Sensitivity calibration with materials of known thermal properties provides mapping $\Delta T \rightarrow \Phi_q$
 		\end{itemize}
 		
+	\end{textblock}
+	
+}
+
+
+\subsection{Smearing problem}
+\frame{
+	\frametitle{Smearing problem}	
+	
+	\begin{textblock}{10}(0.5,5)
+		\includegraphics[width=0.7\textwidth]{/home/argo/masterarbeit/vortrag/images/heat_flux_measurement.png}
+	\end{textblock}
+	
+	\begin{textblock}{4}(7.5,8)
+		$\stackrel{(1)}{\longrightarrow}$
+	\end{textblock}
+	
+	\begin{textblock}{10}(8.7,5)
+		\includegraphics[width=0.7\textwidth]{/home/argo/masterarbeit/vortrag/images/c_p_DIN_formula.png}
+	\end{textblock}
+	
+	\begin{textblock}{14}(1,12.5)
+		\begin{equation}
+			\text{DIN 11357: } \quad c_p^S(T) = c_p^{R}(T) \cdot \frac{m^R}{m^S} \cdot \frac{\Phi^S(T) - \Phi^0(T)}{\Phi^R(T) - \Phi^0(T)}
+		\end{equation}
 	\end{textblock}
 	
 }
