@@ -34,7 +34,7 @@
 \usetheme{Luebeck}
 \usecolortheme{orchid}
 
-\title[Current state of master thesis]{Parameter estimation of specific heat capacity $c_p$ at phase change using a model \\ of a heat flux DSC.}
+\title[Current state of master thesis]{Parameter estimation of specific heat capacity $c_p$ at phase change using a model \\ of a heat flux DSC}
 \subtitle{Current state of master thesis}
 
 \author{Jan Lammel}
@@ -89,11 +89,11 @@
 			$\rightarrow$ heat flux: $\varPhi_q$
 			\vspace{0.2cm} 
 			
-			\item specific heat capacity $c_p$, \qquad $[c_p] = \frac{J}{kg \cdot K}$ \\
-			Material property: Amount of energy needed to raise the temperature of $1kg$ by $1K$ \vspace{0.2cm}
-			
 			\item heat conductivity $\lambda$, \qquad $[\lambda] = \frac{W}{m \cdot K}$ \\
-			Material property: Amount of energy being transported on a distance of $1m$ (unit area) at a temperature difference of $1K$ in $1s$ 
+			Material property: Amount of energy being transported on a distance of $1m$ (unit area) at a temperature difference of $1K$ in $1s$  \vspace{0.2cm}
+			
+			\item specific heat capacity $c_p$, \qquad $[c_p] = \frac{J}{kg \cdot K}$ \\
+			Material property: Amount of energy needed to raise the temperature of $1kg$ by $1K$ 
 			
 		\end{itemize}
 	\end{textblock}
@@ -150,12 +150,12 @@
 \frame{
 	\frametitle{Mathematical model}
 	
-	\begin{textblock}{14}(1, 4.6)
+	\begin{textblock}{14}(1, 4)
 		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/discretization_grid.png}
 	\end{textblock}
 	
 	
-	\begin{textblock}{14}(1, 9.5)
+	\begin{textblock}{14}(1, 8.4)
 	
 		\begin{itemize}
 			\item Heat equation: \quad $\rho c_p(T(x,t)) \frac{\partial T}{\partial t}(x,t) = \nabla \cdot \left[ \lambda \cdot \nabla T(x,t) \right]$
@@ -166,6 +166,7 @@
 				\item No flux outside PCM
 				\end{itemize}
 			\item Reference and PCM side are independent
+			\item Spatial discretization by method of lines
 			
 		\end{itemize}
 	\end{textblock}
@@ -237,7 +238,6 @@
 	
 	\begin{textblock}{14}(1,5)
 		\begin{itemize}
-			\item Spatial discretization by method of lines
 			\item Software: SolvIND using integrator DAESOL-II \\ \vspace{0.15cm}
 			$\rightarrow$ Gives as well needed sensitivities $\frac{\partial T}{\partial p}$ for optimization \\
 			\qquad via IND forward mode
@@ -268,16 +268,16 @@
 
 
 \frame{
-	\frametitle{Measurement times computation}
+	\frametitle{Measurement time points computation}
 	
-	\begin{textblock}{8.5}(0.5,5)
-		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/measurement_time_computation.png}
+	\begin{textblock}{8.5}(0.35,5)
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/measurement_time_computation2.png}
 	\end{textblock}
 	
 	\begin{textblock}{6.8}(8.5,5.)
 	\begin{itemize}
 		\item Reference side $T_{ref}^{sim}(t)$ is solved analytically \\[2ex]
-		\item Given measurement values of reference temperatures $T_{ref}^{\eta_i}$ \\[1ex]
+		\item Given heat flux measurement values $\varPhi_q^{\eta_i} = \varPhi_q^{\eta_i}(T_{ref}^{\eta_i})$ \\[1ex]
 		$\rightarrow$ For fixed $T_0$ we can compute points in time $t_i$ where measurements were done using Newton's method
 	\end{itemize}
 	\end{textblock}
@@ -293,7 +293,7 @@
 
 	\begin{textblock}{10}(0.5,4.)
 	\begin{align*}
-		\min_{p_{c_p}} \ & \sum_{i=1}^{n_{MP}} \left|\left|  \Phi_{q}^{PCM,in}(T(t_i;T_0,p_{c_p})) - \Phi_q^{\eta_i} \right|\right|_2^2 \\
+		\min_{p_{c_p}} \ & \sum_{i=1}^{n_{MP}} \left|\left|  \varPhi_{q}^{PCM,in}(T(t_i;T_0,p_{c_p})) - \varPhi_q^{\eta_i} \right|\right|_2^2 \\
 		s.t. \ & \quad \  \dot{T} = f(T,t;p_{c_p}) \\
 		       & T(0) = T_0
 	\end{align*}
@@ -305,8 +305,8 @@
 	
 	\begin{textblock}{16}(0.3,9.4)
 	\begin{itemize}
-		\item $\eta_i^{\Phi}$: heat flux measurement value at time $t_i$
-		\item $\Phi_q^{\text{PCM,in}}$: heat flux into PCM from simulation \\
+		\item $\varPhi_q^{\eta_i}$: heat flux measurement value at time $t_i$
+		\item $\varPhi_q^{\text{PCM,in}}$: heat flux into PCM from simulation \\
 		\item $n_{MP}$: number of measurement points \\
 		\item $p_{c_p}$: optimization parameters specifying specific heat capacity $c_p(T)$ \\
 		\item $f(T,t;p_{c_p})$: discretized differential equation system from heat equation
@@ -483,9 +483,9 @@
 	
 	\begin{itemize}
 		\item Reason for shift in $c_p$ fits?
+		\item How to get $L_1$ and $L_3$ except as optimization variable?
 		\item Heat equation derivation with $\rho=\rho(T)$ correct? \\
 		$\rightarrow$ How to get enthalpy $h$?
-		\item How to get $L_1$ and $L_3$ except as optimization variable?
 	\end{itemize}
 	
 }

@@ -35,7 +35,7 @@ c_p_Const = 0.235;
 lambda_pcm = 0.96;   % [mW/(mm*K)]
 rho_pcm = 0.85;      % [mg/mm^3]
 
-heat_rate = 20.;     % [K/min]
+heat_rate = dsc.Tinfo.Tstep;     % [K/min]
 T_0 = 10.;           % Start temperature oven [degC]
 T_end = 200.;        % End temperature oven [degC]
 
@@ -107,6 +107,26 @@ end
 
 meas_data(:,2) = q_dsc;
 
+% %% Test: Get measurement times just from dsc data
+% [~,idx_0] = min(abs(dsc.data(:,1) - T_0));
+% [~,idx_1] = min(abs(dsc.data(:,1) - 29));
+% 
+% idx_0
+% idx_1
+% 
+% t_offset = dsc.data(idx_0,2);
+% 
+% t_meas = (dsc.data(idx_0:end,2) - t_offset) * 60;
+% 
+% % size(meas_data(:,1))
+% % size(t_meas)
+% 
+% meas_data(1:10)
+% t_meas(idx_1 - idx_0:idx_1 - idx_0 + 10)'
+% 
+% 
+% %%
+% return
 
 % Set optimization variables
 c_p_param_type = 'gauss_linear_comb';
