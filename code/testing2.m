@@ -69,7 +69,6 @@ set(gca,'xlim', [min(children(1).XData) - mod(min(children(1).XData),20) 160]); 
 title('');
 
 print(c_p_fig, 'q_pcm_in(T_ref)', '-dpng', '-r200');
-title(title_str);
 close;
 
 

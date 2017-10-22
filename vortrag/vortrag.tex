@@ -79,14 +79,21 @@
 \frame{
 	\frametitle{Important physical quantities}
 	
-	\begin{textblock}{14}(1,5)
+	\begin{textblock}{15}(0.3,4.2)
 		\begin{itemize}
 			\item Heat $Q$, \qquad $[Q] = J$ \\
 			Amount of energy transferred because of temperature difference \\ \vspace{0.2cm}
+			
 			\item heat flux density $\Phi_q$, \qquad$[\Phi_q] = \frac{W}{m^2}$ \\
-			Rate of energy transferred per unit area \vspace{0.2cm}
+			Rate of energy transferred per unit area \\
+			$\rightarrow$ heat flux: $\varPhi_q$
+			\vspace{0.2cm} 
+			
 			\item specific heat capacity $c_p$, \qquad $[c_p] = \frac{J}{kg \cdot K}$ \\
-			Material specific amount of energy needed to raise the temperature of $1kg$ by $1K$
+			Material property: Amount of energy needed to raise the temperature of $1kg$ by $1K$ \vspace{0.2cm}
+			
+			\item heat conductivity $\lambda$, \qquad $[\lambda] = \frac{W}{m \cdot K}$ \\
+			Material property: Amount of energy being transported on a distance of $1m$ (unit area) at a temperature difference of $1K$ in $1s$ 
 			
 		\end{itemize}
 	\end{textblock}
@@ -144,7 +151,7 @@
 	\frametitle{Mathematical model}
 	
 	\begin{textblock}{14}(1, 4.6)
-		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/discretization_grid.png}
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/discretization_grid.png}
 	\end{textblock}
 	
 	
@@ -245,13 +252,13 @@
 	\frametitle{Heat flux computation}	
 	
 	\begin{textblock}{14}(1,5)
-		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/discretization_grid.png}
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/discretization_grid_heat_flux.png}
 	\end{textblock}
 	
 	\begin{textblock}{14}(1, 10)
 		\begin{itemize}
 			\item Heat flux into PCM: \\ \vspace{0.15cm}
-			$\Phi_{q}^{PCM,in} = - \bar{\lambda} \frac{T^{N_1} - T^{N_1-1}}{dx_{PCM}} \cdot A_{PCM}
+			$\varPhi_{q}^{PCM,in} = - \bar{\lambda} \frac{T^{N_1} - T^{N_1-1}}{dx_{PCM}} \cdot A_{PCM}
 			\approx - \lambda_{PCM} \frac{T^{N_1+1} - T^{N_1}}{dx_{PCM}} \cdot A_{PCM}$ \\ \vspace{0.15cm}
 			where for the cross section $A_{PCM}$ we used $m_i = \rho \cdot A \cdot dx_i$
 		\end{itemize}
