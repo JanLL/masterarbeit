@@ -27,6 +27,9 @@
 
 [fig, enthalpies] = get_fit_results('2017-10-18_16:40:21_407_L1=40_L3=0.1_N1=500_N3=50');
 
+[fig, enthalpies] = get_fit_results('2017-10-23_21:04:27_407_L1=40_L3=0.1_N1=500_N3=50');
+
+
 
 set(gcf, 'units', 'normalized', 'outerposition', [0 0 0.66 1]);
 children = get(gca, 'Children');

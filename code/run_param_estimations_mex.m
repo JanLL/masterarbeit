@@ -13,7 +13,7 @@ simulation.N3 = 50;
 % Constantan
 % simulation.lambda_Const = 23.; 
 % simulation.rho_Const = 8.9;    
-% simulation.c_p_Const = 0.41;  
+% simulation.c_p_Const = 0.41;   
 
 % Silver
 simulation.lambda_Const = 430.; 
@@ -57,6 +57,7 @@ optimization.p_optim_estimable = true(length(optimization.start_values), 1);
 optimization.lb = zeros(num_opt_params,1);
 optimization.lb(1:3:30) = -2.;
 optimization.lb(2:3:30) = 0.15;
+
 
 optimization.ub = ones(num_opt_params,1) * inf;
 

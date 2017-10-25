@@ -275,13 +275,14 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 	T rho_j;
 	T drho_j;
 	T c_p_j;
-	T dc_p_j;
+	T h;
 	for (svULong j = N1; j <= N1+N3-2; j++)
 	{
-		c_p_fct(x[j], c_p_j, dc_p_j, args.p);
+		c_p_fct(x[j], c_p_j, h, args.p);
 
 		// compute density of pcm
-		rho_pcm_formula(x[j], rho_j, drho_j);
+		//rho_pcm_formula(x[j], rho_j, drho_j);
+		rho_j = 0.85; //  [mg/mm^3]
 
 		// linear part 
 		args.rhs[j] = scale_pcm/(c_p_j*rho_j) * (x[j-1] - 2.0 * x[j] + x[j+1]);
@@ -293,7 +294,7 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 	}
 
 	// RHS boundary, no flux
-	c_p_fct(x[N1+N3-2], c_p_j, dc_p_j, args.p);
+	c_p_fct(x[N1+N3-2], c_p_j, h, args.p);
 	//rho_pcm_formula(x[N1+N3-2], rho_j, drho_j);
 	rho_j = 0.85; //  [mg/mm^3]
 

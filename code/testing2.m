@@ -269,4 +269,50 @@ print(fig, 'relErr_discretization_grid_200_2500', '-dpng', '-r200');
 close();
 
 
+%% Plotting computed c_p and corresponding integral, the enthalpy
+
+enthalpy_data = load('enthalpy_test.txt');
+T_tilde = 30.;
+
+T = enthalpy_data(:,1);
+c_p = enthalpy_data(:,2);
+h = enthalpy_data(:,3);
+
+params = [16.6062086431708,	1.92927098591158,	128.850918977868, ...
+		34.1327529190694,	1.27007399531043,	130.601505840094, ...
+		  4.66622071658818,	3.08315397789580,	126.387021606664, ...
+		  0.330799303747586,	6.28205711993873,	138.931914796423, ...	
+		 -1.99975880363326,	1.00794170224404,	127.886002738954, ...
+		2.00575452880237,	5.23818264316667,	122.475803758605, ...
+		8.69795539050226,	0.764167761467260,	131.898468412807, ...
+			0.,				26.4978102269972,	286.560297948564, ...
+			0.,				11.4117833489350,	111.924264531493, ...
+            0.,				35.7646524748368,	95.2324216508870, ...
+			0.,				0.];
+
+c_p1 = c_p_gauss_linear_comb(T, params);
+        
+h1 = 0.;
+for i=1:3:30
+    
+    A_i = params(i);
+    sigma_i = params(i+1);
+    T_i = params(i+2);
+    
+    h1 = h1 + sqrt(pi)/2. * A_i * sigma_i ...
+        * (erf((T - T_i)/sigma_i) - erf((T_tilde - T_i)/sigma_i));
+    
+end
+
+h1 = h1 + params(31) / 2. * (T.^2 - T_tilde^2) + params(32) * (T - T_tilde);
+
+
+figure(5); hold on
+plot(T, c_p);
+plot(T, c_p1, '--');
+
+figure(6); hold on
+plot(T, h);
+plot(T, h1, '--');
+
 

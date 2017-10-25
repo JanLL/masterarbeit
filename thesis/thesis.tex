@@ -326,7 +326,7 @@ In the spatial discretization of partial differential equations one often choose
 	\label{eq:finite_differences_taylor_exp_non-homogenous}
 	\begin{align}
 	f(x-h) = & f(x) - h \cdot \frac{\partial f}{\partial x}(x) + \frac{h^2}{2} \cdot \frac{\partial^2 f}{\partial^2 x}(x) + \mathcal{O}(h^3) \label{eq:finite_differences_taylor_exp_non-homogenous_1} \\
-	f(x+\alpha h) = & f(x) - \alpha h \cdot \frac{\partial f}{\partial x}(x) + \frac{\alpha^2 h^2}{2} \cdot \frac{\partial^2 f}{\partial^2 x}(x) + \mathcal{O}(h^3)  \label{eq:finite_differences_taylor_exp_non-homogenous_2}
+	f(x+\alpha h) = & f(x) + \alpha h \cdot \frac{\partial f}{\partial x}(x) + \frac{\alpha^2 h^2}{2} \cdot \frac{\partial^2 f}{\partial^2 x}(x) + \mathcal{O}(h^3)  \label{eq:finite_differences_taylor_exp_non-homogenous_2}
 	\end{align}
 \end{subequations}
 

@@ -63,9 +63,10 @@ void c_p_formula(T x, T& c_p, T& dc_p, const T* params) {
 
 
 template<typename T>
-void gauss_linear_comb_formula(T x, T& c_p, T& dc_p, const T* params)
+void gauss_linear_comb_formula(T x, T& c_p, T& h, const T* params)
 {
 	const int n_gauss = 10;
+	T x_tilde = 30;  // [degC]
 
 	T p_ampl;
 	T p_sigma;
@@ -75,7 +76,7 @@ void gauss_linear_comb_formula(T x, T& c_p, T& dc_p, const T* params)
 	T gauss_i;
 
 	c_p  = 0;
-	dc_p = 0;
+	h = 0;
 	
 	for (int i=0; i<n_gauss; ++i) {
 		p_ampl   = *params; params++;
@@ -88,14 +89,21 @@ void gauss_linear_comb_formula(T x, T& c_p, T& dc_p, const T* params)
 		gauss_i = p_ampl * exp(scale_i * (x - p_offset)*(x - p_offset));
 
 		c_p  += gauss_i;
-		dc_p += 2*scale_i * (x - p_offset) * gauss_i;
+		
+		h += sqrt(M_PI)/2. * p_ampl * p_sigma * (erf((x - p_offset)/p_sigma) - erf((x_tilde - p_offset)/p_sigma));
 	}
 
 	T p_linear = *params; params++;
 	T p_const  = *params; params++;
+	T p_h_tilde = *params; params++;
 
-	c_p  += 0.01*p_linear*x + p_const;
-	dc_p += 0.01*p_linear;
+	c_p += 0.01*p_linear*x;
+	c_p += p_const;
+	
+	h += p_linear/2. * (x*x - x_tilde*x_tilde);
+	h += p_const * (x - x_tilde);
+	h += p_h_tilde;
+
 
 	return;
 

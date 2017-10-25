@@ -10,6 +10,8 @@
 
 #include <adolc/adouble.h>
 
+#include "/home/argo/masterarbeit/code/c_p_parametrizations.cpp"
+
 
 
 template<typename T>
@@ -52,7 +54,7 @@ void rho_pcm_formula(T x, T& rho, T& drho) {
 
 int main(int argc, char** argv) {
 
-	std::ofstream rho_test;
+	/*std::ofstream rho_test;
   	rho_test.open ("/home/argo/masterarbeit/rho_test.txt");
 
   	double rho;
@@ -63,8 +65,37 @@ int main(int argc, char** argv) {
   		rho_test << d << "\t" << rho << "\t" << drho << std::endl;
   	}
 
-  	rho_test.close();
+  	rho_test.close();*/
 
+
+	double p_optim_end[32] = {16.6062086431708,	1.92927098591158,	128.850918977868,	
+							  34.1327529190694,	1.27007399531043,	130.601505840094,	
+							  4.66622071658818,	3.08315397789580,	126.387021606664,	
+							  0.330799303747586,	6.28205711993873,	138.931914796423,	
+							 -1.99975880363326,	1.00794170224404,	127.886002738954,	
+							  2.00575452880237,	5.23818264316667,	122.475803758605,	
+							  8.69795539050226,	0.764167761467260,	131.898468412807,
+							  0.,				26.4978102269972,	286.560297948564,	
+							  0.,				11.4117833489350,	111.924264531493,
+							  0.,				35.7646524748368,	95.2324216508870,	
+						      0.,				0.};
+
+
+	std::ofstream enthalpy_test;
+  	enthalpy_test.open ("/home/argo/masterarbeit/enthalpy_test.txt");
+
+	double c_p;
+	double h;
+	
+	for (double T=30; T<200; T+=0.05) {
+	
+		gauss_linear_comb_formula(T, c_p, h, p_optim_end);
+
+		enthalpy_test << T << "\t" << c_p << "\t" << h << std::endl;
+
+	}
+
+	enthalpy_test.close();
 
 	return 0;
 

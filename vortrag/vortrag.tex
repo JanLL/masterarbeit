@@ -112,7 +112,7 @@
 		\begin{itemize}
 			\item Empty reference crucible and crucible with PCM are heated equally
 			\item Due to thermal properties differences (mainly $c_p$) of reference and PCM a temperature difference $\Delta T$ is induced
-			\item Sensitivity calibration with materials of known thermal properties provides mapping $\Delta T \rightarrow \Phi_q$
+			\item Sensitivity calibration with materials of known thermal properties provides mapping $\Delta T \rightarrow \varPhi_q$
 		\end{itemize}
 		
 	\end{textblock}
@@ -168,6 +168,15 @@
 			\item Reference and PCM side are independent
 			\item Spatial discretization by method of lines
 			
+		\end{itemize}
+	\end{textblock}
+	
+	\begin{textblock}{7}(8,10.35)
+		\begin{itemize}
+			\item Start condition: 
+			\begin{itemize}
+				\item $T^i(t_0)=T_0 \ \forall \ i$
+			\end{itemize}
 		\end{itemize}
 	\end{textblock}
 
@@ -482,7 +491,7 @@
 	\frametitle{Open Questions}
 	
 	\begin{itemize}
-		\item Reason for shift in $c_p$ fits?
+		\item Reason for shift and different shape of $c_p$ from optimization?
 		\item How to get $L_1$ and $L_3$ except as optimization variable?
 		\item Heat equation derivation with $\rho=\rho(T)$ correct? \\
 		$\rightarrow$ How to get enthalpy $h$?
@@ -515,6 +524,26 @@
 	\Leftrightarrow \left( \frac{\partial \rho}{\partial T} h + \rho c_p \right) \frac{\partial T}{\partial t} = \nabla \cdot \left[\lambda \cdot \nabla T\right]
 	\end{align}
 	\end{textblock}
+}
+
+\frame{
+	\frametitle{Heat equation derivation}
+	
+	\begin{textblock}{14}(1,4)
+		\begin{align}
+		 \left( \frac{\partial \rho}{\partial T} h + \rho c_p \right) \frac{\partial T}{\partial t} = \nabla \cdot \left[\lambda \cdot \nabla T\right]
+		\end{align}
+		\begin{align}
+		c_p := \left. \frac{\partial h}{\partial T} \right|_{p=const}
+		\end{align}
+		\begin{equation}
+		\Rightarrow h(T) = \tilde{h} + \int_{\tilde{T}}^{T} c_p(T) dT
+		\end{equation}
+		
+		$h(\tilde{T})=\tilde{h}$ unknown $\rightarrow$ optimization variable
+		
+	\end{textblock}
+	
 
 }
 
@@ -537,12 +566,26 @@
 		\qquad \qquad \quad $N_1^\prime = 500$
 	\end{textblock}
 	
-	
-	
-	
 }
 
-
+\frame{
 	
+	
+\begin{textblock}{15}(0.2,3)
+\begin{subequations}
+	\label{eq:finite_differences_taylor_exp_non-homogenous}
+	\begin{align}
+	f(x-h) = & f(x) - h \cdot \frac{\partial f}{\partial x}(x) + \frac{h^2}{2} \cdot \frac{\partial^2 f}{\partial^2 x}(x) + \mathcal{O}(h^3) \label{eq:finite_differences_taylor_exp_non-homogenous_1} \\
+	f(x+\alpha h) = & f(x) + \alpha h \cdot \frac{\partial f}{\partial x}(x) + \frac{\alpha^2 h^2}{2} \cdot \frac{\partial^2 f}{\partial^2 x}(x) + \mathcal{O}(h^3)  \label{eq:finite_differences_taylor_exp_non-homogenous_2}
+	\end{align}
+\end{subequations}
+
+
+\begin{equation}
+\Leftrightarrow \frac{\partial^2 f}{\partial^2 x}(x) = \frac{1}{h^2} \left[ \frac{2}{1+\alpha} f(x-h) - \frac{2}{\alpha} f(x) + \frac{2}{\alpha (\alpha+1)} f(x+\alpha h) \right] + \mathcal{O}(h^3) 
+\end{equation}
+\end{textblock}
+
+}
 	
 \end{document}
