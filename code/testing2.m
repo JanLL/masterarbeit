@@ -49,14 +49,15 @@ c_p_fig = open('c_p(T).fig');
 set(gcf, 'units', 'normalized', 'outerposition', [0 0 0.66 1]);
 children = get(gca, 'Children');
 children.LineWidth = 2;
-set(gca,'FontSize',24)
+%set(gca,'FontSize',24)
 set(gca,'xlim', [20 max(children.XData)]);
+set(gca,'xlim', [110 145]);
 ylabel('c_p [mJ/(mg*K)]');
 title('');
 
 print(c_p_fig, 'c_p(T)', '-dpng', '-r200');
 close;
-
+%%
 c_p_fig = open('q_pcm_in(T_ref).fig');
 set(gcf, 'units', 'normalized', 'outerposition', [0 0 0.66 1]);
 children = get(gca, 'Children');
@@ -67,6 +68,8 @@ children(2).LineStyle = '--';
 set(gca,'FontSize',24)
 set(gca,'xlim', [min(children(1).XData) - mod(min(children(1).XData),20) 160]);  %
 title('');
+ylabel('\Phi_q^{PCM,in}[mW]')
+
 
 print(c_p_fig, 'q_pcm_in(T_ref)', '-dpng', '-r200');
 close;
@@ -304,7 +307,7 @@ for i=1:3:30
     
 end
 
-h1 = h1 + params(31) / 2. * (T.^2 - T_tilde^2) + params(32) * (T - T_tilde);
+h1 = h1 + 0.01*params(31) / 2. * (T.^2 - T_tilde^2) + params(32) * (T - T_tilde);
 
 
 figure(5); hold on

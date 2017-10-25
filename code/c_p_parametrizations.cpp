@@ -100,7 +100,7 @@ void gauss_linear_comb_formula(T x, T& c_p, T& h, const T* params)
 	c_p += 0.01*p_linear*x;
 	c_p += p_const;
 	
-	h += p_linear/2. * (x*x - x_tilde*x_tilde);
+	h += 0.01*p_linear/2. * (x*x - x_tilde*x_tilde);
 	h += p_const * (x - x_tilde);
 	h += p_h_tilde;
 
