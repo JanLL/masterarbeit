@@ -244,16 +244,20 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 	// Oven boundary with constant slope of Temp.
 	args.rhs[0] = heat_rate_s;
 	
-	// Constantan (just linear part)
-	for (svULong j = 1; j <= N1-2; j++)
+	// Constantan
+	for (svULong j = 1; j <= N1-1; j++)
 	{
-		args.rhs[j] = scale_Const * (x[j-1] - 2.0 * x[j] + x[j+1]); 
+		//args.rhs[j] = scale_Const * (x[j-1] - 2.0 * x[j] + x[j+1]); 
+		args.rhs[j] = a_Const / (spatial_gridsize[j-1]*spatial_gridsize[j-1]) * 
+					  (2./(1.+alpha_vec[j-1]) * x[j-1]
+					   - 2./alpha_vec[j-1] * x[j] 
+					   + 2./(alpha_vec[j-1]*(alpha_vec[j-1]+1.)) * x[j+1]);
 	}
 
 
 	// Intermediate area between Constantan and PCM, belongs to Constantan
-	svULong j = N1-1;
-	args.rhs[j] = scale_Const * (2./(1.+alpha) * x[j-1] - 2./alpha * x[j] + 2./(alpha*(alpha+1.)) * x[j+1]);
+	//svULong j = N1-1;
+	//args.rhs[j] = scale_Const * (2./(1.+alpha) * x[j-1] - 2./alpha * x[j] + 2./(alpha*(alpha+1.)) * x[j+1]);
 
 
 	// Set function pointer to chosen c_p parametrization function
@@ -286,18 +290,23 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 	T h_j;
 	for (svULong j = N1; j <= N1+N3-2; j++)
 	{
+		// compute specific heat capacity
 		c_p_fct(x[j], c_p_j, h_j, args.p);
 		
-		/*if (j == N1) {
-			std::cout << x[j] << "\t" << c_p_j << "\t" << h_j << "\n";
-		}*/
-
 		// compute density of pcm
 		rho_pcm_formula(x[j], rho_j, drho_j);
 		rho_j = 0.85; //  [mg/mm^3]
 
 		// linear part 
-		args.rhs[j] = scale_pcm/(c_p_j*rho_j) * (x[j-1] - 2.0 * x[j] + x[j+1]);
+		//args.rhs[j] = scale_pcm/(c_p_j*rho_j) * (x[j-1] - 2.0 * x[j] + x[j+1]);
+		
+		args.rhs[j] = lambda_pcm / (rho_j * c_p_j) / (spatial_gridsize[j-1]*spatial_gridsize[j-1]) * 
+					  (2./(1.+alpha_vec[j-1]) * x[j-1]
+					   - 2./alpha_vec[j-1] * x[j] 
+					   + 2./(alpha_vec[j-1]*(alpha_vec[j-1]+1.)) * x[j+1]);
+
+
+		// with enthalpy terms
 		//args.rhs[j] = scale_pcm * (1./(c_p_j*rho_j) + 1./(h_j*drho_j)) * (x[j-1] - 2.0 * x[j] + x[j+1]);
 
 		// non-linear part (just c_p temperature dependent atm, lambda and rho constant) WRONG!
@@ -307,11 +316,13 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 	}
 
 	// RHS boundary, no flux
-	c_p_fct(x[N1+N3-2], c_p_j, h_j, args.p);
-	//rho_pcm_formula(x[N1+N3-2], rho_j, drho_j);
+	c_p_fct(x[N1+N3-1], c_p_j, h_j, args.p);
+	//rho_pcm_formula(x[N1+N3-1], rho_j, drho_j);
 	rho_j = 0.85; //  [mg/mm^3]
 
-	args.rhs[N1+N3-1] = scale_pcm/(c_p_j*rho_j) * (x[N1+N3-2] - x[N1+N3-1]); // Neumann boundary (right)
+	args.rhs[N1+N3-1] = lambda_pcm/(c_p_j*rho_j) / (spatial_gridsize[N1+N3-2]*spatial_gridsize[N1+N3-2])
+						* (x[N1+N3-2] - x[N1+N3-1]); // Neumann boundary (right)
+
 	//args.rhs[N1+N3-1] = scale_pcm * (1./(c_p_j*rho_j) + 1./(h_j*drho_j)) * (x[N1+N3-2] - x[N1+N3-1]); // Neumann boundary (right)
 
 
@@ -390,8 +401,9 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		heat_rate    = *input_ptr; input_ptr++;     // Oven temp heat rate [K/min]   
 		T_0  	     = *input_ptr; input_ptr++;     // [degC]
 		T_end  	     = *input_ptr; input_ptr++;     // [degC]
+		
 
-
+		// Spatial gridsize with soft transition from Ag -> PCM
 		if (mxGetM(prhs[2]) != N1+N3-1) {
 			mexErrMsgTxt("Spatial discretization grid size inconstistent with N1 and N3!");
 		}
@@ -453,10 +465,17 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		// Some pre-calculations / auxiliary variables
 		g_traj = new Sonic::DMat(nmp, N1+N3);
 
+		/******************* old discretization scheme **************************/
 		double heat_rate_s = heat_rate / 60.; // [K/min] -> [K/s]
 		dx_Const = L1 / static_cast<double>(N1);
 		dx_pcm = L3 / static_cast<double>(N3);
 		alpha = L3/L1 * static_cast<double>(N1)/static_cast<double>(N3);
+
+		/*********** new soft discretization transition Ag -> PCM ***************/
+		for (svULong i=0; i<N1+N3-2; ++i) {
+			alpha_vec.push_back( spatial_gridsize[i+1] / spatial_gridsize[i] );
+		}
+
 
 		const double t_0 = 0.;
 		const double t_end = (T_end - T_0) / heat_rate_s;

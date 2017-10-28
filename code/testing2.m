@@ -328,6 +328,7 @@ L3 = 0.1;
 x_bottom = 18/20*N1;
 x_top = 19/20*N1;
 threshold = 0.90;
+%threshold = 0.5; % equidistant grid with dx_pcm everywhere
 
 x0 = 1/2*(x_top + x_bottom);
 gamma = log(1/threshold - 1) / (1/2*(x_bottom - x_top));
