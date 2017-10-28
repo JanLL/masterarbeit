@@ -319,3 +319,44 @@ plot(T, h);
 plot(T, h1, '--');
 
 
+%% Variable grid with logistic growth function
+N1 = 300;
+N3 = 50;
+L1 = 40.;
+L3 = 0.1;
+
+x_bottom = 18/20*N1;
+x_top = 19/20*N1;
+threshold = 0.90;
+
+x0 = 1/2*(x_top + x_bottom);
+gamma = log(1/threshold - 1) / (1/2*(x_bottom - x_top));
+dx_pcm = L3 / N3;
+N = N1+N3;
+
+dx_Ag = (L1 - (N-1)*dx_pcm)/(N-1+1/gamma * log((exp(-gamma*x0)+1)/(exp(gamma*(N-1-x0))+1))) + dx_pcm;
+dx_Ag
+dx_pcm
+
+
+f = @(x) (dx_Ag - dx_pcm)./(1 + exp(gamma*(x-x0))) + dx_pcm;
+F = @(x) (dx_Ag - dx_pcm) * (x + 1./gamma*log((exp(-gamma*x0)+1)./(exp(gamma*(x-x0))+1))) ...
+         + x*dx_pcm;
+
+x = 0:1:N-1;
+
+figure(1)
+plot(x,f(x))
+xlabel('discretization point')
+ylabel('Grid size \Delta x')
+set(gca,'FontSize',12);
+
+
+figure(2)
+plot(x,F(x))
+xlabel('discretization point')
+ylabel('Physical Grid $$\tilde{x}$$', 'Interpreter','latex')
+set(gca,'FontSize',12);
+
+
+
