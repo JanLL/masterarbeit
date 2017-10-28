@@ -98,8 +98,9 @@ try
 catch Err
     fprintf(errLogFileID, '%s\tError %s occured with heat_rate=%2.4g.\n', ...
         datetime('now'), Err.identifier, dsc_measurement.Tinfo.Tstep);
+    fprintf('%s\tError %s occured with heat_rate=%2.4g.\n', ...
+        datetime('now'), Err.identifier, dsc_measurement.Tinfo.Tstep);
 end
-
 
 
 

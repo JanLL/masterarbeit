@@ -334,29 +334,27 @@ gamma = log(1/threshold - 1) / (1/2*(x_bottom - x_top));
 dx_pcm = L3 / N3;
 N = N1+N3;
 
-dx_Ag = (L1 - (N-1)*dx_pcm)/(N-1+1/gamma * log((exp(-gamma*x0)+1)/(exp(gamma*(N-1-x0))+1))) + dx_pcm;
-dx_Ag
-dx_pcm
+dx_Ag = (L1 - (N-1)*dx_pcm) ./ sum(1./(1+exp(gamma*((0:N-2) - x0)))) + dx_pcm;
 
 
 f = @(x) (dx_Ag - dx_pcm)./(1 + exp(gamma*(x-x0))) + dx_pcm;
-F = @(x) (dx_Ag - dx_pcm) * (x + 1./gamma*log((exp(-gamma*x0)+1)./(exp(gamma*(x-x0))+1))) ...
-         + x*dx_pcm;
+%F = @(x) (dx_Ag - dx_pcm) * (x + 1./gamma*log((exp(-gamma*x0)+1)./(exp(gamma*(x-x0))+1))) ...
+%         + x*dx_pcm;
 
 x = 0:1:N-1;
 
 figure(1)
-plot(x,f(x))
+plot(x,f(x), 'x')
 xlabel('discretization point')
 ylabel('Grid size \Delta x')
 set(gca,'FontSize',12);
 
 
 figure(2)
-plot(x,F(x))
+plot(x,cumsum(f(x)), 'x')
 xlabel('discretization point')
 ylabel('Physical Grid $$\tilde{x}$$', 'Interpreter','latex')
 set(gca,'FontSize',12);
 
-
+sum(f(0:N-2))
 

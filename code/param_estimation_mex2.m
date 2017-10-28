@@ -17,6 +17,24 @@ lambda_pcm = simulation.lambda_pcm;
 
 T_0       = simulation.T_0;
 T_end     = simulation.T_end;
+
+
+% Grid generation
+x_bottom = 18/20*N1;
+x_top = 19/20*N1;
+threshold = 0.90;
+
+x0 = 1/2*(x_top + x_bottom);
+gamma = log(1/threshold - 1) / (1/2*(x_bottom - x_top));
+dx_pcm = L3 / N3;
+N = N1+N3;
+
+dx_Ag = (L1 - (N-1)*dx_pcm) ./ sum(1./(1+exp(gamma*((0:N-2) - x0)))) + dx_pcm;
+
+fct_spatial_gridsize = @(i) (dx_Ag - dx_pcm)./(1 + exp(gamma*(i-x0))) + dx_pcm;
+
+spatial_gridsize = fct_spatial_gridsize(0:N-2)';
+
               
 % Measurement
 m_pcm = dsc_measurement.mass;
@@ -64,7 +82,7 @@ sim_params_vec = [L1, L3, N1, N3, lambda_Const, rho_Const, c_p_Const, ...
                   heat_rate, T_0, T_end];
 
 heat1D_pcm('reset');
-heat1D_pcm('init', sim_params_vec, meas_data, optimization.c_p_param_type);
+heat1D_pcm('init', sim_params_vec, spatial_gridsize, meas_data, optimization.c_p_param_type);
 
 
 % Initialize figures for plots during optimization

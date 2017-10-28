@@ -81,25 +81,33 @@ bool initialized = false;
 
 
 // Global Simulation parameters
-double L1;				// Length of Constantan
-double L3;				// Length of PCM
-svULong N1;				// Number of discretization points Constantan
-svULong N3;				// Number of discretization points PCM
-double dx_Const;		// Mesh size Constantan
-double dx_pcm;			// Mesh size PCM
-double alpha;			// quotient for Constantan / PCM grid transition
+double L1;					// Length of Constantan
+double L3;					// Length of PCM
+svULong N1;					// Number of discretization points Constantan
+svULong N3;					// Number of discretization points PCM
 
-double lambda_Const;	// heat conductivity of Constantan [mW/(mm*K)]
-double rho_Const;		// density of Constantan [mg/mm^3]
-double c_p_Const;		// specific heat capacity of Constantan [mJ/(mg*K)]
-double lambda_pcm;		// heat conductivity of PCM [mW/(mm*K)]
-double rho_pcm;			// density of PCM [mg/mm^3]
+/****** old **********/
+double dx_Const;			// Mesh size Constantan
+double dx_pcm;				// Mesh size PCM
+double alpha;				// quotient for Constantan / PCM grid transition
 
-double m_pcm;			// mass of PCM sample [mg]
+/****** new **********/
+// Spatial discretization gridsize vector of size [N1+N3-1]
+std::vector<double> spatial_gridsize;
+// vector of consecutive spatial discretization gridsize ratios for 2-point formula of 2nd derivative.
+std::vector<double> alpha_vec;				
 
-double heat_rate;		// Oven heat rate [K/min]
-double T_0;				// Start temperature of Constantan & PCM
-double T_end;			// Integration ends when oven reaches T_end
+double lambda_Const;		// heat conductivity of Constantan [mW/(mm*K)]
+double rho_Const;			// density of Constantan [mg/mm^3]
+double c_p_Const;			// specific heat capacity of Constantan [mJ/(mg*K)]
+double lambda_pcm;			// heat conductivity of PCM [mW/(mm*K)]
+double rho_pcm;				// density of PCM [mg/mm^3]
+
+double m_pcm;				// mass of PCM sample [mg]
+
+double heat_rate;			// Oven heat rate [K/min]
+double T_0;					// Start temperature of Constantan & PCM
+double T_end;				// Integration ends when oven reaches T_end
 
 // Global optimization parameter
 double* c_p_params;
@@ -286,14 +294,13 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 
 		// compute density of pcm
 		rho_pcm_formula(x[j], rho_j, drho_j);
-		//rho_j = 0.85; //  [mg/mm^3]
+		rho_j = 0.85; //  [mg/mm^3]
 
 		// linear part 
-		//args.rhs[j] = scale_pcm/(c_p_j*rho_j) * (x[j-1] - 2.0 * x[j] + x[j+1]);
-		args.rhs[j] = scale_pcm * (1./(c_p_j*rho_j) + 1./(h_j*drho_j)) * (x[j-1] - 2.0 * x[j] + x[j+1]);
+		args.rhs[j] = scale_pcm/(c_p_j*rho_j) * (x[j-1] - 2.0 * x[j] + x[j+1]);
+		//args.rhs[j] = scale_pcm * (1./(c_p_j*rho_j) + 1./(h_j*drho_j)) * (x[j-1] - 2.0 * x[j] + x[j+1]);
 
-
-		// non-linear part (just c_p temperature dependent atm, lambda and rho constant)
+		// non-linear part (just c_p temperature dependent atm, lambda and rho constant) WRONG!
 		//args.rhs[j] -= scale_pcm/(4.*c_p_j*c_p_j * rho_j) * dc_p_j * (x[j+1] - x[j-1])*(x[j+1] - x[j-1]);
 		//args.rhs[j] -= scale_pcm/(4.*rho_j*rho_j * c_p_j) * drho_j * (x[j+1] - x[j-1])*(x[j+1] - x[j-1]);
 		
@@ -301,10 +308,11 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 
 	// RHS boundary, no flux
 	c_p_fct(x[N1+N3-2], c_p_j, h_j, args.p);
-	rho_pcm_formula(x[N1+N3-2], rho_j, drho_j);
-	//rho_j = 0.85; //  [mg/mm^3]
+	//rho_pcm_formula(x[N1+N3-2], rho_j, drho_j);
+	rho_j = 0.85; //  [mg/mm^3]
 
-	args.rhs[N1+N3-1] = scale_pcm * (1./(c_p_j*rho_j) + 1./(h_j*drho_j)) * (x[N1+N3-2] - x[N1+N3-1]); // Neumann boundary (right)
+	args.rhs[N1+N3-1] = scale_pcm/(c_p_j*rho_j) * (x[N1+N3-2] - x[N1+N3-1]); // Neumann boundary (right)
+	//args.rhs[N1+N3-1] = scale_pcm * (1./(c_p_j*rho_j) + 1./(h_j*drho_j)) * (x[N1+N3-2] - x[N1+N3-1]); // Neumann boundary (right)
 
 
 	return 0;
@@ -384,9 +392,19 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		T_end  	     = *input_ptr; input_ptr++;     // [degC]
 
 
-		// Measurement time grid and corresponding heat flux values
-		nmp = mxGetM(prhs[2]);
+		if (mxGetM(prhs[2]) != N1+N3-1) {
+			mexErrMsgTxt("Spatial discretization grid size inconstistent with N1 and N3!");
+		}
 		input_ptr = mxGetPr(prhs[2]);
+		for (svULong i=0; i<N1+N3-1; ++i) {
+			spatial_gridsize.push_back(*input_ptr);
+			input_ptr++;
+		}
+
+
+		// Measurement time grid and corresponding heat flux values
+		nmp = mxGetM(prhs[3]);
+		input_ptr = mxGetPr(prhs[3]);
 		// Time grid of measurements (= for value and sensitivity extraction of ODE solution)
 		for (svULong i=0; i<nmp; ++i) {
 			solGrid.push_back(*input_ptr);
@@ -399,7 +417,7 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 			input_ptr++;
 		}
 
-		mxGetString(prhs[3], command, 99);
+		mxGetString(prhs[4], command, 99);
 		if (strncmp(command, "old_atan_formula", 99) == 0) {
 			c_p_param_type = old_atan_formula;
 			np = 6;
@@ -825,7 +843,10 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		N3 = 0;				
 		dx_Const = 0;		
 		dx_pcm = 0;			
-		alpha = 0;			
+		alpha = 0;	
+
+		spatial_gridsize.clear();
+		alpha_vec.clear();
 
 		lambda_Const = 0;	
 		rho_Const = 0;		
