@@ -306,7 +306,7 @@ Regarding the Taylor series up to order two in both directions of the domain of 
 subtract both equations and reorder again we get
 
 \begin{equation}
-\frac{\partial f}{\partial x}(x) = \frac{f(x+h) - f(x-h)}{2 h^2} + \mathcal{O}(h^3)
+\frac{\partial f}{\partial x}(x) = \frac{f(x+h) - f(x-h)}{2 h} + \mathcal{O}(h^3)
 \end{equation}
 
 which has a higher error order but at the expense of two function evaluations. \\
@@ -319,8 +319,14 @@ Second order derivatives can be gained analogously by adding \eqref{eq:finite_di
 \end{equation}
 
 
-\todo{Hier noch ne kleine Skizze einfuegen mit dem Diskretisierungsschema mit $\alpha$, und text vervollstaendigen} \\
-In the spatial discretization of partial differential equations one often choose a finer grid for areas \todo{text vervollstaendigen...}
+
+
+
+In the spatial discretization of partial differential equations one often choose a finer grid for areas of interest. So for the resulting non-equidistant grid (see Fig. \ref{fig:2_point_formula_illustration}) one needs a more general formula which is derived by considering again the Taylor expansion
+
+
+
+
 
 \begin{subequations}
 	\label{eq:finite_differences_taylor_exp_non-homogenous}
@@ -329,6 +335,8 @@ In the spatial discretization of partial differential equations one often choose
 	f(x+\alpha h) = & f(x) + \alpha h \cdot \frac{\partial f}{\partial x}(x) + \frac{\alpha^2 h^2}{2} \cdot \frac{\partial^2 f}{\partial^2 x}(x) + \mathcal{O}(h^3)  \label{eq:finite_differences_taylor_exp_non-homogenous_2}
 	\end{align}
 \end{subequations}
+
+
 
 Multiplying \eqref{eq:finite_differences_taylor_exp_non-homogenous_1} with $\alpha$ and adding \eqref{eq:finite_differences_taylor_exp_non-homogenous_2} gives
 
@@ -339,9 +347,17 @@ Multiplying \eqref{eq:finite_differences_taylor_exp_non-homogenous_1} with $\alp
 
 \begin{equation}
 \Leftrightarrow \frac{\partial^2 f}{\partial^2 x}(x) = \frac{1}{h^2} \left[ \frac{2}{1+\alpha} f(x-h) - \frac{2}{\alpha} f(x) + \frac{2}{\alpha (\alpha+1)} f(x+\alpha h) \right] + \mathcal{O}(h^3) 
-\end{equation}
+\end{equation} \\
 
 Note that for a homogeneous grid ($\alpha=1$) this is obviously equal to \eqref{eq:finite_difference_2nd_der}. \\
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/2nd_derivative_2-point_formula_illustration.png}
+	\caption{Function $f(x)$ and its discretization $f_i$ on a non-equidistant grid.}
+	\label{fig:2_point_formula_illustration}
+\end{figure}
+
 
 For simplicity we restricted the function argument $x \in \mathcal{R}$. In the case $x \in \mathcal{R}^n$ the Jacobian is gained by performing directional derivatives. So e.g. for the one-sided first derivative $n+1$ function evaluations are necessary. \\
 
@@ -664,9 +680,53 @@ where $F \in \mathbb{R}^{n_{MP}}$ is the residuum vector of the measurement poin
 
 
 
-\subsection{Parametrizations of $c_p$}
-\subsection{Influence of spatial discretization grid}
+\subsection{Parametrization of $c_p$}
+Since in the end we want to estimate the specific heat capacity $c_p$ we need a parametrization with enough degrees of freedom in order to generate appropriate functions. 
 
+\subsubsection{NURBS}
+In early stages of work we used Non-Uniform Rational B-Splines (NURBS). The generated curve $C(u) = \{C^x(u), C^y(u) \} \in \mathbb{R}^2$ is defined by
+
+\begin{equation}
+	C(u) = \frac{\sum_{i=0}^{n} N_{i,p}(u) \omega_i P_i }{\sum_{i=0}^{n} N_{i,p}(u) \omega_i} \qquad a \le u \le b
+\end{equation}
+
+where $P_i = \{ P_i^x, P_i^y \} \in \mathbb{R}^2$ are called control points, $\omega_i$ are weights for each control point and $N_{i,p}(u)$ are the B-Spline basis functions. These are defined recursively by
+
+\begin{align}
+	N_{i,p}(u) = & \frac{u - u_i}{u_{i+p} - u_i} N_{i,p-1}(u) + \frac{u_{i+p+1} - u}{u_{i+p+1} - u_{i+1}} N_{i+1,p-1}(u) \\[1ex]
+	N_{i,0} = &
+	\begin{cases}
+		1 \quad \text{if } u_i \le u < u_{i+1} \\
+		0 \quad \text{otherwise}
+	\end{cases} \nonumber
+\end{align}
+
+where $u_i$ are the elements of the knot vector
+
+\begin{equation}
+	U = \{u_0,...,u_m\}=\{a,...,a,u_{p+1},...,u_{m-p-1},b,...,b\}.
+\end{equation}
+
+With this formulation there are $n+1$ control points, $p$ is the order of the basis functions and the order of the resulting curve is defined by $p+1$. The interval $[a,b]$ is arbitrary in the sense that for $C(u=a)=P_0$,  $C(u=b)=P_n$ and $u \in (a,b)$ are points between depending on the knot vector.\\
+
+In our experimental setup we used a NURBS order of $4$, i.e. $p=3$. $a=0$ and $b=1$ so $u \in [0,1]$ and the knot vector is linearly increasing, i.e. $U = \{ 0,0,0,0,\frac{1}{n p},\frac{2}{n p},...,\frac{n p - 1}{n p},1,1,1,1 \}$. All control points contribute equally such that $\omega_i=1 \ \forall \ i$. With these settings it holds that $C(u) \in \mathcal{C}^2$.
+
+Since $C(u)$ is a parametrized curve we get a function $c_p(T)$ by using $C^x(u)$ as the domain of definition (temperature) and $C^y(u)$ as the co-domain ($c_p$). Evaluating $C(u)$ on an appropriate fine grid for values of $u$ and subsequently linear interpolation gives the wanted quantity $c_p(T)$.
+The x-coordinates of the control points were fixed on a predefined grid with $P_i^x < P_{i+1}^x$ to guarantee a well-defined function.
+As optimization variables we used the corresponding y-coordinates $P_i^y$.
+
+
+
+
+\subsubsection{Linear combination of Gaussian functions}
+
+
+
+\subsection{Spatial discretization grid}
+
+
+
+\subsection{Optimization problem}
 
 
 
