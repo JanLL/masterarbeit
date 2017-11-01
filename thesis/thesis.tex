@@ -693,7 +693,7 @@ In early stages of work we used Non-Uniform Rational B-Splines (NURBS). The gene
 where $P_i = \{ P_i^x, P_i^y \} \in \mathbb{R}^2$ are called control points, $\omega_i$ are weights for each control point and $N_{i,p}(u)$ are the B-Spline basis functions. These are defined recursively by
 
 \begin{align}
-	N_{i,p}(u) = & \frac{u - u_i}{u_{i+p} - u_i} N_{i,p-1}(u) + \frac{u_{i+p+1} - u}{u_{i+p+1} - u_{i+1}} N_{i+1,p-1}(u) \\[1ex]
+	N_{i,p}(u) = & \frac{u - u_i}{u_{i+p} - u_i} N_{i,p-1}(u) + \frac{u_{i+p+1} - u}{u_{i+p+1} - u_{i+1}} N_{i+1,p-1}(u) \label{eq:NURBS_basis_polynomial} \\[1ex]
 	N_{i,0} = &
 	\begin{cases}
 		1 \quad \text{if } u_i \le u < u_{i+1} \\
@@ -711,15 +711,31 @@ With this formulation there are $n+1$ control points, $p$ is the order of the ba
 
 In our experimental setup we used a NURBS order of $4$, i.e. $p=3$. $a=0$ and $b=1$ so $u \in [0,1]$ and the knot vector is linearly increasing, i.e. $U = \{ 0,0,0,0,\frac{1}{n p},\frac{2}{n p},...,\frac{n p - 1}{n p},1,1,1,1 \}$. All control points contribute equally such that $\omega_i=1 \ \forall \ i$. With these settings it holds that $C(u) \in \mathcal{C}^2$.
 
-Since $C(u)$ is a parametrized curve we get a function $c_p(T)$ by using $C^x(u)$ as the domain of definition (temperature) and $C^y(u)$ as the co-domain ($c_p$). Evaluating $C(u)$ on an appropriate fine grid for values of $u$ and subsequently linear interpolation gives the wanted quantity $c_p(T)$.
+Since $C(u)$ is a parametrized curve we get a function $c_p(T)$ by using $C^x(u)$ as the domain of definition (temperature) and $C^y(u)$ as the co-domain ($c_p$). Evaluating $C(u)$ on an appropriate fine grid for values of $u$ and subsequently piecewise linear interpolation gives the wanted quantity $c_p(T)$.
 The x-coordinates of the control points were fixed on a predefined grid with $P_i^x < P_{i+1}^x$ to guarantee a well-defined function.
 As optimization variables we used the corresponding y-coordinates $P_i^y$.
 
 
-
-
 \subsubsection{Linear combination of Gaussian functions}
+As we switched for the derivative computation with respect to the optimization variables from finite differences to IND, implementation problems with NURBS occurred. 
+The case structure of the basis polynomial \eqref{eq:NURBS_basis_polynomial} conducts to switch the RHS of the differential equation. This is only supported by the $condassign(a,b,c,d)$ function which assigns $a=c$ if $b>0$ and $a=d$ else. Additionally to $N_{i,0}$ the denominators need this $condassign$ command in order to check for a division by zero. 
+Furthermore the piecewise interpolation of the resulting curve $C(u)$ could be realized as well with the $condassign$ command but in total this leads to a lot of unnecessary numerical operations and makes the program quite complex. \\
+An alternative parametrization which is similar flexible than NURBS is a linear combination of Gaussian functions which is stated in \eqref{eq:parametrization_linear_comb_Gauss}.
 
+
+
+%% Note: Das hier ist weniger das problem weil N_{i,0} recht einfach mit condassign implementiert werden kann. Hat halt den Nachteil einige 0-Terme zusaetzlich zu berechnen. Bleibt das Problem das der Nenner bei N_{i,p} teils 0 werden kann und man auch hier ein if einfuehren muesste aber mit condassign kann man nur auf \ge pruefen.
+
+
+
+
+
+\todo{Fallunterscheidung bei Def. der Basis-Polynome fuehrt zu nem switch in der RHS womit SolvIND nicht umgehen kann.}
+
+\begin{equation}
+	c_p(T) = \sum_{i=1}^{n_{\text{Gauss}}} A_i \exp\left(- \frac{(T - T_{\text{offset}_i})^2}{\sigma_i^2}\right) + m \cdot T + b
+	\label{eq:parametrization_linear_comb_Gauss}
+\end{equation}
 
 
 \subsection{Spatial discretization grid}
@@ -750,6 +766,12 @@ As optimization variables we used the corresponding y-coordinates $P_i^y$.
 	Numerische Mathematik 1 Vorlesungsskript, 
 	Prof. Dr. Stefan Körkel, 2015
 
+\bibitem{ADOL-C}
+	ADOL-C: 1
+	A Package for the Automatic Differentiation
+	of Algorithms Written in C/C++,
+	Version 2.1.12-stable, November 2010,
+	Andrea Walther and Andreas Griewank
   
 \end{thebibliography}
 
