@@ -8,6 +8,7 @@
 \usepackage{graphicx}
 \usepackage{color}
 \usepackage{booktabs}
+\usepackage{xfrac}
 
 \usepackage{pgfplots}
 \usepackage{tikz}
@@ -715,6 +716,7 @@ this leads to the boundary value problem in $\Gamma(x,t)$
 		\frac{\partial \Gamma}{\partial x}(L1,t) & = 0 \label{eq:analytical_soln_bc_dirichlet_gamma}  \\
 		\Gamma(x,0) & = 0 =: \bar{f}
 	\end{align}
+	\label{eq:analytical_soln_gamma}
 \end{subequations}
 
 
@@ -723,6 +725,78 @@ The homogeneous solution (i.e. $\bar{q}=0$) can be obtained by an ansatz of sepe
 \begin{equation}
 	\dot{\mathcal{T}} X = a \mathcal{T} X'' \quad \Leftrightarrow \quad \frac{1}{a} \frac{\dot{\mathcal{T}}}{\mathcal{T}} = \frac{X''}{X} = const =: - \lambda
 \end{equation}
+
+
+since the LHS $\sfrac{\dot{\mathcal{T}}}{{\mathcal{T}}}$ just depends in $t$ and the RHS $\sfrac{X''}{X}$ just depends on $x$. 
+
+The general solution of the ordinary differential equation $X'' = - \lambda \cdot X$ is
+
+\begin{equation}
+	X(x) = c_1 \cdot \sin(\sqrt{\lambda} x) + c_2 \cdot \cos(\sqrt{\lambda} x)
+\end{equation}
+
+where $c_1$ and $c_2$ are determined by the boundary conditions $X(0) = 0$ and $X'(L_1) = 0$:
+
+\begin{align}
+	X(0) = c_2 \stackrel{!}{=} 0 \\
+	X'(L_1) = \left. c_1 \sqrt{\lambda} cos(\sqrt{\lambda} x) \right|_{x=L_1} = c_1 \sqrt{\lambda} cos(\sqrt{\lambda} L_1) \stackrel{!}{=} 0 \\
+	\Rightarrow \sqrt{\lambda_n} = \frac{(2n -1)\pi}{2 L} \qquad n=1,2,...
+\end{align}
+
+
+\begin{equation}
+	X(x) = \sum_{n=1}^{\infty} A_n X_n(x) \quad \text{with} \quad X_n(x) = \sin\left(\frac{(2n -1)\pi}{2 L_1} \cdot x\right)
+\end{equation}
+
+In order to solve the non-homogeneous PDE \eqref{eq:analytical_soln_gamma} $\Gamma$, $\bar{q}$ and $\bar{f}$ are expanded in a Fourier series:
+
+\begin{subequations}
+	\centering
+	\begin{align}
+		\Gamma & = \sum_{n=1}^{\infty} \mathcal{T}_n(t) X_n(x) \\
+		\bar{q} & = \sum_{n=1}^{\infty} \bar{q}_n(t) X_n(x) \\
+		\bar{f} & = \sum_{n=1}^{\infty} \bar{f}_n(t) X_n(x)
+	\end{align}
+\end{subequations}
+
+The Fourier coefficients $\bar{q}_n(t)$ and $\bar{f}_n$ are then computed by
+
+\begin{subequations}
+	\begin{align}
+		\bar{q}_n(t) & = \frac{\int_{0}^{L_1} \bar{q}(x,t) X_n(x) dx}{\int_{0}^{L_1} X_n^2(x) dx} \ \overbrace{=}^{\bar{q}=-\beta} \ - \frac{4 \beta}{\pi (2n - 1)} \\
+		\bar{f}_n & = \frac{\int_{0}^{L_1} \bar{f}(x) X_n(x) dx}{\int_{0}^{L_1} X_n^2(x) dx} \ \underbrace{=}_{\bar{f}=0} 0
+	\end{align}
+\end{subequations}
+
+Inserting this into \eqref{eq:analytical_soln_pde_gamma} gives us
+
+\begin{align*}
+	\sum_{n=1}^{\infty} \dot{\mathcal{T}}_n(t) X_n(x) - a \sum_{n=1}^{\infty} \mathcal{T}_n(t) X_n''(x) = \sum_{n=1}^{\infty} \bar{q}_n(t) X_n(x) \nonumber \\
+	\stackrel{X'' = - \lambda X}{\Leftrightarrow} \sum_{n=1}^{\infty} \dot{\mathcal{T}}_n(t) X_n(x) + a \sum_{n=1}^{\infty} \lambda_n \mathcal{T}_n(t) X_n(x) = \sum_{n=1}^{\infty} \bar{q}_n(t) X_n(x)
+\end{align*}
+
+With a coefficient comparison in $X_n$ we get the inhomogeneous ODE
+
+\begin{equation}
+	\dot{\mathcal{T}_n}(t) + a \lambda_n \mathcal{T}_n(t) = \bar{q}_n(t)
+	\label{eq:analytical_soln_inhomo_ode}
+\end{equation}
+
+where the solution of the homogeneous part is
+
+\begin{equation}
+	\mathcal{T}_n^h(t) = A_n \cdot e^{-a \lambda_n t}
+\end{equation}
+
+Applying the method of variation of constants by setting $A_n = A_n(t)$ and inserting in \eqref{eq:analytical_soln_inhomo_ode} gives
+
+\begin{align}
+	\dot{A_n}(t) & = \bar{q}_n(t) \cdot e^{a \lambda_n t} = -\frac{4 \beta}{\pi (2n - 1)} e^{a \lambda_n \tau} \\
+	\Rightarrow A_n(t) & = \int_{0}^{t} -\frac{4 \beta}{\pi (2n - 1)} e^{a \lambda_n \tau} d \tau + A_{n,c} \\
+	& = -\frac{4 \beta}{\pi (2n - 1)} \frac{1}{a \lambda_n} \left[ e^{a \lambda_n t} - 1 \right] + A_{n,c} \\
+	\Rightarrow \mathcal{T}_n(t) & = -\frac{4 \beta}{\pi (2n - 1)} \frac{1}{a \lambda_n} \left[1 - e^{-a \lambda_n t} \right] + A_{n,c} e^{- a \lambda_n t}
+\end{align}
+
 
 
 
