@@ -12,6 +12,7 @@
 
 \usepackage{pgfplots}
 \usepackage{tikz}
+\usetikzlibrary{fit} 
 \usetikzlibrary{external}
 %\tikzexternalize % activate!
 \usetikzlibrary{patterns}
@@ -37,6 +38,13 @@
     }
     \makeatother
 
+
+
+\newcommand\raalign[2]{%Umrahmen einer align-Gl.
+	\tikz[overlay,every node/.style={inner sep=-2pt,outer sep=0pt}]%
+	\node[anchor=base west](g){\phantom{$\displaystyle #1\null=\null#2$}}%
+	node[draw=blue!50!black,fill=white!10,fit=(g),inner sep=5pt]{};%
+	#1#2}
 
 
 
@@ -753,9 +761,9 @@ In order to solve the non-homogeneous PDE \eqref{eq:analytical_soln_gamma} $\Gam
 \begin{subequations}
 	\centering
 	\begin{align}
-		\Gamma & = \sum_{n=1}^{\infty} \mathcal{T}_n(t) X_n(x) \\
-		\bar{q} & = \sum_{n=1}^{\infty} \bar{q}_n(t) X_n(x) \\
-		\bar{f} & = \sum_{n=1}^{\infty} \bar{f}_n(t) X_n(x)
+		\Gamma(x,t) & = \sum_{n=1}^{\infty} \mathcal{T}_n(t) X_n(x) \\
+		\bar{q}(x,t) & = \sum_{n=1}^{\infty} \bar{q}_n(t) X_n(x) \\
+		\bar{f}(x) & = \sum_{n=1}^{\infty} \bar{f}_n X_n(x)
 	\end{align}
 \end{subequations}
 
@@ -797,7 +805,25 @@ Applying the method of variation of constants by setting $A_n = A_n(t)$ and inse
 	\Rightarrow \mathcal{T}_n(t) & = -\frac{4 \beta}{\pi (2n - 1)} \frac{1}{a \lambda_n} \left[1 - e^{-a \lambda_n t} \right] + A_{n,c} e^{- a \lambda_n t}
 \end{align}
 
+The remaining unknown $A_{n,c}$ is determined by considering the Fourier series of the starting condition
 
+\begin{equation}
+	\Gamma(x,t) = \sum_{n=1}^{\infty} \mathcal{T}_n(0) X_n(x) = \sum_{n=1}^{\infty} \bar{f}_n X_n(x) = \bar{f}(x)
+\end{equation}
+
+From $\mathcal{T}_n(0) = A_{n,c}$, $\bar{f}_n=0$ and again a coefficient comparison it follows that
+
+\begin{equation}
+	A_{n,c} = 0
+\end{equation}
+
+
+
+\begin{align}
+	& \ \ T(x,t) = \bar{T}(x,t) + \Gamma(x,t) \\
+	\Leftrightarrow \ \ & T(x,t) = T_0 + \beta \cdot t + \sum_{n=1}^{\infty} \mathcal{T}_n(t) X_n(x) \\[1ex]
+	\Leftrightarrow \ \ & \raalign{}{T(x,t) = T_0 + \beta \cdot t - \sum_{n=1}^{\infty} \left\{ \frac{4 \beta}{\pi (2n - 1)} \frac{1}{a \cdot \lambda_n} \left[ 1 - e^{- a \lambda_n t} \right] \cdot \sin(\sqrt{\lambda_n} \cdot x) \right\}}
+\end{align}
 
 
 \section{Parameter estimation of specific heat capacity $c_p$}
