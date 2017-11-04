@@ -47,6 +47,9 @@
 	#1#2}
 
 
+\usepackage{empheq}
+\newcommand*\widefbox[1]{\fbox{\hspace{2em}#1\hspace{2em}}}
+
 
 \usepackage{caption}
 \usepackage{subcaption}
@@ -656,27 +659,28 @@ where $F \in \mathbb{R}^{n_{MP}}$ is the residuum vector of the measurement poin
 
 \subsection{Analytical solution of reference side}
 
-Problem:
+The measurement data for the residuum computation is given as a function dependent on the temperature at the reference crucible $T_{ref}^{\eta_i}$. Since we need to evaluate the solution of the heat equation (PCM side) at the corresponding time points $t_i$ it is necessary to calculate these.
+This is done by applying Newton's method on the heat equation's solution of the reference side which can be solved analytically as follows. \\
+
+As the crucible of the reference side is empty there is just the silver plate with a constant temperature coefficient $a$. The start and boundary conditions are equal to the ones of the PCM side. So the boundary value problem reads 
 
 \begin{subequations}
-	\centering
-	\begin{align}
+	\begin{empheq}[box=\widefbox]{align}
 		\frac{\partial T}{\partial t}(x,t) & - a \cdot \frac{\partial^2 T}{\partial x^2}(x,t) = 0 \label{eq:analytical_soln_pde} \\
 		T(0,t) & = T_0 + \beta \cdot t \label{eq:analytical_soln_bc_neumann} \\
-		\frac{\partial T}{\partial x}(L1,t) & = 0 \label{eq:analytical_soln_bc_dirichlet}  \\
+		\frac{\partial T}{\partial x}(L_1,t) & = 0 \label{eq:analytical_soln_bc_dirichlet}  \\
 		T(x,0) & = T_0 
-	\end{align}
+	\end{empheq}
 \end{subequations}
 
-\begin{equation}
-	{T}(x,t) = \bar{T}(x,t) + \Gamma(x,t)
-\end{equation}
+The first step is a separate ansatz of the solution function $T(x,t)$ with $\bar{T}(x,t)$ satisfying the boundary conditions:
 
-\begin{equation}
+\begin{align}
+	{T}(x,t) = \bar{T}(x,t) + \Gamma(x,t) \\
 	\bar{T}(x,t) = A(t) + B(t) \cdot x
-\end{equation}
+\end{align}
 
-$\bar{T}$ has to satisfy the same boundary conditions as $T$:
+Inserting the boundary conditions and a coefficient comparison in $x$ gives
 
 \begin{align}
 	\bar{T}(0,t) = T_0 + \beta \cdot t = A(t) \\
@@ -717,13 +721,12 @@ T(x,0) & = \underbrace{\bar{T}(x,0)}_{T_0} + \Gamma(x,0) = T_0 \\
 this leads to the boundary value problem in $\Gamma(x,t)$
 
 \begin{subequations}
-	\centering
-	\begin{align}
+	\begin{empheq}[box=\widefbox]{align}
 		\frac{\partial \Gamma}{\partial t}(x,t) - a \cdot \frac{\partial^2 \Gamma}{\partial x^2}(x,t) & = - \beta =: \bar{q} \label{eq:analytical_soln_pde_gamma} \\
 		\Gamma(0,t) & = 0 \label{eq:analytical_soln_bc_neumann_gamma} \\
 		\frac{\partial \Gamma}{\partial x}(L1,t) & = 0 \label{eq:analytical_soln_bc_dirichlet_gamma}  \\
 		\Gamma(x,0) & = 0 =: \bar{f}
-	\end{align}
+	\end{empheq}
 	\label{eq:analytical_soln_gamma}
 \end{subequations}
 
@@ -737,7 +740,7 @@ The homogeneous solution (i.e. $\bar{q}=0$) can be obtained by an ansatz of sepe
 
 since the LHS $\sfrac{\dot{\mathcal{T}}}{{\mathcal{T}}}$ just depends in $t$ and the RHS $\sfrac{X''}{X}$ just depends on $x$. 
 
-The general solution of the ordinary differential equation $X'' = - \lambda \cdot X$ is
+The solution of the ordinary differential equation $X'' = - \lambda \cdot X$ is
 
 \begin{equation}
 	X(x) = c_1 \cdot \sin(\sqrt{\lambda} x) + c_2 \cdot \cos(\sqrt{\lambda} x)
@@ -748,15 +751,16 @@ where $c_1$ and $c_2$ are determined by the boundary conditions $X(0) = 0$ and $
 \begin{align}
 	X(0) = c_2 \stackrel{!}{=} 0 \\
 	X'(L_1) = \left. c_1 \sqrt{\lambda} cos(\sqrt{\lambda} x) \right|_{x=L_1} = c_1 \sqrt{\lambda} cos(\sqrt{\lambda} L_1) \stackrel{!}{=} 0 \\
-	\Rightarrow \sqrt{\lambda_n} = \frac{(2n -1)\pi}{2 L} \qquad n=1,2,...
+	\Rightarrow \sqrt{\lambda_n} = \frac{(2n -1)\pi}{2 L_1} \qquad n=1,2,...
 \end{align}
 
+The general solution of $X_n(x)$ is then given by
 
 \begin{equation}
-	X(x) = \sum_{n=1}^{\infty} A_n X_n(x) \quad \text{with} \quad X_n(x) = \sin\left(\frac{(2n -1)\pi}{2 L_1} \cdot x\right)
+	\tilde{X}_n(x) = c_1 \cdot \sin\left(\frac{(2n -1)\pi}{2 L_1} \cdot x\right) =: c_1 \cdot X_n(x)
 \end{equation}
 
-In order to solve the non-homogeneous PDE \eqref{eq:analytical_soln_gamma} $\Gamma$, $\bar{q}$ and $\bar{f}$ are expanded in a Fourier series:
+In order to solve the non-homogeneous boundary value problem \eqref{eq:analytical_soln_gamma} $\Gamma$, $\bar{q}$ and $\bar{f}$ are expanded in a Fourier series with $X_n(x)$ as basis where $c_1$ is incorporated in the corresponding Fourier coefficient:
 
 \begin{subequations}
 	\centering
@@ -780,7 +784,7 @@ Inserting this into \eqref{eq:analytical_soln_pde_gamma} gives us
 
 \begin{align*}
 	\sum_{n=1}^{\infty} \dot{\mathcal{T}}_n(t) X_n(x) - a \sum_{n=1}^{\infty} \mathcal{T}_n(t) X_n''(x) = \sum_{n=1}^{\infty} \bar{q}_n(t) X_n(x) \nonumber \\
-	\stackrel{X'' = - \lambda X}{\Leftrightarrow} \sum_{n=1}^{\infty} \dot{\mathcal{T}}_n(t) X_n(x) + a \sum_{n=1}^{\infty} \lambda_n \mathcal{T}_n(t) X_n(x) = \sum_{n=1}^{\infty} \bar{q}_n(t) X_n(x)
+	\stackrel{X'' = - \lambda X}{\Leftrightarrow} \ \ \sum_{n=1}^{\infty} \dot{\mathcal{T}}_n(t) X_n(x) + a \sum_{n=1}^{\infty} \lambda_n \mathcal{T}_n(t) X_n(x) = \sum_{n=1}^{\infty} \bar{q}_n(t) X_n(x)
 \end{align*}
 
 With a coefficient comparison in $X_n$ we get the inhomogeneous ODE
@@ -790,7 +794,7 @@ With a coefficient comparison in $X_n$ we get the inhomogeneous ODE
 	\label{eq:analytical_soln_inhomo_ode}
 \end{equation}
 
-where the solution of the homogeneous part is
+where the solution of the homogeneous part (i.e. $\bar{q}_n(t) = 0$) is
 
 \begin{equation}
 	\mathcal{T}_n^h(t) = A_n \cdot e^{-a \lambda_n t}
@@ -801,8 +805,13 @@ Applying the method of variation of constants by setting $A_n = A_n(t)$ and inse
 \begin{align}
 	\dot{A_n}(t) & = \bar{q}_n(t) \cdot e^{a \lambda_n t} = -\frac{4 \beta}{\pi (2n - 1)} e^{a \lambda_n \tau} \\
 	\Rightarrow A_n(t) & = \int_{0}^{t} -\frac{4 \beta}{\pi (2n - 1)} e^{a \lambda_n \tau} d \tau + A_{n,c} \\
-	& = -\frac{4 \beta}{\pi (2n - 1)} \frac{1}{a \lambda_n} \left[ e^{a \lambda_n t} - 1 \right] + A_{n,c} \\
-	\Rightarrow \mathcal{T}_n(t) & = -\frac{4 \beta}{\pi (2n - 1)} \frac{1}{a \lambda_n} \left[1 - e^{-a \lambda_n t} \right] + A_{n,c} e^{- a \lambda_n t}
+	& = -\frac{4 \beta}{\pi (2n - 1)} \frac{1}{a \lambda_n} \left[ e^{a \lambda_n t} - 1 \right] + A_{n,c}
+\end{align}
+
+The solution of the inhomogeneous ODE \eqref{eq:analytical_soln_inhomo_ode} then is
+\begin{align}
+	\mathcal{T}_n(t) & = A_n(t) \cdot e^{-a \lambda_n t}  \\
+	& = -\frac{4 \beta}{\pi (2n - 1)} \frac{1}{a \lambda_n} \left[1 - e^{-a \lambda_n t} \right] + A_{n,c} e^{- a \lambda_n t} \nonumber
 \end{align}
 
 The remaining unknown $A_{n,c}$ is determined by considering the Fourier series of the starting condition
@@ -817,13 +826,16 @@ From $\mathcal{T}_n(0) = A_{n,c}$, $\bar{f}_n=0$ and again a coefficient compari
 	A_{n,c} = 0
 \end{equation}
 
-
+Finally the solution of the boundary value problem \eqref{eq:analytical_soln_pde} of the reference side reads as
 
 \begin{align}
-	& \ \ T(x,t) = \bar{T}(x,t) + \Gamma(x,t) \\
-	\Leftrightarrow \ \ & T(x,t) = T_0 + \beta \cdot t + \sum_{n=1}^{\infty} \mathcal{T}_n(t) X_n(x) \\[1ex]
-	\Leftrightarrow \ \ & \raalign{}{T(x,t) = T_0 + \beta \cdot t - \sum_{n=1}^{\infty} \left\{ \frac{4 \beta}{\pi (2n - 1)} \frac{1}{a \cdot \lambda_n} \left[ 1 - e^{- a \lambda_n t} \right] \cdot \sin(\sqrt{\lambda_n} \cdot x) \right\}}
+	& \ \ T(x,t) = \bar{T}(x,t) + \Gamma(x,t) \nonumber \\
+	\Leftrightarrow \ \ & T(x,t) = T_0 + \beta \cdot t + \sum_{n=1}^{\infty} \mathcal{T}_n(t) X_n(x) \nonumber \\[1ex]
+	\Leftrightarrow \ \ & \raalign{}{T(x,t) = T_0 + \beta \cdot t - \sum_{n=1}^{\infty} \left\{ \frac{4 \beta}{\pi (2n - 1)} \frac{1}{a \cdot \lambda_n} \left[ 1 - e^{- a \lambda_n t} \right] \cdot \sin(\sqrt{\lambda_n} \cdot x) \right\}} \label{eq:analytical_soln_final_formula}
 \end{align}
+
+
+\todo{Fehleranalyse bzgl Konvergenz in $n$}
 
 
 \section{Parameter estimation of specific heat capacity $c_p$}
