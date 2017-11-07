@@ -131,12 +131,32 @@ By applying the parameter estimation we aim to avoid this problem. Furthermore t
 \section{Physical Background}
 \subsection{Physical quantities and phase transition}
 
-\todo{heat Q} \\
-\todo{heat flux (density)} \\
-\todo{heat conductivity}
+First of all some important physical quantities will be introduced because they are crucial for further comprehension. A summary is shown in Table \ref{tab:important_physical_quantities} with the consistently used symbol in this thesis and the physical unit. \\
+Heat $Q$ is the energy that flows from a warmer to a colder object because of the temperature difference. The heat flux density $\phi$ tells us how much heat flows through an unit area in one second. It can be computed by Fourier's law: $\phi = - \lambda \nabla T$. By considering a particular area this changes to the heat flux $\varPhi$. Heat conductivity $\lambda$ is a material property how much energy is transported on a distance of $1m$, unit area and temperature difference of $1K$ in one second.
+
+\begin{table}[H]
+	\centering
+\begin{tabular}{| c | c | c |} \hline
+	Quantity & Symbol & Unit \\ \hline
+	Heat & $Q$ & $J$ \\[0.7ex]
+	Heat flux density & $\phi$ & $\frac{W}{m^2}$ \\[0.7ex]
+	Heat flux & $\varPhi$ & $W$ \\[0.7ex]
+	Heat conductivity & $\lambda$ & $\frac{W}{m \cdot K}$ \\[0.7ex]
+	Specific heat capacity & $c_p$ & $\frac{J}{kg \cdot K}$ \\[0.7ex]
+	Enthalpy & $H$ & $J$ \\ \hline
+\end{tabular}
+\caption{Important physical quantities}
+\label{tab:important_physical_quantities}
+\end{table}
 
 
-An important physical quantity is the specific heat capacity $c_p$ which is a temperature dependent material property that tells us how much energy is needed to increase the temperature of $1kg$ of this material by $1K$. Since we are primarily interested in the phase change we handle with the so called apparent specific heat capacity which includes a peak at the melting point with a certain area equal to the melting enthalpy. For a pure substance this peak would be a Dirac delta function. A constant heat flux entering such a pure substance increases the temperature until phase change. Afterwards the heat is absorbed in order to perform the phase transition while the temperature stays constant. Finally after the phase change has finished the temperature increases again. \todo{Hier Bild von diesem Prozess einfuegen???} 
+
+Probably the most important physical quantity for us is the specific heat capacity $c_p$ which is a temperature dependent material property that tells us how much energy is needed to increase the temperature of $1kg$ of this material by $1K$. Since we are primarily interested in the phase change we handle with the so called apparent specific heat capacity which includes a peak at the melting point with a certain area equal to the melting enthalpy. For a pure substance this peak would be a Dirac delta function. A constant heat flux entering such a pure substance increases the temperature until phase change. Afterwards the heat is absorbed in order to perform the phase transition while the temperature stays constant. Finally after the phase change has finished the temperature increases again. 
+
+\todo{Hier Bild von diesem Prozess einfuegen???} 
+
+\todo{Enthalpy $H$}
+
 
 \subsection{Heat equation}
 Since we are dealing with heat transport in the measuring process the central equation in this thesis is the heat equation. \\
