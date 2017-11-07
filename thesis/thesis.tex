@@ -122,13 +122,10 @@ In general PCMs work as an energy buffer. Another application are industry proce
 As a last example we deal with insulations of houses. During the day when it is hot, the PCM becomes liquid and absorb heat from outside, so they work as a cooling system. On the contrary at night when it is cold outside the PCM becomes solid, releases heat and work as a heater [\textcolor{red}{X}]. 
 
 
-An important physical quantity is the specific heat capacity $c_p$ which tells us at which temperature the phase transition occurs and how much energy can be stored. The major goal of this thesis is to simulate the measuring process of a differential scanning calorimetry (DSC) where a PCM undergoes a phase transition and perform a parameter estimation in order to get the PCM's specific heat capacity.
-
-
-
-
-\todo{Smearing problem und Motivation mit moeglichst hoher Heizrate Messung deutlich zu beschleunigen}
-
+An important physical quantity is the specific heat capacity $c_p$ which tells us at which temperature the phase transition occurs and how much energy can be stored. The major goal of this thesis is to simulate the measuring process of a differential scanning calorimetry (DSC) where a PCM undergoes a phase transition and perform a parameter estimation in order to get the PCM's specific heat capacity. \\
+As we will see in more detail in section \ref{sec:physics_DSC} the common way of computing $c_p(T)$ from DSC measurement data yields different results depending on the heat rate, a measurement parameter. Since $c_p(T)$ is a material property this is unphysical and this issue is known as the smearing problem. \\
+By applying the parameter estimation we aim to avoid this problem. Furthermore the heat rate is proportional to the time duration of the experiment. If we get the same $c_p(T)$ for all heat rates we are able to accelerate the measuring process and therefore the research on this materials drastically. 
+ 
 
 
 \section{Physical Background}
@@ -175,6 +172,7 @@ Using the definition of the specific heat capacity $c_p := \frac{dh}{dT}$ we get
 
 
 \subsection{Differential Scanning Calorimetry}
+\label{sec:physics_DSC}
 The measuring method of a heat flux into a sample over a certain temperature range is called Differential Scanning Calorimetry (DSC). 
 
 \begin{figure}[H]
@@ -293,15 +291,29 @@ This is done for a set of calibration materials such that we get a mapping $sens
 
 
 
-\todo{Analytische Formel um Waermestrom aus Referenz-$c_p$ (Saphir) und Waermestrom zu berechnen und auf Probleme hinweisen, dass $c_p$ von Heizrate abhaengig ist.}
-
-
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/dsc_funktionsprinzip.png}
 	\caption{Principle experimental scheme of DSC which has been used for measurements.}
 \end{figure}
+
+
+\begin{figure}[H]
+	\begin{subfigure}{0.49\textwidth}
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/heat_flux_measurement.png}
+		\caption{}
+		\label{fig:heat_flux_measurements}
+	\end{subfigure}
+	\begin{subfigure}{0.49\textwidth}
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/c_p_DIN_formula.png}
+		\caption{}
+		\label{fig:c_p_DIN_formula}
+	\end{subfigure}
+	\caption{\todo{Reihenfolge Heizraten richtig}}
+\end{figure}
+
+\todo{Analytische Formel um Waermestrom aus Referenz-$c_p$ (Saphir) und Waermestrom zu berechnen und auf Probleme hinweisen, dass $c_p$ von Heizrate abhaengig ist.} 
 
 
 \newpage
