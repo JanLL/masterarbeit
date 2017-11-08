@@ -151,7 +151,7 @@ Heat $Q$ is the energy that flows from a warmer to a colder object because of th
 
 
 
-Probably the most important physical quantity for us is the specific heat capacity $c_p$ which is a temperature dependent material property that tells us how much energy is needed to increase the temperature of $1kg$ of this material by $1K$. Since we are primarily interested in the phase change we handle with the so called apparent specific heat capacity which includes a peak at the melting point with a certain area equal to the melting enthalpy. For a pure substance this peak would be a Dirac delta function. A constant heat flux entering such a pure substance increases the temperature until phase change. Afterwards the heat is absorbed in order to perform the phase transition while the temperature stays constant. Finally after the phase change has finished the temperature increases again. 
+Probably the most important physical quantity for us is the specific heat capacity $c_p$ which is a temperature dependent material property that tells us how much energy is needed to increase the temperature of $1kg$ of this material by $1K$. Since we are primarily interested in the phase change we handle with the so called apparent specific heat capacity which includes a peak at the melting point with a certain area equal to the melting enthalpy. For a pure substance this peak would be ideally a Dirac delta function. A constant heat flux entering such a pure substance increases the temperature until phase change. Afterwards the heat is absorbed in order to perform the phase transition while the temperature stays constant. Finally after the phase change has finished the temperature increases again. In mixed substances like PE in our case with different lengths of the individual polymer chains or due to lattice defects the peak extends over a temperature range.
 
 \todo{Hier Bild von diesem Prozess einfuegen???} 
 
@@ -159,6 +159,7 @@ Probably the most important physical quantity for us is the specific heat capaci
 
 
 \subsection{Heat equation}
+\todo{Herleitung als Quelle Buch "Waerme- und Stoffuebertragung" \cite{lit:waerme_und_stoffuebertragung} und quasi abschreiben.} \\
 Since we are dealing with heat transport in the measuring process the central equation in this thesis is the heat equation. \\
 For the derivation we start with the continuity equation with sources and sinks
 
@@ -225,7 +226,15 @@ Due to differences in the heat capacity of reference and sample a temperature di
 This can be used to find typical temperatures of known substances to identify the sample's components. \\
 Unfortunately calorimetric properties like melting enthalpy are not accessible just from the temperature difference measurement. 
 Note that the physical quantity measured is an electrical potential difference $\Delta U$ which is assumed to be proportional to the temperature difference due to the Seebeck effect. \\
-The heat flux DSC extends now DTA by computing the heat flux from the temperature difference using an additional calibration. 
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/dsc_funktionsprinzip.png}
+	\caption{Principle experimental scheme of DSC which has been used for measurements.}
+	\label{fig:heat_flux_DSC}
+\end{figure}
+
+The heat flux DSC (see Fig. \ref{fig:heat_flux_DSC}) extends now DTA by computing the heat flux into the sample $\Phi$ from the temperature difference using an additional calibration. 
 Pure materials with known melting temperature $T_{\text{Kal}}$ and melting heat $\Delta Q_{\text{Kal}}$ are measured, giving the measuring signal $\Delta U(t)$ with a peak at the phase change. 
 The area of this peak is assumed to be proportional with constant $sens$ called sensitivity to the melting heat due to
 
@@ -233,14 +242,7 @@ The area of this peak is assumed to be proportional with constant $sens$ called 
 	A_{\Delta U} \propto \Delta Q_{\text{Kal}} \quad \Rightarrow \quad sens = \frac{A_{\Delta U}}{\Delta Q_{\text{Kal}}}
 \end{equation} 
 
-This is done for a set of calibration materials such that we get a mapping $sens(T)$ by interpolating the data points $(T_{\text{Kal}_i}, sens_i)$, see Fig. \ref{fig:dsc-calibration_sens(T)}.
-
-
-
-
-
-
-
+This is done for a set of calibration materials such that we get a mapping $sens(T)$ by interpolating the data points $(T_{\text{Kal,i}}, sens_i)$, see Fig. \ref{fig:dsc-calibration_sens(T)}.
 
 \begin{figure}[H]
 	\centering
@@ -304,19 +306,24 @@ This is done for a set of calibration materials such that we get a mapping $sens
 		\caption{}
 		\label{fig:dsc-calibration_sens(T)}
 	\end{subfigure}
-	\caption{}
+	\caption{\todo{!!!}}
 \end{figure}
 
+With the mapping $\Phi(T_{ref}) = \frac{\Delta U(T_{ref})}{sens(T_{ref})}$ the heat flux into the sample then can be computed for a measurement signal $\Delta U$. 
 
 
 
 
+\subsubsection{Smearing Problem}
+The common way to perform the DSC calibration, measurement and compute the specific heat capacity $c_p$ is described in detail in DIN 11357 \cite{DIN_11357}. By assuming a proportionality between the heat flux into the sample and the sample's heat capacity one gets the equation
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/dsc_funktionsprinzip.png}
-	\caption{Principle experimental scheme of DSC which has been used for measurements.}
-\end{figure}
+\begin{equation}
+	c_p^S(T) = c_p^{R}(T) \cdot \frac{m^R}{m^S} \cdot \frac{\Phi^S(T) - \Phi^0(T)}{\Phi^R(T) - \Phi^0(T)}
+	\label{eq:c_p_formula_DIN}
+\end{equation}
+
+where $S$ and $R$ denote the sample respectively reference. Reference means here a material with known specific heat capacity $c_p^R(T)$, not to be mistaken with the reference side of the experimental setup. In our case this reference material is Saphir. $m$ is the mass and $\Phi^0$ is the heat flux if both crucibles are empty to compensate asymmetries. \\
+In Fig. \ref{fig:heat_flux_measurements} the measurement data of the heat flux into the PCM is shown for all heat rates dependent on the temperature at the reference crucible. Using \eqref{eq:c_p_formula_DIN} the computed specific heat capacities for the PCM are shown in Fig. \ref{fig:c_p_DIN_formula}. As one can see for higher heat rates the peak position shifts to higher temperatures and furthermore the peak is smeared out. This is known as the smearing problem since $c_p$ is a material property and must be equal for all heat rates.
 
 
 \begin{figure}[H]
@@ -332,8 +339,6 @@ This is done for a set of calibration materials such that we get a mapping $sens
 	\end{subfigure}
 	\caption{\todo{Reihenfolge Heizraten richtig}}
 \end{figure}
-
-\todo{Analytische Formel um Waermestrom aus Referenz-$c_p$ (Saphir) und Waermestrom zu berechnen und auf Probleme hinweisen, dass $c_p$ von Heizrate abhaengig ist.} 
 
 
 \newpage
@@ -1046,6 +1051,16 @@ An example $c_p(T)$ function generated by this parametrization is shown in Fig. 
 	Improving the performance of solar panels by the use of phase-change materials,
 	Pascal Biwole, Pierre Eclache, Frederic Kuznik,
 	World Renewable Energy Congress 2011 - Sweden
+	
+\bibitem{lit:waerme_und_stoffuebertragung}
+	Wärme- und Stoffübertragung,
+	Hans Dieter Baehr, Karl Stephan,
+	9. Auflage, 2016
+	
+\bibitem{DIN_11357}
+	DIN EN ISO 11357, 
+	Kunststoffe –
+	Dynamische Differenz-Thermoanalyse (DSC)
   
 \end{thebibliography}
 
