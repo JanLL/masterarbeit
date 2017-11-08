@@ -20,14 +20,14 @@ num_meas = length(q_dsc);
 L1 = 40;  % [mm]
 L3 = 0.1;  % [mm]
 
-% n_pcm = 0.2;
-% N = 350;
-% N3 = N*n_pcm;
-% N1 = N - N3;
+n_pcm = 0.2;
+N = 350;
+N3 = N*n_pcm;
+N1 = N - N3;
 
-N3 = 50;  % error if N3=0
-N1 = 300;
-N = N1 + N3;
+% N3 = 50;  % error if N3=0
+% N1 = 2500;
+% N = N1 + N3;
 
 % Constantan
 % lambda_Const = 23.;  % [mW/(mm*K)]
@@ -53,11 +53,12 @@ sim_params_vec = [L1, L3, N1, N3, lambda_Const, rho_Const, c_p_Const, ...
 heat_rate_s = heat_rate / 60; % [K/min] -> [K/s]
 
 
+
 % Grid generation NEW
 n_pcm = N3 / (N1 + N3);
-n_tr = 0.1;
+n_tr = 0.03;
 n_m = 0.01;
-t = 0.99;
+t = 1.;
 
 N_pcm = N * n_pcm;
 N_tr = N * n_tr;
@@ -82,19 +83,19 @@ dchi = @(x_tilde) (dx_Ag - dx_pcm) ./ (exp(gamma*(x_tilde-b)) + 1) + dx_pcm;
 
 spatial_gridsize = dchi(0:N-2)';
 
-% sum(spatial_gridsize(1:N1-1))
-% sum(spatial_gridsize(1:N1+N3-1))
-% figure(10)
-% plot(spatial_gridsize, 'x')
-% return
+sum(spatial_gridsize(1:N1-1))
+sum(spatial_gridsize(1:N1+N3-1))
+figure(10)
+plot(spatial_gridsize, 'x')
+return
 
 
 % c_p parametrization with Fraser-Suzuki-Peak
 h  =  10.0;
-r  =  2.0;
+r  =  100.0;
 wr =  15.0;
-sr =   0.3;
-z  = 130.0;
+sr =   0.1;
+z  = 100.0;
 b  =   2.0;
 p_fraser_suzuki = [h, r, wr, sr, z, b];
 
@@ -153,34 +154,16 @@ end
 
 meas_data(:,2) = q_dsc;
 
-% %% Test: Get measurement times just from dsc data
-% [~,idx_0] = min(abs(dsc.data(:,1) - T_0));
-% [~,idx_1] = min(abs(dsc.data(:,1) - 29));
-% 
-% idx_0
-% idx_1
-% 
-% t_offset = dsc.data(idx_0,2);
-% 
-% t_meas = (dsc.data(idx_0:end,2) - t_offset) * 60;
-% 
-% % size(meas_data(:,1))
-% % size(t_meas)
-% 
-% meas_data(1:10)
-% t_meas(idx_1 - idx_0:idx_1 - idx_0 + 10)'
-% 
-% 
-% %%
-% return
+
 
 % Set optimization variables
-c_p_param_type = 'fraser_suzuki';
-p_optim_start = p_fraser_suzuki;
+c_p_param_type = 'gauss_linear_comb';
+p_optim_start = p_gauss_lin_comb;
 
 % choose free(true)/fixed(false) parameters to optimize
 p_optim_estimable = true(length(p_optim_start), 1);
 p_optim_fixed = p_optim_start(~p_optim_estimable);
+p_optim_free = p_optim_start(p_optim_estimable);
 
 num_free_optim_params = sum(p_optim_estimable);
 
@@ -197,90 +180,76 @@ ax2 = gca();
 figure(3); % dqdp plot
 ax3 = gca();
 
-compute_q_dqdp_mex_expl = @(p_optim) compute_q_dqdp_mex(...
-    p_optim, p_optim_estimable, p_optim_fixed, c_p_param_type, T_ref_dsc, q_dsc, ax1, ax2, ax3);
 
 
-%%%%%%%%%%%%%% INITIAL VALUE TEST %%%%%%%%%%%%%%%%%%%%
-[res, dqdp] = compute_q_dqdp_mex_expl(p_optim_start);
-
-q_sim_300 = res + q_dsc;
-
-return
+p_optim_all = zeros(1,length(p_optim_estimable));
+p_optim_all(p_optim_estimable) = p_optim_free;
+p_optim_all(~p_optim_estimable) = p_optim_fixed;
 
 
+% c_p plot
+T_plot = 30:0.01:160;
+switch c_p_param_type
+    case 'old_atan_formula'
+        c_p_plot = c_p_formula(T_plot, p_optim_all(1:6));
+    case 'fraser_suzuki'
+        c_p_plot = c_p_fs(T_plot, p_optim_all);
+    case 'gauss_linear_comb'
+        c_p_plot = c_p_gauss_linear_comb(T_plot, p_optim_all);
+end
 
-%% 
+cla(ax2); 
+hold(ax2, 'on')
+plot(ax2, T_plot, c_p_plot, 'DisplayName', 'c_p Simulation');
+legend(ax2, 'show', 'location', 'northwest');
+xlabel(ax2, 'T [degC]');
+ylabel(ax2, 'c_p [mJ/(mg*K]');
+drawnow;
+
+%[residuum, Jac] = heat1D_pcm('optimization', p_optim_all); 
+[residuum, Jac, T] = heat1D_pcm('optimization', p_optim_all); 
+Jac = Jac(:,p_optim_estimable);
+
+T_350 = T(:,N1);
+
+%%%%%%%%%%%%%%%%%%% PLOTS %%%%%%%%%%%%%%%%%%%%%
+% heat flux plot
+q_sim = residuum + q_dsc;
+cla(ax1); % q_pcm_in plot
+hold(ax1, 'on')
+plot(ax1, T_ref_dsc, q_sim, 'DisplayName', 'Simulation');
+plot(ax1, T_ref_dsc, q_dsc, 'DisplayName', 'Measurement');
+plot(ax1, T_ref_dsc, residuum, 'DisplayName', 'Residuum');
+legend(ax1, 'show', 'location', 'northwest');
+xlabel(ax1, 'T_{ref} [degC]');
+ylabel(ax1, 'q_{pcm}^{in} [mW]');
+drawnow;
+
+
+% dqdp plot
+cla(ax3); 
+hold(ax3, 'on')
+image(ax3, Jac, 'CDataMapping', 'scaled');
+colorbar(ax3);
+title(ax3, 'dqdp')
+xlabel(ax3, 'c_p parameters');
+ylabel(ax3, 'T_{ref}');
+drawnow;
+
+
+
+%% Compute relative error of different grid sizes
 close all;
 figure()
-plot(abs(1-q_sim_300./q_sim_2500), 'x')
-% set(gca,'FontSize',13)
-% xlabel('measurement points')
-% ylabel('Absolute relative error of $$\Phi_q^{PCM,in}$$', 'interpreter', 'latex')
-% title('$$\b{x}=\frac{18}{20}N_1, \bar{x}=\frac{19}{20}N_1$$, threshold=0.999', 'interpreter', 'latex')
+plot(abs(1 - T_350 ./ T_2500), 'x')
+set(gca,'FontSize',10);
+xlabel('measurement points');
+ylabel('Absolute relative error of T^{N_1}');
+title(sprintf('N1=350,2500, N3=%d, n_{tr}=%1.2f, n_m=%1.2f, t=%1.3f',N3,n_tr,n_m,t));
 
 
-%%
-
-% close all;
-% relErr_dqdp = abs(1 - dqdp.fwd ./ dqdp.adj);
-% relErr_dqdp(isnan(relErr_dqdp)) = 0.;
-% figure()
-% image(relErr_dqdp, 'CDataMapping', 'scaled')
-% colorbar
-
-close all
-figure()
-sens_diff = load('/home/argo/masterarbeit/diff_sens.txt');
-max(max(abs(sens_diff)))
-%imagesc(sens_diff, [0, 1e-12]);
-image(sens_diff(:,[1:2,5:8,11:end]), 'CDataMapping', 'scaled')
-colorbar
 
 
-sens = load('/home/argo/masterarbeit/sens.txt');
-fwdSens_N1 = sens(:,1:4:end);
-adjSens_N1 = sens(:,2:4:end);
-fwdSens_N1p1 = sens(:,3:4:end);
-adjSens_N1p1 = sens(:,4:4:end);
-
-figure()
-image(fwdSens_N1, 'CDataMapping', 'scaled'); colorbar
-figure()
-image(adjSens_N1, 'CDataMapping', 'scaled'); colorbar
-figure()
-image(fwdSens_N1p1, 'CDataMapping', 'scaled'); colorbar
-figure()
-image(adjSens_N1p1, 'CDataMapping', 'scaled'); colorbar
-
-fwdSens_N1(772,2) / adjSens_N1(772,2) - 1
-
-
-return;
-
-% Jacobian via finite differences
-% [x,~,~,~,~,~,dqdp_finite_diff] = lsqnonlin(...
-%     compute_q_dqdp_mex_expl, p_optim_start(p_optim_estimable), [], [], optimset('MaxIter',0));
-% figure()
-% image(dqdp_finite_diff, 'CDataMapping', 'scaled');
-% colorbar
-% return;
-
-
-%%%%%%%%%%%%%%%%%%%%%%% SOLVE OPTIMIZATION PROBLEM %%%%%%%%%%%%%%%%%%%%%%%
-lb = ones(1,num_free_optim_params) * -1;
-ub = ones(1,num_free_optim_params) * 500.;
-
-
-%ub(4) = 1.;  % sr < 1
-optim_con = {lb, ub};
-
-opt_options = optimoptions('lsqnonlin', ...
-                           'Display', 'iter-detailed', ...
-                           'OutputFcn', @disp_aux, ...
-                           'SpecifyObjectiveGradient', true);
-[p_optim,~,~,~,optim_output,~,jac_output] = lsqnonlin(...
-    compute_q_dqdp_mex_expl, p_optim_start(p_optim_estimable), optim_con{:}, opt_options);
 
 
 

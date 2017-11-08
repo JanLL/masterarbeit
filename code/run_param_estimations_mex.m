@@ -25,35 +25,61 @@ simulation.lambda_pcm = 0.96;
 simulation.T_0 = 10.;
 simulation.T_end = 200.;
 
+simulation.grid_n_tr = 0.1;
+simulation.grid_n_m = 0.01;
+simulation.grid_t = 0.99;
+
+
 % Measurements
 dsc_filename = 'ExpDat_16-407-3_mitKorr_20Kmin_H.csv';
 dsc_measurement = DSC204_readFile(dsc_filename);
 
 % Optimization
 optimization = struct();
-optimization.c_p_param_type = 'gauss_linear_comb';
+h_start = 0.5;  % [mJ/mg]
 
-fit_data = load(['/home/argo/masterarbeit/fits_data/', ...
-                 '2017-10-16_04:45:00_407_L1=40_L3=0.1_N1=200_N3=50/', ...
-                 '2017-10-16_04:45:34_407_20Kmin_L1=40_L3=0,1/fit_data.mat']);
-h_start = 450.;  % [mJ/mg]
-             
-optimization.start_values = [fit_data.optimization.p_optim_end, h_start];
-% optimization.start_values = [10.,   1.,  123.0, ...
-%                              1.,    1.,  115.0, ...
-%                              1.,    1.,  125.0, ...
-%                              1.,    1.,  127.0, ...
-%                              -0.1,    1.,  129.0, ...
-%                              0., 1., 0., ...
-%                              0., 1., 0., ...
-%                              0., 1., 0., ...
-%                              0., 1., 0., ...
-%                              0., 1., 0., ...
-%                              0.1, 2.];
+% Fraser Suzuki
+optimization.c_p_param_type = 'fraser_suzuki';
+h  =  10.0;
+r  =  2.0;
+wr =  15.0;
+sr =   0.3;
+z  = 130.0;
+m  = 0.01;
+b  =   2.0;
+
+optimization.start_values = [h, r, wr, sr, z, m, b];
+
+
+% Gauss Linear combination
+% optimization.c_p_param_type = 'gauss_linear_comb';
+% 
+% fit_data = load(['/home/argo/masterarbeit/fits_data/', ...
+%                  '2017-10-16_04:45:00_407_L1=40_L3=0.1_N1=200_N3=50/', ...
+%                  '2017-10-16_04:45:34_407_20Kmin_L1=40_L3=0,1/fit_data.mat']);
+%              
+% optimization.start_values = [fit_data.optimization.p_optim_end, h_start];
+% % optimization.start_values = [10.,   1.,  123.0, ...
+% %                              1.,    1.,  115.0, ...
+% %                              1.,    1.,  125.0, ...
+% %                              1.,    1.,  127.0, ...
+% %                              -0.1,    1.,  129.0, ...
+% %                              0., 1., 0., ...
+% %                              0., 1., 0., ...
+% %                              0., 1., 0., ...
+% %                              0., 1., 0., ...
+% %                              0., 1., 0., ...
+% %                              0.1, 2.];
+
+
+
 num_opt_params = length(optimization.start_values);
 
 optimization.p_optim_estimable = true(length(optimization.start_values), 1);
+optimization.p_optim_estimable(2) = false;  % fix "r" in Fraser Suzuki Parametrization
 %optimization.p_optim_estimable(16:30) = false;  %  fix 5 Gaussians
+% optimization.p_optim_estimable(end) = false;  % fix h_start
+
 
 optimization.lb = zeros(num_opt_params,1);
 optimization.lb(1:3:30) = -2.;

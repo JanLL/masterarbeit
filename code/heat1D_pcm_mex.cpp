@@ -236,8 +236,8 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 	// some pre-processing
 	T a_Const      = lambda_Const / (c_p_Const * rho_Const);
 	T heat_rate_s  = heat_rate / 60; // [K/min] -> [K/s]
-	T scale_Const  = a_Const / (dx_Const*dx_Const);
-	T scale_pcm    = lambda_pcm / (dx_pcm*dx_pcm);
+	//T scale_Const  = a_Const / (dx_Const*dx_Const);
+	//T scale_pcm    = lambda_pcm / (dx_pcm*dx_pcm);
 
 
 	/******************* Building up RHS of ODE ********************/
@@ -283,6 +283,8 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 		}
 
 
+	//std::cout << x[N1] << std::endl;
+
 	// PCM
 	T rho_j;
 	T drho_j;
@@ -292,9 +294,8 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 	{
 		// compute specific heat capacity
 		c_p_fct(x[j], c_p_j, h_j, args.p);
-		
 		// compute density of pcm
-		rho_pcm_formula(x[j], rho_j, drho_j);
+		//rho_pcm_formula(x[j], rho_j, drho_j);
 		rho_j = 0.85; //  [mg/mm^3]
 
 		// linear part 
@@ -305,23 +306,29 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 					   - 2./alpha_vec[j-1] * x[j] 
 					   + 2./(alpha_vec[j-1]*(alpha_vec[j-1]+1.)) * x[j+1]);
 
-
 		// with enthalpy terms
-		//args.rhs[j] = scale_pcm * (1./(c_p_j*rho_j) + 1./(h_j*drho_j)) * (x[j-1] - 2.0 * x[j] + x[j+1]);
+		//drho_j = -3e-3; // test fixed drho/dT
+		//h_j = 100.; // test fixed enthalpy
+		//args.rhs[j] = lambda_pcm * (1./(rho_j * c_p_j) + 1./(h_j*drho_j))  / (spatial_gridsize[j-1]*spatial_gridsize[j-1]) * 
+		//			  (2./(1.+alpha_vec[j-1]) * x[j-1]
+		//			   - 2./alpha_vec[j-1] * x[j] 
+		//			   + 2./(alpha_vec[j-1]*(alpha_vec[j-1]+1.)) * x[j+1]);
 
-		// non-linear part (just c_p temperature dependent atm, lambda and rho constant) WRONG!
-		//args.rhs[j] -= scale_pcm/(4.*c_p_j*c_p_j * rho_j) * dc_p_j * (x[j+1] - x[j-1])*(x[j+1] - x[j-1]);
-		//args.rhs[j] -= scale_pcm/(4.*rho_j*rho_j * c_p_j) * drho_j * (x[j+1] - x[j-1])*(x[j+1] - x[j-1]);
-		
 	}
 
-	// RHS boundary, no flux
+	// RHS boundary, no flux Neumann boundary
 	c_p_fct(x[N1+N3-1], c_p_j, h_j, args.p);
 	//rho_pcm_formula(x[N1+N3-1], rho_j, drho_j);
 	rho_j = 0.85; //  [mg/mm^3]
 
 	args.rhs[N1+N3-1] = lambda_pcm/(c_p_j*rho_j) / (spatial_gridsize[N1+N3-2]*spatial_gridsize[N1+N3-2])
-						* (x[N1+N3-2] - x[N1+N3-1]); // Neumann boundary (right)
+						* (x[N1+N3-2] - x[N1+N3-1]);
+
+	// with enthalpy term
+	//drho_j = -3e-3; // test fixed drho/dT
+	//h_j = 100.; // test fixed enthalpy
+	//args.rhs[N1+N3-1] = lambda_pcm * (1./(c_p_j*rho_j) + 1./(h_j*drho_j)) / (spatial_gridsize[N1+N3-2]*spatial_gridsize[N1+N3-2])
+	//					* (x[N1+N3-2] - x[N1+N3-1]);
 
 	//args.rhs[N1+N3-1] = scale_pcm * (1./(c_p_j*rho_j) + 1./(h_j*drho_j)) * (x[N1+N3-2] - x[N1+N3-1]); // Neumann boundary (right)
 
@@ -409,6 +416,7 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		}
 		input_ptr = mxGetPr(prhs[2]);
 		for (svULong i=0; i<N1+N3-1; ++i) {
+			std::cout << *input_ptr << std::endl;
 			spatial_gridsize.push_back(*input_ptr);
 			input_ptr++;
 		}
@@ -435,7 +443,7 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 			np = 6;
 		} else if (strncmp(command, "fraser_suzuki", 99) == 0) {
 			c_p_param_type = fraser_suzuki;
-			np = 6;
+			np = 7;  // 5 from Fraser-Suzuki, 1 linear, 1 constant part
 		} else if (strncmp(command, "gauss_linear_comb", 99) == 0) {
 			c_p_param_type = gauss_linear_comb;
 			np = 3*10 + 2 + 1;  // 10 Gaussians, linear, constant, start_enthalpy
@@ -643,8 +651,6 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		}
 
 
-
-
 		/*integrator->setForwardTaylorCoefficients ( 0, 0, 0, 0 );
 		integrator->setAdjointTaylorCoefficients (
 				nAdjDirTotal, // no of adj Dirs
@@ -689,7 +695,7 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 			double T_N1_i = (*g_traj)(i, N1);
 			rho_pcm_formula(T_N1_i, rho_pcm, drho_pcm);
 
-			double scale_q = (lambda_pcm * m_pcm) / (rho_pcm * dx_pcm*dx_pcm * N3);
+			double scale_q = (lambda_pcm*m_pcm)/(rho_j*N3*spatial_gridsize[N1]*spatial_gridsize[N1]);
 
 
 			for (svULong j=0; j<np; ++j) {
@@ -702,13 +708,14 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		Sonic::DMat dq_dp_fwd (nmp, np);
 		for (svULong i=0; i<nmp; ++i) {
 
-			double rho_pcm;
-			double drho_pcm;
+			double rho_j;
+			//double drho_j;
 
-			double T_N1_i = (*g_traj)(i, N1);
-			rho_pcm_formula(T_N1_i, rho_pcm, drho_pcm);
+			//double T_N1_i = (*g_traj)(i, N1);			
+			//rho_pcm_formula(T_N1_i, rho_j, drho_j);
+			rho_j = 0.85;
 
-			double scale_q = (lambda_pcm * m_pcm) / (rho_pcm * dx_pcm*dx_pcm * N3);
+			double scale_q = (lambda_pcm*m_pcm)/(rho_j*N3*spatial_gridsize[N1]*spatial_gridsize[N1]);
 
 			for (svULong j=0; j<np; ++j) {
 				dq_dp_fwd(i,j) = scale_q * ( (g_fwdSens[i])(N1,j) - (g_fwdSens[i])(N1+1,j) );
@@ -770,16 +777,20 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		Sonic::DMat heat_flux(nmp, 1);
 		for (svULong i=0; i<nmp; ++i) {
 
-			double rho_pcm;
-			double drho_pcm;
+			double rho_j;
+			//double drho_j;
 
 			double T_N1_i = (*g_traj)(i, N1);
-			rho_pcm_formula(T_N1_i, rho_pcm, drho_pcm);
+			double T_N1p1_i = (*g_traj)(i, N1+1);
+			
+			
+			//rho_pcm_formula(T_N1_i, rho_j, drho_j);
+			rho_j = 0.85;
 
-			double scale_q = (lambda_pcm * m_pcm) / (rho_pcm * dx_pcm*dx_pcm * N3);
+			double scale_q = (lambda_pcm*m_pcm)/(rho_j*N3*spatial_gridsize[N1]*spatial_gridsize[N1]);
 
 
-			heat_flux(i,0) = -scale_q * ((*g_traj)(i,N1+1) - (*g_traj)(i,N1));
+			heat_flux(i,0) = scale_q * (T_N1_i - T_N1p1_i);
 		}
 		
 		Sonic::DMat residuum(nmp, 1);

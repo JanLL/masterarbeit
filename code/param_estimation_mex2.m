@@ -8,6 +8,7 @@ L1 = simulation.L1;
 L3 = simulation.L3;
 N1 = simulation.N1;
 N3 = simulation.N3; 
+
  
 lambda_Const = simulation.lambda_Const;
 rho_Const    = simulation.rho_Const;
@@ -19,22 +20,39 @@ T_0       = simulation.T_0;
 T_end     = simulation.T_end;
 
 
-% Grid generation
-x_bottom = 18/20*N1;
-x_top = 19/20*N1;
-threshold = 0.90;
+% Grid generation NEW
+n_pcm = N3 / (N1 + N3);
+n_tr = simulation.grid_n_tr;
+n_m = simulation.grid_n_m;
+t = simulation.grid_t;
 
-x0 = 1/2*(x_top + x_bottom);
-gamma = log(1/threshold - 1) / (1/2*(x_bottom - x_top));
-dx_pcm = L3 / N3;
-N = N1+N3;
+N = N1 + N3;
+N_pcm = N * n_pcm;
+N_tr = N * n_tr;
+N_m = N * n_m;
 
-dx_Ag = (L1 - (N-1)*dx_pcm) ./ sum(1./(1+exp(gamma*((0:N-2) - x0)))) + dx_pcm;
+b = N-1 - N_pcm - N_m - N_tr/2;
+gamma = 2/N_tr * log(t/(1-t));
 
-fct_spatial_gridsize = @(i) (dx_Ag - dx_pcm)./(1 + exp(gamma*(i-x0))) + dx_pcm;
+W11 = sum(1./(exp(gamma*((0:N1-2) - b)) + 1));
+W12 = N1 - 1 - sum(1./(exp(gamma*((0:N1-2) - b)) + 1));
+W21 = sum(1./(exp(gamma*((0:N1+N3-2) - b)) + 1));
+W22 = N1 + N3 - 1 - sum(1./(exp(gamma*((0:N1+N3-2) - b)) + 1));
 
-spatial_gridsize = fct_spatial_gridsize(0:N-2)';
+W = [W11, W12;
+     W21, W22];
 
+ dx = W\[L1;L1+L3];
+ dx_Ag = dx(1);
+ dx_pcm = dx(2);
+ 
+dchi = @(x_tilde) (dx_Ag - dx_pcm) ./ (exp(gamma*(x_tilde-b)) + 1) + dx_pcm;
+
+spatial_gridsize = dchi(0:N-2)';
+
+% figure(10)
+% plot(spatial_gridsize, 'x')
+% return
               
 % Measurement
 m_pcm = dsc_measurement.mass;

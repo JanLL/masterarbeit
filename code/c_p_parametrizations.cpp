@@ -10,6 +10,7 @@ void fraser_suzuki_formula(T x, T& c_p, T& dc_p, const T* params) {
 	T wr = *params; params++;
 	T sr = *params; params++;
 	T z  = *params; params++;
+	T m  = *params; params++;
 	T b  = *params; params++;
 
 	T c_p_case0;
@@ -26,12 +27,12 @@ void fraser_suzuki_formula(T x, T& c_p, T& dc_p, const T* params) {
 	T log_arg = (1 + (x-z)*(sr*sr-1)/(wr*sr));
 	T exp_arg = -log(r)/(log_sr*log_sr) * log(log_arg)*log(log_arg);
 	
-	c_p_case0 = b;
-	c_p_case1 = h*exp(exp_arg) + b;
+	c_p_case0 = m*x + b;
+	c_p_case1 = h*exp(exp_arg) + m*x + b;
 	condassign(c_p, condition, c_p_case1, c_p_case0);
 
-	dc_p_case0 = 0.;
-	dc_p_case1 = -2.*log(r)/(log_sr*log_sr) * (sr*sr - 1)/(wr*sr) * log(log_arg)/log_arg * h*exp(exp_arg);
+	dc_p_case0 = m;
+	dc_p_case1 = -2.*log(r)/(log_sr*log_sr) * (sr*sr - 1)/(wr*sr) * log(log_arg)/log_arg * h*exp(exp_arg) + m;
 	condassign(dc_p, condition, dc_p_case1, dc_p_case0);
 
 	return;
@@ -102,7 +103,7 @@ void gauss_linear_comb_formula(T x, T& c_p, T& h, const T* params)
 	
 	h += 0.01*p_linear/2. * (x*x - x_tilde*x_tilde);
 	h += p_const * (x - x_tilde);
-	h += p_h_tilde;
+	h += 1e7 * p_h_tilde;
 
 
 	return;

@@ -29,6 +29,12 @@
 
 [fig, enthalpies] = get_fit_results('2017-10-23_21:04:27_407_L1=40_L3=0.1_N1=500_N3=50');
 
+[fig, enthalpies] = get_fit_results('2017-10-29_20:40:04_407_L1=40_L3=0.1_N1=500_N3=50');
+
+% Fraser-Suzuki Peak
+[fig, enthalpies] = get_fit_results('2017-11-08_16:45:36_407_L1=40_L3=0.1_N1=500_N3=50');
+
+
 
 
 set(gcf, 'units', 'normalized', 'outerposition', [0 0 0.66 1]);

@@ -327,15 +327,17 @@ L3 = 0.1;
 
 x_bottom = 18/20*N1;
 x_top = 19/20*N1;
-threshold = 0.90;
-%threshold = 0.5; % equidistant grid with dx_pcm everywhere
+threshold = 0.95;
+% threshold = 0.5; % equidistant grid for all N1, N3
 
+N = N1+N3;
 x0 = 1/2*(x_top + x_bottom);
 gamma = log(1/threshold - 1) / (1/2*(x_bottom - x_top));
-dx_pcm = L3 / N3;
-N = N1+N3;
+dx_pcm = L3 / (N3-1);
+%dx_pcm = L1 / (N-1);
 
-dx_Ag = (L1 - (N-1)*dx_pcm) ./ sum(1./(1+exp(gamma*((0:N-2) - x0)))) + dx_pcm;
+
+dx_Ag = (L1 + L3 - (N-1)*dx_pcm) ./ sum(1./(1+exp(gamma*((0:N-2) - x0)))) + dx_pcm;
 
 
 f = @(x) (dx_Ag - dx_pcm)./(1 + exp(gamma*(x-x0))) + dx_pcm;
@@ -344,18 +346,113 @@ f = @(x) (dx_Ag - dx_pcm)./(1 + exp(gamma*(x-x0))) + dx_pcm;
 
 x = 0:1:N-1;
 
-figure(1)
+figure(1); clf;
 plot(x,f(x), 'x')
 xlabel('discretization point')
 ylabel('Grid size \Delta x')
 set(gca,'FontSize',12);
 
 
-figure(2)
+figure(2); clf;
 plot(x,cumsum(f(x)), 'x')
 xlabel('discretization point')
 ylabel('Physical Grid $$\tilde{x}$$', 'Interpreter','latex')
 set(gca,'FontSize',12);
 
 sum(f(0:N-2))
+sum(f(0:N1-2))
+
+
+
+%% New variable grid with equidistant Rechengitter [0,1]
+% falsche Laengen bei N1 und N1+N3 am Ende weil Integral benutzt statt
+% Summe.
+
+% Parameters to set
+L1 = 40.;
+L3 = 1.;
+
+N = 300;
+n_pcm = 0.2;
+n_tr = 0.7;
+n_m = 0.01;
+t = 0.99;
+
+b = 1 - n_pcm - n_m - n_tr/2;
+gamma = 2/n_tr * log(t/(1-t));
+
+Q11 = 1 + 1/gamma * log((exp(-gamma*b) + 1) / (exp(gamma*(1-b)) + 1));
+Q12 = -1/gamma * log((exp(-gamma*b) + 1) / (exp(gamma*(1-b)) + 1));
+Q21 = 1 - n_pcm + 1/gamma * log((exp(-gamma*b) + 1) / (exp(gamma*(1-n_pcm-b)) + 1));
+Q22 = -1/gamma * log((exp(-gamma*b) + 1) / (exp(gamma*(1-n_pcm-b)) + 1));
+
+Q = [Q11, Q12;
+     Q21, Q22];
+
+ dx = Q\[L1+L3;L1];
+ dx_Ag = dx(1);
+ dx_pcm = dx(2);
+ 
+chi = @(x_tilde) (dx_Ag - dx_pcm)*(x_tilde + 1/gamma * log((exp(-gamma*b)+1) ./ (exp(gamma*(x_tilde-b))+1))) + dx_pcm*x_tilde; 
+dchi = @(x_tilde) (dx_Ag - dx_pcm) ./ (exp(gamma*(x_tilde-b)) + 1) + dx_pcm;
+ 
+x_tilde_domain = linspace(0,1,N);
+
+figure(1)
+plot(x_tilde_domain*N, chi(x_tilde_domain), 'x')
+
+figure(2); clf; hold on;
+%plot(x_tilde_domain*N, gradient(chi(x_tilde_domain), x_tilde_domain*N), 'x')
+plot(N*x_tilde_domain, dchi(x_tilde_domain), 'x')
+
+
+
+%% New variable grid with equidistant Rechengitter {0,1,...,N-1}
+
+% Parameters to set
+L1 = 40.;
+L3 = 0.1;
+
+N1 = 300;
+N3 = 50;
+n_pcm = N3 / (N1 + N3);
+n_tr = 0.3;
+n_m = 0.01;
+t = 0.999;
+
+N = N1 + N3;
+N_pcm = N * n_pcm;
+N_tr = N * n_tr;
+N_m = N * n_m;
+
+b = N-1 - N_pcm - N_m - N_tr/2;
+gamma = 2/N_tr * log(t/(1-t));
+
+W11 = sum(1./(exp(gamma*((0:N1-2) - b)) + 1));
+W12 = N1 - 1 - sum(1./(exp(gamma*((0:N1-2) - b)) + 1));
+W21 = sum(1./(exp(gamma*((0:N1+N3-2) - b)) + 1));
+W22 = N1 + N3 - 1 - sum(1./(exp(gamma*((0:N1+N3-2) - b)) + 1));
+
+W = [W11, W12;
+     W21, W22];
+
+ dx = W\[L1;L1+L3];
+ dx_Ag = dx(1);
+ dx_pcm = dx(2);
+ 
+chi = @(x_tilde) (dx_Ag - dx_pcm)*(x_tilde + 1/gamma * log((exp(-gamma*b)+1) ./ (exp(gamma*(x_tilde-b))+1))) + dx_pcm*x_tilde; 
+dchi = @(x_tilde) (dx_Ag - dx_pcm) ./ (exp(gamma*(x_tilde-b)) + 1) + dx_pcm;
+ 
+x_tilde_domain = 0:N-1;
+
+%figure(3); clf; hold on
+%plot(x_tilde_domain, cumsum(dchi(x_tilde_domain)), 'x')
+
+figure(4); clf; hold on;
+plot(x_tilde_domain, dchi(x_tilde_domain), 'x')
+
+
+sum(dchi(0:N1-2))
+sum(dchi(0:N1+N3-2))
+
 
