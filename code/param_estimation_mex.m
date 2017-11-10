@@ -82,11 +82,11 @@ dchi = @(x_tilde) (dx_Ag - dx_pcm) ./ (exp(gamma*(x_tilde-b)) + 1) + dx_pcm;
 
 spatial_gridsize = dchi(0:N-2)';
 
-% sum(spatial_gridsize(1:N1-1))
-% sum(spatial_gridsize(1:N1+N3-1))
-% figure(10)
-% plot(spatial_gridsize, 'x')
-% return
+sum(spatial_gridsize(1:N1-1))
+sum(spatial_gridsize(1:N1+N3-1))
+figure(10)
+plot(spatial_gridsize, 'x')
+return
 
 
 % c_p parametrization with Fraser-Suzuki-Peak

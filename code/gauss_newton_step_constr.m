@@ -29,8 +29,6 @@ dy = [dy1; dy2];
 
 dx = Q * dy;
 
-
-% TODO: lambda computation!!!
 lambda = R_bar \ (Q1' * J1' * J1 * dx + Q1' * J1' * F1);
 
 end

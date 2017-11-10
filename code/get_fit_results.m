@@ -28,7 +28,7 @@ for i=1:length(nameSubDirs)
         enthalpies(i) = integral(@(x)c_p_gauss_linear_comb(x, fit_data.optimization.p_optim_end), 100, 160);
     elseif (strcmp(fit_data.optimization.c_p_param_type, 'fraser_suzuki'))
         c_p = c_p_fs(T_domain, fit_data.optimization.p_optim_end);
-        enthalpies(i) = integral(@(x)c_p_fs(x, fit_data.optimization.p_optim_end), 100, 160);
+        enthalpies(i) = integral(@(x)c_p_fs(x, fit_data.optimization.p_optim_end), 110, 160);
     end
     
     plot(T_domain, c_p, 'DisplayName', strcat(num2str(fit_data.measurement.dsc_data.Tinfo.Tstep), ' K/min'))
