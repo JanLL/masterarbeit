@@ -25,6 +25,8 @@ F3_func = @(x) [x - lb'; -(x - ub')];
 F2 = F2_func(x_start);
 F3 = F3_func(x_start);
 
+m2 = length(F2);
+
 % Check feasibility of x_start
 if (sum(F2 ~= 0) > 0)
     error('x_start is not feasible w.r.t. equality constraints!')
@@ -34,6 +36,8 @@ end
 
 % Get initial Active Set A
 A = F3 < TOL_ineq & F3 > -TOL_ineq;
+A_lb = A(1:n);
+A_ub = A(n+1:2*n);
 
 
 x_k = x_start;
@@ -50,7 +54,7 @@ while (dx_norm > TOL)
     J_active = [J2; J3(A,:)];
     
     % Solve equality constraint LSQ subproblem
-    [dx, lambda] = gauss_newton_step_constr(F1, J1, F_active, J_active, options);
+    [dx, Q1, R_bar] = gauss_newton_step_constr(F1, J1, F_active, J_active, options);
     
     % TODO: Schrittweitensteuerung "Backtracking Linesearch"
     x_kp1 = x_k + dx;
@@ -64,15 +68,23 @@ while (dx_norm > TOL)
     x_kp1(ineq_violation_lb) = lb(ineq_violation_lb);
     x_kp1(ineq_violation_ub) = ub(ineq_violation_ub);
     
-    % Add corresponding index to active set.
-    A_lb(ineq_violations_lb) = true;
-    A_ub(ineq_violations_ub) = true;
-    
-    % Recompute lambda with modified dx
-    % TODO!
+    % Compute lagrange multipliers lambda with modified dx
+    dx_mod = x_kp1 - x_k;
+    lambda = R_bar \ (Q1.' * J1.' * J1 * dx_mod + Q1.' * J1.' * F1);
     
     % Remove constraints from active set with negative lambda
-    % TODO!
+    lambda_aux_lb = inf*ones(n,1);
+    lambda_aux_lb(A_lb == true) = lambda(m2 + (1:sum(A_lb)));
+    A_lb(A_lb == true & lambda_aux_lb.' < 0) = false; % TODO: vllt mit ner Tolerance
+    
+    lambda_aux_ub = inf*ones(n,1);
+    lambda_aux_ub(A_ub == true) = lambda(m2+sum(A_lb) + (1:sum(A_ub)));
+    A_ub(A_ub == true & lambda_aux_ub.' < 0) = false; % TODO: vllt mit ner Tolerance
+    
+    
+    % Add index of violated constraints to active set.
+    A_lb(ineq_violations_lb) = true;
+    A_ub(ineq_violations_ub) = true;
     
 end
 
