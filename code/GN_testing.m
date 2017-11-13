@@ -14,24 +14,19 @@ eps = 0.05;
 eta = y + (rand(length(y),1)-0.5) * 2*eps;
 
 % Optimization Start values
-A0 = 2.1;
-var0 = 1.1;
-mu0 = 2.1;
+A0 = 2.5;
+var0 = 1.5;
+mu0 = 1.5;
 
 p0 = [A0; var0; mu0];
 
 
-
-% figure()
-% image(J1, 'CDataMapping', 'scaled')
-% colorbar
-
 GN_options = struct;
 GN_options.decomposition = 'SVD';
 GN_options.TOL_ineq = 1e-8;
-GN_options.TOL_dx_norm = 1e-6;
+GN_options.TOL_dx_norm = 1e-12;
 
-lb = [-inf, -inf, -inf];
+lb = [-inf, 1.2, -inf];
 ub = [inf, inf, inf];
 
 F1_func = @(p) GN_test_fct_F1(p, x, eta);
@@ -41,6 +36,7 @@ F2_func = @(p) GN_test_fct_F2(p);
 % Test Active Set Strategy
 p_end = GN_ass(F1_func, F2_func, p0, lb, ub, GN_options);
 
+p_end'
 
 
 %% Working example without any constraints

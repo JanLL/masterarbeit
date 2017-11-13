@@ -17,6 +17,7 @@ F3_func = @(p) GN_eval_ineq_constraints(p, lb, ub);
 F2 = F2_func(x_start);
 F3 = F3_func(x_start);
 
+
 n = length(x_start);
 m2 = length(F2);
 m3 = 2*n;  % fixed for just lb, ub of opt variables x
@@ -29,7 +30,7 @@ elseif (sum(F3 < -TOL_ineq) > 0)
 end
 
 % Get initial Active Set A
-A = F3 < TOL_ineq & F3 > -TOL_ineq;
+A = (F3 < TOL_ineq & F3 > -TOL_ineq).';
 A_lb = A(1:n);
 A_ub = A(n+1:2*n);
 
@@ -37,8 +38,9 @@ A_ub = A(n+1:2*n);
 x_k = x_start;
 dx_norm = inf;
 
-%while (dx_norm > TOL_dx_norm)
-for i=1:10
+while (dx_norm > TOL_dx_norm)
+%for i=1:10
+
     
     [F1, J1] = F1_func(x_k);
     [F2, J2] = F2_func(x_k);
@@ -68,8 +70,11 @@ for i=1:10
     dx_mod = x_kp1 - x_k;
     lambda = R_bar \ (Q1.' * J1.' * J1 * dx_mod + Q1.' * J1.' * F1);
     
+    lambda
+    
     % Remove constraints from active set with negative lambda
     lambda_aux_lb = inf*ones(n,1);
+    
     lambda_aux_lb(A_lb == true) = lambda(m2 + (1:sum(A_lb)));
     A_lb(lambda_aux_lb < 0) = false; % TODO: vllt mit ner Tolerance
     
@@ -81,16 +86,20 @@ for i=1:10
     A_lb(ineq_violations_lb) = true;
     A_ub(ineq_violations_ub) = true;
     
-    
+    % update active Set A
+    A = [A_lb, A_ub];
     
     x_k = x_k + dx_mod;
     dx_norm = norm(dx);  % oder hier dx_mod?
     
-    fprintf('%d\n', dx_norm);
+    
+    fprintf('%d\t%d\n', i, dx_norm);
     
 end
 
+
 x_end = x_k;
+
 
 end
 
