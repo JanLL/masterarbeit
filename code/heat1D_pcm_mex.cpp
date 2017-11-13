@@ -416,7 +416,7 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		}
 		input_ptr = mxGetPr(prhs[2]);
 		for (svULong i=0; i<N1+N3-1; ++i) {
-			std::cout << *input_ptr << std::endl;
+			//std::cout << *input_ptr << std::endl;
 			spatial_gridsize.push_back(*input_ptr);
 			input_ptr++;
 		}

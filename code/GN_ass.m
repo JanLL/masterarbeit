@@ -9,14 +9,12 @@ function [x_end] = GN_ass(F1_func, F2_func, x_start, lb, ub, options)
 TOL_ineq = options.TOL_ineq;
 TOL_dx_norm = options.TOL_dx_norm;
 
-
 F3_func = @(p) GN_eval_ineq_constraints(p, lb, ub);
 
 
 % Some pre calculations
 F2 = F2_func(x_start);
 F3 = F3_func(x_start);
-
 
 n = length(x_start);
 m2 = length(F2);
@@ -40,7 +38,6 @@ dx_norm = inf;
 
 while (dx_norm > TOL_dx_norm)
 %for i=1:10
-
     
     [F1, J1] = F1_func(x_k);
     [F2, J2] = F2_func(x_k);
@@ -51,10 +48,10 @@ while (dx_norm > TOL_dx_norm)
     J_active = [J2; J3(A,:)];
     
     % Solve equality constraint LSQ subproblem
-    [dx, Q1, R_bar] = GN_step_constr(F1, J1, F_active, J_active, options);
+    [dx, Q1, R_bar] = GN_step_constr(F1, J1, F_active, J_active, options);    
     
     % TODO: Schrittweitensteuerung "Backtracking Linesearch"
-    stepsize = 1.; % for testing
+    stepsize = 0.1; % for testing
     x_kp1 = x_k + stepsize * dx;
     
     % Check for violations of non-active inequality constraints
@@ -69,8 +66,6 @@ while (dx_norm > TOL_dx_norm)
     % Compute lagrange multipliers lambda with modified dx
     dx_mod = x_kp1 - x_k;
     lambda = R_bar \ (Q1.' * J1.' * J1 * dx_mod + Q1.' * J1.' * F1);
-    
-    lambda
     
     % Remove constraints from active set with negative lambda
     lambda_aux_lb = inf*ones(n,1);
