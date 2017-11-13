@@ -1,4 +1,4 @@
-function [dx] = gauss_newton_step(F1, J1, options)
+function [dx] = GN_step(F1, J1, options)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -12,7 +12,7 @@ if strcmp(options.decomposition,'QR')
     R_bar = R(1:n,:);
     Q1 = Q(:,1:n);
 
-    dx = (linsolve(R_bar, -Q1' * F1))';
+    dx = linsolve(R_bar, -Q1' * F1);
 
 end
 
@@ -33,7 +33,7 @@ if strcmp(options.decomposition,'SVD')
     end
         dy(r+1:end) = 0.;
         
-    dx = (V * dy)';
+    dx = V * dy;
         
 end
 

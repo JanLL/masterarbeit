@@ -23,10 +23,10 @@ fprintf('Meine Loesung\n');
 GN_options = struct;
 GN_options.decomposition = 'SVD';
 
-[dx] = gauss_newton_step(F1, J1, GN_options);
+[dx] = GN_step(F1, J1, GN_options);
 
 
-[dx, lambda] = gauss_newton_step_constr(F1, J1, F2, J2, GN_options);
+[dx, lambda] = GN_step_constr(F1, J1, F2, J2, GN_options);
 dx'
 lambda'
 

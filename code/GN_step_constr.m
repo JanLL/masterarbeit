@@ -1,4 +1,4 @@
-function [dx, Q1, R_bar] = gauss_newton_step_constr(F1, J1, F2, J2, options)
+function [dx, Q1, R_bar] = GN_step_constr(F1, J1, F2, J2, options)
 % 
 
 
@@ -24,9 +24,10 @@ A2 = A(:,m2+1:end);
 F1_new = F1 + A1*dy1;
 J1_new = A2;
 
-dy2 = gauss_newton_step(F1_new, J1_new, options);
+dy2 = GN_step(F1_new, J1_new, options);
 
 dy = [dy1; dy2];
+
 
 dx = Q * dy;
 
