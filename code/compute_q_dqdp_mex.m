@@ -1,4 +1,4 @@
-function [residuum, Jac] = compute_q_dqdp_mex(...
+function [varargout] = compute_q_dqdp_mex(...
     p_optim_free, p_optim_estimable, p_optim_fixed, c_p_param_type, T_ref_dsc, q_dsc, ax1, ax2, ax3)
 % TODO: description!
 
@@ -28,8 +28,17 @@ ylabel(ax2, 'c_p [mJ/(mg*K]');
 drawnow;
 
 %[residuum, Jac] = heat1D_pcm('optimization', p_optim_all); 
-[residuum, Jac, T] = heat1D_pcm('optimization', p_optim_all); 
-Jac = Jac(:,p_optim_estimable);
+
+if (nargout == 1)
+    residuum = heat1D_pcm('evaluation', p_optim_all);
+    varargout{1} = residuum;
+elseif (nargout == 2)    
+    [residuum, Jac, T] = heat1D_pcm('optimization', p_optim_all); 
+    Jac = Jac(:,p_optim_estimable);
+    varargout{1} = residuum;
+    varargout{2} = Jac;
+end
+
 
 
 % residuum = heat1D_pcm('optimization', p_optim_all); 
@@ -56,14 +65,16 @@ drawnow;
 
 
 % dqdp plot
-cla(ax3); 
-hold(ax3, 'on')
-image(ax3, Jac, 'CDataMapping', 'scaled');
-colorbar(ax3);
-title(ax3, 'dqdp')
-xlabel(ax3, 'c_p parameters');
-ylabel(ax3, 'T_{ref}');
-drawnow;
+if (nargout == 2)
+    cla(ax3); 
+    hold(ax3, 'on')
+    image(ax3, Jac, 'CDataMapping', 'scaled');
+    colorbar(ax3);
+    title(ax3, 'dqdp')
+    xlabel(ax3, 'c_p parameters');
+    ylabel(ax3, 'T_{ref}');
+    drawnow;
+end
 
 end
 

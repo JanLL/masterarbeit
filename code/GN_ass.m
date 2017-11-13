@@ -36,6 +36,8 @@ A_ub = A(n+1:2*n);
 x_k = x_start;
 dx_norm = inf;
 
+t_k = 0.4;  % initial stepsize
+
 while (dx_norm > TOL_dx_norm)
 %for i=1:10
     
@@ -51,8 +53,33 @@ while (dx_norm > TOL_dx_norm)
     [dx, Q1, R_bar] = GN_step_constr(F1, J1, F_active, J_active, options);    
     
     % TODO: Schrittweitensteuerung "Backtracking Linesearch"
-    stepsize = 0.1; % for testing
-    x_kp1 = x_k + stepsize * dx;
+    c = 0.02;  % parameter of Armijo Strategy (0, 0.5) for steepness
+    d = 0.9;  % parameter of t_k decrease rate
+    
+    F1_norm_k = F1.' * F1;
+    
+    x_kp1 = x_k + t_k * dx;
+    F1_kp1 = F1_func(x_kp1);
+    F1_norm_kp1 = F1_kp1.' * F1_kp1;
+    
+    if F1_norm_kp1 < F1_norm_k - c*t_k * (dx.'*dx)
+        t_k = min(t_k / d, 1.);
+    else
+        while F1_norm_kp1 > F1_norm_k - c*t_k * (dx.'*dx)
+
+            x_kp1 = x_k + t_k * dx;
+            try  % Catch error if integration not successful (e.g. when c_p negative)
+                F1_kp1 = F1_func(x_kp1);
+            catch ME
+                ME.identifier
+                t_k = t_k * d;
+                continue
+            end    
+            F1_norm_kp1 = F1_kp1.' * F1_kp1;        
+            t_k = t_k * d;
+
+        end
+    end
     
     % Check for violations of non-active inequality constraints
     F3_kp1 = F3_func(x_kp1);
@@ -88,7 +115,7 @@ while (dx_norm > TOL_dx_norm)
     dx_norm = norm(dx);  % oder hier dx_mod?
     
     
-    fprintf('%d\t%d\n', i, dx_norm);
+    fprintf('dx_norm: %d\tt_k = %1.3f\n', dx_norm, t_k);
     
 end
 
