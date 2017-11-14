@@ -9,6 +9,11 @@
 \usepackage{color}
 \usepackage{booktabs}
 \usepackage{xfrac}
+\usepackage{amsthm}
+
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+
 
 \usepackage{pgfplots}
 \usepackage{tikz}
@@ -686,18 +691,68 @@ The function value of $u_0$ is already defined by $u_1$ so $\dot{u}_0$ is not ne
 
 
 \subsection{Optimization Task: Parameter Estimation}
-In this section we treat the least squares problem of the form
+%In this section we treat the least squares problem of the form
+%
+%\begin{align}
+%	\min_{x(t),p} \ & \frac{1}{2} ||F(x(t;x_0,p),p)||_2^2 \\
+%	s.t. \quad & \dot{x} = f(x,t;p) \quad \forall t \in [t_0, t_f] \nonumber \\
+%	& x(0) = x_0 \nonumber
+%\end{align}
+%
+%where $F \in \mathbb{R}^{n_{MP}}$ is the residuum vector of the measurement points, $x \in \mathbb{R}^{n_x}$ are the differential variables satisfying the embedded initial value problem and $p \in \mathbb{R}^{n_p}$ are the parameters being optimized. \\
+%\todo{Frage ist ob man es sehr allgemein erklaert mit NOC und SOC von sehr allgemeinem gleichungsbeschraenken Optimierungsproblem. Oder aber eher fuer uns relevanten Fall von least squares problemen und Loesung dann mit Gauss-Newton. Problem ist das wir momentan gar kein Gauss-Newton Verfahren benutzen... fragen!!}
+
+In this section we first treat the general nonlinear optimization problem of the form
 
 \begin{align}
-	\min_{x(t),p} \ & \frac{1}{2} ||F(x(t;x_0,p),p)||_2^2 \\
-	s.t. \quad & \dot{x} = f(x,t;p) \quad \forall t \in [t_0, t_f] \nonumber \\
-	& x(0) = x_0 \nonumber
+	\min_x & \ f(x) \label{eq:NLP_formulation} \\
+	s.t. & \ g(x) = 0 \nonumber \\
+	& \ h(x) \ge 0 \nonumber
 \end{align}
 
-where $F \in \mathbb{R}^{n_{MP}}$ is the residuum vector of the measurement points, $x \in \mathbb{R}^{n_x}$ are the differential variables satisfying the embedded initial value problem and $p \in \mathbb{R}^{n_p}$ are the parameters being optimized. \\
+where $x \in \mathbb{R}^n$ is the optimization variable, $f: \mathbb{R}^n \rightarrow \mathbb{R}$ is the objective function, $g: \mathbb{R}^n \rightarrow \mathbb{R}^{m_2}$ and $h: \mathbb{R}^n \rightarrow \mathbb{R}^{m_3}$ are the equality and respectively inequality constraints. Index $m_1$ is missing because we will need this later in the context of the least squares problem. \\
+The corresponding Lagrange function of \eqref{eq:NLP_formulation} reads as
+
+\begin{equation}
+	\mathcal{L}(x,\lambda,\mu) = f(x) - \lambda^T g(x) - \mu^T h(x)
+\end{equation}
+
+with Lagrange multipliers $\lambda \in \mathbb{R}^{m_2}$ and $\mu \in \mathbb{R}^{m_3}$. \\
+
+Before stating the major results from optimization theory we need to introduce some definitions:
+
+\begin{definition}
+	$S = \{ x \ | \ g(x) = 0 \ \text{and} \ h(x) \ge 0 \}$ is called \underline{feasible set}.
+\end{definition}
+
+\begin{definition}
+	$I(x) = \{ i=1,...,m_3 \ | \ h(x) = 0 \}$ is called \underline{active set} with $s := \vert I \vert$.
+\end{definition}
+
+\begin{definition}
+	$\tilde{g}(x) := 
+	\begin{pmatrix}
+		g(x) \\
+		h_i(x), \ i \in I(x) 
+	\end{pmatrix}$
+\end{definition}
+
+\begin{definition}
+	$x$ is called \underline{regular} if [LICQ] is satisfied: $Rank \left( \frac{\partial \tilde g(x)}{\partial x} \right) = m_2 + s$
+\end{definition}
+
+\begin{definition}
+	$T(x) = \left\{ p \in \mathbb{R}^n \ | \ \frac{\partial \tilde g(x)}{\partial x} \cdot p = 0 \right\}$ \\
+	$T^+(x) = \left\{ p \in \mathbb{R}^n \ | \ \frac{\partial g(x)}{\partial x} \cdot p = 0, \frac{\partial h_i(x)}{\partial x} \cdot p = 0 \text{ for } i \in I(x) \text{ and } \mu_i > 0 \right\}$
+	are called \underline{tangent space}. It holds $T(x) \subseteq T^+(x)$.
+\end{definition}
 
 
-\todo{Frage ist ob man es sehr allgemein erklaert mit NOC und SOC von sehr allgemeinem gleichungsbeschraenken Optimierungsproblem. Oder aber eher fuer uns relevanten Fall von least squares problemen und Loesung dann mit Gauss-Newton. Problem ist das wir momentan gar kein Gauss-Newton Verfahren benutzen... fragen!!}
+
+Major results from optimization theory are the necessary optimality condition [NOC] and sufficient optimality condition [SOC]: 
+
+
+
 
 
 \newpage
