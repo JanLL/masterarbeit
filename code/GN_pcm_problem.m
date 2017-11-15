@@ -1,3 +1,7 @@
+% Standalone test for c_p optimization in PCM problem to test Gauss-Newton-
+% Active Set Strategy.
+
+
 %%%%%%%%%% Get measurement data %%%%%%%%%%%%%%%%%%%
 dsc_filename = 'ExpDat_16-407-3_mitKorr_10Kmin_H.csv';
 dsc = DSC204_readFile(dsc_filename);

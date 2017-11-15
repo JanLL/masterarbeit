@@ -4,6 +4,20 @@ function [x_end] = GN_ass(F1_func, F2_func, x_start, lb, ub, options)
 % min || F1 + J1*dx ||
 % s.t.   F2 + J2*dx =  0
 %        F3 + J3*dx >= 0
+%
+% INPUT: 
+%   F1_func  ->  Function handle to evaluate objective function for
+%                residuum and Jacobian.
+%   F2_func  ->  Function handle to evaluate equality constraints function
+%                for value and Jacobian. 
+%   x_start  ->  Start values of optimization variables.
+%   lb       ->  Lower bound of optimization variables.
+%   ub       ->  Upper bound of optimization variables.
+%   options  ->  Options struct
+%
+% OUTPUT:
+%   x_end    ->  End values of optimization variables after optimization.
+
 
 % Abbreviations
 TOL_ineq = options.TOL_ineq;
@@ -36,7 +50,7 @@ A_ub = A(n+1:2*n);
 x_k = x_start;
 dx_norm = inf;
 
-t_k = 0.4;  % initial stepsize
+t_k = 0.5;  % initial stepsize
 
 while (dx_norm > TOL_dx_norm)
 %for i=1:10
@@ -53,16 +67,19 @@ while (dx_norm > TOL_dx_norm)
     [dx, Q1, R_bar] = GN_step_constr(F1, J1, F_active, J_active, options);    
     
     % TODO: Schrittweitensteuerung "Backtracking Linesearch"
-    c = 0.02;  % parameter of Armijo Strategy (0, 0.5) for steepness
+    c = 0.;  % parameter of Armijo Strategy (0, 0.5) for steepness
     d = 0.9;  % parameter of t_k decrease rate
     
+    % some pre-computations
     F1_norm_k = F1.' * F1;
+    J1J1 = J1.' * J1;
+    dxdx = dx.' * dx;
     
     x_kp1 = x_k + t_k * dx;
     F1_kp1 = F1_func(x_kp1);
     F1_norm_kp1 = F1_kp1.' * F1_kp1;
     
-    if F1_norm_kp1 < F1_norm_k - c*t_k * (dx.'*dx)
+    if F1_norm_kp1 < F1_norm_k - c*t_k * (dxdx + dx.' * J1J1 * dx)
         t_k = min(t_k / d, 1.);
     else
         while F1_norm_kp1 > F1_norm_k - c*t_k * (dx.'*dx)
@@ -71,12 +88,14 @@ while (dx_norm > TOL_dx_norm)
             try  % Catch error if integration not successful (e.g. when c_p negative)
                 F1_kp1 = F1_func(x_kp1);
             catch ME
-                ME.identifier
+                fprintf('Error occured at integration: %s\n', ME.identifier);
                 t_k = t_k * d;
                 continue
             end    
             F1_norm_kp1 = F1_kp1.' * F1_kp1;        
             t_k = t_k * d;
+            
+            fprintf('Diff F1_norm: %1.3f\n', F1_norm_kp1 - F1_norm_k);
 
         end
     end
@@ -92,7 +111,7 @@ while (dx_norm > TOL_dx_norm)
     
     % Compute lagrange multipliers lambda with modified dx
     dx_mod = x_kp1 - x_k;
-    lambda = R_bar \ (Q1.' * J1.' * J1 * dx_mod + Q1.' * J1.' * F1);
+    lambda = R_bar \ (Q1.' * (J1.' * J1) * dx_mod + Q1.' * J1.' * F1);
     
     % Remove constraints from active set with negative lambda
     lambda_aux_lb = inf*ones(n,1);
