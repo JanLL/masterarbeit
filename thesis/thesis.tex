@@ -984,6 +984,32 @@ which is an unconstrained least squares problem we discussed before. At last we 
 If $rank(J_2) < m_2$ one can perform a singular value decomposition of $J_2$ analog to the unconstrained case. \todo{stimmt das?}
 
 \paragraph{Equality and inequality constrained case using active set strategy}\mbox{}\\
+\begin{align}
+\min_{\Delta x} & \ \frac{1}{2} || F_1 + J_1 \Delta x ||_2^2 \label{eq:numerical_soln_ineq_constrained_LSQ} \\
+s.t. & \ F_2 + J_2 \Delta x = 0 \nonumber \\
+&  \ F_3 + J_3 \Delta x \ge 0 \nonumber
+\end{align}
+
+Active Set Strategy algorithm:
+\begin{enumerate}
+	\item Choose start point $x^0$, set iteration number $k=0$ and check for feasibility of $x^0$ and compute  initial active set $I^0 = \{ i \ | \ F_3^i(x^0) = 0 \}$
+	\item Compute extended equality constraints $\tilde{F}_2(x) = 
+	\begin{pmatrix} 
+	F_2(x) \\  
+	F_3^i(x), \ i \in I^k
+	\end{pmatrix}$
+	\item Solve the extended equality constrained subproblem
+	\begin{align}
+		\min_{\Delta x} & \ \frac{1}{2} || F_1 + J_1 \Delta x ||_2^2 \nonumber \\
+		s.t. & \ \tilde{F}_2 + \tilde{J}_2 \Delta x = 0 \nonumber
+	\end{align}
+	\item Check for constraint violations $F_3(x^k + \Delta x^k) < 0$, modify $\Delta x^k$ such that $x^{k+1}$ is feasible and add corresponding constraints to active set.
+	\item Compute $x^{k+1} = x^k + t^k \Delta x^k$ with stepsize $t^k \in (0, 1]$ from linesearch algorithm.
+	\item Compute Lagrange multiplier $\mu$ from active inequality constraints and remove from active set if $\mu_i < 0$.
+	\item Set $x^k = x^{k+1}$, $k += 1$ and goto step 2.
+	
+\end{enumerate}
+
 
 
 \newpage
