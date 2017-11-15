@@ -928,19 +928,63 @@ Based on decomposing $J_1$ two solutions are shown:
 	\begin{equation}
 		\Delta x = V \Delta y
 	\end{equation}
+	
+	\todo{Lemma von ODE Skript noch rein?}
 
 \end{itemize}
 
 
 \paragraph{Equality constrained case}\mbox{}\\
+In the equality constrained case we handle the problem
 
+\begin{align}
+	\min_{\Delta x} & \ \frac{1}{2} || F_1 + J_1 \Delta x ||_2^2 \label{eq:numerical_soln_eq_constrained_LSQ} \\
+	s.t. & \ F_2 + J_2 \Delta x = 0 \nonumber
+\end{align}
+
+For the case $rank(J_2)=m_2$ we will use a QR decomposition:
+
+\begin{equation}
+	J_2^T = Q R = 
+	\begin{pmatrix}
+		Q_1 & Q_2
+	\end{pmatrix}
+	\begin{pmatrix}
+		\bar{R} \\
+		0
+	\end{pmatrix}
+\end{equation}
+
+Inserting into the equality constraint gives
+
+\begin{equation}
+	F_2 + J_2 \Delta x = F_2 + R^T \overbrace{Q^T \Delta x}^{=: \Delta y} = F_2 +
+	\begin{pmatrix}
+		\bar{R}^T & 0
+	\end{pmatrix} 
+	\begin{pmatrix}
+		\Delta y_1 \\
+		\Delta y_2
+	\end{pmatrix} = F_2 + \bar{R}^T \Delta y_1 = 0
+\end{equation}
+
+Since $rank(J_2)=m$, $\bar{R}^T$ is invertible and we can solve for $\Delta y_1$ because $\bar{R}^T$ is triangular:
+
+\begin{equation}
+	\bar{R}^T \Delta y_1 = -F_2
+\end{equation}
+
+With the solution $\Delta y_1^*$, recalling $\Delta x = Q \Delta y$ and the definition $J_1 Q = \begin{pmatrix} A_1 & A_2 \end{pmatrix}$ it remains to solve
+
+\begin{align}
+	\min_{\Delta y_2} \ \frac{1}{2} || (F_1 + A_1 \Delta y_1^*) + A_2 \Delta y_2 ||_2^2
+\end{align}
+
+which is an unconstrained least squares problem we discussed before. At last we need to compute $\Delta x = Q \Delta y$ for the final solution of \eqref{eq:numerical_soln_eq_constrained_LSQ}. \\
+If $rank(J_2) < m_2$ one can perform a singular value decomposition of $J_2$ analog to the unconstrained case. \todo{stimmt das?}
 
 \paragraph{Equality and inequality constrained case using active set strategy}\mbox{}\\
 
-
-
-\todo{QR und SVD Zerlegung um Gauss Newton Problem zu loesen} \\
-\todo{Active Set Strategy} 
 
 \newpage
 \section{Simulation of DSC measuring process}
