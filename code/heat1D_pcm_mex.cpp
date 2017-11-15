@@ -637,13 +637,12 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 				);
 		//integrator->setForwardTaylorCoefficients ( 0, 0, 0, 0 );
 		integrator->setAdjointTaylorCoefficients ( 0, 0, 0, 0, 0 );
-		std::cout << "Integrate now...\n";
+		//std::cout << "Integrate now...\n";
 		clock_t t_begin = clock();
 		errorCode = integrator->evaluate();
 		clock_t t_end = clock();
 		clock_t t_duration = t_end - t_begin;
-		std::cout << "Integrator return code : " << errorCode << std::endl;
-		std::cout << "Integration took " << double(t_duration) / CLOCKS_PER_SEC << " seconds." << std::endl;
+		//std::cout << "Integration took " << double(t_duration) / CLOCKS_PER_SEC << " seconds." << std::endl;
 		if ( errorCode < 0 ){
 			cout << "Error occured during evaluation, terminating now... \n" << errorCode<< std::endl;
 			return;
@@ -867,13 +866,12 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 
 		integrator->setForwardTaylorCoefficients ( 0, 0, 0, 0 );
 		integrator->setAdjointTaylorCoefficients ( 0, 0, 0, 0, 0 );
-		std::cout << "Integrate now...\n";
+		//std::cout << "Integrate now...\n";
 		clock_t t_begin = clock();
 		errorCode = integrator->evaluate();
 		clock_t t_end = clock();
 		clock_t t_duration = t_end - t_begin;
-		std::cout << "Integrator return code : " << errorCode << std::endl;
-		std::cout << "Integration took " << double(t_duration) / CLOCKS_PER_SEC << " seconds." << std::endl;
+		//std::cout << "Integration took " << double(t_duration) / CLOCKS_PER_SEC << " seconds." << std::endl;
 		if ( errorCode < 0 ){
 			cout << "Error occured during evaluation, terminating now... \n" << errorCode<< std::endl;
 			return;

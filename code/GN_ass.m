@@ -95,8 +95,6 @@ while (dx_norm > TOL_dx_norm)
             F1_norm_kp1 = F1_kp1.' * F1_kp1;        
             t_k = t_k * d;
             
-            fprintf('Diff F1_norm: %1.3f\n', F1_norm_kp1 - F1_norm_k);
-
         end
     end
     
@@ -131,10 +129,11 @@ while (dx_norm > TOL_dx_norm)
     A = [A_lb, A_ub];
     
     x_k = x_k + dx_mod;
+    
     dx_norm = norm(dx);  % oder hier dx_mod?
+    F1_norm = norm(F1_func(x_k));
     
-    
-    fprintf('dx_norm: %d\tt_k = %1.3f\n', dx_norm, t_k);
+    fprintf('F1_norm: %1.3e\tdx_norm: %1.3e\tt_k = %1.3e\n', F1_norm, dx_norm, t_k);
     
 end
 
