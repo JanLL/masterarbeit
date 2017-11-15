@@ -706,6 +706,7 @@ The function value of $u_0$ is already defined by $u_1$ so $\dot{u}_0$ is not ne
 %where $F \in \mathbb{R}^{n_{MP}}$ is the residuum vector of the measurement points, $x \in \mathbb{R}^{n_x}$ are the differential variables satisfying the embedded initial value problem and $p \in \mathbb{R}^{n_p}$ are the parameters being optimized. \\
 %\todo{Frage ist ob man es sehr allgemein erklaert mit NOC und SOC von sehr allgemeinem gleichungsbeschraenken Optimierungsproblem. Oder aber eher fuer uns relevanten Fall von least squares problemen und Loesung dann mit Gauss-Newton. Problem ist das wir momentan gar kein Gauss-Newton Verfahren benutzen... fragen!!}
 
+\subsubsection{General NLP and optimality criterions}
 In this section we first treat the general nonlinear optimization problem (NLP) of the form
 
 \begin{align}
@@ -777,6 +778,7 @@ Major results from optimization theory are the necessary optimality condition [N
 
 \todo{KKT conditions einfuehren!} \\
 
+\subsubsection{Non-linear least squares problem and Gauss-Newton method}
 Since we are performing a parameter estimation we will treat now an equality constrained nonlinear least squares problem
 
 \begin{align}
@@ -808,13 +810,14 @@ with $J_1(x) = \frac{\partial F_1(x)}{\partial x} \in \mathbb{R}^{m_1 \times n}$
 	J_1^T F_1 \\
 	F_2
 	\end{bmatrix}
+	\label{eq:GN_KKT_system}
 \end{equation}
 
 
 An important result is
 
 \begin{Lemma} \textcolor{white}{.}\\
-	If $rank(J_2) = m_2$ and if $rank 
+	If $rank(J_2) = m_2$ and $rank 
 	\begin{pmatrix}
 	J_1 \\
 	J_2
@@ -828,7 +831,111 @@ An important result is
 	is non-singular.
 \end{Lemma}
 
+\subsubsection{Numerical solution}
+For the numerical solution of \eqref{eq:GN_KKT_system} we will successively introduce the unconstrained, the equality constrained and the general equality and inequality constrained case because they are built up on each other.
 
+\paragraph{Unconstrained case}\mbox{}\\
+In the unconstrained case we want to solve the problem
+
+\begin{equation}
+\min_{\Delta x} \frac{1}{2} || F_1 + J_1 \Delta x ||_2^2
+\label{eq:numerical_solution_LSQ}
+\end{equation}
+
+Based on decomposing $J_1$ two solutions are shown:
+
+\begin{itemize}
+	\item \textbf{QR decomposition} \\
+	First we decompose $J_1$
+	\begin{equation}
+		J_1 = Q R = 
+		\begin{pmatrix}
+			Q1 & Q2
+		\end{pmatrix}
+		\begin{pmatrix}
+			\bar{R} \\
+			0
+		\end{pmatrix}
+	\end{equation}
+	where $Q$ is an orthogonal matrix and $\bar{R}$ is an upper triangular matrix. Inserting in the objective function \eqref{eq:numerical_solution_LSQ} gives
+	
+	\begin{align}
+		|| F_1 + J_1 \Delta x ||_2^2 & = || F_1 + Q R \Delta x ||_2^2 = || Q( Q^T F_1 + R \Delta x ||_2^2 \\
+		& = \left| \left| \begin{pmatrix}
+		Q_1^T F_1 \\
+		Q_2^T F_1
+		\end{pmatrix} + 
+		\begin{pmatrix}
+		\bar{R} \\
+		0
+		\end{pmatrix}
+		\Delta x \right| \right|_2^2 \nonumber \\
+		& = || Q_1^T F_1 + \bar{R} \Delta x ||_2^2 + ||Q_2^T F_1 ||_2^2 \nonumber
+	\end{align}
+	
+	If $rank(J_1)=n$ and therefore $\bar{R}$ invertible one can solve for $\Delta x$ easily because $\bar{R}$ is triangular:
+	
+	\begin{equation}
+		\bar{R} \Delta x = -Q_1^T F_1
+	\end{equation}
+	
+	\item \textbf{Singular value decomposition (SVD)} \\
+	Using SVD $J_1$ decomposes to
+	\begin{equation}
+		J_1 = U \Sigma V^T =
+		\begin{pmatrix}
+			U_1 & U_2
+		\end{pmatrix}
+		\begin{pmatrix}
+			\bar{\Sigma} \\
+			0
+		\end{pmatrix}
+		\begin{pmatrix}
+			V_1 \\
+			V_2
+		\end{pmatrix}
+	\end{equation}
+	
+	with $U, V$ orthogonal and $\bar{\Sigma}$ diagonal. Let $r := rank(J_1) \le n$. Then $\bar{\Sigma}$ has the singular values $\sigma_1 \ge \sigma_2 \ge ... \ge \sigma_r > 0 > ... > 0$ on the diagonal. \\
+	Inserting modifies \eqref{eq:numerical_solution_LSQ} by
+	
+	\begin{align}
+		|| F_1 + J_1 \Delta x ||_2^2 & = || F_1 + U \Sigma \overbrace{V^T \Delta x}^{=: \Delta y} ||_2^2 = || U ( U^T F_1 + \Sigma \Delta y ||_2^2 \label{eq:numerical_solution_LSQ_SVD} \\
+		& = \left| \left| \begin{pmatrix}
+		U_1^T F_1 \\
+		U_2^T F_1
+		\end{pmatrix} + 
+		\begin{pmatrix}
+		\bar{\Sigma} \\
+		0
+		\end{pmatrix}
+		\Delta y \right| \right|_2^2 \nonumber \\
+		& = || \underbrace{U_1^T F_1}_{=: c} + \bar{\Sigma} \Delta y ||_2^2 + || U_2^T F_1 ||_2^2 \nonumber
+	\end{align}
+	
+	For $rank(J_1) < n$ the solution $\Delta y$ is not unique to minimize \eqref{eq:numerical_solution_LSQ_SVD}. By choosing
+	
+	\begin{align}
+		\Delta y_i = 
+		\begin{cases}
+			- \frac{c_i}{\sigma_i} \ & \text{for } i=1,...,r \\
+			\ 0 \ & \text{else}
+		\end{cases}
+	\end{align}
+	
+	we get the final result $\Delta x$ with
+	
+	\begin{equation}
+		\Delta x = V \Delta y
+	\end{equation}
+
+\end{itemize}
+
+
+\paragraph{Equality constrained case}\mbox{}\\
+
+
+\paragraph{Equality and inequality constrained case using active set strategy}\mbox{}\\
 
 
 
