@@ -1036,14 +1036,112 @@ with the parameters $\Delta \underline{x}, \Delta \bar{x}$ as lower and upper bo
 	\item $N \in \mathbb{N}$: total number of computation grid points.
 	\item $n_{pcm} \in (0,1)$: Ratio of grid points for the PCM.
 	\item $n_{tr} \in (0,1)$: Ratio of grid points for the transition.
-	\item $n_{m} \in (0,1)$: Ratio of grid points: Margin to the pcm the transition is finished up to a threshold.
+	\item $n_{m} \in (0,1)$: Ratio of grid points: Margin to the PCM, where the transition is finished up to a threshold.
 	\item $t < 1$: At grid point $N-N_{pcm}-N_m$, $\frac{\partial \chi(\tilde{x})}{\partial \tilde{x}}$ has finished the transition by $(100 \cdot t)\%$.
 \end{itemize}
 
-  
+First of all, the ratios of grid points $n_i$ can be converted easily into absolute numbers with $N_i = N \cdot n_i$. The central position of the grid transition in the computation grid size is
 
-\todo{Bilder von $\chi(\tilde{x})$ und $\frac{\partial \chi(\tilde{x})}{\partial \tilde{x}}$}
+\begin{equation}
+	b = N - N_{pcm} - N_m - \frac{1}{2} m_{tr}
+	\label{eq:spatial_grid_b}
+\end{equation}
+
+Furthermore we get $\gamma$ by
+
+\begin{subequations}
+\begin{align}
+	\frac{\partial \chi}{\partial \tilde{x}}(\tilde{x}=N-N_{pcm}-N_m) = & \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x}) \cdot (1-t) \\
+	\Leftrightarrow \frac{\Delta \bar{x} - \Delta \underline{x}}{1 + e^{\gamma(N-N_{pcm}-N_m - b)}} + \Delta \underline{x} = & \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x}) \cdot (1-t)  \\
+	\stackrel{\eqref{eq:spatial_grid_b}}{\Leftrightarrow}  1 + e^{\gamma \frac{N_{tr}}{2}} = & \frac{1}{1 - t}  \\[2ex]
+	\Leftrightarrow \gamma = \frac{2}{N \cdot n_{tr}} \ln(\frac{t}{1-t})
+\end{align}
+\end{subequations}
+
+The remaining variables $\underline{x}$ and $\bar{x}$ we get by the condition that $T^{N_1-1}$ is at the physical grid position $L_1$
+
+\begin{subequations}
+	\begin{align}
+	\sum_{i=0}^{N_1 - 2} \frac{\partial \chi}{\partial \tilde{x}}(i) = & L_1 \\
+	\Leftrightarrow \sum_{i=0}^{N_1 - 2} \left[ \frac{\Delta \bar{x} - \Delta \underline{x}}{1 + e^{\gamma(i - b)}} + \Delta \underline{x} \right] = & L_1 \\
+	\Leftrightarrow \underbrace{ \left[ \sum_{i=0}^{N_1 - 2} \frac{1}{1 + e^{\gamma(i - b)}} \right] }_{=: W_{11}} \cdot \Delta \bar{x} + \underbrace{\left[ N_1 - 1 - \sum_{i=0}^{N_1 - 2} \frac{1}{1 + e^{\gamma(i - b)}} \right]}_{=: W_{12}} \cdot \Delta \underline{x} = & L_1
+	\end{align}
+\end{subequations}
+
+and $T^{N_1+N_3-1}$ is at the physical grid position $L_1+L_3$
+
+\begin{subequations}
+	\begin{align}
+	\sum_{i=0}^{N_1 + N_3 - 2} \frac{\partial \chi}{\partial \tilde{x}}(i) = & L_1 + L_3 \\
+	\Leftrightarrow \sum_{i=0}^{N_1 + N_3 - 2} \left[ \frac{\Delta \bar{x} - \Delta \underline{x}}{1 + e^{\gamma(i - b)}} + \Delta \underline{x} \right] = & L_1 + L_3 \\
+	\Leftrightarrow \underbrace{ \left[ \sum_{i=0}^{N_1 + N_3 - 2} \frac{1}{1 + e^{\gamma(i - b)}} \right] }_{=: W_{21}} \cdot \Delta \bar{x} + \underbrace{ \left[ N_1 + N_3 - 1 - \sum_{i=0}^{N_1 + N_3 - 2} \frac{1}{1 + e^{\gamma(i - b)}} \right] }_{=: W_{22}} \cdot \Delta \underline{x} = & L_1 + L_3
+	\end{align}
+\end{subequations}
+
+This gives the linear system
+
+\begin{equation}
+	\begin{bmatrix}
+		W_{11} & W_{12} \\
+		W_{21} & W_{22}
+	\end{bmatrix}
+	\begin{bmatrix}
+		\Delta \bar{x} \\
+		\Delta \underline{x}
+	\end{bmatrix}
+	= 
+	\begin{bmatrix}
+		L_1 \\
+		L_1 + L_3
+	\end{bmatrix}
+\end{equation}
+  
+ we can solve for $\Delta \bar{x}$ and $\Delta \underline{x}$. \\
+
+\todo{Bild von $\frac{\partial \chi(\tilde{x})}{\partial \tilde{x}}$}
  
+
+
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}
+	\begin{axis}[domain=0:25,
+	samples=100,
+	xmin=0, xmax=30,
+	ymin=0., ymax=12.,	 
+	axis lines=left,
+	xtick={15., 25.},
+	xticklabels={$N_1-1$, $N_1+N_3-1$},
+	ytick={10.1, 10.75},
+	yticklabels={$L_1$, $L_1 + L_3$},
+	xlabel=$\tilde{x}$, xlabel style={at=(current axis.right of origin), anchor=west},
+	ylabel=\empty
+	]
+	
+	\addplot+[color=black, mark=none] {(1 - 0.05)*(x + 1/0.5 * ln((exp(-0.5*10) + 1) / (exp(0.5*(x-10))+1))) + 0.05*x}
+	node[pos=0.95, above, sloped] {$\chi(\tilde{x})$};
+	
+	\addplot[only marks, mark=x, color=black] 
+	table {15	10.1
+		   25   10.75
+	};	
+	
+	% L1
+	\draw [loosely dashed] (0, 101) -- (150, 101);
+	\draw [loosely dashed] (150, 0) -- (150, 101);	
+	
+	
+	% L1 + L3
+	\draw [loosely dashed] (0, 107.5) -- (250, 107.5);
+	\draw [loosely dashed] (250, 0) -- (250, 107.5);	
+	
+	
+	\end{axis}
+	\end{tikzpicture}
+	\caption{}
+	\label{fig:}
+\end{figure}
 
 
 
