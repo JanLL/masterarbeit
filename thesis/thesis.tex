@@ -24,7 +24,9 @@
 \usetikzlibrary{fit} 
 \usetikzlibrary{external}
 %\tikzexternalize % activate!
-\usetikzlibrary{patterns}
+%\usetikzlibrary{patterns}
+\usetikzlibrary{patterns,decorations.pathreplacing}
+
 
     \tikzset{
     	hatch distance/.store in=\hatchdistance,
@@ -1098,9 +1100,6 @@ This gives the linear system
   
  we can solve for $\Delta \bar{x}$ and $\Delta \underline{x}$. \\
 
-\todo{Bild von $\frac{\partial \chi(\tilde{x})}{\partial \tilde{x}}$}
- 
-
 
 
 \begin{figure}[H]
@@ -1112,7 +1111,7 @@ This gives the linear system
 	ymin=0., ymax=12.,	 
 	axis lines=left,
 	xtick={15., 25.},
-	xticklabels={$N_1-1$, $N_1+N_3-1$},
+	xticklabels={$N\text{-}1\text{-}N_{pcm}$, $N \text{-} 1$},
 	ytick={10.1, 10.75},
 	yticklabels={$L_1$, $L_1 + L_3$},
 	xlabel=$\tilde{x}$, xlabel style={at=(current axis.right of origin), anchor=west},
@@ -1140,9 +1139,48 @@ This gives the linear system
 	\end{axis}
 	\end{tikzpicture}
 	\caption{}
-	\label{fig:}
+	\label{fig:computation_physical_grid}
 \end{figure}
 
+
+
+
+
+
+\begin{figure}[H]
+	\begin{tikzpicture}
+	\begin{axis}[
+	axis x line = middle,
+	axis y line = middle,
+	xtick={5,17,19,25},
+	ytick={0.05, 1.},
+	xticklabels={, , , $N\text{-}1$},
+	yticklabels={$\Delta \underline{x}$, $\Delta \bar{x}$},
+	xmin=0, xmax=27,
+	ymin=-0.2, ymax=1.1,
+	xlabel=$\tilde{x}$, xlabel style={at=(current axis.right of origin), anchor=west},
+	]
+	\addplot [domain=0:25] {(1 - 0.05) / (exp(0.7*(x-10))+1) + 0.05};
+	
+	\draw [thick,decoration={brace,mirror,raise=3pt},decorate] 
+	(axis cs:19,0) --
+	node[below=7pt] {$N_{pcm}$} 
+	(axis cs:25,0);
+	
+	\draw [thick,decoration={brace,mirror,raise=3pt},decorate] 
+	(axis cs:17,0) --
+	node[below=7pt] {$N_{m}$} 
+	(axis cs:19,0);
+	
+	\draw [thick,decoration={brace,mirror,raise=3pt},decorate] 
+	(axis cs:5,0) --
+	node[below=7pt] {$N_{tr}$} 
+	(axis cs:17,0);
+	\end{axis}
+	\end{tikzpicture}
+	\caption{}
+	\label{fig:grid_size}
+\end{figure}
 
 
 \subsection{Analytical solution of reference side}
