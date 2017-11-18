@@ -170,6 +170,7 @@ Probably the most important physical quantity for us is the specific heat capaci
 
 
 \subsection{Heat equation}
+\label{sec:heat_equation}
 \todo{Herleitung als Quelle Buch "Waerme- und Stoffuebertragung" \cite{lit:waerme_und_stoffuebertragung} und quasi abschreiben.} \\
 Since we are dealing with heat transport in the measuring process the central equation in this thesis is the heat equation. \\
 For the derivation we start with the continuity equation with sources and sinks
@@ -1015,14 +1016,60 @@ Active Set Strategy algorithm:
 
 \newpage
 \section{Simulation of DSC measuring process}
-
 \subsection{Mathematical model}
+
+Our mathematical model is based on the following assumptions. First the heat transport is exclusively done by thermal diffusion (c.f. section \ref{sec:heat_equation}, equation \eqref{eq:heat_equation}), so convection and thermal radiation are neglected. Furthermore the mass density $\rho$ and heat conductivity $\lambda$ of the PCM are constant.
+
+\begin{equation}
+\rho c_p(T(x,t)) \frac{\partial T}{\partial t}(x,t) = \nabla \cdot \left[\lambda \cdot \nabla T(x,t)  \right]
+\label{eq:heat_equation}
+\end{equation}
+
+\begin{itemize}
+	\item \todo{Boundary Conditions PDE}
+	\item \todo{Start value PDE}
+	\item \todo{Reference und sample side independent}
+	\item \todo{Method of lines -> System \eqref{eq:heat_equation_discretized}}
+\end{itemize}
+
+
+
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/discretization_grid.png}
-	\caption{blubb}
+	\caption{}
 \end{figure}
+
+
+\begin{align}
+\hspace{-1cm}
+\frac{d}{dt} \begin{bmatrix*}
+T^0 \\[1ex]
+T^1 \\[0.3ex]
+\vdots \\[1ex]
+T^{N_1-2} \\[1.7ex]
+T^{N_1-1} \\[1.7ex]
+T^{N_1} \\[0.5ex]
+\vdots \\[1.5ex]
+T^{N_1+N_3-2} \\[1ex]
+T^{N_1+N_3-1}
+\end{bmatrix*} =
+\begin{bmatrix}
+\beta \\
+\frac{\lambda^{\text{Ag}}}{\rho^{\text{Ag}} \ c_p^{\text{Ag}}} \cdot \frac{T^{0} - 2 T^{1} + T^{2}}{\Delta x_{\text{Ag}}^2} \\
+\vdots \\
+\frac{\lambda^{\text{Ag}}}{\rho^{\text{Ag}} \ c_p^{\text{Ag}}} \cdot \frac{T^{N_1-3} - 2 T^{N_1-2} + T^{N_1-1}}{\Delta x_{\text{Ag}}^2} \\
+\frac{\lambda^{\text{Ag}}}{\rho^{\text{Ag}} \ c_p^{\text{Ag}}} \cdot \frac{\frac{2}{1+\alpha} T^{N_1-2} - \frac{2}{\alpha} T^{N_1-1} + \frac{2}{\alpha (\alpha + 1)} T^{N_1}}{\Delta x_{\text{Ag}}^2} \\
+\frac{\lambda^{\text{PCM}}}{\rho^{\text{PCM}} \ c_p^{\text{PCM}}(T^{N^1})} \cdot \frac{T^{N_1-1} - 2 T^{N_1} + T^{N_1+1}}{\Delta x_{\text{PCM}}^2} \\
+\vdots \\
+\frac{\lambda^{\text{PCM}}}{\rho^{\text{PCM}} \ c_p^{\text{PCM}}(T^{N^1+N^3-2})} \cdot \frac{T^{N_1+N_3-3} - 2 T^{N_1+N_3-2} + T^{N_1+N_3-1}}{\Delta x_{\text{PCM}}^2} \\
+\frac{\lambda^{\text{PCM}}}{\rho^{\text{PCM}} \ c_p^{\text{PCM}}(T^{N^1+N^3-1})} \cdot \frac{T^{N_1+N_3-2} - T^{N_1+N_3-1}}{\Delta x_{\text{PCM}}^2}
+\end{bmatrix}
+\label{eq:heat_equation_discretized}
+\end{align}
+
+
 
 \subsection{Spatial discretization grid}
 At first the spatial discretization grid was constant in the silver and PCM respectively with grid sizes $\Delta x_{\text{Ag}} > \Delta x_{\text{PCM}}$ because only in PCM the phase transition occurs we are interested in. As for the silver plate we get appropriate results for the lengths $L1=40$ and $L3=0.1$ there is a big discontinuity in the grid size at the transition from silver to PCM. In order to avoid numerical problems the used framework of generating a continuous grid will be explained now. \\
