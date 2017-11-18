@@ -1018,17 +1018,30 @@ Active Set Strategy algorithm:
 \section{Simulation of DSC measuring process}
 \subsection{Mathematical model}
 
-Our mathematical model is based on the following assumptions. First the heat transport is exclusively done by thermal diffusion (c.f. section \ref{sec:heat_equation}, equation \eqref{eq:heat_equation}), so convection and thermal radiation are neglected. Furthermore the mass density $\rho$ and heat conductivity $\lambda$ of the PCM are constant.
+Our 1D mathematical model is based on the following assumptions. First the heat transport is exclusively done by thermal diffusion (c.f. section \ref{sec:heat_equation}, equation \eqref{eq:heat_equation}), so convection and thermal radiation are neglected. Furthermore the mass density $\rho$ and heat conductivity $\lambda$ of the PCM are constant.
 
 \begin{equation}
 \rho c_p(T(x,t)) \frac{\partial T}{\partial t}(x,t) = \nabla \cdot \left[\lambda \cdot \nabla T(x,t)  \right]
 \label{eq:heat_equation}
 \end{equation}
 
+Moreover we assume that the reference and sample crucible (see Fig. \ref{fig:heat_flux_DSC}) are independent of each other which allows us to simulate each side on its own. Correspondingly in Fig. \ref{fig:mathematical_model_discretized} one can see the spatially discretized model of the sample side, where on the very left is the furnace. Heat then flows through the silver plate finally into the PCM. Since the furnace is heated in such a way by regulating that the temperature at the reference crucible increases linearly with a heating rate $\beta$ and due to constant material properties of silver with respect to temperature the furnace' temperature increases as well with a constant rate $\beta$. From this follows the first boundary condition
+
+\begin{equation}
+	T^0 = T_0 + \beta t
+\end{equation}
+
+with a start temperature $T_0$ and the heating rate $\beta$. For the boundary condition at the right hand side we assume that no heat can leave the PCM. So the heat flux 
+
+\begin{equation}
+	\Phi_q^{N-1} = \lambda_{pcm} \frac{T^N - T^{N-1}}{\Delta x^N} = 0
+\end{equation}
+
+using Fourier's law for the heat flux and a virtual grid point $T^N$.
+
 \begin{itemize}
 	\item \todo{Boundary Conditions PDE}
 	\item \todo{Start value PDE}
-	\item \todo{Reference und sample side independent}
 	\item \todo{Method of lines -> System \eqref{eq:heat_equation_discretized}}
 \end{itemize}
 
@@ -1037,8 +1050,9 @@ Our mathematical model is based on the following assumptions. First the heat tra
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/discretization_grid.png}
+	\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/discretization_grid.png}
 	\caption{}
+	\label{fig:mathematical_model_discretized}
 \end{figure}
 
 
