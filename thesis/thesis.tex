@@ -432,6 +432,7 @@ Multiplying \eqref{eq:finite_differences_taylor_exp_non-homogenous_1} with $\alp
 
 \begin{equation}
 \Leftrightarrow \frac{\partial^2 f}{\partial^2 x}(x) = \frac{1}{h^2} \left[ \frac{2}{1+\alpha} f(x-h) - \frac{2}{\alpha} f(x) + \frac{2}{\alpha (\alpha+1)} f(x+\alpha h) \right] + \mathcal{O}(h^3) 
+\label{eq:2_point_formula_inhomogeneous}
 \end{equation} \\
 
 Note that for a homogeneous grid ($\alpha=1$) this is obviously equal to \eqref{eq:finite_difference_2nd_der}. \\
@@ -1025,28 +1026,7 @@ Our 1D mathematical model is based on the following assumptions. First the heat 
 \label{eq:heat_equation}
 \end{equation}
 
-Moreover we assume that the reference and sample crucible (see Fig. \ref{fig:heat_flux_DSC}) are independent of each other which allows us to simulate each side on its own. Correspondingly in Fig. \ref{fig:mathematical_model_discretized} one can see the spatially discretized model of the sample side, where on the very left is the furnace. Heat then flows through the silver plate finally into the PCM. Since the furnace is heated in such a way by regulating that the temperature at the reference crucible increases linearly with a heating rate $\beta$ and due to constant material properties of silver with respect to temperature the furnace' temperature increases as well with a constant rate $\beta$. From this follows the first boundary condition
-
-\begin{equation}
-	T^0 = T_0 + \beta t
-\end{equation}
-
-with a start temperature $T_0$ and the heating rate $\beta$. For the boundary condition at the right hand side we assume that no heat can leave the PCM. So the heat flux 
-
-\begin{equation}
-	\Phi_q^{N-1} = \lambda_{pcm} \frac{T^N - T^{N-1}}{\Delta x^N} = 0
-\end{equation}
-
-using Fourier's law for the heat flux and a virtual grid point $T^N$.
-
-\begin{itemize}
-	\item \todo{Boundary Conditions PDE}
-	\item \todo{Start value PDE}
-	\item \todo{Method of lines -> System \eqref{eq:heat_equation_discretized}}
-\end{itemize}
-
-
-
+Moreover we assume that the reference and sample crucible (see Fig. \ref{fig:heat_flux_DSC}) are independent of each other which allows us to simulate each side on its own. 
 
 \begin{figure}[H]
 	\centering
@@ -1055,6 +1035,26 @@ using Fourier's law for the heat flux and a virtual grid point $T^N$.
 	\label{fig:mathematical_model_discretized}
 \end{figure}
 
+Correspondingly in Fig. \ref{fig:mathematical_model_discretized} one can see the spatially discretized model of the sample side, where on the very left is the furnace. Heat then flows through the silver plate finally into the PCM. Since the furnace is heated in such a way by regulating that the temperature at the reference crucible increases linearly with a heating rate $\beta$ and due to constant material properties of silver with respect to temperature the furnace' temperature increases as well with a constant rate $\beta$. From this follows the first boundary condition
+
+\begin{equation}
+	T^0 = T_0 + \beta t
+\end{equation}
+
+with a start temperature $T_0$ and the heating rate $\beta$. For the boundary condition at the right hand side we assume that no heat can leave the PCM. So the heat flux is
+
+\begin{equation}
+	\Phi_q^{N-1} = \lambda_{pcm} \frac{T^N - T^{N-1}}{\Delta x^N} = 0
+\end{equation}
+
+using Fourier's law and a virtual grid point $T^N$. \\
+At time $t_0=0$ we assume that the temperature is equal everywhere:
+
+\begin{equation}
+	T^i(t_0=0) = T_0 \ \forall \ i \in \{ 0,1,...,N-1 \}
+\end{equation}
+
+For the spatial discretization of the heat equation we applied the method of lines. Since the heat conductivity $\lambda$ is constant everywhere, on the RHS of heat equation \eqref{eq:heat_equation} is a second derivative with respect to space. For the discretization on a non-homogeneous grid we used equation \eqref{eq:2_point_formula_inhomogeneous}. The resulting system of ordinary differential equations is given by
 
 \begin{align}
 \hspace{-1cm}
@@ -1082,6 +1082,8 @@ T^{N_1+N_3-1}
 \end{bmatrix}
 \label{eq:heat_equation_discretized}
 \end{align}
+
+where \todo{ODE system noch aktualisieren und beschreibung der einzelnen Terme.}
 
 
 
@@ -1484,6 +1486,19 @@ Since $C(u)$ is a parametrized curve we get a function $c_p(T)$ by using $C^x(u)
 The x-coordinates of the control points were fixed on a predefined grid with $P_i^x < P_{i+1}^x$ to guarantee a well-defined function.
 As optimization variables we used the corresponding y-coordinates $P_i^y$.
 
+\subsubsection{Fraser-Suzuki Peak}
+
+
+\begin{align}
+	c_p(T) =
+	\begin{cases}
+		h \cdot \exp \left\{ - \frac{\ln(r)}{\ln(sr)^2} \cdot \left[ \ln\left( 1 + (T-z) \cdot \frac{sr^2 - 1}{wr \cdot sr} \right) \right]^2 \right\} \ & \text{for } \ T < z - \frac{wr \cdot sr}{sr^2 - 1} \\
+		0 \ & \ \text{else}
+	\end{cases}
+	\label{eq:fraser_suzuki}
+\end{align}
+
+
 
 \subsubsection{Linear combination of Gaussian functions}
 As we switched for the derivative computation with respect to the optimization variables from finite differences to IND, implementation problems with NURBS occurred. 
@@ -1562,13 +1577,18 @@ An example $c_p(T)$ function generated by this parametrization is shown in Fig. 
 
 
 \section{Numerical experiments and results}
+\subsection{Parameter estimation using finite differences and NURBS parametrization}
 
-\begin{itemize}
-	\item \todo{Optimierung mit NURBS mit 10 K/min}
-	\item \todo{Relativer Fehler Gittergroesse -> brauche erst Zugang zu Cluster fuer Referenz mit aequidistantem Grid.}
-	\item \todo{Optimierung mit Fraser-Suzuki Peak}
-	\item \todo{Optimierung mit Linearkombination von Gauss-Funktionen}
-\end{itemize}
+
+
+\subsection{Error analysis of spatial discretization grid}
+\todo{Zugang zu Rechencluster und Referenz mit aequidistantem grid berechnen}
+
+
+\subsection{Parameter estimation using Fraser-Suzuki parametrization}
+
+\subsection{Parameter estimation using linear combination of Gaussians parametrization}
+
 
 
 \section{Discussion}
