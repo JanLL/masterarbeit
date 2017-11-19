@@ -1,4 +1,4 @@
-function varargout = simulate_1d(p_sim)
+function varargout = simulate_1d(p_sim, q_dsc)
 % [T, sol] = simulate_1d(varargin)
 % 
 % Solves the 1D heat equation for density rho and specific heat capacity
@@ -55,9 +55,13 @@ ode_system1d_expl = @(t, y) ode_system1d(t, y, p_sim, dx);
 
 %tic;
 sol = ode15s(ode_system1d_expl, t, T0, opts);
+
+% meas_times = q_dsc(:,3);
+% sol = ode15s(ode_system1d_expl, meas_times, T0, opts);
 %toc
 
 T = deval(sol, t)';
+% T = deval(sol, meas_times)';
 
 if (nargout >= 1), varargout{1} = T; end
 if (nargout >= 2), varargout{2} = sol; end

@@ -65,22 +65,27 @@ L3 = p_sim.L3;
 lambda_pcm = p_sim.lambda_test_setup(3);
 dt = 0.05 / p_sim.heat_rate * 60; % function evaluation every 0.05K at oven
 
-T_pcm = simulate_1d(p_sim);
+T_pcm = simulate_1d(p_sim, q_dsc);
 
 if optim_type_int == 1
     % Computation of q_pcm_in via combination of heat change aund fourier's law
-    q_N1p1_out = - (lambda_pcm * m_pcm)./(N3 * rho_formula(T_pcm(1:end-1,N1+1))) ...
-                  .*(T_pcm(1:end-1,N1+2) - T_pcm(1:end-1,N1+1)) / (L3/N3)^2;
+    %q_N1p1_out = - (lambda_pcm * m_pcm)./(N3 * rho_formula(T_pcm(1:end-1,N1+1))) ...
+    %              .*(T_pcm(1:end-1,N1+2) - T_pcm(1:end-1,N1+1)) / (L3/N3)^2;
+    
+    rho_pcm = 0.85;
+    q_N1p1_out = - (lambda_pcm * m_pcm)./(N3 * rho_pcm) ...
+                  .*(T_pcm(:,N1+2) - T_pcm(:,N1+1)) / (L3/N3)^2;
 
-    dQdt = p_sim.eval_c_p(T_pcm(1:end-1,N1+1))*m_pcm/N3 ...
-           .* (T_pcm(2:end,N1+1) - T_pcm(1:end-1,N1+1)) / dt;
+    %dQdt = p_sim.eval_c_p(T_pcm(1:end-1,N1+1))*m_pcm/N3 ...
+    %       .* (T_pcm(2:end,N1+1) - T_pcm(1:end-1,N1+1)) / dt;
        
 %     p = 1e8; % pressure in [mg/(mm*s)]
 %     dQdt = p_sim.eval_c_p(T_pcm(1:end-1,N1+1))*m_pcm/N3 ...
 %            .* (T_pcm(2:end,N1+1) - T_pcm(1:end-1,N1+1)) / dt ...
 %            + p*m_pcm/N3./(dt*rho_formula(T_pcm(1:end-1,N1+1)).^2) .* diff(rho_formula(T_pcm(1:end,N1+1)));
 
-    q_pcm_in = dQdt + q_N1p1_out;
+    %q_pcm_in = dQdt + q_N1p1_out;
+    q_pcm_in = q_N1p1_out;
     
     % figure(4)
     % plot(q_N1p1_out, 'DisplayName', 'q_{N1p1}^{out}'); hold on
@@ -99,8 +104,10 @@ end
 % the oven reaches it. Interpolation can't handle non-unique domain of
 % definition.
 index_T_p5 = find(T_ref(:) > p_sim.T_0 + 5, 1, 'first');
-q_pcm_in_interp = interp1(T_ref(index_T_p5:end-1), q_pcm_in(index_T_p5:end), ...
-                    q_dsc(:,1), 'linear');
+% q_pcm_in_interp = interp1(T_ref(index_T_p5:end-1), q_pcm_in(index_T_p5:end), ...
+%                    q_dsc(:,1), 'linear');
+q_pcm_in_interp = interp1(T_ref(index_T_p5:end), q_pcm_in(index_T_p5:end), ...
+                   q_dsc(:,1), 'linear');
 
                 
 switch nargin
@@ -109,6 +116,7 @@ switch nargin
 
     case 5
         q_pcm_in_output = q_pcm_in_interp;
+        %q_pcm_in_output = q_pcm_in;
                 
                 
 end

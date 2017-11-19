@@ -9,6 +9,7 @@ c_p_meas = calc_cp(dsc_filename);
 % alle Messungen bisher ganz gut war
 index_T_dsc = [find(dsc.data(:,1) > 29, 1, 'first'), ...
                find(dsc.data(:,1) < 157.9, 1, 'last')];
+           
 q_dsc = [dsc.data(index_T_dsc(1):index_T_dsc(2),1), ...
          dsc.data(index_T_dsc(1):index_T_dsc(2),3) ...
          ./ dsc.data(index_T_dsc(1):index_T_dsc(2),4)];
@@ -36,6 +37,7 @@ heat_rate = dsc.Tinfo.Tstep; % same heat rate as in measurement
 
 lambda_test_setup = [23*1, 35.6000, 0.9600];
 
+
 optim_solverName = 'lsqnonlin';
 optim_type = 'heat_flux_1';
 optim_type_int = str2double(optim_type(end));
@@ -44,7 +46,12 @@ optim_type_int = str2double(optim_type(end));
 nrb_order = 4; % nrb_order = 4 equates to C^2
 
 cntrl_pts_x = [0, 30, 60, 90, 100:2:150, 160, 180, 200]; %24
-cntrl_pts_y = [repmat(2.,1,length(cntrl_pts_x))];
+%cntrl_pts_y = [repmat(2.,1,length(cntrl_pts_x))];
+%cntrl_pts_y = [repmat(2.,1,13), 5, 20, 1, repmat(2.,1,length(cntrl_pts_x) - 16)];
+
+prev_fit_data = load('/home/argo/masterarbeit/fits_data/old_NURBS_finite_diff/2017-08-17_12:52:24_407_10Kmin_lsqnonlin/fit_data.mat');
+cntrl_pts_y = prev_fit_data.optimization.param_end(33+1:33+33);
+
 % cntrl_pts_y = [linspace(2,4,13), 4.5, 5, 7, 10, 15, 30, 50, ...
 %                linspace(1,2.5,length(cntrl_pts_x)-20)];
 
@@ -64,6 +71,35 @@ common_args = {'L1', L1, 'L2', L2, 'L3', L3, 'N3', N3, 'T_0', T_0, ...
                'c_p_sample', c_p_sample};
      
 p_sim = get_param_sim(common_args{:}, 'c_p_sample', c_p_sample);
+
+
+%%%%%%%%%%%%%%%%%% NEU: Berechnung Messzeitpunkte %%%%%%%%%%%%%%%%%%%%%%
+lambda_Const = p_sim.lambda_test_setup(1);
+c_p_Const = p_sim.c_p_test_setup(1);
+rho_Const = p_sim.rho_test_setup(1);
+a_Const = lambda_Const/(rho_Const*c_p_Const);
+
+% Analytical solution for T_ref: Solve non-linear system to get time t 
+% where T_ref (temp. at crucible) reaches T_ref_meas (time where heat flux
+% measurement was done)
+n = 100;
+heat_rate_s = heat_rate / 60;
+
+num_meas = length(q_dsc(:,1));
+meas_times = zeros(num_meas, 1);
+for i=1:num_meas
+
+    F = @(t) analytical_sol(p_sim.L1,t,n,p_sim.T_0, heat_rate_s, a_Const) - q_dsc(i,1);
+
+    t_guess = (q_dsc(i,1) - T_0)/heat_rate_s;
+    
+    fsolve_options = optimoptions('fsolve','Display','none');
+    meas_times(i) = fsolve(F, t_guess, fsolve_options);
+end
+
+q_dsc = [q_dsc, meas_times];
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 p_optim_start = [cntrl_pts(1,:), cntrl_pts(2,:), knots];
 

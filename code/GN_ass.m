@@ -102,6 +102,8 @@ while (dx_norm > TOL_dx_norm)
     F3_kp1 = F3_func(x_kp1);
     ineq_violations_lb = F3_kp1(1:n) < -TOL_ineq;
     ineq_violations_ub = F3_kp1(n+1:2*n) < -TOL_ineq;
+    % TOL_ineq = 0!!
+    
     
     % For violations, set to value of lb, ub
     x_kp1(ineq_violations_lb) = lb(ineq_violations_lb);

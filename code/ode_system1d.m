@@ -62,20 +62,21 @@ c_p(1:N1) = p_sim.c_p_test_setup(1);
 c_p(N1+1:N1+N2) = p_sim.c_p_test_setup(2); 
 c_p(N1+N2+1:end) = p_sim.eval_c_p(T(N1+N2+1:end));
 
-dc_p = zeros(N, 1);
-dc_p(N1+N2+1:end) = p_sim.eval_dc_p(T(N1+N2+1:end));
+%dc_p = zeros(N, 1);
+%dc_p(N1+N2+1:end) = p_sim.eval_dc_p(T(N1+N2+1:end));
 
 
 rho = ones(N, 1);
 rho(1:N1) = p_sim.rho_test_setup(1); 
 rho(N1+1:N1+N2) = p_sim.rho_test_setup(2); 
-rho(N1+N2+1:end) = rho_formula(T(N1+N2+1:end));% .* 0.1;
+%rho(N1+N2+1:end) = rho_formula(T(N1+N2+1:end));% .* 0.1;
+rho(N1+N2+1:end) = 0.85;
 
 % factor 0.1 (a simple guess) to compensate different 
 % masses(-> cross sections) of Constantan/PCM.
 
-drho = zeros(N, 1);
-drho(N1+N2+1:end) = drho_formula(T(N1+N2+1:end));% .* 0.1;
+%drho = zeros(N, 1);
+%drho(N1+N2+1:end) = drho_formula(T(N1+N2+1:end));% .* 0.1;
 
 lambda = ones(N, 1);
 lambda(1:N1) = p_sim.lambda_test_setup(1);
@@ -88,13 +89,13 @@ dT_non_lin = zeros(N,1);
 dT_non_lin(1) = heat_rate;
 
 % forward differences in gradient
-dT_non_lin(N1+N2+1:N-1) = ...
-    (-lambda(N1+N2+1:N-1) ./ (rho(N1+N2+1:N-1) .* c_p(N1+N2+1:N-1).^2) .* dc_p(N1+N2+1:N-1) ...
-     -lambda(N1+N2+1:N-1) ./ (rho(N1+N2+1:N-1).^2 .* c_p(N1+N2+1:N-1)) .* drho(N1+N2+1:N-1)) ...
-    .* ((T(N1+N2+2:N) - T(N1+N2+1:N-1)).^2 ...
-    ./ dx(N1+N2+2:N).^2);
+% dT_non_lin(N1+N2+1:N-1) = ...
+%     (-lambda(N1+N2+1:N-1) ./ (rho(N1+N2+1:N-1) .* c_p(N1+N2+1:N-1).^2) .* dc_p(N1+N2+1:N-1) ...
+%      -lambda(N1+N2+1:N-1) ./ (rho(N1+N2+1:N-1).^2 .* c_p(N1+N2+1:N-1)) .* drho(N1+N2+1:N-1)) ...
+%     .* ((T(N1+N2+2:N) - T(N1+N2+1:N-1)).^2 ...
+%     ./ dx(N1+N2+2:N).^2);
 
-dT_non_lin(N) = 0;
+dT_non_lin(N1+N2+1:N) = 0;
 
 
 %% Linear part
