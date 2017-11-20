@@ -985,7 +985,7 @@ With the solution $\Delta y_1^*$, recalling $\Delta x = Q \Delta y$ and the defi
 \end{align}
 
 which is an unconstrained least squares problem we discussed before. At last we need to compute $\Delta x = Q \Delta y$ for the final solution of \eqref{eq:numerical_soln_eq_constrained_LSQ}. \\
-If $rank(J_2) < m_2$ one can perform a singular value decomposition of $J_2$ analog to the unconstrained case. \todo{stimmt das?}
+If $rank(J_2) < m_2$ one can perform a singular value decomposition of $J_2$ analog to the unconstrained case. \todo{stimmt nicht... aktualisieren!}
 
 \paragraph{Equality and inequality constrained case using active set strategy}\mbox{}\\
 \begin{align}
@@ -1054,37 +1054,64 @@ At time $t_0=0$ we assume that the temperature is equal everywhere:
 	T^i(t_0=0) = T_0 \ \forall \ i \in \{ 0,1,...,N-1 \}
 \end{equation}
 
-For the spatial discretization of the heat equation we applied the method of lines. Since the heat conductivity $\lambda$ is constant everywhere, on the RHS of heat equation \eqref{eq:heat_equation} is a second derivative with respect to space. For the discretization on a non-homogeneous grid we used equation \eqref{eq:2_point_formula_inhomogeneous}. The resulting system of ordinary differential equations is given by
+For the spatial discretization of the heat equation we applied the method of lines. Since the heat conductivity $\lambda$ is constant everywhere, on the RHS of heat equation \eqref{eq:heat_equation} is a second derivative with respect to space. The resulting initial value problem is given by
 
 \begin{align}
-\hspace{-1cm}
+\hspace{-2cm}
 \frac{d}{dt} \begin{bmatrix*}
 T^0 \\[1ex]
 T^1 \\[0.3ex]
 \vdots \\[1ex]
-T^{N_1-2} \\[1.7ex]
-T^{N_1-1} \\[1.7ex]
-T^{N_1} \\[0.5ex]
+T^{N-N_{pcm}-2} \\[1.7ex]
+T^{N-N_{pcm}-1} \\[1.7ex]
+T^{N-N_{pcm}} \\[0.5ex]
 \vdots \\[1.5ex]
-T^{N_1+N_3-2} \\[1ex]
-T^{N_1+N_3-1}
-\end{bmatrix*} =
+T^{N-2} \\[1ex]
+T^{N-1}
+\end{bmatrix*} = &
 \begin{bmatrix}
 \beta \\
-\frac{\lambda^{\text{Ag}}}{\rho^{\text{Ag}} \ c_p^{\text{Ag}}} \cdot \frac{T^{0} - 2 T^{1} + T^{2}}{\Delta x_{\text{Ag}}^2} \\
-\vdots \\
-\frac{\lambda^{\text{Ag}}}{\rho^{\text{Ag}} \ c_p^{\text{Ag}}} \cdot \frac{T^{N_1-3} - 2 T^{N_1-2} + T^{N_1-1}}{\Delta x_{\text{Ag}}^2} \\
-\frac{\lambda^{\text{Ag}}}{\rho^{\text{Ag}} \ c_p^{\text{Ag}}} \cdot \frac{\frac{2}{1+\alpha} T^{N_1-2} - \frac{2}{\alpha} T^{N_1-1} + \frac{2}{\alpha (\alpha + 1)} T^{N_1}}{\Delta x_{\text{Ag}}^2} \\
-\frac{\lambda^{\text{PCM}}}{\rho^{\text{PCM}} \ c_p^{\text{PCM}}(T^{N^1})} \cdot \frac{T^{N_1-1} - 2 T^{N_1} + T^{N_1+1}}{\Delta x_{\text{PCM}}^2} \\
-\vdots \\
-\frac{\lambda^{\text{PCM}}}{\rho^{\text{PCM}} \ c_p^{\text{PCM}}(T^{N^1+N^3-2})} \cdot \frac{T^{N_1+N_3-3} - 2 T^{N_1+N_3-2} + T^{N_1+N_3-1}}{\Delta x_{\text{PCM}}^2} \\
-\frac{\lambda^{\text{PCM}}}{\rho^{\text{PCM}} \ c_p^{\text{PCM}}(T^{N^1+N^3-1})} \cdot \frac{T^{N_1+N_3-2} - T^{N_1+N_3-1}}{\Delta x_{\text{PCM}}^2}
-\end{bmatrix}
-\label{eq:heat_equation_discretized}
+\frac{\lambda_{\text{Ag}}}{\rho_{\text{Ag}} \ c_{p,\text{Ag}}} \cdot \tilde{\Delta} T^1 \\[0.7ex]
+\vdots \\[0.3ex]
+\frac{\lambda_{\text{Ag}}}{\rho_{\text{Ag}} \ c_{p,\text{Ag}}} \cdot \tilde{\Delta} T^{N-N_{pcm}-1} \\[1.5ex]
+\frac{\lambda_{\text{Ag}}}{\rho_{\text{Ag}} \ c_{p,\text{Ag}}} \cdot \tilde{\Delta} T^{N-N_{pcm}} \\[1.5ex]
+\frac{\lambda_{\text{pcm}}}{\rho_{\text{pcm}} \ c_{p,{\text{pcm}}}(T^{N-N_{pcm}+1})} \cdot \tilde{\Delta} T^{N-N_{pcm}+1} \\[0.5ex]
+\vdots \\[0.5ex]
+\frac{\lambda_{\text{pcm}}}{\rho_{\text{pcm}} \ c_{p,{\text{pcm}}}(T^{N-2})} \cdot \tilde{\Delta} T^{N-2} \\[0.5ex]
+\frac{\lambda_{\text{pcm}}}{\rho_{\text{pcm}} \ c_{p,\text{pcm}}(T^{N-1})} \cdot \tilde{\Delta} T^{N-1}
+\end{bmatrix} \label{eq:heat_equation_discretized} \\[2ex]
+T^i(t_0=0) = & \ T_0 \ \ \forall \ \ i \in \{ 0,1,...,N-1 \} \nonumber
 \end{align}
 
-where \todo{ODE system noch aktualisieren und beschreibung der einzelnen Terme.}
+where using \eqref{eq:2_point_formula_inhomogeneous} the abbreviation for the discretized second derivative is defined as
 
+\begin{align}
+	\tilde{\Delta} T^i := \frac{1}{\Delta x_{i-1}^2} \left[ \frac{2}{1+\alpha_{i-1}} T^{i-1} - \frac{2}{\alpha_{i-1}} T^{i} + \frac{2}{\alpha_{i-1} (\alpha_{i-1} + 1)} T^{i+1} \right]
+\end{align}
+
+and the factor coming from the inhomogeneous grid is
+
+\begin{align}
+	\alpha_i = \frac{\Delta x_{i+1}}{\Delta x_{i}}
+\end{align}
+
+The system is structured in three parts. First there is the furnace which increases its temperature with the heating rate $\beta$. Afterwards comes the silver plate until index $N$-$N_{pcm}$-$1$ and finally the PCM with temperature dependent specific heat capacity $c_p$. \\
+
+Solving \eqref{eq:heat_equation_discretized} yields the temperature but we are primarily interested in the heat flux into the PCM $\varPhi_{q}^{\text{pcm,in}}$ marked in Fig. \ref{fig:mathematical_model_discretized}. For the conversion from temperature to heat flux we use Fourier's law \eqref{eq:fouriers_law} where the gradient is discretized:
+
+\begin{align}
+	\varPhi_{q}^{\text{pcm,in}} = & - \bar{\lambda} \frac{T^{N_{\text{pcm}}} - T^{N_{\text{pcm}}-1}}{\Delta x_{N_{\text{pcm}}-1}} \cdot A_{\text{pcm}} \\
+	\approx & - \lambda_{\text{pcm}} \frac{T^{N_{\text{pcm}}+1} - T^{N_{\text{pcm}}}}{\Delta x_{N_{\text{pcm}}}} \cdot A_{\text{pcm}} \nonumber
+\end{align}
+
+The approximation is necessary because we do not know the heat conductivity $\bar{\lambda}$ at the transition between the silver plate and the PCM. \todo{Numerisch Waermestromdifferenz vor und nach Uebergang Ag -> PCM testen um Aussage treffen zu koennen wie gut die Naeherung ist.} \\
+Since Fourier's law gives a heat flux density we need to add a factor of the PCM's cross section $A_{\text{pcm}}$. It is computed by
+
+\begin{equation}
+	\frac{m_{pcm}}{N_{pcm}} = m_{pcm,i} = \rho_{pcm} \cdot A_{pcm} \cdot \Delta x_i 
+\end{equation}
+
+assuming beside a homogeneous mass distribution, a constant grid size $\Delta x$ in the PCM which is satisfied in good approximation by construction of the spatial discretization grid, see next section.
 
 
 \subsection{Spatial discretization grid}
