@@ -456,3 +456,118 @@ sum(dchi(0:N1-2))
 sum(dchi(0:N1+N3-2))
 
 
+
+%% Fraser-Suzuki Beispielbild
+
+% c_p parametrization with Fraser-Suzuki-Peak
+h  =  10.0;
+r  =  2.0;
+wr =  5.0;
+sr =   0.3;
+z  = 130.0;
+m  = 0.003;
+b  =   2.0;
+p_fraser_suzuki = [h, r, wr, sr, z, m, b].';
+
+
+T = 30:0.001:160;
+c_p = c_p_fs(T, p_fraser_suzuki);
+fig = figure(5); cla;
+set(gca,'FontSize',24);
+plot(T,c_p, 'linewidth', 1);
+xlabel('T [degC]');
+ylabel('c_p [mJ/(mg*K)]')
+
+
+print(fig, '/home/argo/masterarbeit/thesis/images/fraser_suzuki_example', '-dpng', '-r200');
+close();
+
+
+%% Plot old NURBS results in a pretty way
+
+% Jacobian
+% fit_data = load('fit_data.mat');
+% 
+% fig = open('jac_output.fig');
+% set(gca,'FontSize',12);
+% 
+% print(fig, '/home/argo/masterarbeit/thesis/images/NURBS_jac', '-dpng', '-r200');
+% 
+% % Zoom in interesting part
+% xlim([0, 30])
+% ylim([124, 132])
+% 
+% print(fig, '/home/argo/masterarbeit/thesis/images/NURBS_jac_zoom', '-dpng', '-r200');
+% close();
+
+
+% c_p(T)
+% fig = open('c_p(T).fig');
+% 
+% set(gca,'FontSize',12);
+% 
+% children = get(gca,'Children');
+% delete(children(1)) % delete c_p calc from formula
+% 
+% ylabel('c_p [mJ/(mg*K)]')
+% 
+% print(fig, '/home/argo/masterarbeit/thesis/images/NURBS_c_p(T)', '-dpng', '-r200');
+
+
+% heat flux
+fig = open('q_pcm_in(T_ref).fig');
+
+children = get(gca, 'Children');
+children(1).LineWidth = 1.;
+children(2).LineWidth = 1.;
+children(3).LineWidth = 1.;
+children(2).LineStyle = '--';
+
+set(gca,'FontSize',12);
+
+ylabel('\Phi_q^{PCM,in} [mW]')
+
+legend('off')
+legend('show', 'location', 'northwest');
+
+print(fig, '/home/argo/masterarbeit/thesis/images/NURBS_heat_flux', '-dpng', '-r200');
+close;
+
+
+%% Plot smearing effect in simulation in a pretty way
+
+% heat fluxes
+fig = open('heat_flux_smearing_simulation.fig')
+set(gca,'FontSize',12);
+
+children = get(gca, 'Children');
+children(1).LineWidth = 1.;
+children(2).LineWidth = 1.;
+children(3).LineWidth = 1.;
+children(4).LineWidth = 1.;
+children(5).LineWidth = 1.;
+children(6).LineWidth = 1.;
+children(7).LineWidth = 1.;
+
+print(fig, '/home/argo/masterarbeit/thesis/images/smearing_effect_simulation_heat_fluxes', '-dpng', '-r200');
+close();
+
+% c_p(T)
+fig = open('c_p(T).fig');
+
+set(gca,'FontSize',12);
+
+children = get(gca, 'Children');
+children(1).LineWidth = 1.;
+
+ylabel('c_p [mJ/(mg*K)]')
+
+print(fig, '/home/argo/masterarbeit/thesis/images/smearing_effect_simulation_c_p', '-dpng', '-r200');
+
+close();
+
+
+
+
+
+

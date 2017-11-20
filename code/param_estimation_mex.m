@@ -1,5 +1,5 @@
 %%%%%%%%%% Get measurement data %%%%%%%%%%%%%%%%%%%
-dsc_filename = 'ExpDat_16-407-3_mitKorr_10Kmin_H.csv';
+dsc_filename = 'ExpDat_16-407-3_mitKorr_20Kmin_H.csv';
 dsc = DSC204_readFile(dsc_filename);
 
 m_pcm = dsc.mass;
@@ -82,21 +82,22 @@ dchi = @(x_tilde) (dx_Ag - dx_pcm) ./ (exp(gamma*(x_tilde-b)) + 1) + dx_pcm;
 
 spatial_gridsize = dchi(0:N-2)';
 
-sum(spatial_gridsize(1:N1-1))
-sum(spatial_gridsize(1:N1+N3-1))
-figure(10)
-plot(spatial_gridsize, 'x')
-return
+% sum(spatial_gridsize(1:N1-1))
+% sum(spatial_gridsize(1:N1+N3-1))
+% figure(10)
+% plot(spatial_gridsize, 'x')
+% return
 
 
 % c_p parametrization with Fraser-Suzuki-Peak
 h  =  10.0;
 r  =  2.0;
-wr =  15.0;
+wr =  5.0;
 sr =   0.3;
 z  = 130.0;
+m  = 0.003;
 b  =   2.0;
-p_fraser_suzuki = [h, r, wr, sr, z, b];
+p_fraser_suzuki = [h, r, wr, sr, z, m, b];
 
 p_atan_cp = [125., 10, 0.01, 10., 0.003, 2];
 
@@ -204,8 +205,11 @@ compute_q_dqdp_mex_expl = @(p_optim) compute_q_dqdp_mex(...
 %%%%%%%%%%%%%% INITIAL VALUE TEST %%%%%%%%%%%%%%%%%%%%
 [res, dqdp] = compute_q_dqdp_mex_expl(p_optim_start);
 
-q_sim_300 = res + q_dsc;
+q_sim = res + q_dsc;
 
+
+figure(4); hold on
+plot(T_ref_dsc, q_sim, 'DisplayName', sprintf('%1.2f K/min', heat_rate))
 return
 
 
