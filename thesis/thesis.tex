@@ -1585,6 +1585,52 @@ In order to perform the parameter estimation for $c_p(T)$ we need to solve the l
 
 where $p_{c_p} \in \mathbb{R}^{n_p}$ are optimization variables parametrizing the specific heat capacity $c_p(T)$, $n_{{mp}}$ is the number of measurement points, $\varPhi_{q}^{pcm,in}$ is the simulated heat flux into the PCM from the solution of the heat equation $T(t_i;T_0,p_{c_p})$ and $\varPhi_q^{\eta_i}$ is the heat flux measurement value at measurement time $t_i$. The side condition $\dot{T} = f(T,t;p_{c_p})$ with $T(0) = T_0$ is equal to the initial value problem \eqref{eq:heat_equation_discretized} of solving the heat equation. $\bar{p}_{c_p}$ and $\underline{p}_{c_p}$ are upper respectively lower bounds of the optimization variables. \\
 
+The measurement data is given as $\varPhi_q^{\eta_i}(T_{ref}^{\eta_i})$ where $T_{ref}^{\eta_i}$ is the temperature at the reference crucible at measurement time $t_i$. Since we need to pass these times $t_i$ to the differential equation solver for the evaluation of the temperature and sensitivities we obtain them by solving the non-linear equation 
+
+\begin{align}
+	T_{ref}^{\eta_i} - T_{ref}^{sim}(t_i) = 0 \quad \forall \ i \in \{1,2,...,n_{mp}\}
+\end{align}
+
+using Newton's method where $T_{ref}^{sim}(t)$ is the analytical solution of the heat equation on the reference side \eqref{eq:analytical_soln_final_formula}. This is depicted in Fig. \ref{fig:obtaining_measurement_times}.
+
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}
+	\begin{axis}[domain=0:65,
+	samples=100,
+	xmin=0, xmax=70,
+	ymin=0.,	 
+	axis lines=left,
+	xtick={40},
+	xticklabels={$t_i$},
+	ytick={0.7, 3.7},
+	yticklabels={$T_0$, $T_{ref}^{\eta_i}$},
+	xlabel=$time$, xlabel style={at=(current axis.right of origin), anchor=west},
+	ylabel=\empty
+	]
+	
+	\addplot+[color=black, mark=none] {0.7 + 0.1*x}
+	node[pos=0.87, above, sloped] {$T_{{furnace}}$};
+	
+	\addplot+[color=black, mark=none] {0.7 + 0.1*x - (1 - exp(-0.11*x)}
+	node[pos=0.95, below, sloped] {$T_{{ref}}^{{sim}}$};
+	
+	\addplot[only marks, mark=x, color=black] 
+	table {40 3.7
+	};	
+	
+	\draw [loosely dashed] (0, 370) -- (400, 370);
+	\draw [loosely dashed] (400, 0) -- (400, 370);	
+	
+	\end{axis}
+	\end{tikzpicture}
+	\caption{}
+	\label{fig:obtaining_measurement_times}
+\end{figure}
+
+
+
 For the optimization process using Gauss-Newton method (see section \ref{sec:Gauss_Newton}) we first define the residuum vector which euclidean norm $|| \cdot ||_2^2$ will be minimized as 
 
 \begin{equation}
@@ -1625,43 +1671,7 @@ with
 using \eqref{eq:heat_flux_computation_final}. The non-zero entries are in column $N_{pcm}$ and $N_{pcm}+1$. \\
 The sensitivities $\frac{\partial T}{\partial p_{c_p}}(t_i) \in \mathbb{R}^{N \times n_p}$ are obtained by internal numerical differentiation while solving the differential equation in forward mode with the software SolvIND \cite{diss_jan}. \\
 
-\todo{Erklaeren wie man mit Newton-Verfahren auf die Mess-Zeitpunkte $t_i$ kommt.}
 
-
-\begin{figure}[H]
-	\centering
-	\begin{tikzpicture}
-	\begin{axis}[domain=0:65,
-	samples=100,
-	xmin=0, xmax=70,
-	ymin=0.,	 
-	axis lines=left,
-	xtick={40},
-	xticklabels={$t_i$},
-	ytick={0.7, 3.7},
-	yticklabels={$T_0$, $T_{ref}^{\eta_i}$},
-	xlabel=$time$, xlabel style={at=(current axis.right of origin), anchor=west},
-	ylabel=\empty
-	]
-	
-	\addplot+[color=black, mark=none] {0.7 + 0.1*x}
-	node[pos=0.87, above, sloped] {$T_{{furnace}}$};
-	
-	\addplot+[color=black, mark=none] {0.7 + 0.1*x - (1 - exp(-0.11*x)}
-	node[pos=0.95, below, sloped] {$T_{{ref}}^{{sim}}$};
-	
-	\addplot[only marks, mark=x, color=black] 
-	table {40 3.7
-	};	
-	
-	\draw [loosely dashed] (0, 370) -- (400, 370);
-	\draw [loosely dashed] (400, 0) -- (400, 370);	
-	
-	\end{axis}
-	\end{tikzpicture}
-	\caption{}
-	\label{fig:}
-\end{figure}
 
 
 \section{Numerical experiments and results}
