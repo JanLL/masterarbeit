@@ -327,6 +327,7 @@ With the mapping $\Phi(T_{ref}) = \frac{\Delta U(T_{ref})}{sens(T_{ref})}$ the h
 
 
 \subsubsection{Smearing Problem}
+\label{sec:smearing_problem}
 The common way to perform the DSC calibration, measurement and compute the specific heat capacity $c_p$ is described in detail in DIN 11357 \cite{DIN_11357}. By assuming a proportionality between the heat flux into the sample and the sample's heat capacity one gets the equation
 
 \begin{equation}
@@ -1630,7 +1631,9 @@ using Newton's method where $T_{ref}^{sim}(t)$ is the analytical solution of the
 \end{figure}
 
 
-
+\begin{flushright}
+	
+\end{flushright}
 For the optimization process using Gauss-Newton method (see section \ref{sec:Gauss_Newton}) we first define the residuum vector which euclidean norm $|| \cdot ||_2^2$ will be minimized as 
 
 \begin{equation}
@@ -1675,26 +1678,32 @@ The sensitivities $\frac{\partial T}{\partial p_{c_p}}(t_i) \in \mathbb{R}^{N \t
 
 
 \section{Numerical experiments and results}
-
+\todo{allg. Werte fuer Parameter in Simulationen benutzt, z.b. Materialkonstanten Silber} \\
+\todo{nur bei NURBS noch Constantan benutzt}
 
 \subsection{Smearing effect on simulated heat flux for different heat rates}
+The first basic numerical experiment consists of showing that our mathematical model is capable of reproducing heat fluxes exhibiting the smearing effect similar to those measured (see Sec \ref{sec:smearing_problem}). This was achieved by a forward simulation for several different heat rates using  the same specific heat capacity (see Fig. \ref{fig:smearing_effect_c_p}) each time. \\
+The resulting heat fluxes for all heat rates from the forward simulation can be seen in Fig. \ref{fig:smearing_effect_simulation_heat_flux}. They exhibit obviously a widening of the peak and a shift of the maximum to higher temperatures for increasing heat rates similar to the measured heat fluxes shown in Fig. \ref{fig:smearing_effect_measurement_heat_flux}. \\
+This result forms the basis of reproducing the heat flux measurement values in the simulation and in the further numerical experiments perform a parameter estimation to obtain the specific heat capacity. 
+
 
 
 \begin{figure}[H]
 	\centering
-	\begin{subfigure}{0.49\textwidth}
-		\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/thesis/images/smearing_effect_simulation_c_p.png}
-		\caption{blubb}
+	\begin{subfigure}{0.9\textwidth}
+		\centering
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/thesis/images/smearing_effect_simulation_c_p.png}
+		\caption{Used specific heat capacity for all heat rates. Parametrization is Fraser-Suzuki with $h=10$, $r=2$, $wr=5$, $sr=0.3$, $z=130$, $m=0.003$ and $b=2$.}
 		\label{fig:smearing_effect_c_p}
 	\end{subfigure} \\
 	\begin{subfigure}{0.49\textwidth}
 		\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/thesis/images/smearing_effect_simulation_heat_fluxes.png}
-		\caption{blubb}
+		\caption{Heat fluxes from simulation for different heat rates.}
 		\label{fig:smearing_effect_simulation_heat_flux}
 	\end{subfigure}
 	\begin{subfigure}{0.49\textwidth}
 		\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/vortrag/images/heat_flux_measurement.png}
-		\caption{blubb}
+		\caption{Heat flux measurement values for different heat rates.}
 		\label{fig:smearing_effect_measurement_heat_flux}
 	\end{subfigure}
 	\caption{}
