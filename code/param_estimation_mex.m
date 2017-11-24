@@ -1,5 +1,5 @@
 %%%%%%%%%% Get measurement data %%%%%%%%%%%%%%%%%%%
-dsc_filename = 'ExpDat_16-407-3_mitKorr_20Kmin_H.csv';
+dsc_filename = 'ExpDat_16-407-3_mitKorr_5Kmin_H.csv';
 dsc = DSC204_readFile(dsc_filename);
 
 m_pcm = dsc.mass;
@@ -20,14 +20,14 @@ num_meas = length(q_dsc);
 L1 = 40;  % [mm]
 L3 = 0.1;  % [mm]
 
-% n_pcm = 0.2;
-% N = 350;
-% N3 = N*n_pcm;
-% N1 = N - N3;
+n_pcm = 0.2;
+N = 1000;
+N3 = N*n_pcm;
+N1 = N - N3;
 
-N3 = 50;  % error if N3=0
-N1 = 300;
-N = N1 + N3;
+% N3 = 50;  % error if N3=0
+% N1 = 1000;
+% N = N1 + N3;
 
 % Constantan
 % lambda_Const = 23.;  % [mW/(mm*K)]
@@ -57,7 +57,7 @@ heat_rate_s = heat_rate / 60; % [K/min] -> [K/s]
 n_pcm = N3 / (N1 + N3);
 n_tr = 0.1;
 n_m = 0.01;
-t = 0.99;
+t = 0.999;
 
 N_pcm = N * n_pcm;
 N_tr = N * n_tr;
@@ -204,6 +204,19 @@ compute_q_dqdp_mex_expl = @(p_optim) compute_q_dqdp_mex(...
 
 %%%%%%%%%%%%%% INITIAL VALUE TEST %%%%%%%%%%%%%%%%%%%%
 [T] = compute_q_dqdp_mex_expl(p_optim_start(p_optim_estimable));
+
+n_pcm_str = strrep(num2str(n_pcm), '.', ',');
+n_tr_str = strrep(num2str(n_tr), '.', ',');
+n_m_str = strrep(num2str(n_m), '.', ',');
+t_str = strrep(num2str(t), '.', ',');
+L1_str = strrep(num2str(L1), '.', ',');
+L3_str = strrep(num2str(L3), '.', ',');
+
+save(sprintf(['/home/argo/masterarbeit/simulationen-data/grid_error/', ...
+    'Temp_n_pcm=%s_n_tr=%s_n_m=%s_t=%s_L1=%s_L3=%s_N1=%d_N3=%d'], ...
+    n_pcm_str, n_tr_str, n_m_str, t_str, L1_str, L3_str, N1, N3), ...
+    'T', 'n_pcm', 'n_tr', 'n_m', 't', 'L1', 'L3', 'N1', 'N3', 'L1', 'L3');
+
 return
 
 q_sim = res + q_dsc;

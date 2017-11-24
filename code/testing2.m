@@ -568,6 +568,124 @@ close();
 
 
 
+%% Plot grid error with equidistant grid as reference
+%  modify n_tr
+
+root_dir = '/home/argo/masterarbeit/simulationen-data/grid_error/';
+
+T_ref_file = [root_dir, 'Temp_equidistant_grid_N1=20000_N3=50_L1=40,00_L3=0,10.mat'];
+T_ref_data = load(T_ref_file);
+T_ref = T_ref_data.T(:,20000);
+
+T_test_dirs = {'Temp_n_pcm=0,14286_n_tr=0_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=300_N3=50.mat', ...
+               'Temp_n_pcm=0,14286_n_tr=0,1_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=300_N3=50.mat', ...
+               'Temp_n_pcm=0,14286_n_tr=0,3_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=300_N3=50.mat', ...
+               'Temp_n_pcm=0,14286_n_tr=0,5_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=300_N3=50.mat', ...
+               'Temp_n_pcm=0,14286_n_tr=0,7_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=300_N3=50.mat'};
+
+figure(20); clf; ax1=gca; hold on;
+figure(21); clf; ax2=gca; hold on;
+
+           
+for i=1:length(T_test_dirs)
+  
+    T_test_data = load([root_dir, T_test_dirs{i}]);
+    T_test = T_test_data.T(:,T_test_data.N1);
+    
+    relErr = abs(1 - T_test ./ T_ref);
+    
+    plot(ax1, relErr, 'DisplayName', sprintf('%s', num2str(T_test_data.n_tr)));
+    
+    %T_test_data.N1
+    
+    spatial_grid = build_grid(T_test_data.N1, T_test_data.N3, T_test_data.L1, T_test_data.L3, T_test_data.n_tr, T_test_data.n_m, T_test_data.t);
+    
+    plot(ax2, spatial_grid, 'x', 'DisplayName', sprintf('%s', num2str(T_test_data.n_tr)));
+    
+end
+
+legend(ax1, 'show', 'location', 'northwest')
+legend(ax2, 'show', 'location', 'northeast')
+
+
+%%
+%  modify N1
+
+root_dir = '/home/argo/masterarbeit/simulationen-data/grid_error/';
+
+T_ref_file = [root_dir, 'Temp_equidistant_grid_N1=20000_N3=50_L1=40,00_L3=0,10.mat'];
+T_ref_data = load(T_ref_file);
+T_ref = T_ref_data.T(:,20000);
+
+T_test_dirs = {'Temp_n_pcm=0,33333_n_tr=0,1_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=100_N3=50.mat', ...
+               'Temp_n_pcm=0,14286_n_tr=0,1_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=300_N3=50.mat', ...
+               'Temp_n_pcm=0,090909_n_tr=0,1_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=500_N3=50.mat', ...
+               'Temp_n_pcm=0,047619_n_tr=0,1_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=1000_N3=50.mat'};
+
+figure(20); clf; ax1=gca; hold on;
+figure(21); clf; ax2=gca; hold on;
+
+           
+for i=1:length(T_test_dirs)
+  
+    T_test_data = load([root_dir, T_test_dirs{i}]);
+    T_test = T_test_data.T(:,T_test_data.N1);
+    
+    relErr = abs(1 - T_test ./ T_ref);
+    
+    plot(ax1, relErr, 'DisplayName', sprintf('%s', num2str(T_test_data.N1)));
+    
+    %T_test_data.N1
+    
+    spatial_grid = build_grid(T_test_data.N1, T_test_data.N3, T_test_data.L1, T_test_data.L3, T_test_data.n_tr, T_test_data.n_m, T_test_data.t);
+    
+    plot(ax2, spatial_grid, 'x', 'DisplayName', sprintf('%s', num2str(T_test_data.N1)));
+    
+end
+
+legend(ax1, 'show', 'location', 'northwest')
+legend(ax2, 'show', 'location', 'northeast')
+
+
+
+
+%%
+%  modify N
+
+root_dir = '/home/argo/masterarbeit/simulationen-data/grid_error/';
+
+T_ref_file = [root_dir, 'Temp_equidistant_grid_N1=20000_N3=50_L1=40,00_L3=0,10.mat'];
+T_ref_data = load(T_ref_file);
+T_ref = T_ref_data.T(:,20000);
+
+T_test_dirs = {'Temp_n_pcm=0,2_n_tr=0,1_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=160_N3=40.mat', ...
+               'Temp_n_pcm=0,2_n_tr=0,1_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=240_N3=60.mat', ...
+               'Temp_n_pcm=0,2_n_tr=0,1_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=400_N3=100.mat', ...
+               'Temp_n_pcm=0,2_n_tr=0,1_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=800_N3=200.mat'};
+
+figure(20); clf; ax1=gca; hold on;
+figure(21); clf; ax2=gca; hold on;
+
+           
+for i=1:length(T_test_dirs)
+  
+    T_test_data = load([root_dir, T_test_dirs{i}]);
+    T_test = T_test_data.T(:,T_test_data.N1);
+    
+    relErr = abs(1 - T_test ./ T_ref);
+    
+    plot(ax1, relErr, 'DisplayName', sprintf('%s', num2str(T_test_data.N1 + T_test_data.N3)));
+    
+    spatial_grid = build_grid(T_test_data.N1, T_test_data.N3, T_test_data.L1, T_test_data.L3, T_test_data.n_tr, T_test_data.n_m, T_test_data.t);
+    
+    plot(ax2, spatial_grid, 'x', 'DisplayName', sprintf('%s', num2str(T_test_data.N1 + T_test_data.N3)));
+    
+end
+
+legend(ax1, 'show', 'location', 'northwest')
+legend(ax2, 'show', 'location', 'northeast')
+
+
 
 
 
