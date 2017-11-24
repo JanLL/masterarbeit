@@ -91,7 +91,7 @@ void gauss_linear_comb_formula(T x, T& c_p, T& h, const T* params)
 
 		c_p  += gauss_i;
 		
-		h += sqrt(M_PI)/2. * p_ampl * p_sigma * (erf((x - p_offset)/p_sigma) - erf((x_tilde - p_offset)/p_sigma));
+		//h += sqrt(M_PI)/2. * p_ampl * p_sigma * (erf((x - p_offset)/p_sigma) - erf((x_tilde - p_offset)/p_sigma));
 	}
 
 	T p_linear = *params; params++;

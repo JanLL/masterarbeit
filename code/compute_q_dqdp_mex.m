@@ -30,8 +30,9 @@ drawnow;
 %[residuum, Jac] = heat1D_pcm('optimization', p_optim_all); 
 
 if (nargout == 1)
-    residuum = heat1D_pcm('evaluation', p_optim_all);
-    varargout{1} = residuum;
+    [residuum, T] = heat1D_pcm('evaluation', p_optim_all);
+    %varargout{1} = residuum;
+    varargout{1} = T;
 elseif (nargout == 2)    
     [residuum, Jac, T] = heat1D_pcm('optimization', p_optim_all); 
     Jac = Jac(:,p_optim_estimable);

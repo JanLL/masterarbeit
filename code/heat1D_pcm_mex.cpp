@@ -125,6 +125,7 @@ public:
 		m_event_filter.set ( IPlugin::Event_OutputGrid );
 
 		solGrid_idx = 0;
+		optimization_active = false;
 
 	}
 
@@ -137,6 +138,7 @@ public:
 	void resetSolGrid_idx() {
 		solGrid_idx = 0;
 	}
+
 
 	virtual svLong atEvent (
 		const TEvent       event,
@@ -153,8 +155,9 @@ public:
 
 		//std::cout << "TContFwdSensGetter: stored traj:\n" << g_traj[ g_traj.size() - 1 ];
 
-		g_fwdSens.push_back( Sonic::DMat ( Sonic::cDMat ( data->m_fwdSensitivities[0], data->m_fwdSensLeaDim, data->m_dims [ Component_XD ], m_nRays * m_fwdTCOrder) ) );
-
+		if (optimization_active == true) {
+			g_fwdSens.push_back( Sonic::DMat ( Sonic::cDMat ( data->m_fwdSensitivities[0], data->m_fwdSensLeaDim, data->m_dims [ Component_XD ], m_nRays * m_fwdTCOrder) ) );
+		}
 		//std::cout << "TContFwdSensGetter: stored fwdSens:\n" << g_fwdSens[ g_fwdSens.size() - 1 ];
 
 		solGrid_idx++;
@@ -165,6 +168,7 @@ public:
 	svULong m_nRays;
 
 	svULong solGrid_idx;
+	bool optimization_active;
 
 };
 
@@ -618,6 +622,7 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 
 		evaluator->resetStatistics();
 		fwdSensGetter.resetSolGrid_idx();
+		fwdSensGetter.optimization_active = true;
 		g_adjSens.clear();
 		g_fwdSens.clear();
 
@@ -853,6 +858,7 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 
 		evaluator->resetStatistics();
 		fwdSensGetter.resetSolGrid_idx();
+		fwdSensGetter.optimization_active = false;
 		g_adjSens.clear();
 		g_fwdSens.clear();
 
@@ -860,23 +866,28 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		// Q: nicht ganz klar warum man das nochmal braucht? Sonst sind alle adjSens gleich 0...
 
 
-
+		std::cout << "Setting initial values\n";
 		integrator->setInitialValues(Component_P, np, c_p_params);
 
 
 		integrator->setForwardTaylorCoefficients ( 0, 0, 0, 0 );
+		/*integrator->setForwardTaylorCoefficients (
+				nFwdDir,      // no of fwd Dirs
+				1,            // order
+				1 + nxd + np, // leading Dim of fwd Dirs
+				fwdSensDir    // (1+nxd+np)x(np) matrix with np fwdDirections
+				);*/
 		integrator->setAdjointTaylorCoefficients ( 0, 0, 0, 0, 0 );
-		//std::cout << "Integrate now...\n";
+		std::cout << "Integrate now...\n";
 		clock_t t_begin = clock();
 		errorCode = integrator->evaluate();
 		clock_t t_end = clock();
 		clock_t t_duration = t_end - t_begin;
-		//std::cout << "Integration took " << double(t_duration) / CLOCKS_PER_SEC << " seconds." << std::endl;
+		std::cout << "Integration took " << double(t_duration) / CLOCKS_PER_SEC << " seconds." << std::endl;
 		if ( errorCode < 0 ){
 			cout << "Error occured during evaluation, terminating now... \n" << errorCode<< std::endl;
 			return;
 		}
-
 
 		// Compute heat flux and residuum vector
 		Sonic::DMat heat_flux(nmp, 1);
@@ -897,11 +908,13 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 
 			heat_flux(i,0) = scale_q * (T_N1_i - T_N1p1_i);
 		}
+
 		
 		Sonic::DMat residuum(nmp, 1);
 		for (svULong i=0; i<nmp; ++i) {
 			residuum(i,0) = heat_flux(i,0) - (*q_meas)(i,0);
 		}
+
 
 
 
@@ -914,11 +927,13 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		residuum_output <<= residuum_temp;
 
 
+
+
 		// Temperature trajectory
 		if (nlhs >= 2) {
 			const Sonic::cDMat& T_temp(*g_traj);
-			plhs[2] = mxCreateDoubleMatrix(T_temp.nRows(), T_temp.nCols(), mxREAL);
-			Sonic::DMat T_output(mxGetPr(plhs[2]), T_temp.nRows(),
+			plhs[1] = mxCreateDoubleMatrix(T_temp.nRows(), T_temp.nCols(), mxREAL);
+			Sonic::DMat T_output(mxGetPr(plhs[1]), T_temp.nRows(),
 					T_temp.nRows(), T_temp.nCols(), Sonic::CreateReference);
 			T_output <<= T_temp;
 		}

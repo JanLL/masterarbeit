@@ -96,10 +96,10 @@ spatial_gridsize = dchi(0:N-2)';
 % c_p parametrization with Fraser-Suzuki-Peak
 h  =  10.0;
 r  =  2.0;
-wr =  15.0;
+wr =  5.0;
 sr =   0.3;
 z  = 130.0;
-m  = 0.01;
+m  = 0.003;
 b  =   2.0;
 p_fraser_suzuki = [h, r, wr, sr, z, m, b].';
 
@@ -158,8 +158,8 @@ F1_func = @(p_optim) compute_q_dqdp_mex(...
 F2_func = @(p) GN_test_fct_F2(p);
 
 %%%%%%%%%%%%%% INITIAL VALUE TEST %%%%%%%%%%%%%%%%%%%%
-% [F1, J1] = F1_func(p_optim_start(p_optim_estimable));
-% return
+[F1, J1] = F1_func(p_optim_start(p_optim_estimable));
+return
 
 lb = -inf*ones(1,length(p_optim_start));
 ub = +inf*ones(1,length(p_optim_start));

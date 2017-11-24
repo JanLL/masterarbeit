@@ -203,10 +203,11 @@ compute_q_dqdp_mex_expl = @(p_optim) compute_q_dqdp_mex(...
 
 
 %%%%%%%%%%%%%% INITIAL VALUE TEST %%%%%%%%%%%%%%%%%%%%
-[res, dqdp] = compute_q_dqdp_mex_expl(p_optim_start);
+[T] = compute_q_dqdp_mex_expl(p_optim_start(p_optim_estimable));
+return
 
 q_sim = res + q_dsc;
-
+return
 
 figure(4); hold on
 plot(T_ref_dsc, q_sim, 'DisplayName', sprintf('%1.2f K/min', heat_rate))
