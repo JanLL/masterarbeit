@@ -1489,6 +1489,7 @@ Finally the solution of the boundary value problem \eqref{eq:analytical_soln_pde
 Since in the end we want to estimate the specific heat capacity $c_p$ we need a parametrization with enough degrees of freedom in order to generate appropriate functions. 
 
 \subsubsection{NURBS}
+\label{sec:nurbs}
 In early stages of work we used Non-Uniform Rational B-Splines (NURBS). The generated curve $C(u) = \{C^x(u), C^y(u) \} \in \mathbb{R}^2$ is defined by
 
 \begin{equation}
@@ -1582,6 +1583,7 @@ In order to perform the parameter estimation for $c_p(T)$ we need to solve the l
 	& T(0) = T_0 \nonumber \\
 	& p_{c_p} \le \bar{p}_{c_p} \nonumber \\
 	& p_{c_p} \ge \underline{p}_{c_p} \nonumber
+	\label{eq:parameter_estimation_least_squares_problem}
 \end{align}
 
 where $p_{c_p} \in \mathbb{R}^{n_p}$ are optimization variables parametrizing the specific heat capacity $c_p(T)$, $n_{{mp}}$ is the number of measurement points, $\varPhi_{q}^{pcm,in}$ is the simulated heat flux into the PCM from the solution of the heat equation $T(t_i;T_0,p_{c_p})$ and $\varPhi_q^{\eta_i}$ is the heat flux measurement value at measurement time $t_i$. The side condition $\dot{T} = f(T,t;p_{c_p})$ with $T(0) = T_0$ is equal to the initial value problem \eqref{eq:heat_equation_discretized} of solving the heat equation. $\bar{p}_{c_p}$ and $\underline{p}_{c_p}$ are upper respectively lower bounds of the optimization variables. \\
@@ -1659,6 +1661,7 @@ By applying the chain rule we get the corresponding Jacobian
 		\textcolor{white}{} \\
 		\frac{\partial \varPhi_{q}^{pcm,in}}{\partial T}(T(t_{n_{mp}})) \cdot \frac{\partial T}{\partial p_{c_p}}(t_{n_{mp}}) \\
 	\end{pmatrix}
+	\label{eq:optimization_jacobian}
 \end{equation}
 
 with
@@ -1678,8 +1681,10 @@ The sensitivities $\frac{\partial T}{\partial p_{c_p}}(t_i) \in \mathbb{R}^{N \t
 
 
 \section{Numerical experiments and results}
-\todo{allg. Werte fuer Parameter in Simulationen benutzt, z.b. Materialkonstanten Silber} \\
-\todo{nur bei NURBS noch Constantan benutzt}
+All conducted numerical experiments involve the following subproblems: The numerical integration where we solve \eqref{eq:heat_equation_discretized} gives us the temperature $T$ and sensitivities $\frac{\partial T}{\partial p}$. This was accomplished with the numerical integrator DAESOL-II embedded in SolvIND. The integration tolerance was set to $10^{-7}$ and the sensitivities were obtained in forward mode.
+The heat flux $\varPhi_q^{pcm,in}$ is then computed with \eqref{eq:heat_flux_computation_final} and the optimization Jacobian $J_1(p_{c_p})$ with \eqref{eq:optimization_jacobian}. The parameter estimation is then performed by solving the least squares problem \eqref{eq:parameter_estimation_least_squares_problem}. \todo{welches programm fuer die optimierung} \\
+The material properties used throughout were for silver $c_{p,Ag}=0.235 \frac{mJ}{mg \ K}$, $\rho_{Ag}=10.49 \frac{mg}{mm^3}$ and $\lambda_{Ag}=430 \frac{mW}{mm \ K}$ and for the PCM $\rho_{pcm}=0.85 \frac{mg}{mm^3}$ and $\lambda_{pcm}=0.96 \frac{mW}{mm \ K}$. The initial temperature was set to $T_0=10^\circ C$ and the simulation stopped for the furnace temperature $T^0=200^\circ C$ such that the phase transition is completely finished. \\
+
 
 \subsection{Smearing effect on simulated heat flux for different heat rates}
 The first basic numerical experiment consists of showing that our mathematical model is capable of reproducing heat fluxes exhibiting the smearing effect similar to those measured (see Sec \ref{sec:smearing_problem}). This was achieved by a forward simulation for several different heat rates using  the same specific heat capacity (see Fig. \ref{fig:smearing_effect_c_p}) each time. \\
@@ -1697,12 +1702,12 @@ This result forms the basis of reproducing the heat flux measurement values in t
 		\label{fig:smearing_effect_c_p}
 	\end{subfigure} \\
 	\begin{subfigure}{0.49\textwidth}
-		\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/thesis/images/smearing_effect_simulation_heat_fluxes.png}
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/smearing_effect_simulation_heat_fluxes.png}
 		\caption{Heat fluxes from simulation for different heat rates.}
 		\label{fig:smearing_effect_simulation_heat_flux}
 	\end{subfigure}
 	\begin{subfigure}{0.49\textwidth}
-		\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/vortrag/images/heat_flux_measurement.png}
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/heat_flux_measurement.png}
 		\caption{Heat flux measurement values for different heat rates.}
 		\label{fig:smearing_effect_measurement_heat_flux}
 	\end{subfigure}
@@ -1714,33 +1719,43 @@ This result forms the basis of reproducing the heat flux measurement values in t
 
 \subsection{Parameter estimation using finite differences and NURBS parametrization}
 
-\begin{itemize}
-	\item ODE15s Fehlertolereanz 1e-7
-\end{itemize}
+For the first attempt of estimating $c_p(T)$  we used the NURBS parametrization (see Sec. \ref{sec:nurbs}). In total we used 33 control points where the y-coordinates ($\hat{=} c_p$) are optimization variables and the the x-coordinate ($\hat{=}$ temperature) were fixed to 
+
+\begin{equation}
+	P^x = [0, 30, 60, 90, 100, 102, 104, ..., 148, 150, 160, 180, 200]
+\end{equation}
+
+such that the peak has enough degrees of freedom for temperatures $T \in [100, 150]$. \\
+Due to the early working state we used the matlab routines $ode15s$ for integration and $lsqnonlin$ to solve the least squares problem where the Jacobian was computed via external numerical differentiation. The integration tolerance was set here to $10^{-7}$ as well. Besides that material properties of Constantan were used instead of silver for the heat transport plate from furnace to PCM. In particular these are $c_{p,Const}=0.41\frac{mJ}{mg \ K}$, $\rho_{Const}=10.49\frac{mg}{mm^3}$ and $\lambda_{Const}=23\frac{mW}{mm \ K}$. \\
+Minimizing the heat flux residuum worked best in this setting for $L_{Const}=15mm$ (instead of $L_{Ag}$ here) and $L_{pcm}=0.5mm$. \\
+The results after optimizing are shown in Fig. \ref{fig:NURBS_results}.
+
 
 
 \begin{figure}[H]
 	\begin{subfigure}{0.49\textwidth}
-		\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_c_p(T).png}
-		\caption{blubb}
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_c_p(T).png}
+		\caption{Specific heat capacity $c_p(T)$ obtained by parameter estimation.}
 		\label{fig:NURBS_c_p}
 	\end{subfigure}
 	\begin{subfigure}{0.49\textwidth}
-		\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_heat_flux.png}
-		\caption{blubb}
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_heat_flux.png}
+		\caption{Heat flux into PCM $\varPhi_q^{pcm,in}$ measurement values (dashed red), simulation (blue) and corresponding residuum (yellow).}
 		\label{fig:NURBS_heat_flux}
 	\end{subfigure}
 	\begin{subfigure}{0.49\textwidth}
-		\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_jac.png}
-		\caption{blubb}
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_jac.png}
+		\caption{Optimization Jacobian $J_1(p_{c_p})$.}
 		\label{fig:NURBS_jac}
 	\end{subfigure}
+	\hspace{1cm}
 	\begin{subfigure}{0.49\textwidth}
-		\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_jac_zoom.png}
-		\caption{blubb}
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_jac_zoom.png}
+		\caption{Zoomed in view of Optimization Jacobian $J_1(p_{c_p})$.}
 		\label{fig:NURBS_jac_zoom}
 	\end{subfigure}
-	\caption{}
+	\caption{Specific heat capacity, heat flux and optimization Jacobian at the end of the optimization process.}
+	\label{fig:NURBS_results}
 \end{figure}
 
 
