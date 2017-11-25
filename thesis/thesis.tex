@@ -172,6 +172,33 @@ Heat $Q$ is the energy that flows from a warmer to a colder object because of th
 Probably the most important physical quantity for us is the specific heat capacity $c_p$ which is a temperature dependent material property that tells us how much energy is needed to increase the temperature of $1kg$ of this material by $1K$. Since we are primarily interested in the phase change we handle with the so called apparent specific heat capacity which includes a peak at the melting point with a certain area equal to the melting enthalpy. For a pure substance this peak would be ideally a Dirac delta function. A constant heat flux entering such a pure substance increases the temperature until phase change. Then the heat is absorbed in order to perform the phase transition while the temperature stays constant. Finally after the phase change has finished the temperature increases again. In mixed substances like PE in our case with different lengths of the individual polymer chains or due to lattice defects the peak extends over a temperature range. 
 The last physical quantity to introduce is the melting enthalpy $\Delta H$ which is in the case of constant pressure the heat needed to perform the phase transition. Considering the graph $c_p(T)$, the area of the phase change peak is equal to the melting enthalpy.
 
+\begin{figure}[H]
+\hspace{-2cm}
+\begin{subfigure}{0.49\textwidth}
+\begin{tikzpicture}
+\begin{axis}[domain=70:150,
+samples=500,
+ymin=0, ymax=15	,	
+xmin=70, xmax=150,	 
+axis lines=left,
+xtick=\empty,
+ytick=\empty,
+xlabel=$T$, xlabel style={at=(current axis.right of origin), anchor=west},
+ylabel=\empty, ylabel style={at=(current axis.above origin), anchor=south}]
+
+\addplot+[color=blue,
+mark=none] {1.};
+\addlegendentry{$c_p(T)$}
+
+\draw[-latex,blue] (axis cs:130,1.) -- (axis cs:130,10);
+
+\end{axis}
+\end{tikzpicture}
+\caption{}
+\label{fig:physics_c_p_dirac_delta}
+\end{subfigure}
+\hspace{1.cm}
+\begin{subfigure}{0.49\textwidth}
 \begin{tikzpicture}
 \begin{axis}[domain=70:132,
 samples=500,
@@ -183,17 +210,16 @@ ytick=\empty,
 xlabel=$T$, xlabel style={at=(current axis.right of origin), anchor=west},
 ylabel=\empty, ylabel style={at=(current axis.above origin), anchor=south}]
 
-\addplot+[color=black,
-mark=none] {10*exp(-ln(2)/ln(0.3)^2 * (ln(1 + (x-130)*(0.3^2 - 1)/(5*0.3)))^2) + 0.5};
+\addplot+[color=blue,
+mark=none] {10*exp(-ln(2)/ln(0.3)^2 * (ln(1 + (x-130)*(0.3^2 - 1)/(5*0.3)))^2) + 1.};
 \addlegendentry{$c_p(T)$}
 
 \addplot+[mark=none,
-color=black,
+color=blue,
 domain=131.64:150,
 samples=50,
 forget plot]
-{0.5};
-
+{1.};
 
 \addplot+[mark=none,
 domain=100:132,
@@ -201,15 +227,21 @@ samples=500,
 pattern=flexible hatch,
 hatch distance=8pt,
 hatch thickness=1pt,
-draw=black,
+draw=blue,
 pattern color=red,
 area legend]
-{10*exp(-ln(2)/ln(0.3)^2 * (ln(1 + (x-130)*(0.3^2 - 1)/(5*0.3)))^2) + 0.5};
+{10*exp(-ln(2)/ln(0.3)^2 * (ln(1 + (x-130)*(0.3^2 - 1)/(5*0.3)))^2) + 1.};
 \addlegendentry{$\Delta H$}
 \end{axis}
 \end{tikzpicture}
+\caption{}
+\label{fig:physics_fraser_suzuki}
+\end{subfigure}
+\end{figure}
 
-\todo{Bild von $c_p$ fuer pure substance und ein Fraser-Suzuki Peak und erklaeren warum wir das fuer einen Kristall erwarten wuerden.}
+
+
+\todo{Erklaeren warum wir das fuer einen Kristall erwarten wuerden.}
 
 \subsection{Heat equation}
 \label{sec:heat_equation}
