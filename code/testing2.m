@@ -485,18 +485,21 @@ close();
 
 %% Plot old NURBS results in a pretty way
 
+root_dir = '/home/argo/masterarbeit/fits_data/2017-11-19_20:25:11_407_10Kmin_lsqnonlin/'
+fit_data = load([root_dir, 'fit_data.mat']);
+
+
 % Jacobian
-% fit_data = load('fit_data.mat');
-% 
-% fig = open('jac_output.fig');
-% set(gca,'FontSize',12);
-% 
+
+fig = open('jac_output.fig');
+set(gca,'FontSize',12);
+
 % print(fig, '/home/argo/masterarbeit/thesis/images/NURBS_jac', '-dpng', '-r200');
-% 
-% % Zoom in interesting part
+
+% Zoom in interesting part
 % xlim([0, 30])
 % ylim([124, 132])
-% 
+
 % print(fig, '/home/argo/masterarbeit/thesis/images/NURBS_jac_zoom', '-dpng', '-r200');
 % close();
 
@@ -508,30 +511,32 @@ close();
 % 
 % children = get(gca,'Children');
 % delete(children(1)) % delete c_p calc from formula
+% children(2).LineWidth = 1.3;
 % 
 % ylabel('c_p [mJ/(mg*K)]')
+% box off  % entfernt den Rahmen um die figure
 % 
 % print(fig, '/home/argo/masterarbeit/thesis/images/NURBS_c_p(T)', '-dpng', '-r200');
-
+% close;
 
 % heat flux
-fig = open('q_pcm_in(T_ref).fig');
-
-children = get(gca, 'Children');
-children(1).LineWidth = 1.;
-children(2).LineWidth = 1.;
-children(3).LineWidth = 1.;
-children(2).LineStyle = '--';
-
-set(gca,'FontSize',12);
-
-ylabel('\Phi_q^{PCM,in} [mW]')
-
-legend('off')
-legend('show', 'location', 'northwest');
-
-print(fig, '/home/argo/masterarbeit/thesis/images/NURBS_heat_flux', '-dpng', '-r200');
-close;
+% fig = open('q_pcm_in(T_ref).fig');
+% 
+% children = get(gca, 'Children');
+% children(1).LineWidth = 1.3;
+% children(2).LineWidth = 1.3;
+% children(3).LineWidth = 1.3;
+% children(2).LineStyle = '--';
+% 
+% set(gca,'FontSize',12);
+% 
+% ylabel('\Phi_q^{PCM,in} [mW]')
+% 
+% legend('off')
+% legend('show', 'location', 'northwest');
+% 
+% print(fig, '/home/argo/masterarbeit/thesis/images/NURBS_heat_flux', '-dpng', '-r200');
+% close;
 
 
 %% Plot smearing effect in simulation in a pretty way

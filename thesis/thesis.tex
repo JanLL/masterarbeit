@@ -1543,6 +1543,7 @@ where $h$, $r$, $sr$, $wr$ and $z$ are the parameters of Fraser-Suzuki. Furtherm
 	\label{fig:parametrization_example_fraser_suzuki}
 \end{figure}
 
+\todo{FS Peak von theorie fuer zumindest Kristallfestkoerper vorhergesagt, problem ist das wir hier ein Polymer haben, das komplizierter ist.}
 
 
 \subsubsection{Linear combination of Gaussian functions}
@@ -1729,26 +1730,23 @@ For the first attempt of estimating $c_p(T)$  we used the NURBS parametrization 
 such that the peak has enough degrees of freedom for temperatures $T \in [100, 150]$. \\
 Due to the early working state we used the matlab routines $ode15s$ for integration and $lsqnonlin$ to solve the least squares problem where the Jacobian was computed via external numerical differentiation. The integration tolerance was set here to $10^{-7}$ as well. Besides that material properties of Constantan were used instead of silver for the heat transport plate from furnace to PCM. In particular these are $c_{p,Const}=0.41\frac{mJ}{mg \ K}$, $\rho_{Const}=10.49\frac{mg}{mm^3}$ and $\lambda_{Const}=23\frac{mW}{mm \ K}$. \\
 Minimizing the heat flux residuum worked best in this setting for $L_{Const}=15mm$ (instead of $L_{Ag}$ here) and $L_{pcm}=0.5mm$. \\
-The results after optimizing are shown in Fig. \ref{fig:NURBS_results}.
+The results after optimizing, using the measurement data of heat rate $\beta = 10 \frac{K}{min}$, are shown in Fig. \ref{fig:NURBS_results}. As one can see it was possible to minimize the residuum of heat flux quite well aside from some oscillations which have their origin in $c_p(T)$ due to numerical problems. Beside the oscillations there is one major difference in the peak shape from what we would expect, that is after the peak a temporary decrease followed by a big slope.
+Finally $lsqnonlin$ gives us the approximation of the used Jacobian $J_1(p_{c_p})$ at the end of the optimization process which was computed internally via finite differences, see Fig. \ref{fig:NURBS_results}c. Since in our NURBS parametrization the y-coordinates of the control points are free optimization variables and the locality of those the x-axis of these Jacobian plots was set being the x-coordinates of the control points. This way there is a direct connection between $J_1(p_{c_p})$ and which zone of $c_p(T)$ it affects. The y-axis was labeled using the reference crucible temperature since the heat flux measurement values are given as a function of those, analog to the heat flux plot.
+Two things are worth mentioning. First the order of magnitude which is increased by several orders for areas of $c_p(T)$ up to temperatures of $100^\circ C$ and measurement values above $110^\circ C$ reference temperature during phase transition.
 
 
-
+\todo{Optimierungsdauer}
 \begin{figure}[H]
 	\subcaptionbox{Heat flux into PCM $\varPhi_q^{pcm,in}$ measurement values (dashed red), simulation (blue) and corresponding residuum (yellow).}[.49\linewidth]
 	{\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_heat_flux.png}}
-	\label{fig:NURBS_heat_flux}
 	\subcaptionbox{Specific heat capacity $c_p(T)$ obtained by parameter estimation.}[.49\linewidth]
 	{\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_c_p(T).png}}
-	\label{fig:NURBS_c_p}
 
-	
-	\subcaptionbox{Optimization Jacobian $J_1(p_{c_p})$.}[.49\linewidth]
+	\subcaptionbox{Approximated Jacobian $J_1(p_{c_p})$.}[.49\linewidth]
 	{\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_jac.png}}
-	\label{fig:NURBS_jac}
 	\hspace{0.5cm}
-	\subcaptionbox{Zoomed in view of Optimization Jacobian $J_1(p_{c_p})$.}[.49\linewidth]
+	\subcaptionbox{Zoomed in view of approximated $J_1(p_{c_p})$.}[.49\linewidth]
 	{\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_jac_zoom.png}}
-	\label{fig:NURBS_jac_zoom}
 	\caption{Specific heat capacity, heat flux and optimization Jacobian at the end of the optimization process.}
 	\label{fig:NURBS_results}
 \end{figure}
