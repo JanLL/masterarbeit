@@ -25,9 +25,9 @@ N = 1000;
 N3 = N*n_pcm;
 N1 = N - N3;
 
-% N3 = 50;  % error if N3=0
-% N1 = 1000;
-% N = N1 + N3;
+N3 = 50;  % error if N3=0
+N1 = 200;
+N = N1 + N3;
 
 % Constantan
 % lambda_Const = 23.;  % [mW/(mm*K)]
@@ -215,7 +215,7 @@ L3_str = strrep(num2str(L3), '.', ',');
 save(sprintf(['/home/argo/masterarbeit/simulationen-data/grid_error/', ...
     'Temp_n_pcm=%s_n_tr=%s_n_m=%s_t=%s_L1=%s_L3=%s_N1=%d_N3=%d'], ...
     n_pcm_str, n_tr_str, n_m_str, t_str, L1_str, L3_str, N1, N3), ...
-    'T', 'n_pcm', 'n_tr', 'n_m', 't', 'L1', 'L3', 'N1', 'N3', 'L1', 'L3');
+    'T', 'n_pcm', 'n_tr', 'n_m', 't', 'L1', 'L3', 'N1', 'N3', 'L1', 'L3', 'T_ref_dsc');
 
 return
 

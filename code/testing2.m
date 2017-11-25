@@ -581,11 +581,10 @@ T_test_dirs = {'Temp_n_pcm=0,14286_n_tr=0_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=300_N
                'Temp_n_pcm=0,14286_n_tr=0,1_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=300_N3=50.mat', ...
                'Temp_n_pcm=0,14286_n_tr=0,3_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=300_N3=50.mat', ...
                'Temp_n_pcm=0,14286_n_tr=0,5_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=300_N3=50.mat', ...
-               'Temp_n_pcm=0,14286_n_tr=0,7_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=300_N3=50.mat'};
+               'Temp_n_pcm=0,14286_n_tr=0,7_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=300_N3=50.mat'};           
 
-figure(20); clf; ax1=gca; hold on;
-figure(21); clf; ax2=gca; hold on;
-
+fig1 = figure(20); clf; ax1=gca; hold on;
+fig2 = figure(21); clf; ax2=gca; hold on;
            
 for i=1:length(T_test_dirs)
   
@@ -594,18 +593,29 @@ for i=1:length(T_test_dirs)
     
     relErr = abs(1 - T_test ./ T_ref);
     
-    plot(ax1, relErr, 'DisplayName', sprintf('%s', num2str(T_test_data.n_tr)));
+    plot(ax1, T_test_data.T_ref_dsc, relErr, 'Linewidth', 1.3, 'DisplayName', sprintf('n_{tr}=%s', num2str(T_test_data.n_tr)));
     
     %T_test_data.N1
     
     spatial_grid = build_grid(T_test_data.N1, T_test_data.N3, T_test_data.L1, T_test_data.L3, T_test_data.n_tr, T_test_data.n_m, T_test_data.t);
     
-    plot(ax2, spatial_grid, 'x', 'DisplayName', sprintf('%s', num2str(T_test_data.n_tr)));
+    plot(ax2, spatial_grid, 'x', 'DisplayName', sprintf('n_{tr}=%s', num2str(T_test_data.n_tr)));
     
 end
 
 legend(ax1, 'show', 'location', 'northwest')
+xlabel(ax1, 'T_{ref} [degC]')
+ylabel(ax1, 'Absolute relative error')
+set(ax1,'FontSize',12);
+print(fig1, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_n_tr_relErr', '-dpng', '-r200');
+
+
 legend(ax2, 'show', 'location', 'northeast')
+xlabel('$$\tilde{x}$$, Computation grid', 'Interpreter', 'latex')
+ylabel('$$\chi(\tilde{x}) = \Delta x$$ [mm]', 'Interpreter', 'latex')
+set(ax2,'FontSize',12);
+print(fig2, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_n_tr_gridsize', '-dpng', '-r200');
+
 
 
 %%
@@ -617,34 +627,47 @@ T_ref_file = [root_dir, 'Temp_equidistant_grid_N1=20000_N3=50_L1=40,00_L3=0,10.m
 T_ref_data = load(T_ref_file);
 T_ref = T_ref_data.T(:,20000);
 
-T_test_dirs = {'Temp_n_pcm=0,33333_n_tr=0,1_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=100_N3=50.mat', ...
+T_test_dirs = {'Temp_n_pcm=0,2_n_tr=0,1_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=200_N3=50.mat', ...
                'Temp_n_pcm=0,14286_n_tr=0,1_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=300_N3=50.mat', ...
                'Temp_n_pcm=0,090909_n_tr=0,1_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=500_N3=50.mat', ...
                'Temp_n_pcm=0,047619_n_tr=0,1_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=1000_N3=50.mat'};
 
-figure(20); clf; ax1=gca; hold on;
-figure(21); clf; ax2=gca; hold on;
+fig1 = figure(20); clf; ax1=gca; hold on;
+fig2 = figure(21); clf; ax2=gca; hold on;
 
            
 for i=1:length(T_test_dirs)
-  
+    
     T_test_data = load([root_dir, T_test_dirs{i}]);
     T_test = T_test_data.T(:,T_test_data.N1);
     
     relErr = abs(1 - T_test ./ T_ref);
     
-    plot(ax1, relErr, 'DisplayName', sprintf('%s', num2str(T_test_data.N1)));
+
+    plot(ax1, T_test_data.T_ref_dsc, relErr, 'Linewidth', 1.3, 'DisplayName', sprintf('N_1=%s', num2str(T_test_data.N1)));
     
     %T_test_data.N1
     
     spatial_grid = build_grid(T_test_data.N1, T_test_data.N3, T_test_data.L1, T_test_data.L3, T_test_data.n_tr, T_test_data.n_m, T_test_data.t);
     
-    plot(ax2, spatial_grid, 'x', 'DisplayName', sprintf('%s', num2str(T_test_data.N1)));
+    plot(ax2, spatial_grid, 'x', 'DisplayName', sprintf('N_1=%s', num2str(T_test_data.N1)));
     
 end
 
 legend(ax1, 'show', 'location', 'northwest')
+xlabel(ax1, 'T_{ref} [degC]')
+ylabel(ax1, 'Absolute relative error')
+set(ax1,'FontSize',12);
+print(fig1, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_N1_relErr', '-dpng', '-r200');
+
+
 legend(ax2, 'show', 'location', 'northeast')
+xlabel('$$\tilde{x}$$, Computation grid', 'Interpreter', 'latex')
+ylabel('$$\chi(\tilde{x}) = \Delta x$$ [mm]', 'Interpreter', 'latex')
+set(ax2,'FontSize',12);
+print(fig2, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_N1_gridsize', '-dpng', '-r200');
+
+
 
 
 
@@ -663,8 +686,8 @@ T_test_dirs = {'Temp_n_pcm=0,2_n_tr=0,1_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=160_N3=
                'Temp_n_pcm=0,2_n_tr=0,1_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=400_N3=100.mat', ...
                'Temp_n_pcm=0,2_n_tr=0,1_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=800_N3=200.mat'};
 
-figure(20); clf; ax1=gca; hold on;
-figure(21); clf; ax2=gca; hold on;
+fig1 = figure(20); clf; ax1=gca; hold on;
+fig2 = figure(21); clf; ax2=gca; hold on;
 
            
 for i=1:length(T_test_dirs)
@@ -674,16 +697,26 @@ for i=1:length(T_test_dirs)
     
     relErr = abs(1 - T_test ./ T_ref);
     
-    plot(ax1, relErr, 'DisplayName', sprintf('%s', num2str(T_test_data.N1 + T_test_data.N3)));
+    plot(ax1, T_test_data.T_ref_dsc, relErr, 'Linewidth', 1.3, 'DisplayName', sprintf('N=%s', num2str(T_test_data.N1 + T_test_data.N3)));
     
     spatial_grid = build_grid(T_test_data.N1, T_test_data.N3, T_test_data.L1, T_test_data.L3, T_test_data.n_tr, T_test_data.n_m, T_test_data.t);
     
-    plot(ax2, spatial_grid, 'x', 'DisplayName', sprintf('%s', num2str(T_test_data.N1 + T_test_data.N3)));
+    plot(ax2, spatial_grid, 'x', 'DisplayName', sprintf('N=%s', num2str(T_test_data.N1 + T_test_data.N3)));
     
 end
 
 legend(ax1, 'show', 'location', 'northwest')
+xlabel(ax1, 'T_{ref} [degC]')
+ylabel(ax1, 'Absolute relative error')
+set(ax1,'FontSize',12);
+print(fig1, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_N_relErr', '-dpng', '-r200');
+
+
 legend(ax2, 'show', 'location', 'northeast')
+xlabel('$$\tilde{x}$$, Computation grid', 'Interpreter', 'latex')
+ylabel('$$\chi(\tilde{x}) = \Delta x$$ [mm]', 'Interpreter', 'latex')
+set(ax2,'FontSize',12);
+print(fig2, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_N_gridsize', '-dpng', '-r200');
 
 
 
