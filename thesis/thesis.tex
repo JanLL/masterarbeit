@@ -11,6 +11,7 @@
 \usepackage{xfrac}
 %\usepackage{amsthm}
 \usepackage{ntheorem}
+\usepackage{subcaption}
 
 %\theoremstyle{break}
 \newtheorem{Definition}{Definition}
@@ -1733,27 +1734,21 @@ The results after optimizing are shown in Fig. \ref{fig:NURBS_results}.
 
 
 \begin{figure}[H]
-	\begin{subfigure}{0.49\textwidth}
-		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_c_p(T).png}
-		\caption{Specific heat capacity $c_p(T)$ obtained by parameter estimation.}
-		\label{fig:NURBS_c_p}
-	\end{subfigure}
-	\begin{subfigure}{0.49\textwidth}
-		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_heat_flux.png}
-		\caption{Heat flux into PCM $\varPhi_q^{pcm,in}$ measurement values (dashed red), simulation (blue) and corresponding residuum (yellow).}
-		\label{fig:NURBS_heat_flux}
-	\end{subfigure}
-	\begin{subfigure}{0.49\textwidth}
-		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_jac.png}
-		\caption{Optimization Jacobian $J_1(p_{c_p})$.}
-		\label{fig:NURBS_jac}
-	\end{subfigure}
-	\hspace{1cm}
-	\begin{subfigure}{0.49\textwidth}
-		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_jac_zoom.png}
-		\caption{Zoomed in view of Optimization Jacobian $J_1(p_{c_p})$.}
-		\label{fig:NURBS_jac_zoom}
-	\end{subfigure}
+	\subcaptionbox{Heat flux into PCM $\varPhi_q^{pcm,in}$ measurement values (dashed red), simulation (blue) and corresponding residuum (yellow).}[.49\linewidth]
+	{\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_heat_flux.png}}
+	\label{fig:NURBS_heat_flux}
+	\subcaptionbox{Specific heat capacity $c_p(T)$ obtained by parameter estimation.}[.49\linewidth]
+	{\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_c_p(T).png}}
+	\label{fig:NURBS_c_p}
+
+	
+	\subcaptionbox{Optimization Jacobian $J_1(p_{c_p})$.}[.49\linewidth]
+	{\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_jac.png}}
+	\label{fig:NURBS_jac}
+	\hspace{0.5cm}
+	\subcaptionbox{Zoomed in view of Optimization Jacobian $J_1(p_{c_p})$.}[.49\linewidth]
+	{\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_jac_zoom.png}}
+	\label{fig:NURBS_jac_zoom}
 	\caption{Specific heat capacity, heat flux and optimization Jacobian at the end of the optimization process.}
 	\label{fig:NURBS_results}
 \end{figure}
