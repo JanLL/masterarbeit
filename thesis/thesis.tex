@@ -169,8 +169,11 @@ Heat $Q$ is the energy that flows from a warmer to a colder object because of th
 
 
 
-Probably the most important physical quantity for us is the specific heat capacity $c_p$ which is a temperature dependent material property that tells us how much energy is needed to increase the temperature of $1kg$ of this material by $1K$. Since we are primarily interested in the phase change we handle with the so called apparent specific heat capacity which includes a peak at the melting point with a certain area equal to the melting enthalpy. For a pure substance this peak would be ideally a Dirac delta function. A constant heat flux entering such a pure substance increases the temperature until phase change. Then the heat is absorbed in order to perform the phase transition while the temperature stays constant. Finally after the phase change has finished the temperature increases again. In mixed substances like PE in our case with different lengths of the individual polymer chains or due to lattice defects the peak extends over a temperature range. 
-The last physical quantity to introduce is the melting enthalpy $\Delta H$ which is in the case of constant pressure the heat needed to perform the phase transition. Considering the graph $c_p(T)$, the area of the phase change peak is equal to the melting enthalpy.
+Probably the most important physical quantity for us is the specific heat capacity $c_p$ which is a temperature dependent material property that tells us how much energy is needed to increase the temperature of $1kg$ of this material by $1K$. Since we are primarily interested in the phase change we handle with the so called apparent specific heat capacity which includes a peak at the melting point with a certain area equal to the melting enthalpy. For a pure substance this peak would be ideally a Dirac delta function (see Fig. \ref{fig:physics_c_p_dirac_delta}). A constant heat flux entering such a pure substance increases the temperature until phase change. Then the heat is absorbed in order to perform the phase transition while the temperature stays constant. Finally after the phase change has finished the temperature increases again. 
+In mixed substances like PE in our case with different lengths of the individual polymer chains or due to lattice defects the peak extends over a temperature range. In the case of lattice defects the atom's binding energies are decreased which lowers the phase transition's temperature partially. The corresponding shape of the specific heat capacity is shown in Fig. \ref{fig:physics_fraser_suzuki} and is called Fraser-Suzuki peak. \\
+The last physical quantity to introduce is the melting enthalpy $\Delta H$ which is in the case of constant pressure the heat needed to perform the phase transition. Considering the graph $c_p(T)$, the area of the phase change peak is equal to the melting enthalpy. This is illustrated in Fig. \ref{fig:physics_fraser_suzuki}.
+
+
 
 \begin{figure}[H]
 \hspace{-2cm}
@@ -237,11 +240,10 @@ area legend]
 \caption{}
 \label{fig:physics_fraser_suzuki}
 \end{subfigure}
+\caption{Specific heat capacity for (a) ideally pure substance where the phase transition is described by a Dirac delta function at the melting point and (b) mixed substance described by a Fraser-Suzuki Peak.}
 \end{figure}
 
 
-
-\todo{Erklaeren warum wir das fuer einen Kristall erwarten wuerden.}
 
 \subsection{Heat equation}
 \label{sec:heat_equation}
