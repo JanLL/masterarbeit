@@ -128,10 +128,16 @@ blubb !
 \pagenumbering{arabic}
 
 \section{Introduction}
-In this thesis we examine so called phase change materials (PCM). A popular application are heating pads (see Fig. \textcolor{red}{X}) which are liquid in a fully charged state. Folding induces a phase change to a solid state where energy is released and therefore the temperature increases. They can be easily recharged by applying a temperature above the melting point (e.g. with boiling water). 
+In this thesis we examine so called phase change materials (PCM). A popular application are heating pads (see Fig. \ref{fig:heating_pad}) which are liquid in a fully charged state. Folding induces a phase change to a solid state where energy is released and therefore the temperature increases. They can be easily recharged by applying a temperature above the melting point (e.g. with boiling water). 
 
-In general PCMs work as an energy buffer. Another application are industry processes to store the process heat for later usage [\textcolor{red}{X}]. Furthermore they can be used to optimize photovoltaic cells because their efficiency is temperature dependent and has a maximum at a certain point. PCMs are able to stabilize the temperature where the efficiency is maximal \cite{pcm_solar_cells}. 
-As a last example we deal with insulations of houses. During the day when it is hot, the PCM becomes liquid and absorb heat from outside, so they work as a cooling system. On the contrary at night when it is cold outside the PCM becomes solid, releases heat and work as a heater [\textcolor{red}{X}]. 
+\begin{wrapfigure}{l}{0.45\textwidth}
+	\includegraphics[width=0.45\textwidth]{/home/argo/masterarbeit/thesis/images/handwaermer[wiki].jpg}
+	\caption{Heating pad \\ left: liquid; right: solid}
+	\label{fig:heating_pad}
+\end{wrapfigure}
+
+In general PCMs work as an energy buffer. Another application are industry processes to store the process heat for later usage \cite{pcm_process_heat}. Furthermore they can be used to optimize photovoltaic cells because their efficiency is temperature dependent and has a maximum at a certain point. PCMs are able to stabilize the temperature where the efficiency is maximal \cite{pcm_solar_cells}. 
+As a last example we deal with insulations of houses. During the day when it is hot, the PCM becomes liquid and absorb heat from outside, so they work as a cooling system. On the contrary at night when it is cold outside the PCM becomes solid, releases heat and work as a heating \cite{pcm_house_insulation}. 
 
 
 An important physical quantity is the specific heat capacity $c_p$ which tells us at which temperature the phase transition occurs and how much energy can be stored. The major goal of this thesis is to simulate the measuring process of a differential scanning calorimetry (DSC) where a PCM undergoes a phase transition and perform a parameter estimation in order to get the PCM's specific heat capacity. \\
@@ -155,7 +161,7 @@ Heat $Q$ is the energy that flows from a warmer to a colder object because of th
 	Heat flux & $\varPhi$ & $W$ \\[0.7ex]
 	Heat conductivity & $\lambda$ & $\frac{W}{m \cdot K}$ \\[0.7ex]
 	Specific heat capacity & $c_p$ & $\frac{J}{kg \cdot K}$ \\[0.7ex]
-	Enthalpy & $H$ & $J$ \\ \hline
+	Melting enthalpy & $\Delta H$ & $J$ \\ \hline
 \end{tabular}
 \caption{Important physical quantities}
 \label{tab:important_physical_quantities}
@@ -163,12 +169,47 @@ Heat $Q$ is the energy that flows from a warmer to a colder object because of th
 
 
 
-Probably the most important physical quantity for us is the specific heat capacity $c_p$ which is a temperature dependent material property that tells us how much energy is needed to increase the temperature of $1kg$ of this material by $1K$. Since we are primarily interested in the phase change we handle with the so called apparent specific heat capacity which includes a peak at the melting point with a certain area equal to the melting enthalpy. For a pure substance this peak would be ideally a Dirac delta function. A constant heat flux entering such a pure substance increases the temperature until phase change. Afterwards the heat is absorbed in order to perform the phase transition while the temperature stays constant. Finally after the phase change has finished the temperature increases again. In mixed substances like PE in our case with different lengths of the individual polymer chains or due to lattice defects the peak extends over a temperature range.
+Probably the most important physical quantity for us is the specific heat capacity $c_p$ which is a temperature dependent material property that tells us how much energy is needed to increase the temperature of $1kg$ of this material by $1K$. Since we are primarily interested in the phase change we handle with the so called apparent specific heat capacity which includes a peak at the melting point with a certain area equal to the melting enthalpy. For a pure substance this peak would be ideally a Dirac delta function. A constant heat flux entering such a pure substance increases the temperature until phase change. Then the heat is absorbed in order to perform the phase transition while the temperature stays constant. Finally after the phase change has finished the temperature increases again. In mixed substances like PE in our case with different lengths of the individual polymer chains or due to lattice defects the peak extends over a temperature range. 
+The last physical quantity to introduce is the melting enthalpy $\Delta H$ which is in the case of constant pressure the heat needed to perform the phase transition. Considering the graph $c_p(T)$, the area of the phase change peak is equal to the melting enthalpy.
 
-\todo{Hier Bild von diesem Prozess einfuegen???} 
+\begin{tikzpicture}
+\begin{axis}[domain=70:132,
+samples=500,
+ymin=0, ymax=15	,	
+xmin=70, xmax=150,	 
+axis lines=left,
+xtick=\empty,
+ytick=\empty,
+xlabel=$T$, xlabel style={at=(current axis.right of origin), anchor=west},
+ylabel=\empty, ylabel style={at=(current axis.above origin), anchor=south}]
 
-\todo{Enthalpy $H$}
+\addplot+[color=black,
+mark=none] {10*exp(-ln(2)/ln(0.3)^2 * (ln(1 + (x-130)*(0.3^2 - 1)/(5*0.3)))^2) + 0.5};
+\addlegendentry{$c_p(T)$}
 
+\addplot+[mark=none,
+color=black,
+domain=131.64:150,
+samples=50,
+forget plot]
+{0.5};
+
+
+\addplot+[mark=none,
+domain=100:132,
+samples=500,
+pattern=flexible hatch,
+hatch distance=8pt,
+hatch thickness=1pt,
+draw=black,
+pattern color=red,
+area legend]
+{10*exp(-ln(2)/ln(0.3)^2 * (ln(1 + (x-130)*(0.3^2 - 1)/(5*0.3)))^2) + 0.5};
+\addlegendentry{$\Delta H$}
+\end{axis}
+\end{tikzpicture}
+
+\todo{Bild von $c_p$ fuer pure substance und ein Fraser-Suzuki Peak und erklaeren warum wir das fuer einen Kristall erwarten wuerden.}
 
 \subsection{Heat equation}
 \label{sec:heat_equation}
@@ -1719,7 +1760,6 @@ This result forms the basis of reproducing the heat flux measurement values in t
 
 
 
-
 \subsection{Parameter estimation using finite differences and NURBS parametrization}
 
 For the first attempt of estimating $c_p(T)$  we used the NURBS parametrization (see Sec. \ref{sec:nurbs}). In total we used 33 control points where the y-coordinates ($\hat{=} c_p$) are optimization variables and the the x-coordinate ($\hat{=}$ temperature) were fixed to 
@@ -1866,6 +1906,16 @@ The optimization took in this case about 40 minutes on my laptop and stopped bec
 	peaks
 	Valerio B. Di Marco, G. Giorgio Bombi,
 	Journal of Chromatography A, 931 (2001) 1–30
+	
+\bibitem{pcm_house_insulation}
+	Energy Savings in Building with a PCM Free Cooling System,
+	Uroš Stritih, Vincenc Butala,
+	Journal of Mechanical Engineering 57(2011)2, 125-134	
+	
+\bibitem{pcm_process_heat}
+	Latent heat storage above 120°C for applications in the industrial process heat sector and solar power generation,
+	Rainer Tamme, Thomas Bauer, Jochen Buschle, Doerte Laing, Hans Müller-Steinhagen and Wolf-Dieter Steinmann,
+	Int. J. Energy Res. 2008;32:264–271
   
 \end{thebibliography}
 
