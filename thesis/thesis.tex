@@ -595,7 +595,6 @@ x_2 \cdot \sin(1+x_1)
 \end{bmatrix}
 \end{equation}
 
-\todo{Graph mit den einzelnen Berechnungsverzweigungen noch einfuegen?}
 
 \paragraph{Forward Mode}\mbox{}\\
 In the forward mode the directional derivative $\dot{y}$ is computed for a given direction in the function arguments $\dot{x}$ at a evaluation point $x$:
@@ -608,11 +607,9 @@ In the forward mode the directional derivative $\dot{y}$ is computed for a given
 The algorithm called first order forward sweep is structured into three parts. First the auxiliary variables $v_{1-n},...,v_0$ and $\dot{v}_{1-n},...,\dot{v}_0$ are initialized with the evaluation point $x$ and the direction of the directional derivative $\dot{x}$. So if we want to get $\frac{\partial f}{\partial x_2}$ we would need to set $\dot{x} = \begin{bmatrix}
 0 & 1 & 0 & \dots & 0
 \end{bmatrix}^T$. One can see here that with one forward sweep we get one column of the Jacobian $ \frac{\partial f}{\partial x}$. 
-After the initialization the actual forward sweep begins where the $k$ elemental functions of $f$ are evaluated and saved in the intermediate values $v_i$. Simultaneously their derivatives  $\dot{v}_i$ are computed using previously calculated intermediate values. E.g. for $v_2 = \varphi_2(v_0, v_1)$ it would hold $\dot{v}_2 = \frac{\partial \varphi_2}{\partial v_0} \dot{v_0} + \frac{\partial \varphi_2}{\partial v_1} \dot{v_1}$. \\
+After the initialization the actual forward sweep begins where the $k$ elemental functions of $f$ are evaluated and saved in the intermediate values $v_i$. Simultaneously their derivatives  $\dot{v}_i$ are computed using previously calculated intermediate values. E.g. for $v_2 = \varphi_2(v_0, v_1)$ it holds $\dot{v}_2 = \frac{\partial \varphi_2}{\partial v_0} \dot{v_0} + \frac{\partial \varphi_2}{\partial v_1} \dot{v_1}$. \\
 The last $m$ intermediate variables represent the solution vector. So finally this values and derivatives are extracted.
 
-
-\todo{Q: Ist das hier eine totale Ableitung?}
 
 
 \begin{table}[H]
@@ -625,7 +622,7 @@ The last $m$ intermediate variables represent the solution vector. So finally th
 	\label{tab:first_order_forward_sweep}
 \end{table}
 
-In order to illustrate this algorithm we will apply it onto the example function \eqref{eq:AD_example}:
+In order to illustrate this algorithm we will apply it on the example function \eqref{eq:AD_example}:
 
 \begin{table}[H]
 	\centering
@@ -706,9 +703,8 @@ Again we apply this algorithm on the exemplary function \eqref{eq:AD_example}:
 
 Until now the fundamental principles of AD have been explained, i.e. just the first order derivative in forward and adjoint mode. Higher derivatives of arbitrary order can be obtained by using the method of Taylor coefficient propagation which is based on the propagation of a Taylor polynomial through a function evaluation. The higher derivatives can then be extracted by scaling of the polynomial coefficients. \\
 
-In this thesis we are actually interested in the sensitivities $\frac{\partial y}{\partial p}$ of an differential equation $\dot{y}=f(t,y;p)$ with respect to parameters $p$. The application of AD on differential equations is called Internal Numerical Differentiation (IND). The principle is based on the fact that solving numerically a differential equation consists of many elemental operations from which the derivatives are known. So it is straight forward to apply the chain rule on all these elemental operations in order to get the derivative $\frac{\partial y}{\partial p}$ just as explained above. \\
-A detailed explanation on taylor coefficient propagation for higher derivatives and IND can be found in \cite{diss_jan}. \todo{Reicht das... mehr?}
-
+In this thesis we are actually interested in the sensitivities $\frac{\partial y}{\partial p}$ of an differential equation $\dot{y}=f(t,y;p)$ with respect to parameters $p$. The application of AD on differential equations is called Internal Numerical Differentiation (IND). Since the numerical integrator uses a stepsize control in order to limit the relative locale error, the idea of IND is to freeze these adaptive components and just use all mathematical operations of the used integration scheme as elemental operations. So it is straight forward to apply the chain rule on all these elemental operations in order to get the derivative $\frac{\partial y}{\partial p}$ just as explained above. \\
+The details on IND and generation of higher derivatives via taylor coefficient propagation (TCP) can be found in \cite{diss_jan}.
 
 
 \subsection{Numerical solution of initial value problems (IVP)}
@@ -821,16 +817,7 @@ The function value of $u_0$ is already defined by $u_1$ so $\dot{u}_0$ is not ne
 
 
 \subsection{Optimization Task: Parameter Estimation}
-%In this section we treat the least squares problem of the form
-%
-%\begin{align}
-%	\min_{x(t),p} \ & \frac{1}{2} ||F(x(t;x_0,p),p)||_2^2 \\
-%	s.t. \quad & \dot{x} = f(x,t;p) \quad \forall t \in [t_0, t_f] \nonumber \\
-%	& x(0) = x_0 \nonumber
-%\end{align}
-%
-%where $F \in \mathbb{R}^{n_{MP}}$ is the residuum vector of the measurement points, $x \in \mathbb{R}^{n_x}$ are the differential variables satisfying the embedded initial value problem and $p \in \mathbb{R}^{n_p}$ are the parameters being optimized. \\
-%\todo{Frage ist ob man es sehr allgemein erklaert mit NOC und SOC von sehr allgemeinem gleichungsbeschraenken Optimierungsproblem. Oder aber eher fuer uns relevanten Fall von least squares problemen und Loesung dann mit Gauss-Newton. Problem ist das wir momentan gar kein Gauss-Newton Verfahren benutzen... fragen!!}
+
 
 \subsubsection{General NLP and optimality criterions}
 In this section we first treat the general nonlinear optimization problem (NLP) of the form
@@ -1136,7 +1123,7 @@ Active Set Strategy algorithm:
 	\item Set $x^k = x^{k+1}$, $k += 1$ and goto step 2.
 \end{enumerate}
 
-
+\todo{ueberarbeiten und nach Quelle aufbauen}
 
 \newpage
 \section{Simulation of DSC measuring process}
