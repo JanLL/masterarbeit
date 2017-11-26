@@ -80,9 +80,17 @@ return
 
 %% Plot heat flux measurements and c_p computed from DIN formula
 
-dsc_list = DSC204_readFiles(['/home/argo/masterarbeit/', ...
-    'DSC204_F1_Phoenix_Messungen/Messungen/Messungen/', ...
-    'ExpDat_16-407-3_mitKorr_*Kmin_H.csv']);
+%dsc_list = DSC204_readFiles(['/home/argo/masterarbeit/', ...
+%    'DSC204_F1_Phoenix_Messungen/Messungen/Messungen/', ...
+%    'ExpDat_16-407-3_mitKorr_*Kmin_H.csv']);
+
+dsc_list = {'ExpDat_16-407-3_mitKorr_0,3Kmin_H.csv', ...
+            'ExpDat_16-407-3_mitKorr_0,6Kmin_H.csv', ...
+            'ExpDat_16-407-3_mitKorr_1,25Kmin_H.csv', ...
+            'ExpDat_16-407-3_mitKorr_2,5Kmin_H.csv', ...
+            'ExpDat_16-407-3_mitKorr_5Kmin_H.csv', ...
+            'ExpDat_16-407-3_mitKorr_10Kmin_H.csv', ...
+            'ExpDat_16-407-3_mitKorr_20Kmin_H.csv'};
 
 fig1 = figure(1); hold on
 ax1 = gca();
@@ -91,19 +99,22 @@ ax2 = gca();
 
 for i=1:length(dsc_list)
 
-    dsc = dsc_list(i);
+    dsc = DSC204_readFile(dsc_list{i});
+    
     q_meas = dsc.data(:,3) ./ dsc.data(:,4) * dsc.mass;
     legend_str = [num2str(dsc.Tinfo.Tstep), ' K/min'];
     plot(ax1, dsc.data(:,1), q_meas, 'DisplayName', legend_str, ...
-        'LineWidth', 2);
+        'LineWidth', 1.3);
     
     c_p = calc_cp(dsc);
     legend_str = [num2str(dsc.Tinfo.Tstep), ' K/min'];
     plot(ax2, c_p(:,1), c_p(:,2), 'DisplayName', legend_str, ...
-        'LineWidth', 2);
+        'LineWidth', 1.3);
     
     
 end
+
+save_root_dir = '/home/argo/masterarbeit/thesis/images/'
 
 figure(1);
 set(gcf, 'units', 'normalized', 'outerposition', [0 0 0.66 1]);
@@ -113,7 +124,7 @@ ylabel('\eta^{\Phi}[mW]');
 set(gca, 'xlim', [30 160]);
 legend('show', 'location', 'northwest');
 
-print(fig1, 'heat_flux_measurement', '-dpng', '-r200');
+print(fig1, [save_root_dir, 'heat_flux_measurement'], '-dpng', '-r200');
 close();
 
 
@@ -125,7 +136,7 @@ ylabel('c_p [mJ/(mg*K)]');
 set(gca, 'xlim', [30 160]);
 legend('show', 'location', 'northwest');
 
-print(fig2, 'c_p_DIN_formula', '-dpng', '-r200');
+print(fig2, [save_root_dir, 'c_p_DIN_formula'], '-dpng', '-r200');
 close();
 
 
