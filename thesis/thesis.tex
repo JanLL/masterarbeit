@@ -170,7 +170,7 @@ Heat $Q$ is the energy that flows from a warmer to a colder object because of th
 
 
 Probably the most important physical quantity for us is the specific heat capacity $c_p$ which is a temperature dependent material property that tells us how much energy is needed to increase the temperature of $1kg$ of this material by $1K$. Since we are primarily interested in the phase change we handle with the so called apparent specific heat capacity which includes a peak at the melting point with a certain area equal to the melting enthalpy. For a pure substance this peak would be ideally a Dirac delta function (see Fig. \ref{fig:physics_c_p_dirac_delta}). A constant heat flux entering such a pure substance increases the temperature until phase change. Then the heat is absorbed in order to perform the phase transition while the temperature stays constant. Finally after the phase change has finished the temperature increases again. 
-In mixed substances like PE in our case with different lengths of the individual polymer chains or due to lattice defects the peak extends over a temperature range. In the case of lattice defects the atom's binding energies are decreased which lowers the phase transition's temperature partially. The corresponding shape of the specific heat capacity is shown in Fig. \ref{fig:physics_fraser_suzuki} and is called Fraser-Suzuki peak. \\
+In mixed substances like PE in our case with different lengths of the individual polymer chains or due to lattice defects the peak extends over a temperature range. In the case of lattice defects the atom's binding energies are decreased which lowers the phase transition's temperature partially. The corresponding shape of the specific heat capacity is shown in Fig. \ref{fig:physics_fraser_suzuki} and is called Fraser-Suzuki peak. It is not known what shape of $c_p(T)$ we should expect exactly for a polymer and therefore task in this thesis to find out. \\
 The last physical quantity to introduce is the melting enthalpy $\Delta H$ which is in the case of constant pressure the heat needed to perform the phase transition. Considering the graph $c_p(T)$, the area of the phase change peak is equal to the melting enthalpy. This is illustrated in Fig. \ref{fig:physics_fraser_suzuki}.
 
 
@@ -889,7 +889,7 @@ Major results from optimization theory are the necessary optimality condition [N
 	Then: $x^*$ is a strict local minimum.
 \end{Theorem}
 
-\todo{KKT conditions einfuehren!} \\
+\todo{KKT conditions: Definition von Bock Diss. nehmen}
 
 \subsubsection{Non-linear least squares problem and Gauss-Newton method}
 \label{sec:Gauss_Newton}
@@ -1043,7 +1043,7 @@ Based on decomposing $J_1$ two solutions are shown:
 		\Delta x = V \Delta y
 	\end{equation}
 	
-	\todo{Lemma von ODE Skript noch rein?}
+	\todo{Lemma von ODE Skript noch rein? Wenn dann als Referenz zu Arbeit von Bock oder so}
 
 \end{itemize}
 
@@ -1095,7 +1095,8 @@ With the solution $\Delta y_1^*$, recalling $\Delta x = Q \Delta y$ and the defi
 \end{align}
 
 which is an unconstrained least squares problem we discussed before. At last we need to compute $\Delta x = Q \Delta y$ for the final solution of \eqref{eq:numerical_soln_eq_constrained_LSQ}. \\
-If $rank(J_2) < m_2$ one can perform a singular value decomposition of $J_2$ analog to the unconstrained case. \todo{stimmt nicht... aktualisieren!}
+
+\todo{Referenz zu direkter Elimination finden und darauf verweisen}
 
 \paragraph{Equality and inequality constrained case using active set strategy}\mbox{}\\
 \begin{align}
@@ -1584,8 +1585,6 @@ Finally the solution of the boundary value problem \eqref{eq:analytical_soln_pde
 \end{align}
 
 
-\todo{Fehleranalyse bzgl Konvergenz in $n$?}
-
 
 \section{Parameter estimation of specific heat capacity $c_p$}
 
@@ -1650,7 +1649,6 @@ where $h$, $r$, $sr$, $wr$ and $z$ are the parameters of Fraser-Suzuki. Furtherm
 	\label{fig:parametrization_example_fraser_suzuki}
 \end{figure}
 
-\todo{FS Peak von theorie fuer zumindest Kristallfestkoerper vorhergesagt, problem ist das wir hier ein Polymer haben, das komplizierter ist.}
 
 
 \subsubsection{Linear combination of Gaussian functions}
@@ -1792,9 +1790,12 @@ The sensitivities $\frac{\partial T}{\partial p_{c_p}}(t_i) \in \mathbb{R}^{N \t
 \section{Numerical experiments and results}
 All conducted numerical experiments involve the following subproblems: The numerical integration where we solve \eqref{eq:heat_equation_discretized} gives us the temperature $T$ and sensitivities $\frac{\partial T}{\partial p}$. This was accomplished with the numerical integrator DAESOL-II embedded in SolvIND. The integration tolerance was set to $10^{-7}$ and the sensitivities were obtained in forward mode.
 The heat flux $\varPhi_q^{pcm,in}$ is then computed with \eqref{eq:heat_flux_computation_final} and the optimization Jacobian $J_1(p_{c_p})$ with \eqref{eq:optimization_jacobian}. The parameter estimation is then performed by solving the least squares problem \eqref{eq:parameter_estimation_least_squares_problem}. \todo{welches programm fuer die optimierung} \\
+At solving the reference side with the analytical solution \eqref{eq:analytical_soln_final_formula} we stopped the actually infinite sum after 100 summands since the summand is proportional to $n^{-3}$. \\
+
 The material properties used throughout were for silver $c_{p,Ag}=0.235 \frac{mJ}{mg \ K}$, $\rho_{Ag}=10.49 \frac{mg}{mm^3}$ and $\lambda_{Ag}=430 \frac{mW}{mm \ K}$ and for the PCM $\rho_{pcm}=0.85 \frac{mg}{mm^3}$ and $\lambda_{pcm}=0.96 \frac{mW}{mm \ K}$. The initial temperature was set to $T_0=10^\circ C$ and the simulation stopped for the furnace temperature $T^0=200^\circ C$ such that the phase transition is completely finished. \\
 
-\todo{Laptop Daten, CPU, RAM und co}
+Except the forward simulation with an equidistant grid as reference for the error analysis of different spatial grids, all experiments have been done on my laptop using Linux Ubuntu Mate, 2 Cores Intel(R) Core(TM) i3-4100M CPU @ 2.50GHz and 8GB RAM. Former was computed on the IWR-Compute Server Quadxeon2 (4 x Dual Core E7220 2.93 GHz, 256 GB RAM).
+
 
 \subsection{Smearing effect on simulated heat flux for different heat rates}
 The first basic numerical experiment consists of showing that our mathematical model is capable of reproducing heat fluxes exhibiting the smearing effect similar to those measured (see Sec \ref{sec:smearing_problem}). This was achieved by a forward simulation for several different heat rates using  the same specific heat capacity (see Fig. \ref{fig:smearing_effect_c_p}) each time. \\
