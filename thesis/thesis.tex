@@ -249,34 +249,80 @@ area legend]
 \label{sec:heat_equation}
 \todo{Herleitung als Quelle Buch "Waerme- und Stoffuebertragung" \cite{lit:waerme_und_stoffuebertragung} und quasi abschreiben.} \\
 Since we are dealing with heat transport in the measuring process the central equation in this thesis is the heat equation. \\
-For the derivation we start with the continuity equation with sources and sinks
+For the derivation \cite{lit:waerme_und_stoffuebertragung}
+we start with the total inner energy $U$ in a volume $V$ which can be computed by
 
 \begin{equation}
-	\frac{\partial \rho_h}{\partial t} + \nabla \cdot J_q = 0
+	U = \int_{V} \rho u \ dV
 \end{equation}
 
-where $\rho_h$ is the enthalpy density and $J_q$ is the heat flux density. We assume a constant pressure so it holds $dH = dQ$ such that a heat flux will only change the enthalpy.
+where $\rho$ is the mass density and $u$ is the specific inner energy. \\
+Next the total heat flux $\varPhi$ into the volume $V$ is
 
 \begin{equation}
-	J_q = - \lambda \cdot \nabla T
+	\varPhi = - \int_{\partial V} \phi \cdot n \ dA = - \int_{V} \nabla \cdot \phi \ dV
+\end{equation}
+
+where $\phi$ is the heat flux density, $n$ is the normal vector pointing outside $dA$ (therefore the minus in front) and $\partial V$ is the surface of $V$. We have used Gauss theorem to transform the surface integral into a volume integral. \\
+Now we assume that there are no further sources and sinks of inner energy for volume $V$ such that it holds
+
+\begin{equation}
+	\frac{\partial U}{\partial t} = \frac{\partial}{\partial t} \int_V (\rho u) \ dV = \int_V \frac{\partial}{\partial t}(\rho u) \ dV = - \int_{V} \nabla \cdot \phi \ dV = \varPhi
+	\label{eq:heat_eq_derivation_1}
+\end{equation}
+
+for $\rho u$ continuous \todo{stimmt das?!}. The heat flux density is now computed with Fourier's law
+
+\begin{equation}
+	\phi = - \lambda \cdot \nabla T
 	\label{eq:fouriers_law}
 \end{equation}
 
-The enthalpy density $\rho_h = \rho h$ expressed with the mass density $\rho$ and specific enthalpy $h$ and Fourier's law inserted in the continuity equation gives us
+with the heat conductivity $\lambda$. Since \eqref{eq:heat_eq_derivation_1} must hold for all volumes we can equate the integrands and insert \eqref{eq:fouriers_law} such that we get for a constant mass density $\rho$ and $u = u(T(x,t))$
 
 \begin{align}
-	\frac{\partial (\rho h)}{\partial t} = \nabla \cdot \left[\lambda \cdot \nabla T\right] \\
-	\Leftrightarrow \frac{\partial \rho}{\partial T} \frac{\partial T}{\partial t} h + \rho \frac{\partial h}{\partial T} \frac{\partial T}{\partial t} = \nabla \cdot \left[\lambda \cdot \nabla T\right] \\
-	\Leftrightarrow \left( \frac{\partial \rho}{\partial T} h + \rho \frac{\partial h}{\partial T} \right) \frac{\partial T}{\partial t} = \nabla \cdot \left[\lambda \cdot \nabla T\right]
+	\frac{\partial}{\partial t}(\rho u) = & \ \nabla \cdot \left[ \lambda \cdot \nabla T \right] \\
+	\Leftrightarrow \ \ \rho \frac{\partial u}{\partial T} \frac{\partial T}{\partial t} = & \ \nabla \cdot \left[ \lambda \cdot \nabla T \right]
 \end{align}
 
-Using the definition of the specific heat capacity $c_p := \frac{dh}{dT}$ we get the final heat equation
+Due to the definition of the heat capacity $c_v(T) = \frac{\partial u}{\partial T}(T)$ and due to the assumption of a constant pressure $c_p = c_v$ we get the final heat equation
 
 \begin{equation}
-	\left( \frac{\partial \rho}{\partial T} h + \rho c_p \right) \frac{\partial T}{\partial t} = \nabla \cdot \left[\lambda \cdot \nabla T\right]
+	\rho c_p(T) \frac{\partial T}{\partial t} = \nabla \cdot \left[ \lambda \cdot \nabla T \right]
+	\label{eq:heat_equation_derivation}
 \end{equation}
 
-\todo{Pruefen lassen ob das physikalisch alles so stimmt...}
+
+
+
+% ALT             
+%
+%\begin{equation}
+%	\frac{\partial \rho_h}{\partial t} + \nabla \cdot J_q = 0
+%\end{equation}
+%
+%where $\rho_h$ is the enthalpy density and $J_q$ is the heat flux density. We assume a constant pressure so it holds $dH = dQ$ such that a heat flux will only change the enthalpy.
+%
+%\begin{equation}
+%	J_q = - \lambda \cdot \nabla T
+%	\label{eq:fouriers_law}
+%\end{equation}
+%
+%The enthalpy density $\rho_h = \rho h$ expressed with the mass density $\rho$ and specific enthalpy $h$ and Fourier's law inserted in the continuity equation gives us
+%
+%\begin{align}
+%	\frac{\partial (\rho h)}{\partial t} = \nabla \cdot \left[\lambda \cdot \nabla T\right] \\
+%	\Leftrightarrow \frac{\partial \rho}{\partial T} \frac{\partial T}{\partial t} h + \rho \frac{\partial h}{\partial T} \frac{\partial T}{\partial t} = \nabla \cdot \left[\lambda \cdot \nabla T\right] \\
+%	\Leftrightarrow \left( \frac{\partial \rho}{\partial T} h + \rho \frac{\partial h}{\partial T} \right) \frac{\partial T}{\partial t} = \nabla \cdot \left[\lambda \cdot \nabla T\right]
+%\end{align}
+%
+%Using the definition of the specific heat capacity $c_p := \frac{dh}{dT}$ we get the final heat equation
+%
+%\begin{equation}
+%	\left( \frac{\partial \rho}{\partial T} h + \rho c_p \right) \frac{\partial T}{\partial t} = \nabla \cdot \left[\lambda \cdot \nabla T\right]
+%\end{equation}
+%
+%\todo{Pruefen lassen ob das physikalisch alles so stimmt...}
 
 
 
