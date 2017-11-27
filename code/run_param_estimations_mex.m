@@ -39,26 +39,26 @@ optimization = struct();
 h_start = 0.5;  % [mJ/mg]
 
 % Fraser Suzuki
-% optimization.c_p_param_type = 'fraser_suzuki';
-% h  =  10.0;
-% r  =  2.0;
-% wr =  15.0;
-% sr =   0.3;
-% z  = 130.0;
-% m  = 0.01;
-% b  =   2.0;
-% 
-% optimization.start_values = [h, r, wr, sr, z, m, b];
+optimization.c_p_param_type = 'fraser_suzuki';
+h  =  10.0;
+r  =  2.0;
+wr =  15.0;
+sr =   0.3;
+z  = 130.0;
+m  = 1.;
+b  =   2.0;
+
+optimization.start_values = [h, r, wr, sr, z, m, b];
 
 
 % Gauss Linear combination
-optimization.c_p_param_type = 'gauss_linear_comb';
-
-fit_data = load(['/home/argo/masterarbeit/fits_data/', ...
-                 '2017-11-27_08:36:08_407_L1=40_L3=0.1_N1=500_N3=50/', ...
-                 '2017-11-27_08:39:57_407_20Kmin_L1=40_L3=0,1/fit_data.mat']);
-             
-optimization.start_values = [fit_data.optimization.p_optim_end];
+% optimization.c_p_param_type = 'gauss_linear_comb';
+% 
+% fit_data = load(['/home/argo/masterarbeit/fits_data/', ...
+%                  '2017-11-27_08:36:08_407_L1=40_L3=0.1_N1=500_N3=50/', ...
+%                  '2017-11-27_08:39:57_407_20Kmin_L1=40_L3=0,1/fit_data.mat']);
+%              
+% optimization.start_values = [fit_data.optimization.p_optim_end];
 % % optimization.start_values = [10.,   1.,  123.0, ...
 % %                              1.,    1.,  115.0, ...
 % %                              1.,    1.,  125.0, ...
@@ -76,14 +76,14 @@ optimization.start_values = [fit_data.optimization.p_optim_end];
 num_opt_params = length(optimization.start_values);
 
 optimization.p_optim_estimable = true(num_opt_params, 1);
-% optimization.p_optim_estimable(2) = false;  % fix "r" in Fraser Suzuki Parametrization
+optimization.p_optim_estimable(2) = false;  % fix "r" in Fraser Suzuki Parametrization
 %optimization.p_optim_estimable(16:30) = false;  %  fix 5 Gaussians
 % optimization.p_optim_estimable(end) = false;  % fix h_start
 
 
 optimization.lb = zeros(num_opt_params,1);
-optimization.lb(1:3:30) = -2.;
-optimization.lb(2:3:30) = 0.15;
+% optimization.lb(1:3:30) = -2.;
+% optimization.lb(2:3:30) = 0.15;
 
 
 optimization.ub = ones(num_opt_params,1) * inf;
@@ -119,14 +119,14 @@ options.save_path_root = save_path_root_str;
 
 
 % Run optimization #1
-% try
-%     fit_data = param_estimation_mex2(simulation, dsc_measurement, optimization, options);
-% catch Err
-%     fprintf(errLogFileID, '%s\tError %s occured with heat_rate=%2.4g.\n', ...
-%         datetime('now'), Err.identifier, dsc_measurement.Tinfo.Tstep);
-%     fprintf('%s\tError %s occured with heat_rate=%2.4g.\n', ...
-%         datetime('now'), Err.identifier, dsc_measurement.Tinfo.Tstep);
-% end
+try
+    fit_data = param_estimation_mex2(simulation, dsc_measurement, optimization, options);
+catch Err
+    fprintf(errLogFileID, '%s\tError %s occured with heat_rate=%2.4g.\n', ...
+        datetime('now'), Err.identifier, dsc_measurement.Tinfo.Tstep);
+    fprintf('%s\tError %s occured with heat_rate=%2.4g.\n', ...
+        datetime('now'), Err.identifier, dsc_measurement.Tinfo.Tstep);
+end
 
 
 
@@ -135,15 +135,13 @@ optimization.start_values = fit_data.optimization.p_optim_end;
 dsc_filename = 'ExpDat_16-407-3_mitKorr_10Kmin_H.csv';
 dsc_measurement = DSC204_readFile(dsc_filename);
 
-fit_data = param_estimation_mex2(simulation, dsc_measurement, optimization, options);
-
 % % Run optimization #2
-% try
-%     fit_data = param_estimation_mex2(simulation, dsc_measurement, optimization, options);
-% catch Err
-%     fprintf(errLogFileID, '%s\tError %s occured with heat_rate=%2.4g.\n', ...
-%         datetime('now'), Err.identifier, dsc_measurement.Tinfo.Tstep);
-% end
+try
+    fit_data = param_estimation_mex2(simulation, dsc_measurement, optimization, options);
+catch Err
+    fprintf(errLogFileID, '%s\tError %s occured with heat_rate=%2.4g.\n', ...
+        datetime('now'), Err.identifier, dsc_measurement.Tinfo.Tstep);
+end
 
 
 

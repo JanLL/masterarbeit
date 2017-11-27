@@ -36,8 +36,8 @@
 
 
 % Modified heat rate
-[fig, enthalpies] = get_fit_results('2017-11-27_08:22:19_407_L1=40_L3=0.1_N1=500_N3=50');
-[fig, enthalpies] = get_fit_results('2017-11-27_08:36:08_407_L1=40_L3=0.1_N1=500_N3=50');
+[fig, enthalpies] = get_fit_results('2017-11-27_08:22:19_407_L1=40_L3=0.1_N1=500_N3=50'); % FS
+[fig, enthalpies] = get_fit_results('2017-11-27_17:36:31_407_L1=40_L3=0.1_N1=500_N3=50'); % Gausse
 
 
 

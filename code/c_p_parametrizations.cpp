@@ -27,12 +27,12 @@ void fraser_suzuki_formula(T x, T& c_p, T& dc_p, const T* params) {
 	T log_arg = (1 + (x-z)*(sr*sr-1)/(wr*sr));
 	T exp_arg = -log(r)/(log_sr*log_sr) * log(log_arg)*log(log_arg);
 	
-	c_p_case0 = m*x + b;
-	c_p_case1 = h*exp(exp_arg) + m*x + b;
+	c_p_case0 = 0.01*m*x + b;
+	c_p_case1 = h*exp(exp_arg) + 0.01*m*x + b;
 	condassign(c_p, condition, c_p_case1, c_p_case0);
 
-	dc_p_case0 = m;
-	dc_p_case1 = -2.*log(r)/(log_sr*log_sr) * (sr*sr - 1)/(wr*sr) * log(log_arg)/log_arg * h*exp(exp_arg) + m;
+	dc_p_case0 = 0.01*m;
+	dc_p_case1 = -2.*log(r)/(log_sr*log_sr) * (sr*sr - 1)/(wr*sr) * log(log_arg)/log_arg * h*exp(exp_arg) + 0.01*m;
 	condassign(dc_p, condition, dc_p_case1, dc_p_case0);
 
 	return;
