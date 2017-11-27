@@ -58,6 +58,28 @@ spatial_gridsize = dchi(0:N-2)';
 m_pcm = dsc_measurement.mass;
 heat_rate = dsc_measurement.Tinfo.Tstep;
 
+switch heat_rate
+    case 20
+        heat_rate = 19.97;
+    case 10
+        heat_rate = 9.98;
+    case 5
+        heat_rate = 4.99;
+    case 2.5
+        heat_rate = 2.496;
+    case 1.25
+        heat_rate = 1.2476;
+    case 0.6
+        heat_rate = 0.5989;
+    case 0.3
+        heat_rate = 0.2994;
+    otherwise
+        error('Heat rate modification failed!')
+end
+
+simulation.heat_rate = heat_rate;
+
+
 % TODO: sinnvolles Intervall automatisch waehlen ... wobei das hier fuer
 % alle Messungen bisher ganz gut war
 index_T_dsc = [find(dsc_measurement.data(:,1) > 29, 1, 'first'), ...

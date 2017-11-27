@@ -9,8 +9,18 @@ stop = false;
 persistent x_process;
 global p_optim_process;
 
+p_optim_process = false ;
+
+
+
 if (optimValues.iteration == size(x_process, 1) && strcmp(state, 'iter'))
-    x_process = [x_process; x];
+    try
+        x_process = [x_process; x];
+    catch
+        size(x_process)
+        size(x)
+        fprintf('Error with x_process occured!\n');
+    end
 end
 
 if strcmp(state, 'done')

@@ -736,5 +736,31 @@ print(fig2, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_N_gridsize
 
 
 
+%% Get average value of measured heat rate
+
+% dsc_filename = 'ExpDat_16-407-3_mitKorr_10Kmin_H.csv';
+% dsc = DSC204_readFile(dsc_filename);
+% 
+% idx_start = find(dsc.data(:,2) > 45, 1, 'first');
+% heat_rate_meas = gradient(dsc.data(idx_start:end,1), dsc.data(idx_start:end,2)); % [K/min]
+% %plot(dsc.data(:,2), dsc.data(:,1));
+% plot(dsc.data(idx_start:end,2), heat_rate_meas)
+% 
+% mean(heat_rate_meas)
+
+dsc_filename = 'ExpDat_16-407-3_mitKorr_5Kmin_H.csv';
+dsc = DSC204_readFile(dsc_filename);
+
+idx_start = 1;
+%idx_start = find(dsc.data(:,2) > 1, 1, 'first');
+idx_end = find(dsc.data(:,2) < 10200, 1, 'last');
 
 
+heat_rate_meas = gradient(dsc.data(idx_start:idx_end,1), dsc.data(idx_start:idx_end,2));
+figure(50); clf; hold on
+plot(dsc.data(idx_start:idx_end,2), heat_rate_meas);
+plot(dsc.data(idx_start:idx_end,2), dsc.data(idx_start:idx_end,3))
+plot(dsc.data(idx_start:idx_end,2), dsc.data(idx_start:idx_end,1))
+
+mean(heat_rate_meas)
+var(heat_rate_meas)
