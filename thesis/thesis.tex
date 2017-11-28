@@ -828,8 +828,8 @@ In this section we first treat the general nonlinear optimization problem (NLP) 
 	& \ h(x) \ge 0 \nonumber
 \end{align}
 
-where $x \in \mathbb{R}^n$ is the optimization variable, $f: \mathbb{R}^n \rightarrow \mathbb{R}$ is the objective function, $g: \mathbb{R}^n \rightarrow \mathbb{R}^{m_2}$ and $h: \mathbb{R}^n \rightarrow \mathbb{R}^{m_3}$ are the equality and respectively inequality constraints. Index $m_1$ is missing because we will need this later in the context of the least squares problem. \\
-The corresponding Lagrange function of \eqref{eq:NLP_formulation} is defined as
+where $x \in \mathbb{R}^n$ is the optimization variable, $f\text{: } \mathbb{R}^n \rightarrow \mathbb{R}$ is the objective function, $g\text{: } \mathbb{R}^n \rightarrow \mathbb{R}^{m_2}$ and $h\text{: } \mathbb{R}^n \rightarrow \mathbb{R}^{m_3}$ are the equality and respectively inequality constraints. Index $m_1$ is missing because we will need this later in the context of a least squares problem. The results shown in this chapter can be found in \cite{nonlinear_optimiziation_wright} or \cite{diss_jan}. \\
+The Lagrange function of \eqref{eq:NLP_formulation} is defined as
 
 \begin{equation}
 	\mathcal{L}(x,\lambda,\mu) := f(x) - \lambda^T g(x) - \mu^T h(x)
@@ -840,11 +840,11 @@ with Lagrange multipliers $\lambda \in \mathbb{R}^{m_2}$ and $\mu \in \mathbb{R}
 Before stating the major results from optimization theory we need to introduce the following definitions:
 
 \begin{Definition}
-	$S = \{ x \ | \ g(x) = 0 \ \text{and} \ h(x) \ge 0 \}$ is called \underline{feasible set}.
+	$S := \{ x \ | \ g(x) = 0 \ \text{and} \ h(x) \ge 0 \}$ is called \underline{feasible set}.
 \end{Definition}
 
 \begin{Definition}
-	$I(x) = \{ i=1,...,m_3 \ | \ h(x) = 0 \}$ is called \underline{active set} with $s := \vert I \vert$.
+	$I(x) := \{ i=1,...,m_3 \ | \ h(x) = 0 \}$ is called \underline{active set} with $s := \vert I \vert$.
 \end{Definition}
 
 \begin{Definition}
@@ -861,26 +861,27 @@ Before stating the major results from optimization theory we need to introduce t
 
 \begin{Definition}
 	\textbf{(Tangent space)} \\
-	$T(x) = \left\{ p \in \mathbb{R}^n \ | \ \frac{\partial \tilde g(x)}{\partial x} \cdot p = 0 \right\}$ \\
-	$T^+(x) = \left\{ p \in \mathbb{R}^n \ | \ \frac{\partial g(x)}{\partial x} \cdot p = 0, \frac{\partial h_i(x)}{\partial x} \cdot p = 0 \text{ and } \mu_i > 0 \text{ for } i \in I(x) \right\}$ \\
+	$T(x) := \left\{ p \in \mathbb{R}^n \ | \ \frac{\partial \tilde g(x)}{\partial x} \cdot p = 0 \right\}$ \\
+	$T^+(x) := \left\{ p \in \mathbb{R}^n \ | \ \frac{\partial g(x)}{\partial x} \cdot p = 0, \frac{\partial h_i(x)}{\partial x} \cdot p = 0 \text{ and } \mu_i > 0 \text{ for } i \in I(x) \right\}$ \\
 	are called \underline{tangent space}. It holds $T(x) \subseteq T^+(x)$.
 \end{Definition}
 
-
-
-Major results from optimization theory are the necessary optimality condition [NOC] and sufficient optimality condition [SOC]: 
+Major results from optimization theory are the necessary optimality condition [NOC]
 
 \begin{Theorem}
 	$[\text{\textbf{NOC}}]$ \\
-	Let $x^*$ be a local minimum and regular, then
+	Let $x^*$ be a local minimum and regular, then it holds
 	\begin{enumerate}
-		\item $\exists \lambda^* \in \mathbb{R}^{m_2}, \mu^* \in \mathbb{R}^{m_3}, \mu^* \ge 0$ s.t. \\
+		\item \textbf{First order necessary optimality conditions [NOC1]} \\
+		$\exists \lambda^* \in \mathbb{R}^{m_2}, \mu^* \in \mathbb{R}^{m_3}, \mu^* \ge 0$ s.t. \\
 		$\nabla_x \mathcal{L}(x^*, \lambda^*, \mu^*) = 0$ and \\
 		$(\mu^*)^T \cdot h(x^*) = 0$ complementary condition [CC]
-		\item $p^T \nabla_x^2 \mathcal{L}(x^*, \lambda^*, \mu^*) p \ge 0 \ \forall \ p \in T(x^*)$
+		\item \textbf{Second order necessary optimality condition [NOC2]} \\
+		$p^T \nabla_x^2 \mathcal{L}(x^*, \lambda^*, \mu^*) p \ge 0 \ \forall \ p \in T(x^*)$
 	\end{enumerate}
 \end{Theorem}
 
+and the sufficient optimality condition [SOC]
 
 \begin{Theorem}
 	$[\text{\textbf{SOC}}]$ \\
@@ -889,7 +890,13 @@ Major results from optimization theory are the necessary optimality condition [N
 	Then: $x^*$ is a strict local minimum.
 \end{Theorem}
 
-\todo{KKT conditions: Definition von Bock Diss. nehmen}
+Finally we define for later usage 
+
+\begin{Definition} \textbf{KKT-conditions} \\
+	Feasibility and [NOC1] are called \underline{Karush-Kuhn-Tucker (KKT)-conditions}. \\
+	A point $(x^*, \lambda^*, \mu^*)$ satisfying the KKT-conditions is called \underline{KKT-point}.
+\end{Definition}
+
 
 \subsubsection{Non-linear least squares problem and Gauss-Newton method}
 \label{sec:Gauss_Newton}
@@ -900,8 +907,8 @@ Since we are performing a parameter estimation we will treat now an equality con
 	s.t. \ & F_2(x) = 0 \nonumber
 \end{align}
 
-with $x \in \mathbb{R}^n$, $F_1: \mathbb{R}^n \rightarrow \mathbb{R}^{m_1}$ and $F_2: \mathbb{R}^n \rightarrow \mathbb{R}^{m_2}$. Inequality constraints will be introduced in the context of the Active Set Strategy (ASS) later. \\
-Instead of applying the KKT conditions on this problem we first linearize in order to avoid the need of computing the Hessian. This method is called Gauss-Newton (GN) and the resulting problem reads as
+with $x \in \mathbb{R}^n$, $F_1: \mathbb{R}^n \rightarrow \mathbb{R}^{m_1}$ and $F_2: \mathbb{R}^n \rightarrow \mathbb{R}^{m_2}$. Inequality constraints will be introduced in the context of the active set strategy (ASS) later. \\
+Instead of applying the KKT-conditions on this problem we first linearize in order to avoid the need of computing the Hessian. This method is called Gauss-Newton (GN) and the resulting problem reads as
 
 \begin{align}
 \min_{\Delta x} \ & || F_1(x) + J_1(x) \Delta x ||_2^2 \\
@@ -928,7 +935,7 @@ with $J_1(x) = \frac{\partial F_1(x)}{\partial x} \in \mathbb{R}^{m_1 \times n}$
 \end{equation}
 
 
-An important result is
+An important result \cite{diss_bock} is
 
 \begin{Lemma} \textcolor{white}{.}\\
 	If $rank(J_2) = m_2$ and $rank 
@@ -946,7 +953,7 @@ An important result is
 \end{Lemma}
 
 \subsubsection{Numerical solution}
-For the numerical solution of \eqref{eq:GN_KKT_system} we will successively introduce the unconstrained, the equality constrained and the general equality and inequality constrained case because they are built up on each other.
+For the numerical solution of \eqref{eq:GN_KKT_system} we will successively introduce the unconstrained, the equality constrained and the general equality and inequality constrained case because they are built up on each other, c.f. \cite{numerical_methods_lsq_Bjorck}.
 
 \paragraph{Unconstrained case}\mbox{}\\
 In the unconstrained case we want to solve the problem
@@ -1030,20 +1037,18 @@ Based on decomposing $J_1$ two solutions are shown:
 	For $rank(J_1) < n$ the solution $\Delta y$ is not unique to minimize \eqref{eq:numerical_solution_LSQ_SVD}. By choosing
 	
 	\begin{align}
-		\Delta y_i = 
+		\Delta y_i^* = 
 		\begin{cases}
 			- \frac{c_i}{\sigma_i} \ & \text{for } i=1,...,r \\
 			\ 0 \ & \text{else}
 		\end{cases}
 	\end{align}
 	
-	we get the final result $\Delta x$ with
+	we get the final result $\Delta x^*$ with
 	
 	\begin{equation}
-		\Delta x = V \Delta y
+		\Delta x^* = V \Delta y^*
 	\end{equation}
-	
-	\todo{Lemma von ODE Skript noch rein? Wenn dann als Referenz zu Arbeit von Bock oder so}
 
 \end{itemize}
 
@@ -1095,36 +1100,74 @@ With the solution $\Delta y_1^*$, recalling $\Delta x = Q \Delta y$ and the defi
 \end{align}
 
 which is an unconstrained least squares problem we discussed before. At last we need to compute $\Delta x = Q \Delta y$ for the final solution of \eqref{eq:numerical_soln_eq_constrained_LSQ}. \\
+This procedure is called null space method. Another possibility is the method of direct elimination, see \cite{numerical_methods_lsq_Bjorck} for a detailed description.
 
-\todo{Referenz zu direkter Elimination finden und darauf verweisen}
 
 \paragraph{Equality and inequality constrained case using active set strategy}\mbox{}\\
+In the general case with inequality constraints we consider the problem
+
 \begin{align}
 \min_{\Delta x} & \ \frac{1}{2} || F_1 + J_1 \Delta x ||_2^2 \label{eq:numerical_soln_ineq_constrained_LSQ} \\
 s.t. & \ F_2 + J_2 \Delta x = 0 \nonumber \\
 &  \ F_3 + J_3 \Delta x \ge 0 \nonumber
 \end{align}
 
-Active Set Strategy algorithm:
+We treat this problem with an active set strategy illustrated below, c.f. \cite{diss_bock}:
+
 \begin{enumerate}
-	\item Choose start point $x^0$, set iteration number $k=0$ and check for feasibility of $x^0$ and compute  initial active set $I^0 = \{ i \ | \ F_3^i(x^0) = 0 \}$
-	\item Compute extended equality constraints $\tilde{F}_2(x) = 
+	\item Set $k := 0$, Let $x^{(0)}$ be feasible point and $I^{(0)}$ corresponding active set.
+	\item Compute solution $\Delta x^{(k)}$ of equality constrained subproblem
+	\begin{align}
+	\min_{\Delta x} & \ \frac{1}{2} || F_1 + J_1 \Delta x ||_2^2 \nonumber \\
+	s.t. & \ \tilde{F}_2 + \tilde{J}_2 \Delta x = 0
+	\label{active_set_strategy_substep}
+	\end{align}
+	
+	with combined equality and active inequality constraints $\tilde{F}_2(x) = 
 	\begin{pmatrix} 
 	F_2(x) \\  
 	F_3^i(x), \ i \in I^k
 	\end{pmatrix}$
-	\item Solve the extended equality constrained subproblem
-	\begin{align}
-		\min_{\Delta x} & \ \frac{1}{2} || F_1 + J_1 \Delta x ||_2^2 \nonumber \\
-		s.t. & \ \tilde{F}_2 + \tilde{J}_2 \Delta x = 0 \nonumber
-	\end{align}
-	\item Check for constraint violations $F_3(x^k + \Delta x^k) < 0$, modify $\Delta x^k$ such that $x^{k+1}$ is feasible and add corresponding constraints to active set.
-	\item Compute $x^{k+1} = x^k + t^k \Delta x^k$ with stepsize $t^k \in (0, 1]$ from linesearch algorithm.
-	\item Compute Lagrange multiplier $\mu$ from active inequality constraints and remove from active set if $\mu_i < 0$.
-	\item Set $x^k = x^{k+1}$, $k += 1$ and goto step 2.
+	
+	If $||\Delta x^{(k)}|| < TOL$: goto 2. \\
+	else set $x^{(k+1)} := y(\alpha)$ and $k := k+1$ with \\
+	$\alpha := \max\{ s \in [0,1] \ | \ F_{3,i}(x^{(k)}) + J_{3,i}(x^{(k)}) y(s) \ge 0 \}$ and \\
+	$y(s) := x^{(k)} + s \cdot \Delta x^{(k)}$ \\
+	
+	If new inequality constraint gets active, add to active set $I^{(k)}$ and goto 1. \\
+	else goto 2.
+	
+	\item $x^{(k)}$ is stationary point of \eqref{active_set_strategy_substep}. Compute corresponding Lagrange multiplier $(\lambda, \mu)$. \\
+	If $\mu_i \ge 0 \ \forall \ i \in I^{(k)}$, $(x^{(k)},\lambda^{(k)},\mu^{(k)})$ is KKT-point of \eqref{eq:numerical_soln_ineq_constrained_LSQ}. \\
+	else remove \textbf{one} constraint with $\mu_i < 0$ from active set and goto 1.
+	
 \end{enumerate}
 
+
+
+%Active Set Strategy algorithm (\textcolor{red}{OLD!!}):
+%\begin{enumerate}
+%	\item Choose start point $x^0$, set iteration number $k=0$ and check for feasibility of $x^0$ and compute  initial active set $I^0 = \{ i \ | \ F_3^i(x^0) = 0 \}$
+%	\item Compute extended equality constraints $\tilde{F}_2(x) = 
+%	\begin{pmatrix} 
+%	F_2(x) \\  
+%	F_3^i(x), \ i \in I^k
+%	\end{pmatrix}$
+%	\item Solve the extended equality constrained subproblem
+%	\begin{align}
+%		\min_{\Delta x} & \ \frac{1}{2} || F_1 + J_1 \Delta x ||_2^2 \nonumber \\
+%		s.t. & \ \tilde{F}_2 + \tilde{J}_2 \Delta x = 0 \nonumber
+%	\end{align}
+%	\item Check for constraint violations $F_3(x^k + \Delta x^k) < 0$, modify $\Delta x^k$ such that $x^{k+1}$ is feasible and add corresponding constraints to active set.
+%	\item Compute $x^{k+1} = x^k + t^k \Delta x^k$ with stepsize $t^k \in (0, 1]$ from linesearch algorithm.
+%	\item Compute Lagrange multiplier $\mu$ from active inequality constraints and remove from active set if $\mu_i < 0$.
+%	\item Set $x^k = x^{k+1}$, $k += 1$ and goto step 2.
+%\end{enumerate}
+
+\todo{Linearisierte Konfidenzgebiete Parameterschaetzung rein} \\
+
 \todo{ueberarbeiten und nach Quelle aufbauen}
+
 
 \newpage
 \section{Simulation of DSC measuring process}
@@ -1215,7 +1258,7 @@ Solving \eqref{eq:heat_equation_discretized} yields the temperature but we are p
 	\approx & - \lambda_{\text{pcm}} \frac{T^{N_{\text{pcm}}+1} - T^{N_{\text{pcm}}}}{\Delta x_{N_{\text{pcm}}}} \cdot A_{\text{pcm}} \nonumber
 \end{align}
 
-The approximation is necessary because we do not know the heat conductivity $\bar{\lambda}$ at the transition between the silver plate and the PCM. \todo{Numerisch Waermestromdifferenz vor und nach Uebergang Ag -> PCM testen um Aussage treffen zu koennen wie gut die Naeherung ist.} \\
+The approximation is necessary because we do not know the heat conductivity $\bar{\lambda}$ at the transition between the silver plate and the PCM. \\
 Since Fourier's law gives a heat flux density we need to add a factor of the PCM's cross section $A_{\text{pcm}}$. It is computed by
 
 \begin{equation}
@@ -1789,7 +1832,7 @@ The sensitivities $\frac{\partial T}{\partial p_{c_p}}(t_i) \in \mathbb{R}^{N \t
 
 \section{Numerical experiments and results}
 All conducted numerical experiments involve the following subproblems: The numerical integration where we solve \eqref{eq:heat_equation_discretized} gives us the temperature $T$ and sensitivities $\frac{\partial T}{\partial p}$. This was accomplished with the numerical integrator DAESOL-II embedded in SolvIND. The integration tolerance was set to $10^{-7}$ and the sensitivities were obtained in forward mode.
-The heat flux $\varPhi_q^{pcm,in}$ is then computed with \eqref{eq:heat_flux_computation_final} and the optimization Jacobian $J_1(p_{c_p})$ with \eqref{eq:optimization_jacobian}. The parameter estimation is then performed by solving the least squares problem \eqref{eq:parameter_estimation_least_squares_problem}. \todo{welches programm fuer die optimierung} \\
+The heat flux $\varPhi_q^{pcm,in}$ is then computed with \eqref{eq:heat_flux_computation_final} and the optimization Jacobian $J_1(p_{c_p})$ with \eqref{eq:optimization_jacobian} \todo{Approx.-fehler vom heat flux nimmt mit steigendem N3 ab, bei Vergleich von N3=50 -> 200 hat sich nichts grossartig veraendert -> N3=50 reicht aus}. The parameter estimation is then performed by solving the least squares problem \eqref{eq:parameter_estimation_least_squares_problem}. \todo{welches programm fuer die optimierung} \\
 At solving the reference side with the analytical solution \eqref{eq:analytical_soln_final_formula} we stopped the actually infinite sum after 100 summands since the summand is proportional to $n^{-3}$. \\
 
 The material properties used throughout were for silver $c_{p,Ag}=0.235 \frac{mJ}{mg \ K}$, $\rho_{Ag}=10.49 \frac{mg}{mm^3}$ and $\lambda_{Ag}=430 \frac{mW}{mm \ K}$ and for the PCM $\rho_{pcm}=0.85 \frac{mg}{mm^3}$ and $\lambda_{pcm}=0.96 \frac{mW}{mm \ K}$. The initial temperature was set to $T_0=10^\circ C$ and the simulation stopped for the furnace temperature $T^0=200^\circ C$ such that the phase transition is completely finished. \\
@@ -1983,6 +2026,20 @@ The optimization took in this case about 40 minutes on my laptop and stopped bec
 	Latent heat storage above 120°C for applications in the industrial process heat sector and solar power generation,
 	Rainer Tamme, Thomas Bauer, Jochen Buschle, Doerte Laing, Hans Müller-Steinhagen and Wolf-Dieter Steinmann,
 	Int. J. Energy Res. 2008;32:264–271
+	
+\bibitem{diss_bock}
+	Randwertproblemmethoden zur Parameteridentifizierung in Systemen nichtlinearer Differentialgleichungen,
+	Dissertation Hans Georg Bock, 1985
+	
+\bibitem{nonlinear_optimiziation_wright}
+	Numerical Optimization,
+	Jorge Nocedal, Stephen J. Wright,
+	Second Edition, 2006 Springer Science+Business Media, LLC, ISBN-13: 978-0387-30303-1
+	
+\bibitem{numerical_methods_lsq_Bjorck}
+	Numerical Methods for Least Squares Problems,
+	Åke Björck, 1996,
+	ISBN: 978-0-89871-360-2
   
 \end{thebibliography}
 
