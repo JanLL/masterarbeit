@@ -764,3 +764,71 @@ plot(dsc.data(idx_start:idx_end,2), dsc.data(idx_start:idx_end,1))
 
 mean(heat_rate_meas)
 var(heat_rate_meas)
+
+
+%% Compute covariance matrix C in solution point
+
+fit_dir = '/home/argo/masterarbeit/fits_data/2017-11-27_22:04:37_407_L1=40_L3=0.1_N1=500_N3=200/';
+
+file_list = dir(fit_dir);
+
+isub = [file_list(:).isdir]; %# returns logical vector
+nameSubDirs = {file_list(isub).name}';
+nameSubDirs(ismember(nameSubDirs,{'.','..'})) = [];
+
+for j=1:length(nameSubDirs)
+    
+    fit_data = load([fit_dir, nameSubDirs{j}, '/fit_data.mat']);
+    
+    J1 = fit_data.optimization.dqdp_end;
+
+    [U,Sigma,V] = svd(full(J1));
+
+    np = size(Sigma,2);
+
+    Sigma_inv_square = diag(diag(Sigma).^(-2));
+
+    C = V * Sigma_inv_square * V.';
+
+    p_optim = fit_data.optimization.p_optim_end(fit_data.optimization.p_optim_estimable);
+    p_optim_variance = diag(C)';
+    
+    % Cuboid confidence region
+    alpha = 0.05;
+    theta = sqrt(chi2pdf(1-alpha, np)) .* sqrt(p_optim_variance);
+    
+    % Output
+    fprintf('Heat rate: %1.2f\n', fit_data.measurement.dsc_data.Tinfo.Tstep);
+    fprintf('Optim Variables: ');
+    for i=1:np
+        fprintf('%1.3e\t', p_optim(i));
+    end
+    
+    fprintf('\nVariances:       ');
+    for i=1:np
+        fprintf('%1.3e\t', p_optim_variance(i));
+    end
+    
+    fprintf('\nCuboid:          ');
+    for i=1:np
+        fprintf('%1.3e\t', theta(i));
+    end
+    
+    
+    fprintf('\n\n');
+    
+    
+end
+
+%% Chi^2 Test
+
+
+x = 0:0.01:30;
+
+plot(x, chi2pdf(x, 6))
+
+
+
+
+
+
