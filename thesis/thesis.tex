@@ -12,6 +12,11 @@
 %\usepackage{amsthm}
 \usepackage{ntheorem}
 \usepackage{subcaption}
+\usepackage{bbm}
+
+
+
+\numberwithin{equation}{section}
 
 %\theoremstyle{break}
 \newtheorem{Definition}{Definition}
@@ -824,15 +829,15 @@ In this section we first treat the general nonlinear optimization problem (NLP) 
 
 \begin{align}
 	\min_x & \ f(x) \label{eq:NLP_formulation} \\
-	s.t. & \ g(x) = 0 \nonumber \\
-	& \ h(x) \ge 0 \nonumber
+	s.t. & \ F_2(x) = 0 \nonumber \\
+	& \ F_3(x) \ge 0 \nonumber
 \end{align}
 
-where $x \in \mathbb{R}^n$ is the optimization variable, $f\text{: } \mathbb{R}^n \rightarrow \mathbb{R}$ is the objective function, $g\text{: } \mathbb{R}^n \rightarrow \mathbb{R}^{m_2}$ and $h\text{: } \mathbb{R}^n \rightarrow \mathbb{R}^{m_3}$ are the equality and respectively inequality constraints. Index $m_1$ is missing because we will need this later in the context of a least squares problem. The results shown in this chapter can be found in \cite{nonlinear_optimiziation_wright} or \cite{diss_jan}. \\
+where $x \in \mathbb{R}^n$ is the optimization variable, $f\text{: } \mathbb{R}^n \rightarrow \mathbb{R}$ is the objective function, $F_2\text{: } \mathbb{R}^n \rightarrow \mathbb{R}^{m_2}$ and $F_3\text{: } \mathbb{R}^n \rightarrow \mathbb{R}^{m_3}$ are the equality and respectively inequality constraints. Index $m_1$ is missing because we will need this later in the context of a least squares problem. The results shown in this chapter can be found in \cite{nonlinear_optimiziation_wright} or \cite{diss_jan}. \\
 The Lagrange function of \eqref{eq:NLP_formulation} is defined as
 
 \begin{equation}
-	\mathcal{L}(x,\lambda,\mu) := f(x) - \lambda^T g(x) - \mu^T h(x)
+	\mathcal{L}(x,\lambda,\mu) := f(x) - \lambda^T F_2(x) - \mu^T F_3(x)
 \end{equation}
 
 with Lagrange multipliers $\lambda \in \mathbb{R}^{m_2}$ and $\mu \in \mathbb{R}^{m_3}$. \\
@@ -840,29 +845,29 @@ with Lagrange multipliers $\lambda \in \mathbb{R}^{m_2}$ and $\mu \in \mathbb{R}
 Before stating the major results from optimization theory we need to introduce the following definitions:
 
 \begin{Definition}
-	$S := \{ x \ | \ g(x) = 0 \ \text{and} \ h(x) \ge 0 \}$ is called \underline{feasible set}.
+	$S := \{ x \ | \ F_2(x) = 0 \ \text{and} \ F_3(x) \ge 0 \}$ is called \underline{feasible set}.
 \end{Definition}
 
 \begin{Definition}
-	$I(x) := \{ i=1,...,m_3 \ | \ h(x) = 0 \}$ is called \underline{active set} with $s := \vert I \vert$.
+	$I(x) := \{ i=1,...,m_3 \ | \ F_{3,i}(x) = 0 \}$ is called \underline{active set} with $s := \vert I \vert$.
 \end{Definition}
 
 \begin{Definition}
-	$\tilde{g}(x) := 
+	$\tilde{F}_2(x) := 
 	\begin{pmatrix}
-		g(x) \\
-		h_i(x), \ i \in I(x) 
+		F_2(x) \\
+		F_{3,i}(x), \ i \in I(x) 
 	\end{pmatrix}$
 \end{Definition}
 
 \begin{Definition}
-	$x$ is called \underline{regular} if [LICQ] is satisfied, i.e. $rank \left( \frac{\partial \tilde g(x)}{\partial x} \right) = m_2 + s$
+	$x$ is called \underline{regular} if [LICQ] is satisfied, i.e. $rank \left( \frac{\partial \tilde F_2(x)}{\partial x} \right) = m_2 + s$
 \end{Definition}
 
 \begin{Definition}
 	\textbf{(Tangent space)} \\
-	$T(x) := \left\{ p \in \mathbb{R}^n \ | \ \frac{\partial \tilde g(x)}{\partial x} \cdot p = 0 \right\}$ \\
-	$T^+(x) := \left\{ p \in \mathbb{R}^n \ | \ \frac{\partial g(x)}{\partial x} \cdot p = 0, \frac{\partial h_i(x)}{\partial x} \cdot p = 0 \text{ and } \mu_i > 0 \text{ for } i \in I(x) \right\}$ \\
+	$T(x) := \left\{ p \in \mathbb{R}^n \ | \ \frac{\partial \tilde F_2(x)}{\partial x} \cdot p = 0 \right\}$ \\
+	$T^+(x) := \left\{ p \in \mathbb{R}^n \ | \ \frac{\partial F_2(x)}{\partial x} \cdot p = 0, \frac{\partial F_{3,i}(x)}{\partial x} \cdot p = 0 \text{ and } \mu_i > 0 \text{ for } i \in I(x) \right\}$ \\
 	are called \underline{tangent space}. It holds $T(x) \subseteq T^+(x)$.
 \end{Definition}
 
@@ -890,7 +895,7 @@ and the sufficient optimality condition [SOC]
 	Then: $x^*$ is a strict local minimum.
 \end{Theorem}
 
-Finally we define for later usage 
+Finally we introduce for later usage 
 
 \begin{Definition} \textbf{KKT-conditions} \\
 	Feasibility and [NOC1] are called \underline{Karush-Kuhn-Tucker (KKT)-conditions}. \\
@@ -903,7 +908,7 @@ Finally we define for later usage
 Since we are performing a parameter estimation we will treat now an equality constrained nonlinear least squares problem
 
 \begin{align}
-	\min_x \ & || F_1(x) ||_2^2 \\
+	\min_x \ & \frac{1}{2}|| F_1(x) ||_2^2 \\
 	s.t. \ & F_2(x) = 0 \nonumber
 \end{align}
 
@@ -911,11 +916,12 @@ with $x \in \mathbb{R}^n$, $F_1: \mathbb{R}^n \rightarrow \mathbb{R}^{m_1}$ and 
 Instead of applying the KKT-conditions on this problem we first linearize in order to avoid the need of computing the Hessian. This method is called Gauss-Newton (GN) and the resulting problem reads as
 
 \begin{align}
-\min_{\Delta x} \ & || F_1(x) + J_1(x) \Delta x ||_2^2 \\
+\min_{\Delta x} \ & \frac{1}{2}|| F_1(x) + J_1(x) \Delta x ||_2^2 \\
 s.t. \ & F_2(x) + J_2(x) \Delta x = 0 \nonumber
 \end{align}
 
-with $J_1(x) = \frac{\partial F_1(x)}{\partial x} \in \mathbb{R}^{m_1 \times n}$ and $J_2(x) = \frac{\partial F_2(x)}{\partial x} \in \mathbb{R}^{m_2 \times n}$. Applying the KKT conditions on this system gives the system
+with $J_1(x) = \frac{\partial F_1(x)}{\partial x} \in \mathbb{R}^{m_1 \times n}$ and $J_2(x) = \frac{\partial F_2(x)}{\partial x} \in \mathbb{R}^{m_2 \times n}$. In the following we will omit the function argument for better readability, i.e. $F_i(x) \equiv F_i$ and $J_i(x) \equiv J_i$ for $i \in \{1,2\}$.
+Applying KKT conditions on this system gives the system
 
 \begin{equation}
 	\begin{bmatrix}
@@ -934,8 +940,29 @@ with $J_1(x) = \frac{\partial F_1(x)}{\partial x} \in \mathbb{R}^{m_1 \times n}$
 	\label{eq:GN_KKT_system}
 \end{equation}
 
+The solution $\Delta x$ therefore reads as
 
-An important result \cite{diss_bock} is
+\begin{align}
+	\Delta x & =
+	- \underbrace{\begin{pmatrix}
+		\mathbbm{1} & 0
+	\end{pmatrix}
+	\begin{pmatrix}
+		J_1^T J_1 & J_2^T \\
+		J_2 & 0
+	\end{pmatrix}^{-1}
+	\begin{pmatrix}
+		J_1^T & 0 \\
+		0 & \mathbbm{1}
+	\end{pmatrix}}_{=: J^+}
+	\begin{pmatrix}
+		F_1 \\
+		F_2
+	\end{pmatrix}
+	\label{eq:GN_solution_formal}
+\end{align}
+
+with the generalized inverse $J^+$. An important result \cite{diss_bock} is
 
 \begin{Lemma} \textcolor{white}{.}\\
 	If $rank(J_2) = m_2$ and $rank 
@@ -953,7 +980,13 @@ An important result \cite{diss_bock} is
 \end{Lemma}
 
 \subsubsection{Numerical solution}
-For the numerical solution of \eqref{eq:GN_KKT_system} we will successively introduce the unconstrained, the equality constrained and the general equality and inequality constrained case because they are built up on each other, c.f. \cite{numerical_methods_lsq_Bjorck}.
+For the numerical solution of \eqref{eq:GN_KKT_system} we will successively introduce the unconstrained, the equality constrained and the general equality and inequality constrained case because they are built up on each other, c.f. \cite{numerical_methods_lsq_Bjorck}. All algorithms compute steps $\Delta x^{(k)}$ in iteration $k$. The final solution is then computed iteratively by
+
+\begin{equation}
+	x^{(k+1)} = x^{(k)} + t^{(k)} \Delta x^{(k)}
+\end{equation}
+
+The iteration index is omitted except for the active set strategy for better legibility.
 
 \paragraph{Unconstrained case}\mbox{}\\
 In the unconstrained case we want to solve the problem
@@ -978,7 +1011,7 @@ Based on decomposing $J_1$ two solutions are shown:
 			0
 		\end{pmatrix}
 	\end{equation}
-	where $Q$ is an orthogonal matrix and $\bar{R}$ is an upper triangular matrix. Inserting in the objective function \eqref{eq:numerical_solution_LSQ} gives
+	where $Q$ is an orthogonal matrix and $\bar{R}$ is an upper triangular matrix. Inserting in the objective function \eqref{eq:numerical_solution_LSQ} and omitting factor $\frac{1}{2}$ gives
 	
 	\begin{align}
 		|| F_1 + J_1 \Delta x ||_2^2 & = || F_1 + Q R \Delta x ||_2^2 = || Q( Q^T F_1 + R \Delta x ||_2^2 \\
@@ -1018,7 +1051,7 @@ Based on decomposing $J_1$ two solutions are shown:
 	\end{equation}
 	
 	with $U, V$ orthogonal and $\bar{\Sigma}$ diagonal. Let $r := rank(J_1) \le n$. Then $\bar{\Sigma}$ has the singular values $\sigma_1 \ge \sigma_2 \ge ... \ge \sigma_r > 0 > ... > 0$ on the diagonal. \\
-	Inserting modifies \eqref{eq:numerical_solution_LSQ} by
+	Inserting modifies \eqref{eq:numerical_solution_LSQ} where we omit again factor $\frac{1}{2}$ by
 	
 	\begin{align}
 		|| F_1 + J_1 \Delta x ||_2^2 & = || F_1 + U \Sigma \overbrace{V^T \Delta x}^{=: \Delta y} ||_2^2 = || U ( U^T F_1 + \Sigma \Delta y ||_2^2 \label{eq:numerical_solution_LSQ_SVD} \\
@@ -1115,18 +1148,18 @@ s.t. & \ F_2 + J_2 \Delta x = 0 \nonumber \\
 We treat this problem with an active set strategy illustrated below, c.f. \cite{diss_bock}:
 
 \begin{enumerate}
-	\item Set $k := 0$, Let $x^{(0)}$ be feasible point and $I^{(0)}$ corresponding active set.
+	\item Set $k := 0$, Let $x^{(0)}$ be a feasible point and $I^{(0)}$ corresponding active set.
 	\item Compute solution $\Delta x^{(k)}$ of equality constrained subproblem
 	\begin{align}
-	\min_{\Delta x} & \ \frac{1}{2} || F_1 + J_1 \Delta x ||_2^2 \nonumber \\
-	s.t. & \ \tilde{F}_2 + \tilde{J}_2 \Delta x = 0
+	\min_{\Delta x^{(k)}} & \ \frac{1}{2} || F_1(x^{(k)}) + J_1(x^{(k)}) \Delta x^{(k)} ||_2^2 \nonumber \\
+	s.t. & \ \tilde{F}_2(x^{(k)}) + \tilde{J}_2(x^{(k)}) \Delta x^{(k)} = 0
 	\label{active_set_strategy_substep}
 	\end{align}
 	
-	with combined equality and active inequality constraints $\tilde{F}_2(x) = 
+	with combined equality and active inequality constraints $\tilde{F}_2(x^{(k)}) = 
 	\begin{pmatrix} 
-	F_2(x) \\  
-	F_3^i(x), \ i \in I^k
+	F_2(x^{(k)}) \\  
+	F_3^i(x^{(k)}), \ i \in I^k
 	\end{pmatrix}$
 	
 	If $||\Delta x^{(k)}|| < TOL$: goto 2. \\
@@ -1164,9 +1197,52 @@ We treat this problem with an active set strategy illustrated below, c.f. \cite{
 %	\item Set $x^k = x^{k+1}$, $k += 1$ and goto step 2.
 %\end{enumerate}
 
-\todo{Linearisierte Konfidenzgebiete Parameterschaetzung rein} \\
 
-\todo{ueberarbeiten und nach Quelle aufbauen}
+\subsubsection{Statistical analysis of estimated parameters}
+In order to quantify how trustworthy the obtained estimated parameters are, a statistical analysis is applied. The results shown in the following part can be found including proofs in \cite{diss_koerkel}. \\
+
+Since the measurement data $\eta$ is a random variable because of the statistical measurement error, the parameters $x$ are random variables as well. The corresponding covariance matrix of the estimate $x^*$ is defined as
+
+\begin{align}
+	C = & \mathbb{E} [ \Delta x \Delta x^T ]
+	\ \stackrel{\eqref{eq:GN_solution_formal}}{=} \ J^+
+	\begin{pmatrix}
+	\mathbbm{1} & 0 \\
+	0 & 0
+	\end{pmatrix}
+	(J^+)^T 
+	\label{eq:stat_ana_covariance_matrix}
+\end{align}
+
+We define a confidence region in which the true parameter values are with a probability $1-\alpha$. Its linearization reads as
+\begin{align}
+	G_L(\alpha, x^*) = \left\{ x \in \mathbb{R}^n \ | \ \right. & F_2(x^*) + J_2(x^*)(x - x^*) = 0, \\ 
+	& \left. || F_1(x^*) + J_1(x^*)(x - x^*) ||_2^2 - || F_1(x^*)||_2^2 \le \gamma(\alpha) \right\} \nonumber
+	\label{eq:stat_ana_lin_confidence_region}
+\end{align}
+
+with 
+
+\begin{equation}
+	\gamma(\alpha) := \chi_{n-m2}^2(1-\alpha)
+	\label{eq:stat_ana_chi_squared_dist}
+\end{equation}
+
+the chi-square distribution. The final important result for us is
+
+\begin{Theorem} .\\
+	Let 
+	\begin{equation}
+		\theta_i := \sqrt{\gamma(\alpha)} \cdot \sqrt{C_{ii}(x^*)} \qquad \text{for } i=1,...,n
+	\end{equation}
+	
+	with $\gamma(\alpha)$ defined in \eqref{eq:stat_ana_chi_squared_dist} and $C{ii}(x^*)$ are the diagonal elements of the covariance matrix obtained by \eqref{eq:stat_ana_covariance_matrix}. Then the linearized confidence region \eqref{eq:stat_ana_lin_confidence_region} is a subset of a cuboid with length $2 \theta_i$:
+	\begin{equation}
+		G_L(\alpha, x^*) \subseteq [x_1^* - \theta_1, x_1^* + \theta_1] \times ... \times [x_n^* - \theta_n, x_n^* + \theta_n]
+	\end{equation}
+	
+\end{Theorem}
+
 
 
 \newpage
@@ -2040,6 +2116,12 @@ The optimization took in this case about 40 minutes on my laptop and stopped bec
 	Numerical Methods for Least Squares Problems,
 	Åke Björck, 1996,
 	ISBN: 978-0-89871-360-2
+	
+\bibitem{diss_koerkel}
+	Numerische Methoden
+	für Optimale Versuchsplanungsprobleme
+	bei nichtlinearen DAE-Modellen,
+	Dissertation Stefan Körkel, 2002
   
 \end{thebibliography}
 
