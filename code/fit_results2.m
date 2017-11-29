@@ -39,6 +39,7 @@
 [fig, enthalpies] = get_fit_results('2017-11-27_08:22:19_407_L1=40_L3=0.1_N1=500_N3=50'); % FS
 [fig, enthalpies] = get_fit_results('2017-11-27_17:36:31_407_L1=40_L3=0.1_N1=500_N3=50'); % Gausse
 
+[fig, enthalpies] = get_fit_results('2017-11-27_22:04:37_407_L1=40_L3=0.1_N1=500_N3=200'); % FS
 
 
 

@@ -179,12 +179,12 @@ p_optim_all(~optimization.p_optim_estimable) = p_optim_fixed;
 
 %%%%%%%%%%%%%%%%% SAVE FIT RESULTS %%%%%%%%%%%%%%%%%%
 save_path_root = options.save_path_root;
-[residuum_end, ~] = heat1D_pcm('optimization', p_optim_all);
+[residuum_end, Jac_end] = heat1D_pcm('optimization', p_optim_all);
 
 fit_data = save_fit_mex(...
     save_path_root, simulation, dsc_measurement, index_T_dsc, ...
     optimization, p_optim_all, optim_output, optim_duration, ...
-    residuum_end, jac_output, p_optim_process);
+    residuum_end, Jac_end, p_optim_process);
 
 
 end
