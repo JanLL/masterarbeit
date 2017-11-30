@@ -862,7 +862,7 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		g_adjSens.clear();
 		g_fwdSens.clear();
 
-		integrator->setAdjointInjectionGrid(solGrid, &adjInjector); 
+		//integrator->setAdjointInjectionGrid(solGrid, &adjInjector); 
 		// Q: nicht ganz klar warum man das nochmal braucht? Sonst sind alle adjSens gleich 0...
 
 

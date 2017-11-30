@@ -4,6 +4,7 @@ function [varargout] = compute_q_dqdp_mex(...
 
 % build vector of all (free and fixed) optimization parameters
 p_optim_all = zeros(1,length(p_optim_estimable));
+
 p_optim_all(p_optim_estimable) = p_optim_free;
 p_optim_all(~p_optim_estimable) = p_optim_fixed;
 

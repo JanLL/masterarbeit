@@ -22,6 +22,7 @@ function [x_end] = GN_ass(F1_func, F2_func, x_start, lb, ub, options)
 % Abbreviations
 TOL_ineq = options.TOL_ineq;
 TOL_dx_norm = options.TOL_dx_norm;
+TOL_t_k = options.TOL_t_k;
 
 F3_func = @(p) GN_eval_ineq_constraints(p, lb, ub);
 
@@ -46,13 +47,12 @@ A = (F3 < TOL_ineq & F3 > -TOL_ineq).';
 A_lb = A(1:n);
 A_ub = A(n+1:2*n);
 
-
 x_k = x_start;
 dx_norm = inf;
 
-t_k = 0.3;  % initial stepsize
+t_k = 0.05;  % initial stepsize
 
-while (dx_norm > TOL_dx_norm)
+while (dx_norm > TOL_dx_norm && t_k > TOL_t_k)
 %for i=1:10
     
     [F1, J1] = F1_func(x_k);
@@ -76,6 +76,7 @@ while (dx_norm > TOL_dx_norm)
     dxdx = dx.' * dx;
     
     x_kp1 = x_k + t_k * dx;
+    
     F1_kp1 = F1_func(x_kp1);
     F1_norm_kp1 = F1_kp1.' * F1_kp1;
     
@@ -90,7 +91,12 @@ while (dx_norm > TOL_dx_norm)
             catch ME
                 fprintf('Error occured at integration: %s\n', ME.identifier);
                 t_k = t_k * d;
-                continue
+                
+                if t_k > TOL_t_k
+                    continue
+                else
+                    break
+                end
             end    
             F1_norm_kp1 = F1_kp1.' * F1_kp1;        
             t_k = t_k * d;
@@ -100,10 +106,8 @@ while (dx_norm > TOL_dx_norm)
     
     % Check for violations of non-active inequality constraints
     F3_kp1 = F3_func(x_kp1);
-    ineq_violations_lb = F3_kp1(1:n) < -TOL_ineq;
-    ineq_violations_ub = F3_kp1(n+1:2*n) < -TOL_ineq;
-    % TOL_ineq = 0!!
-    
+    ineq_violations_lb = F3_kp1(1:n) < 0;
+    ineq_violations_ub = F3_kp1(n+1:2*n) < 0;
     
     % For violations, set to value of lb, ub
     x_kp1(ineq_violations_lb) = lb(ineq_violations_lb);
@@ -135,7 +139,19 @@ while (dx_norm > TOL_dx_norm)
     dx_norm = norm(dx);  % oder hier dx_mod?
     F1_norm = norm(F1_func(x_k));
     
-    fprintf('F1_norm: %1.3e\tdx_norm: %1.3e\tt_k = %1.3e\n', F1_norm, dx_norm, t_k);
+    fprintf('\nF1_norm: %1.3e\tdx_norm: %1.3e\tt_k = %1.3e\n', F1_norm, dx_norm, t_k);
+    
+    for j=0:ceil(length(x_k)/10)-1
+        fprintf('param number:\t');
+        fprintf(repmat('%d\t',1,10),(1:10)+j*10 );
+        fprintf('\n');
+
+        fprintf('param value:\t');
+        index = (1:10)+j*10;
+        index = index(index <= length(x_k));
+        fprintf(repmat('%1.3g\t',1,10), x_k(index));
+        fprintf('\n');
+    end
     
 end
 

@@ -118,51 +118,65 @@ end
 
 meas_data(:,2) = q_dsc;
 
-
+optimization.c_p_param_type = 'fraser_suzuki';
+% optimization.c_p_param_type = 'gauss_linear_comb';
 
 %%%%%%%%%% Set optimization variables Fraser Suzuki %%%%%%%%%%%%%%%%%%%%%%
-c_p_param_type = 'fraser_suzuki';
+if (strcmp(optimization.c_p_param_type, 'fraser_suzuki'))
+    
+    h  =  10.0;
+    r  =  2.0;
+    wr =  5.0;
+    sr =   0.3;
+    z  = 130.0;
+    m  = 0.1;
+    b  =   3.0;
+    p_fraser_suzuki = [h, r, wr, sr, z, m, b].';
 
-h  =  10.0;
-r  =  2.0;
-wr =  5.0;
-sr =   0.3;
-z  = 130.0;
-m  = 1.5;
-b  =   2.0;
-p_fraser_suzuki = [h, r, wr, sr, z, m, b].';
+    optimization.p_optim_start = p_fraser_suzuki;
 
-p_optim_start = p_fraser_suzuki;
+    % choose free(true)/fixed(false) parameters to optimize
+    optimization.p_optim_estimable = true(length(optimization.p_optim_start), 1);
+    optimization.p_optim_estimable(2) = false;  % fix "r"
+    optimization.p_optim_fixed = optimization.p_optim_start(~optimization.p_optim_estimable);
 
-% choose free(true)/fixed(false) parameters to optimize
-p_optim_estimable = true(length(p_optim_start), 1);
-p_optim_estimable(2) = false;  % fix "r"
-p_optim_fixed = p_optim_start(~p_optim_estimable);
+    optimization.lb = -inf*ones(1,length(optimization.p_optim_start));
+    optimization.ub = +inf*ones(1,length(optimization.p_optim_start));
 
-lb = -inf*ones(1,length(p_optim_start));
-ub = +inf*ones(1,length(p_optim_start));
+elseif (strcmp(optimization.c_p_param_type, 'gauss_linear_comb'))
+    
+%     fit_data = load(['/home/argo/masterarbeit/fits_data/', ...
+%                      '2017-11-27_17:36:31_407_L1=40_L3=0.1_N1=500_N3=50/', ...
+%                      '2017-11-27_08:39:57_407_20Kmin_L1=40_L3=0,1/fit_data.mat']);
+%     optimization.p_optim_start = fit_data.optimization.p_optim_end';
 
-%%%%%%%%%%% Set optimization variables Gauss Linear Comb. %%%%%%%%%%%%%%%%
-% optimization.c_p_param_type = 'gauss_linear_comb';
-% 
-% fit_data = load(['/home/argo/masterarbeit/fits_data/', ...
-%                  '2017-11-27_08:36:08_407_L1=40_L3=0.1_N1=500_N3=50/', ...
-%                  '2017-11-27_08:39:57_407_20Kmin_L1=40_L3=0,1/fit_data.mat']);
-% optimization.start_values = [fit_data.optimization.p_optim_end];
-% 
-% % choose free(true)/fixed(false) parameters to optimize
-% p_optim_estimable = true(length(p_optim_start), 1);
-% p_optim_fixed = p_optim_start(~p_optim_estimable);
-% 
-% lb = -inf*ones(1,length(p_optim_start));
-% ub = +inf*ones(1,length(p_optim_start));
+    optimization.p_optim_start = ones(33,1);
+    optimization.p_optim_start([3,6,9,12,15]) = [120., 125, 129, 131, 135]; % offset start positions
+    optimization.p_optim_start(7) = 10.;
+    optimization.p_optim_start(31) = 0.;    
+    
+    optimization.p_optim_start(16:3:30) = 0.;  % Amplitude of deactivated Gaussians = 0
 
+    % choose free(true)/fixed(false) parameters to optimize
+    optimization.p_optim_estimable = true(length(optimization.p_optim_start), 1);
+    optimization.p_optim_estimable(16:30) = false;  % deactivate last 5 Gaussians
+    optimization.p_optim_estimable(33) = false;  % fix h_start
+    
+    optimization.p_optim_estimable(31) = false;  % fix linear
+    
+    
+    optimization.p_optim_fixed = optimization.p_optim_start(~optimization.p_optim_estimable);
+    
+    optimization.lb = -inf*ones(1,length(optimization.p_optim_start));
+    optimization.lb(2:3:30) = 0.5;
+    
+    optimization.ub = +inf*ones(1,length(optimization.p_optim_start));
 
-
+end
 
 
 heat1D_pcm('reset');
-heat1D_pcm('init', sim_params_vec, spatial_gridsize, meas_data, c_p_param_type);
+heat1D_pcm('init', sim_params_vec, spatial_gridsize, meas_data, optimization.c_p_param_type);
 
 
 figure(1); % q_pcm_in plot
@@ -173,24 +187,28 @@ figure(3); % dqdp plot
 ax3 = gca();
 
 F1_func = @(p_optim) compute_q_dqdp_mex(...
-    p_optim, p_optim_estimable, p_optim_fixed, c_p_param_type, T_ref_dsc, q_dsc, ax1, ax2, ax3);
+    p_optim, optimization.p_optim_estimable, optimization.p_optim_fixed, optimization.c_p_param_type, T_ref_dsc, q_dsc, ax1, ax2, ax3);
 F2_func = @(p) GN_test_fct_F2(p);
 
 %%%%%%%%%%%%%% INITIAL VALUE TEST %%%%%%%%%%%%%%%%%%%%
-% [F1, J1] = F1_func(p_optim_start(p_optim_estimable));
+% [F1, J1] = F1_func(optimization.p_optim_start(optimization.p_optim_estimable));
 % return
 
 
 GN_options = struct;
 GN_options.decomposition = 'SVD';
-GN_options.TOL_ineq = 1e-8;
+GN_options.TOL_ineq = 1e-8;  % constraint active when -TOL < F_3i < TOL
+
+% Termination criteria
 GN_options.TOL_dx_norm = 1e-8;
+GN_options.TOL_t_k = 1e-8;
+GN_options.max_iterations = 
 
 p_optim_end = GN_ass(F1_func, ...
                      F2_func, ...
-                     p_optim_start(p_optim_estimable), ...
-                     lb(p_optim_estimable), ...
-                     ub(p_optim_estimable), ...
+                     optimization.p_optim_start(optimization.p_optim_estimable), ...
+                     optimization.lb(optimization.p_optim_estimable), ...
+                     optimization.ub(optimization.p_optim_estimable), ...
                      GN_options);
 
 
