@@ -93,15 +93,7 @@ spatial_gridsize = dchi(0:N-2)';
 % return
 
 
-% c_p parametrization with Fraser-Suzuki-Peak
-h  =  10.0;
-r  =  2.0;
-wr =  5.0;
-sr =   0.3;
-z  = 130.0;
-m  = 0.003;
-b  =   2.0;
-p_fraser_suzuki = [h, r, wr, sr, z, m, b].';
+
 
 %%%%%%%%%% some pre-calculations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -128,8 +120,18 @@ meas_data(:,2) = q_dsc;
 
 
 
-% Set optimization variables
+%%%%%%%%%% Set optimization variables Fraser Suzuki %%%%%%%%%%%%%%%%%%%%%%
 c_p_param_type = 'fraser_suzuki';
+
+h  =  10.0;
+r  =  2.0;
+wr =  5.0;
+sr =   0.3;
+z  = 130.0;
+m  = 1.5;
+b  =   2.0;
+p_fraser_suzuki = [h, r, wr, sr, z, m, b].';
+
 p_optim_start = p_fraser_suzuki;
 
 % choose free(true)/fixed(false) parameters to optimize
@@ -137,8 +139,25 @@ p_optim_estimable = true(length(p_optim_start), 1);
 p_optim_estimable(2) = false;  % fix "r"
 p_optim_fixed = p_optim_start(~p_optim_estimable);
 
+lb = -inf*ones(1,length(p_optim_start));
+ub = +inf*ones(1,length(p_optim_start));
 
-num_free_optim_params = sum(p_optim_estimable);
+%%%%%%%%%%% Set optimization variables Gauss Linear Comb. %%%%%%%%%%%%%%%%
+% optimization.c_p_param_type = 'gauss_linear_comb';
+% 
+% fit_data = load(['/home/argo/masterarbeit/fits_data/', ...
+%                  '2017-11-27_08:36:08_407_L1=40_L3=0.1_N1=500_N3=50/', ...
+%                  '2017-11-27_08:39:57_407_20Kmin_L1=40_L3=0,1/fit_data.mat']);
+% optimization.start_values = [fit_data.optimization.p_optim_end];
+% 
+% % choose free(true)/fixed(false) parameters to optimize
+% p_optim_estimable = true(length(p_optim_start), 1);
+% p_optim_fixed = p_optim_start(~p_optim_estimable);
+% 
+% lb = -inf*ones(1,length(p_optim_start));
+% ub = +inf*ones(1,length(p_optim_start));
+
+
 
 
 
@@ -158,11 +177,9 @@ F1_func = @(p_optim) compute_q_dqdp_mex(...
 F2_func = @(p) GN_test_fct_F2(p);
 
 %%%%%%%%%%%%%% INITIAL VALUE TEST %%%%%%%%%%%%%%%%%%%%
-[F1, J1] = F1_func(p_optim_start(p_optim_estimable));
-return
+% [F1, J1] = F1_func(p_optim_start(p_optim_estimable));
+% return
 
-lb = -inf*ones(1,length(p_optim_start));
-ub = +inf*ones(1,length(p_optim_start));
 
 GN_options = struct;
 GN_options.decomposition = 'SVD';

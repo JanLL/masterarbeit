@@ -866,7 +866,7 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		// Q: nicht ganz klar warum man das nochmal braucht? Sonst sind alle adjSens gleich 0...
 
 
-		std::cout << "Setting initial values\n";
+		//std::cout << "Setting initial values\n";
 		integrator->setInitialValues(Component_P, np, c_p_params);
 
 
@@ -878,12 +878,12 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 				fwdSensDir    // (1+nxd+np)x(np) matrix with np fwdDirections
 				);*/
 		integrator->setAdjointTaylorCoefficients ( 0, 0, 0, 0, 0 );
-		std::cout << "Integrate now...\n";
+		//std::cout << "Integrate now...\n";
 		clock_t t_begin = clock();
 		errorCode = integrator->evaluate();
 		clock_t t_end = clock();
 		clock_t t_duration = t_end - t_begin;
-		std::cout << "Integration took " << double(t_duration) / CLOCKS_PER_SEC << " seconds." << std::endl;
+		//std::cout << "Integration took " << double(t_duration) / CLOCKS_PER_SEC << " seconds." << std::endl;
 		if ( errorCode < 0 ){
 			cout << "Error occured during evaluation, terminating now... \n" << errorCode<< std::endl;
 			return;

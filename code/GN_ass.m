@@ -50,7 +50,7 @@ A_ub = A(n+1:2*n);
 x_k = x_start;
 dx_norm = inf;
 
-t_k = 0.5;  % initial stepsize
+t_k = 0.3;  % initial stepsize
 
 while (dx_norm > TOL_dx_norm)
 %for i=1:10

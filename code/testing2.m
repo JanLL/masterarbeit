@@ -712,6 +712,7 @@ for i=1:length(T_test_dirs)
     T_test = T_test_data.T(:,T_test_data.N1);
     
     relErr = abs(1 - T_test ./ T_ref);
+    relErr = (1 - T_test ./ T_ref);
     
     plot(ax1, T_test_data.T_ref_dsc, relErr, 'Linewidth', 1.3, 'DisplayName', sprintf('N=%s', num2str(T_test_data.N1 + T_test_data.N3)));
     
@@ -725,14 +726,14 @@ legend(ax1, 'show', 'location', 'northwest')
 xlabel(ax1, 'T_{ref} [degC]')
 ylabel(ax1, 'Absolute relative error')
 set(ax1,'FontSize',12);
-print(fig1, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_N_relErr', '-dpng', '-r200');
+%print(fig1, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_N_relErr', '-dpng', '-r200');
 
 
 legend(ax2, 'show', 'location', 'northeast')
 xlabel('$$\tilde{x}$$, Computation grid', 'Interpreter', 'latex')
 ylabel('$$\chi(\tilde{x}) = \Delta x$$ [mm]', 'Interpreter', 'latex')
 set(ax2,'FontSize',12);
-print(fig2, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_N_gridsize', '-dpng', '-r200');
+%print(fig2, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_N_gridsize', '-dpng', '-r200');
 
 
 
