@@ -1199,44 +1199,50 @@ We treat this problem with an active set strategy illustrated below, c.f. \cite{
 
 
 \subsubsection{Statistical analysis of estimated parameters}
-In order to quantify how trustworthy the obtained estimated parameters are, a statistical analysis is applied. The results shown in the following part can be found including proofs in \cite{diss_koerkel}. \\
+In order to quantify how trustworthy the obtained estimated parameters are, a statistical analysis is applied. The results shown in the following part can be found including proofs in \cite{diss_bock} \cite{diss_koerkel}. \\
 
 Since the measurement data $\eta$ is a random variable because of the statistical measurement error, the parameters $x$ are random variables as well. The corresponding covariance matrix of the estimate $x^*$ is defined as
 
 \begin{align}
-	C = & \mathbb{E} [ \Delta x \Delta x^T ]
-	\ \stackrel{\eqref{eq:GN_solution_formal}}{=} \ J^+
+	C(x^*) = & \mathbb{E} [ \Delta x \Delta x^T ]
+	\ \stackrel{\eqref{eq:GN_solution_formal}}{=} \ J^+(x^*)
 	\begin{pmatrix}
-	\mathbbm{1} & 0 \\
+	\beta^2  \mathbbm{1} & 0 \\
 	0 & 0
 	\end{pmatrix}
-	(J^+)^T 
+	(J^+)^T(x^*) 
 	\label{eq:stat_ana_covariance_matrix}
 \end{align}
 
-We define a confidence region in which the true parameter values are with a probability $1-\alpha$. Its linearization reads as
+for the case that the measurement covariance matrix $\Sigma$ are known except a common factor $\beta$, that is $\Sigma = \beta \hat{\Sigma}$ with $\hat{\Sigma}$ the used measurement covariance matrix in the parameter estimation. An approximation $b$ of this factor can be computed a-posteriori by
+
+\begin{equation}
+	\beta^2 \approx b^2 = \frac{|| F_1(x^*) ||_2^2}{n_{mp} - (n_p - n_c)}
+\end{equation}
+
+with $n_c$ number of active equality constraints. We define a confidence region in which the true parameter values are with a probability $1-\alpha$. Its linearization reads as
 \begin{align}
-	G_L(\alpha, x^*) = \left\{ x \in \mathbb{R}^n \ | \ \right. & F_2(x^*) + J_2(x^*)(x - x^*) = 0, \\ 
-	& \left. || F_1(x^*) + J_1(x^*)(x - x^*) ||_2^2 - || F_1(x^*)||_2^2 \le \gamma(\alpha) \right\} \nonumber
-	\label{eq:stat_ana_lin_confidence_region}
+	G_L(\alpha, x^*) = \left\{ x \in \mathbb{R}^n \ | \ \right. & F_2(x^*) + J_2(x^*)(x - x^*) = 0, \label{eq:stat_ana_lin_confidence_region} \\ 
+	& \left. || F_1(x^*) + J_1(x^*)(x - x^*) ||_2^2 - || F_1(x^*)||_2^2 \le \gamma(\alpha) \right\} \nonumber	
 \end{align}
 
 with 
 
 \begin{equation}
-	\gamma(\alpha) := \chi_{n-m2}^2(1-\alpha)
-	\label{eq:stat_ana_chi_squared_dist}
+	%\gamma(\alpha) := \chi_{n-m_2}^2(1-\alpha)
+	\gamma(\alpha) := b^2 (n_p - n_c) \cdot F_{1-\alpha}(n_p - n_c, n_{mp} - (n_p - n_c))
+	\label{eq:stat_ana_fisher_dist}
 \end{equation}
 
-the chi-square distribution. The final important result for us is
+where $F_{1-\alpha}$ is the $1-\alpha$ quantile of the Fisher-distribution. The final important result for us is
 
 \begin{Theorem} .\\
 	Let 
 	\begin{equation}
-		\theta_i := \sqrt{\gamma(\alpha)} \cdot \sqrt{C_{ii}(x^*)} \qquad \text{for } i=1,...,n
+		\theta_i := b \cdot \sqrt{\gamma(\alpha)} \cdot \sqrt{C_{ii}(x^*)} \qquad \text{for } i=1,...,n
 	\end{equation}
 	
-	with $\gamma(\alpha)$ defined in \eqref{eq:stat_ana_chi_squared_dist} and $C{ii}(x^*)$ are the diagonal elements of the covariance matrix obtained by \eqref{eq:stat_ana_covariance_matrix}. Then the linearized confidence region \eqref{eq:stat_ana_lin_confidence_region} is a subset of a cuboid with length $2 \theta_i$:
+	with $\gamma(\alpha)$ defined in \eqref{eq:stat_ana_fisher_dist} and $C_{ii}(x^*)$ are the diagonal elements of the covariance matrix obtained by \eqref{eq:stat_ana_covariance_matrix}. Then the linearized confidence region \eqref{eq:stat_ana_lin_confidence_region} is a subset of a cuboid with length $2 \theta_i$:
 	\begin{equation}
 		G_L(\alpha, x^*) \subseteq [x_1^* - \theta_1, x_1^* + \theta_1] \times ... \times [x_n^* - \theta_n, x_n^* + \theta_n]
 	\end{equation}
