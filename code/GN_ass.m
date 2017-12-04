@@ -23,6 +23,7 @@ function [x_end] = GN_ass(F1_func, F2_func, x_start, lb, ub, options)
 TOL_ineq = options.TOL_ineq;
 TOL_dx_norm = options.TOL_dx_norm;
 TOL_t_k = options.TOL_t_k;
+max_iterations = options.max_iterations;
 
 F3_func = @(p) GN_eval_ineq_constraints(p, lb, ub);
 
@@ -50,10 +51,12 @@ A_ub = A(n+1:2*n);
 x_k = x_start;
 dx_norm = inf;
 
-t_k = 0.05;  % initial stepsize
+t_k = options.t_k_start;  % initial stepsize
 
-while (dx_norm > TOL_dx_norm && t_k > TOL_t_k)
-%for i=1:10
+i = 1;
+while (dx_norm > TOL_dx_norm && t_k > TOL_t_k && i < max_iterations)
+          
+    A
     
     [F1, J1] = F1_func(x_k);
     [F2, J2] = F2_func(x_k);
@@ -65,18 +68,33 @@ while (dx_norm > TOL_dx_norm && t_k > TOL_t_k)
     
     % Solve equality constraint LSQ subproblem
     [dx, Q1, R_bar] = GN_step_constr(F1, J1, F_active, J_active, options);    
+    lambda = R_bar \ (Q1.' * (J1.' * J1) * dx + Q1.' * J1.' * F1);
     
-    % TODO: Schrittweitensteuerung "Backtracking Linesearch"
+    lambda
+    
+    % Step size control backtracking linesearch with Armojo strategy
     c = 0.;  % parameter of Armijo Strategy (0, 0.5) for steepness
-    d = 0.9;  % parameter of t_k decrease rate
+    d = 0.8;  % parameter of t_k decrease rate
     
     % some pre-computations
     F1_norm_k = F1.' * F1;
     J1J1 = J1.' * J1;
     dxdx = dx.' * dx;
     
-    x_kp1 = x_k + t_k * dx;
     
+    % TODO: dx kuerzen auf erste constraintverletzung. momentan nur lb
+    dx_cut_factor = max(t_k* [dx; dx] ./ ([lb.'; ub.'] - [x_k; x_k]));
+    
+    if (dx_cut_factor > 1)
+        dx_tmp = dx / dx_cut_factor;
+        dx_cut_factor
+    else
+        dx_tmp = dx;
+    end
+    
+    x_kp1 = x_k + t_k * dx_tmp;
+    
+    % Line Search
     F1_kp1 = F1_func(x_kp1);
     F1_norm_kp1 = F1_kp1.' * F1_kp1;
     
@@ -85,7 +103,7 @@ while (dx_norm > TOL_dx_norm && t_k > TOL_t_k)
     else
         while F1_norm_kp1 > F1_norm_k - c*t_k * (dx.'*dx)
 
-            x_kp1 = x_k + t_k * dx;
+            x_kp1 = x_k + t_k * dx_tmp;
             try  % Catch error if integration not successful (e.g. when c_p negative)
                 F1_kp1 = F1_func(x_kp1);
             catch ME
@@ -104,42 +122,40 @@ while (dx_norm > TOL_dx_norm && t_k > TOL_t_k)
         end
     end
     
-    % Check for violations of non-active inequality constraints
+
+    % Save one constraint from active set with negative lambda to remove
+    % later
+    lambda_aux = inf*(ones(2*n,1));
+    
+    lambda_aux(reshape(A,1,[]) == true) = lambda(m2 + (1:sum(sum(A))));
+    idx_lambda_aux_neg = find(lambda_aux < 0);
+    if (isempty(idx_lambda_aux_neg))
+        idx_temp = [];
+    else
+        idx_temp = randi(length(idx_lambda_aux_neg));
+    end
+    idx_remove_constraint = idx_lambda_aux_neg(idx_temp);    
+    
+    % Build new active set if F_3i < TOL
     F3_kp1 = F3_func(x_kp1);
-    ineq_violations_lb = F3_kp1(1:n) < 0;
-    ineq_violations_ub = F3_kp1(n+1:2*n) < 0;
     
-    % For violations, set to value of lb, ub
-    x_kp1(ineq_violations_lb) = lb(ineq_violations_lb);
-    x_kp1(ineq_violations_ub) = ub(ineq_violations_ub);
+    active_lb = F3_kp1(1:n) < 1e-8;
+    active_ub = F3_kp1(n+1:2*n) < 1e-8;
     
-    % Compute lagrange multipliers lambda with modified dx
-    dx_mod = x_kp1 - x_k;
-    lambda = R_bar \ (Q1.' * (J1.' * J1) * dx_mod + Q1.' * J1.' * F1);
+    A = [active_lb, active_ub];
     
-    % Remove constraints from active set with negative lambda
-    lambda_aux_lb = inf*ones(n,1);
+    % Remove constraint with negative lambda from previous calculation
+    A(idx_remove_constraint) = false;
+
     
-    lambda_aux_lb(A_lb == true) = lambda(m2 + (1:sum(A_lb)));
-    A_lb(lambda_aux_lb < 0) = false; % TODO: vllt mit ner Tolerance
     
-    lambda_aux_ub = inf*ones(n,1);
-    lambda_aux_ub(A_ub == true) = lambda(m2+sum(A_lb) + (1:sum(A_ub)));
-    A_ub(lambda_aux_ub < 0) = false; % TODO: vllt mit ner Tolerance
+    dx_final_step = x_kp1 - x_k;
+    x_k = x_k + dx_final_step;
     
-    % Add index of violated constraints to active set.
-    A_lb(ineq_violations_lb) = true;
-    A_ub(ineq_violations_ub) = true;
-    
-    % update active Set A
-    A = [A_lb, A_ub];
-    
-    x_k = x_k + dx_mod;
-    
-    dx_norm = norm(dx);  % oder hier dx_mod?
+    dx_norm = norm(dx);
     F1_norm = norm(F1_func(x_k));
     
-    fprintf('\nF1_norm: %1.3e\tdx_norm: %1.3e\tt_k = %1.3e\n', F1_norm, dx_norm, t_k);
+    fprintf('\nIteration: %d\tF1_norm: %1.3e\tdx_norm: %1.3e\tt_k = %1.3e\n', i, F1_norm, dx_norm, t_k);
     
     for j=0:ceil(length(x_k)/10)-1
         fprintf('param number:\t');
@@ -152,6 +168,8 @@ while (dx_norm > TOL_dx_norm && t_k > TOL_t_k)
         fprintf(repmat('%1.3g\t',1,10), x_k(index));
         fprintf('\n');
     end
+    
+    i = i+1;
     
 end
 

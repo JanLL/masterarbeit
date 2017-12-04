@@ -41,6 +41,11 @@
 
 [fig, enthalpies] = get_fit_results('2017-11-27_22:04:37_407_L1=40_L3=0.1_N1=500_N3=200'); % FS
 
+% Unmodified heat rate again
+[fig, enthalpies] = get_fit_results('2017-12-03_19:49:07_407_L1=40_L3=0.1_N1=500_N3=50'); % Gausse
+
+
+
 
 
 set(gcf, 'units', 'normalized', 'outerposition', [0 0 0.66 1]);

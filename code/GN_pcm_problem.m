@@ -3,7 +3,7 @@
 
 
 %%%%%%%%%% Get measurement data %%%%%%%%%%%%%%%%%%%
-dsc_filename = 'ExpDat_16-407-3_mitKorr_10Kmin_H.csv';
+dsc_filename = 'ExpDat_16-407-3_mitKorr_20Kmin_H.csv';
 dsc = DSC204_readFile(dsc_filename);
 
 m_pcm = dsc.mass;
@@ -61,7 +61,7 @@ heat_rate_s = heat_rate / 60; % [K/min] -> [K/s]
 n_pcm = N3 / (N1 + N3);
 n_tr = 0.1;
 n_m = 0.01;
-t = 0.99;
+t = 0.999;
 
 N_pcm = N * n_pcm;
 N_tr = N * n_tr;
@@ -118,8 +118,8 @@ end
 
 meas_data(:,2) = q_dsc;
 
-optimization.c_p_param_type = 'fraser_suzuki';
-% optimization.c_p_param_type = 'gauss_linear_comb';
+% optimization.c_p_param_type = 'fraser_suzuki';
+optimization.c_p_param_type = 'gauss_linear_comb';
 
 %%%%%%%%%% Set optimization variables Fraser Suzuki %%%%%%%%%%%%%%%%%%%%%%
 if (strcmp(optimization.c_p_param_type, 'fraser_suzuki'))
@@ -146,23 +146,34 @@ if (strcmp(optimization.c_p_param_type, 'fraser_suzuki'))
 elseif (strcmp(optimization.c_p_param_type, 'gauss_linear_comb'))
     
 %     fit_data = load(['/home/argo/masterarbeit/fits_data/', ...
-%                      '2017-11-27_17:36:31_407_L1=40_L3=0.1_N1=500_N3=50/', ...
-%                      '2017-11-27_08:39:57_407_20Kmin_L1=40_L3=0,1/fit_data.mat']);
-%     optimization.p_optim_start = fit_data.optimization.p_optim_end';
-
-    optimization.p_optim_start = ones(33,1);
-    optimization.p_optim_start([3,6,9,12,15]) = [120., 125, 129, 131, 135]; % offset start positions
-    optimization.p_optim_start(7) = 10.;
-    optimization.p_optim_start(31) = 0.;    
+%                      '2017-12-03_19:49:07_407_L1=40_L3=0.1_N1=500_N3=50/', ...
+%                      '2017-12-03_20:09:10_407_20Kmin_L1=40_L3=0,1/fit_data.mat']);
+%     optimization.p_optim_start = fit_data.optimization.p_optim_end(1:32).';
     
-    optimization.p_optim_start(16:3:30) = 0.;  % Amplitude of deactivated Gaussians = 0
+    % 5 Gausse aktiviert
+    optimization.p_optim_start = ones(32,1);
+    optimization.p_optim_start(1:3:15) = [0.5, 0.5, 10., 1., -2.];
+    optimization.p_optim_start(2:3:15) = [2., 2., 2., 2., 2.];
+    optimization.p_optim_start(3:3:15) = [115., 120., 128., 135., 140.];
+    
+    optimization.p_optim_start(31) = 1.07;  % linear
+    optimization.p_optim_start(32) = 1.78;  % const  
+
+%     % 10 Gausses
+%     optimization.p_optim_start = ones(32,1);
+%     optimization.p_optim_start(1:3:30) = ...
+%         [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 10., -1., -1., -1.];
+%     optimization.p_optim_start(2:3:30) = ...
+%         [2., 2., 2., 2., 2., 2., 5., 2., 2., 2.];
+%     optimization.p_optim_start(3:3:30) = ...
+%         [115, 118, 120, 123, 126, 128, 130, 135, 138, 142];
+%      
+%     optimization.p_optim_start(31) = 1.07;  % linear
+%     optimization.p_optim_start(32) = 1.78;  % const    
 
     % choose free(true)/fixed(false) parameters to optimize
     optimization.p_optim_estimable = true(length(optimization.p_optim_start), 1);
     optimization.p_optim_estimable(16:30) = false;  % deactivate last 5 Gaussians
-    optimization.p_optim_estimable(33) = false;  % fix h_start
-    
-    optimization.p_optim_estimable(31) = false;  % fix linear
     
     
     optimization.p_optim_fixed = optimization.p_optim_start(~optimization.p_optim_estimable);
@@ -201,8 +212,9 @@ GN_options.TOL_ineq = 1e-8;  % constraint active when -TOL < F_3i < TOL
 
 % Termination criteria
 GN_options.TOL_dx_norm = 1e-8;
-GN_options.TOL_t_k = 1e-8;
-GN_options.max_iterations = 
+GN_options.TOL_t_k = 1e-7;
+GN_options.max_iterations = 1000;
+GN_options.t_k_start = 0.3;
 
 p_optim_end = GN_ass(F1_func, ...
                      F2_func, ...

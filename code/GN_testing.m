@@ -14,7 +14,7 @@ eps = 0.05;
 eta = y + (rand(length(y),1)-0.5) * 2*eps;
 
 % Optimization Start values
-A0 = 2.5;
+A0 = 1.25;
 var0 = 1.5;
 mu0 = 1.5;
 
@@ -24,10 +24,13 @@ p0 = [A0; var0; mu0];
 GN_options = struct;
 GN_options.decomposition = 'SVD';
 GN_options.TOL_ineq = 1e-8;
-GN_options.TOL_dx_norm = 1e-12;
+GN_options.TOL_dx_norm = 1e-8;
+GN_options.TOL_t_k = 1e-8;
+GN_options.max_iterations = 1000;
+GN_options.t_k_start = 0.3;
 
-lb = [-inf, 1.2, -inf];
-ub = [inf, inf, inf];
+lb = [1., 1.2, -inf];
+ub = [1.7, inf, inf];
 
 F1_func = @(p) GN_test_fct_F1(p, x, eta);
 F2_func = @(p) GN_test_fct_F2(p);

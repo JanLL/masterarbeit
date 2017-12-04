@@ -32,8 +32,8 @@ drawnow;
 
 if (nargout == 1)
     [residuum, T] = heat1D_pcm('evaluation', p_optim_all);
-    varargout{1} = residuum;
-%     varargout{1} = T;
+    varargout{1} = residuum;  % for optimization step without Jacobian generation
+%     varargout{1} = T;       % for grid error computation.
 elseif (nargout == 2)    
     [residuum, Jac, T] = heat1D_pcm('optimization', p_optim_all); 
     Jac = Jac(:,p_optim_estimable);

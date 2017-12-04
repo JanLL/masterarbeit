@@ -32,6 +32,7 @@ fit_data.optimization.optim_output = optim_output;
 fit_data.optimization.optim_duration = optim_duration;
 fit_data.optimization.dqdp_end = Jacobian_end;
 fit_data.optimization.p_optim_process = p_optim_process;
+fit_data.optimization.residuum_end = residuum_end;
 
 %%%% Save .m data file
 % generic filename generation

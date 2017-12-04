@@ -449,7 +449,7 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 			np = 7;  // 5 from Fraser-Suzuki, 1 linear, 1 constant part
 		} else if (strncmp(command, "gauss_linear_comb", 99) == 0) {
 			c_p_param_type = gauss_linear_comb;
-			np = 3*10 + 2 + 1;  // 10 Gaussians, linear, constant, start_enthalpy
+			np = 3*10 + 2;  // 10 Gaussians, linear, constant
 
 		} else if (strncmp(command, "NURBS", 99) == 0) {
 			mexErrMsgTxt( "NURBS problem with index unsolved..." ); // TODO!
@@ -594,11 +594,11 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		integrator->registerPlugin( &fwdSensGetter);
 		
 
-	    integrator->activateFeature( IIntegrator::Feature_Store_Grid );
-	    integrator->activateFeature( IIntegrator::Feature_Store_Tape );  
+	    integrator->deactivateFeature( IIntegrator::Feature_Store_Grid );
+	    integrator->deactivateFeature( IIntegrator::Feature_Store_Tape );  
 
-		integrator->activateFeature( IIntegrator::Feature_Adjoint_Sensitivity_Injection );  
-		integrator->setAdjointInjectionGrid( solGrid, &adjInjector );
+		//integrator->activateFeature( IIntegrator::Feature_Adjoint_Sensitivity_Injection );  
+		//integrator->setAdjointInjectionGrid( solGrid, &adjInjector );
 
 		initialized = true;
 
@@ -626,7 +626,7 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		g_adjSens.clear();
 		g_fwdSens.clear();
 
-		integrator->setAdjointInjectionGrid(solGrid, &adjInjector); 
+		//integrator->setAdjointInjectionGrid(solGrid, &adjInjector); 
 		// Q: nicht ganz klar warum man das nochmal braucht? Sonst sind alle adjSens gleich 0...
 
 

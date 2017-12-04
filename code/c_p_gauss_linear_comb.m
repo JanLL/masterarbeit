@@ -13,8 +13,7 @@ function [c_p] = c_p_gauss_linear_comb(T, p)
 
 c_p = 0;
 for i=1:3:30
-    c_p = c_p + p(i) * exp(-(T-p(i+2)).^2 / p(i+1)^2);
-    %c_p = c_p + p(i) * exp(-(T-p(i+2)).^2 / p(i+1));
+    c_p = c_p + p(i) * exp(-(T-p(i+2)).^2 / p(i+1));
     
 end
 c_p = c_p + 0.01*p(31)*T + p(32);
