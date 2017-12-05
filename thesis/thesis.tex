@@ -1356,6 +1356,7 @@ assuming beside a homogeneous mass distribution, a constant grid size $\Delta x$
 
 
 \subsection{Spatial discretization grid}
+\label{sec:spatial_discretization_grid}
 At first the spatial discretization grid was constant in the silver and PCM respectively with grid sizes $\Delta x_{\text{Ag}} > \Delta x_{\text{PCM}}$ because only in PCM the phase transition occurs we are interested in. As for the silver plate we get appropriate results for the lengths $L1=40$ and $L3=0.1$ there is a big discontinuity in the grid size at the transition from silver to PCM. In order to avoid numerical problems the used framework of generating a continuous grid will be explained now. \\
 In the following $x$ will denote the physical grid, $\tilde{x}$ the computation grid and $\chi(\tilde{x}) = x$ the corresponding mapping which is defined by its derivative
 
@@ -1990,7 +1991,7 @@ The optimization took in this case about 40 minutes on my laptop and stopped bec
 
 \subsection{Error analysis of integration tolerance and spatial discretization grid}
 In this section we quantify the occurring numerical errors due to the used integration tolerance and spatial discretization grid in order to ensure that these do not influence the results significantly. \\
-From here on we used the numerical integrator DAESOL-II within the SolvIND Suite. The relative error comparing integration tolerances $10^{-7}$ and $10^{-8}$  is shown in Fig. \ref{fig:integration_tolerance_error}.
+From here on the numerical integrator DAESOL-II within the SolvIND Suite and the material properties of silver for the silver plate were used for all upcoming numerical experiments. The relative error comparing integration tolerances $10^{-7}$ and $10^{-8}$  is shown in Fig. \ref{fig:integration_tolerance_error}.
 The temperature at the last discretization point of the silver plate was evaluated for all measurement time points which equates a temperature at the reference crucible $T_{ref}$. 
 As one can see the maximum relative error $1.7 \cdot 10^{-6}$ occurs approximately at the PCM's phase transition. 
 From the magnitude we can conclude that a integration tolerance of $10^{-7}$ is sufficient. \\
@@ -2003,6 +2004,17 @@ From the magnitude we can conclude that a integration tolerance of $10^{-7}$ is 
 	\label{fig:integration_tolerance_error}
 \end{figure}
 
+
+Next we compare several configurations of the spatial discretization grid (c.f. Sec. \ref{sec:spatial_discretization_grid}) with an equidistant reference grid with $\Delta x = \frac{L_{pcm}}{N_{pcm}}$ everywhere. The used physical lengths $L_{Ag}=40mm$ and $L_{pcm}=0.1mm$ where the optimization worked best together with a sufficiently large number of discretization points within the PCM such that the heat flux approximation is adequate results in a huge number of total discretization points in an equidistant grid. E.g. with $N_{pcm}=50$ the total number of discretization points would be $N=20,050$ which is not practical in the optimization process. Therefore we compute the relative error
+
+\begin{equation}
+	| \text{Relative error}_i| = \left| 1 - \frac{T_{{grid}_i}^{N_{Ag}-1}(T_{ref})}{T_{eq}^{N_{Ag}-1}(T_{ref})} \right|
+\end{equation}
+
+where $T_{grid_i}^{N_{Ag}-1}$ is the temperature using grid $i$ and $T_{eq}^{N_{Ag}-1}$ is the temperature from the reference equidistant grid using $N_{pcm}=50$ and $N_{Ag}=20,000$. Both temperatures are evaluated at the silver plate's last discretization point since this equates to the same physical coordinate $x=L_{Ag}$ by construction in all grids. \\
+
+
+
 \begin{figure}[H]
 	\begin{subfigure}{0.49\textwidth}
 		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/simulationen-data/grid_error/mod_N_gridsize.png}
@@ -2014,6 +2026,7 @@ From the magnitude we can conclude that a integration tolerance of $10^{-7}$ is 
 		\caption{}
 		\label{fig:grid_relErr_mod_N}
 	\end{subfigure}
+	\caption{}
 \end{figure}
 
 
@@ -2028,6 +2041,7 @@ From the magnitude we can conclude that a integration tolerance of $10^{-7}$ is 
 		\caption{}
 		\label{fig:grid_relErr_mod_N1}
 	\end{subfigure}
+	\caption{}
 \end{figure}
 
 
@@ -2042,6 +2056,7 @@ From the magnitude we can conclude that a integration tolerance of $10^{-7}$ is 
 		\caption{}
 		\label{fig:grid_relErr_mod_n_tr}
 	\end{subfigure}
+	\caption{}
 \end{figure}
 
 
