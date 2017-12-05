@@ -1361,7 +1361,7 @@ At first the spatial discretization grid was constant in the silver and PCM resp
 In the following $x$ will denote the physical grid, $\tilde{x}$ the computation grid and $\chi(\tilde{x}) = x$ the corresponding mapping which is defined by its derivative
 
 \begin{equation}
-	\frac{\partial \chi(\tilde{x})}{\partial \tilde{x}} := \frac{\Delta \bar{x} - \Delta \underline{x}}{1 + e^{\gamma(\tilde{x} - b)}} + \Delta \underline{x}
+	\frac{\partial \chi}{\partial \tilde{x}}(\tilde{x}) := \frac{\Delta \bar{x} - \Delta \underline{x}}{1 + e^{\gamma(\tilde{x} - b)}} + \Delta \underline{x}
 \end{equation}
 
 with the parameters $\Delta \underline{x}, \Delta \bar{x}$ as lower and upper bounds of the grid size. $\gamma$ defines the transition shape and $b$ the transition position on the computation grid. Since these parameters are quite counterintuitive they will be calculated with the following parameters:
@@ -2009,10 +2009,12 @@ Next we compare several configurations of the spatial discretization grid (c.f. 
 
 \begin{equation}
 	| \text{Relative error}_i| = \left| 1 - \frac{T_{{grid}_i}^{N_{Ag}-1}(T_{ref})}{T_{eq}^{N_{Ag}-1}(T_{ref})} \right|
+	\label{eq:relErr_grid}
 \end{equation}
 
-where $T_{grid_i}^{N_{Ag}-1}$ is the temperature using grid $i$ and $T_{eq}^{N_{Ag}-1}$ is the temperature from the reference equidistant grid using $N_{pcm}=50$ and $N_{Ag}=20,000$. Both temperatures are evaluated at the silver plate's last discretization point since this equates to the same physical coordinate $x=L_{Ag}$ by construction in all grids. \\
-
+where $T_{grid_i}^{N_{Ag}-1}$ is the temperature using grid $i$ and $T_{eq}^{N_{Ag}-1}$ is the temperature from the reference equidistant grid using $N_{pcm}=50$ and $N_{Ag}=20,000$. Both temperatures are evaluated at the silver plate's last discretization point since this equates to the same physical coordinate $x=L_{Ag}$ by construction in all grids. 
+We set $n_m=0.01$ and $t=0.999$ for all experiments in order to guarantee that the transition of the grid size is finished sufficiently once the PCM starts which is necessary for the heat flux approximation. \\
+In the first set of tests we modified the total number of discretization points $N$ while fixing $n_{pcm}=0.2$. The results are shown in Fig. \ref{fig:grid_mod_N} where in all upcoming cases (a) shows the grid size $\Delta x = \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$ as a function of the computation grid $\tilde{x}$ and (b) maps the corresponding relative error computed by \eqref{eq:relErr_grid}.
 
 
 \begin{figure}[H]
@@ -2027,6 +2029,7 @@ where $T_{grid_i}^{N_{Ag}-1}$ is the temperature using grid $i$ and $T_{eq}^{N_{
 		\label{fig:grid_relErr_mod_N}
 	\end{subfigure}
 	\caption{}
+	\label{fig:grid_mod_N}
 \end{figure}
 
 
@@ -2042,6 +2045,7 @@ where $T_{grid_i}^{N_{Ag}-1}$ is the temperature using grid $i$ and $T_{eq}^{N_{
 		\label{fig:grid_relErr_mod_N1}
 	\end{subfigure}
 	\caption{}
+	\label{fig:grid_mod_N1}
 \end{figure}
 
 
@@ -2057,6 +2061,7 @@ where $T_{grid_i}^{N_{Ag}-1}$ is the temperature using grid $i$ and $T_{eq}^{N_{
 		\label{fig:grid_relErr_mod_n_tr}
 	\end{subfigure}
 	\caption{}
+	\label{fig:grid_mod_n_tr}
 \end{figure}
 
 
@@ -2065,7 +2070,9 @@ where $T_{grid_i}^{N_{Ag}-1}$ is the temperature using grid $i$ and $T_{eq}^{N_{
 
 \subsection{Parameter estimation using linear combination of Gaussians parametrization}
 
-\subsection{Parameter estimation with measurement data modified heat rate}
+\subsection{Parameter estimation with modified heat rate from measurement data}
+So far the nominal heat rate of the corresponding measurement scheme was used. Fig. \ref{fig:heat_rate_measurement} shows the measurement data of the heat rate at the reference crucible $\frac{\partial T_{ref}(t)}{\partial t}(T_{ref})$ 
+
 
 \begin{figure}[H]
 	\centering
@@ -2073,6 +2080,22 @@ where $T_{grid_i}^{N_{Ag}-1}$ is the temperature using grid $i$ and $T_{eq}^{N_{
 	\caption{}
 	\label{fig:heat_rate_measurement}
 \end{figure}
+
+\begin{table}
+	\centering
+	\begin{tabular}{| c | c | c |} \hline 
+		$\beta \ [K/min]$ & $<\beta_{meas}> \ [K/min]$ & $\sigma_{\beta_{meas}} \ [K/min]$ \\ \hline
+		$20$ & $19.97$ & $0.033$ \\
+		$10$ & $9.98$ & $0.019$ \\
+		$5$ & $4.991$ & $0.0095$ \\
+		$2.5$ & $2.4956$ & $0.0040$ \\
+		$1.25$ & $1.2476$ & $0.0017$ \\
+		$0.6$ & $0.5989$ & $0.00078$ \\
+		$0.3$ & $0.2994$ & $0.00046$ \\ \hline
+	\end{tabular}
+	\caption{}
+	\label{tab:mod_heat_rate}
+\end{table}
 
 
 
