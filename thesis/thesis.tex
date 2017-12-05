@@ -17,6 +17,8 @@
 
 
 \numberwithin{equation}{section}
+\numberwithin{figure}{section}
+\numberwithin{table}{section}
 
 %\theoremstyle{break}
 \newtheorem{Definition}{Definition}
@@ -2065,13 +2067,20 @@ In the first set of tests we modified the total number of discretization points 
 \end{figure}
 
 
-
-\subsection{Parameter estimation using Fraser-Suzuki parametrization}
-
 \subsection{Parameter estimation using linear combination of Gaussians parametrization}
 
+\subsection{Parameter estimation using Fraser-Suzuki parametrization}
+\label{sec:param_estimation_fs}
+
 \subsection{Parameter estimation with modified heat rate from measurement data}
-So far the nominal heat rate of the corresponding measurement scheme was used. Fig. \ref{fig:heat_rate_measurement} shows the measurement data of the heat rate at the reference crucible $\frac{\partial T_{ref}(t)}{\partial t}(T_{ref})$ 
+So far the nominal heat rate of the appropriate measurement scheme was used. 
+Fig. \ref{fig:heat_rate_measurement} shows the measurement data of the heat rate at the reference crucible $\frac{\partial T_{ref}(t)}{\partial t}(T_{ref})$ exemplary for a nominal heat rate $\beta = 2.5 \frac{K}{min}$. 
+As one can see there are fluctuations due to the regulation which tries to keep the heat rate at the nominal value. 
+Computing the mean value gives a lower measured heat rate than the nominal value (red line in Fig. \ref{fig:heat_rate_measurement}). 
+This is the case for all used measurements as one can see in table \ref{tab:mod_heat_rate}. 
+Although the observed difference is quite small, with increasing time the shift in temperature will accumulate more and more.
+Further this could be a reason for the observed shift in the obtained $c_p(T)$ in the previous sections.
+This is why we perform now the parameter estimation again with the modified heat rate $<\beta_{meas}>$ stated in table \ref{tab:mod_heat_rate}.
 
 
 \begin{figure}[H]
@@ -2081,7 +2090,7 @@ So far the nominal heat rate of the corresponding measurement scheme was used. F
 	\label{fig:heat_rate_measurement}
 \end{figure}
 
-\begin{table}
+\begin{table}[H]
 	\centering
 	\begin{tabular}{| c | c | c |} \hline 
 		$\beta \ [K/min]$ & $<\beta_{meas}> \ [K/min]$ & $\sigma_{\beta_{meas}} \ [K/min]$ \\ \hline
