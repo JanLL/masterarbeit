@@ -630,7 +630,7 @@ print(fig1, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_n_tr_relEr
 
 legend(ax2, 'show', 'location', 'northeast')
 xlabel('$$\tilde{x}$$, Computation grid', 'Interpreter', 'latex')
-ylabel('$$\chi(\tilde{x}) = \Delta x$$ [mm]', 'Interpreter', 'latex')
+ylabel('$$\frac{\partial \chi}{\partial \tilde{x}}(\tilde{x}) = \Delta x$$ [mm]', 'Interpreter', 'latex')
 set(ax2,'FontSize',12);
 print(fig2, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_n_tr_gridsize_1e-8', '-dpng', '-r200');
 
@@ -641,11 +641,11 @@ print(fig2, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_n_tr_grids
 
 root_dir = '/home/argo/masterarbeit/simulationen-data/grid_error/';
 
-T_ref_file = [root_dir, 'Temp_equidistant_grid_N1=20000_N3=50_L1=40,00_L3=0,10_1e-7.mat'];
+T_ref_file = [root_dir, 'Temp_N1=20000_N3=50_L1=40.00_L3=0.10_relTol=1e-7_new.mat'];
 % T_ref_file = [root_dir, 'Temp_N1=20000_N3=50_L1=40.00_L3=0.10_relTol=1e-8.mat'];
 
 T_ref_data = load(T_ref_file);
-T_ref = T_ref_data.T(:,20000);
+T_ref = T_ref_data.T(:,20050);
 
 T_test_dirs = {'Temp_n_pcm=0,2_n_tr=0,1_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=200_N3=50.mat', ...
                'Temp_n_pcm=0,14286_n_tr=0,1_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=300_N3=50.mat', ...
@@ -663,7 +663,7 @@ fig2 = figure(21); clf; ax2=gca; set(ax2, 'YScale', 'log'); hold on;
 for i=1:length(T_test_dirs)
     
     T_test_data = load([root_dir, T_test_dirs{i}]);
-    T_test = T_test_data.T(:,T_test_data.N1);
+    T_test = T_test_data.T(:,T_test_data.N1 + T_test_data.N3);
     
     relErr = abs(1 - T_test ./ T_ref);
     
@@ -680,14 +680,14 @@ end
 
 legend(ax1, 'show', 'location', 'southwest')
 xlabel(ax1, 'T_{ref} [degC]')
-ylabel(ax1, 'Absolute relative error')
+ylabel(ax1, '| Relative error |')
 set(ax1,'FontSize',12);
 % print(fig1, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_N1_relErr_1e-8', '-dpng', '-r200');
 
 
 legend(ax2, 'show', 'location', 'northeast')
 xlabel('$$\tilde{x}$$, Computation grid', 'Interpreter', 'latex')
-ylabel('$$\chi(\tilde{x}) = \Delta x$$ [mm]', 'Interpreter', 'latex')
+ylabel('$$\frac{\partial \chi}{\partial \tilde{x}}(\tilde{x}) = \Delta x$$ [mm]', 'Interpreter', 'latex')
 set(ax2,'FontSize',12);
 % print(fig2, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_N1_gridsize_1e-8', '-dpng', '-r200');
 
@@ -701,7 +701,7 @@ set(ax2,'FontSize',12);
 
 root_dir = '/home/argo/masterarbeit/simulationen-data/grid_error/';
 
-T_ref_file = [root_dir, 'Temp_equidistant_grid_N1=20000_N3=50_L1=40,00_L3=0,10_1e-7.mat'];
+T_ref_file = [root_dir, 'Temp_N1=20000_N3=50_L1=40.00_L3=0.10_relTol=1e-7_new.mat'];
 % T_ref_file = [root_dir, 'Temp_N1=20000_N3=50_L1=40.00_L3=0.10_relTol=1e-8.mat'];
 
 T_ref_data = load(T_ref_file);
@@ -711,7 +711,9 @@ T_test_dirs = {'Temp_n_pcm=0,2_n_tr=0,1_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=160_N3=
                'Temp_n_pcm=0,2_n_tr=0,1_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=240_N3=60.mat', ...
                'Temp_n_pcm=0,2_n_tr=0,1_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=400_N3=100.mat', ...
                'Temp_n_pcm=0,2_n_tr=0,1_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=800_N3=200.mat', ...
-               'Temp_n_pcm=0,2_n_tr=0,1_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=1600_N3=400.mat'};
+               'Temp_n_pcm=0,2_n_tr=0,1_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=1600_N3=400.mat', ...
+               'Temp_n_pcm=0,2_n_tr=0,1_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=4000_N3=1000.mat', ...
+               'Temp_n_pcm=0,2_n_tr=0,1_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=8000_N3=2000.mat'};
 
 fig1 = figure(20); clf; ax1=gca; hold on;
 fig2 = figure(21); clf; ax2=gca; hold on;
@@ -742,7 +744,7 @@ set(ax1,'FontSize',12);
 
 legend(ax2, 'show', 'location', 'northeast')
 xlabel('$$\tilde{x}$$, Computation grid', 'Interpreter', 'latex')
-ylabel('$$\chi(\tilde{x}) = \Delta x$$ [mm]', 'Interpreter', 'latex')
+ylabel('$$\frac{\partial \chi}{\partial \tilde{x}}(\tilde{x}) = \Delta x$$ [mm]', 'Interpreter', 'latex')
 set(ax2,'FontSize',12);
 % print(fig2, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_N_gridsize_1e-8', '-dpng', '-r200');
 
@@ -762,6 +764,7 @@ T_ref_dsc = dsc.data(index_T_dsc(1):index_T_dsc(2),1);
 root_dir = '/home/argo/masterarbeit/simulationen-data/grid_error/';
 
 T_ref_file7 = [root_dir, 'Temp_equidistant_grid_N1=20000_N3=50_L1=40,00_L3=0,10_1e-7.mat'];  % 1e-7
+% T_ref_file7 = [root_dir, 'Temp_N1=20000_N3=50_L1=40.00_L3=0.10_relTol=1e-7_new.mat'];
 T_ref_data7 = load(T_ref_file7);
 T_ref7 = T_ref_data7.T(:,20000);
 
@@ -771,7 +774,7 @@ T_ref8 = T_ref_data8.T(:,20000);
 
 relErr = abs(1 - T_ref7 ./ T_ref8);
 
-fig1 = figure(26); clf; ax1 = gca; set(ax1, 'YScale', 'log'); hold on
+fig1 = figure(23); clf; ax1 = gca; set(ax1, 'YScale', 'log'); hold on
 
 plot(ax1, T_ref_dsc, relErr, 'Linewidth', 1.3);
 xlabel(ax1, 'T_{ref} [degC]')
@@ -806,15 +809,16 @@ heat_rate_meas = gradient(dsc.data(idx_start:idx_end,1), dsc.data(idx_start:idx_
 
 fig = figure(50); clf; hold on
 plot(dsc.data(idx_start:idx_end,1), heat_rate_meas, 'Color', 'blue', ...
-    'Linewidth', 1., 'DisplayName', 'Heat rate');
+    'Linewidth', 1., 'DisplayName', 'Heat rate at reference crucible');
 plot([dsc.data(idx_start,1), dsc.data(end,1)], mean(heat_rate_meas)*ones(1,2), ...
-    'Color', 'red', 'Linewidth', 1.3, 'DisplayName', 'Mean');
+    'Color', 'red', 'Linewidth', 1.3, 'DisplayName', 'Mean value');
 
 % plot(dsc.data(idx_start:idx_end,2), dsc.data(idx_start:idx_end,3))
 % plot(dsc.data(idx_start:idx_end,2), dsc.data(idx_start:idx_end,1))
 
+ylim([2.48 2.511])
 xlabel('T_{ref} [degC]');
-ylabel('Heat rate at reference crucible [K/min]')
+ylabel('Heat rate [K/min]')
 legend('show', 'location', 'northwest')
 set(gca,'FontSize',12);
 
@@ -828,7 +832,7 @@ var(heat_rate_meas)
 
 %% Compute covariance matrix C in solution point
 
-fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-03_19:49:07_407_L1=40_L3=0.1_N1=500_N3=50/';
+fit_dir = '/home/argo/masterarbeit/fits_data/2017-11-27_22:04:37_407_L1=40_L3=0.1_N1=500_N3=200/';
 
 file_list = dir(fit_dir);
 
@@ -839,13 +843,15 @@ nameSubDirs(ismember(nameSubDirs,{'.','..'})) = [];
 for j=1:length(nameSubDirs)
     
     fit_data = load([fit_dir, nameSubDirs{j}, '/fit_data.mat']);
+    p_optim = fit_data.optimization.p_optim_end;
     
     J1 = fit_data.optimization.dqdp_end;
     F1 = fit_data.optimization.residuum_end;
     
     confidence_lvl = 0.05;
     [theta, C] = compute_confidence_interval(F1,J1,confidence_lvl);
-    
+    p_optim_variance = diag(C);
+    np = length(theta); 
     
     % Output
     fprintf('Heat rate: %1.2f\n', fit_data.measurement.dsc_data.Tinfo.Tstep);
@@ -892,4 +898,32 @@ b_sq = q_res.' * q_res / (length(q_res) - sum(fit_data.optimization.p_optim_esti
 
 fprintf('b    = %1.2e\n', b_sq);
 
+
+%% Residuum aus heat flux plot nachtraeglich zu fit_data.mat hinzufuegen
+
+
+fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-03_19:49:07_407_L1=40_L3=0.1_N1=500_N3=50/';
+
+file_list = dir(fit_dir);
+
+isub = [file_list(:).isdir]; %# returns logical vector
+nameSubDirs = {file_list(isub).name}';
+nameSubDirs(ismember(nameSubDirs,{'.','..'})) = [];
+
+for j=1:length(nameSubDirs)
+    
+    
+    open([fit_dir, nameSubDirs{j}, '/q_pcm_in(T_ref).fig']);
+    children = get(gca, 'Children');
+    q_res = (children(1).YData)';
+    close;
+    
+    fit_data = load([fit_dir, nameSubDirs{j}, '/fit_data.mat']);
+    fit_data.optimization.residuum_end = q_res;
+    
+    path_fit_data = [fit_dir, nameSubDirs{j}, '/fit_data.mat'];
+    save(path_fit_data, '-struct', 'fit_data');
+
+    
+end
 
