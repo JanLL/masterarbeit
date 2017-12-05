@@ -1989,12 +1989,17 @@ The optimization took in this case about 40 minutes on my laptop and stopped bec
 
 
 \subsection{Error analysis of integration tolerance and spatial discretization grid}
+In this section we quantify the occurring numerical errors due to the used integration tolerance and spatial discretization grid in order to ensure that these do not influence the results significantly. \\
+From here on we used the numerical integrator DAESOL-II within the SolvIND Suite. The relative error comparing integration tolerances $10^{-7}$ and $10^{-8}$  is shown in Fig. \ref{fig:integration_tolerance_error}.
+The temperature at the last discretization point of the silver plate was evaluated for all measurement time points which equates a temperature at the reference crucible $T_{ref}$. 
+As one can see the maximum relative error $1.7 \cdot 10^{-6}$ occurs approximately at the PCM's phase transition. 
+From the magnitude we can conclude that a integration tolerance of $10^{-7}$ is sufficient. \\
 
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.75\textwidth]{/home/argo/masterarbeit/thesis/images/integration_tolerance_relErr.png}
-	\caption{}
+	\caption{Computed relative error $|1 - \frac{T^{N_{Ag}-1}_{E_1}}{T^{N_{Ag}-1}_{E_2}}|$ where $T_{E_1}$ used a integration tolerance of $10^{-7}$ and $T_{E_2}$ respectively $10^{-8}$.}
 	\label{fig:integration_tolerance_error}
 \end{figure}
 
