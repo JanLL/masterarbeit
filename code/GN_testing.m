@@ -7,7 +7,7 @@ p_true = [A, var, mu];  % true variables
 
 h = @(x,p) p(1)*exp(-(x-p(3)).^2/p(2));
 
-x = (-5:0.1:5).';
+x = (-5:0.01:5).';
 y = h(x, p_true);
 
 eps = 0.05;
@@ -29,8 +29,8 @@ GN_options.TOL_t_k = 1e-8;
 GN_options.max_iterations = 1000;
 GN_options.t_k_start = 0.3;
 
-lb = [1., 1.2, -inf];
-ub = [1.7, inf, inf];
+lb = [-inf, 1.2, -inf];
+ub = [inf, inf, inf];
 
 F1_func = @(p) GN_test_fct_F1(p, x, eta);
 F2_func = @(p) GN_test_fct_F2(p);

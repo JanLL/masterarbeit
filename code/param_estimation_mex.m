@@ -20,14 +20,14 @@ num_meas = length(q_dsc);
 L1 = 40;  % [mm]
 L3 = 0.1;  % [mm]
 
-% n_pcm = 0.2;
-% N = 2000;
-% N3 = N*n_pcm;
-% N1 = N - N3;
+n_pcm = 0.2;
+N = 10000;
+N3 = N*n_pcm;
+N1 = N - N3;
 
-N3 = 50;  % error if N3=0
-N1 = 19950;
-N = N1 + N3;
+% N3 = 50;  % error if N3=0
+% N1 = 20000;
+% N = N1 + N3;
 
 % Constantan
 % lambda_Const = 23.;  % [mW/(mm*K)]
@@ -208,7 +208,7 @@ compute_q_dqdp_mex_expl = @(p_optim) compute_q_dqdp_mex(...
 %%%%%%%%%%%%%% INITIAL VALUE TEST %%%%%%%%%%%%%%%%%%%%
 [T] = compute_q_dqdp_mex_expl(p_optim_start(p_optim_estimable));
 
-% save(sprintf('/home/argo/masterarbeit/Temp_N1=%d_N3=%d_L1=%2.2f_L3=%2.2f_relTol=1e-8_2.mat', ...
+% save(sprintf('/home/argo/masterarbeit/Temp_N1=%d_N3=%d_L1=%2.2f_L3=%2.2f_relTol=1e-7_new.mat', ...
 %     N1, N3, L1, L3), 'T');
 % return
 

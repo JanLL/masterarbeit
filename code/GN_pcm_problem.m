@@ -150,11 +150,11 @@ elseif (strcmp(optimization.c_p_param_type, 'gauss_linear_comb'))
 %                      '2017-12-03_20:09:10_407_20Kmin_L1=40_L3=0,1/fit_data.mat']);
 %     optimization.p_optim_start = fit_data.optimization.p_optim_end(1:32).';
     
-    % 5 Gausse aktiviert
+    % 4 Gausse aktiviert
     optimization.p_optim_start = ones(32,1);
-    optimization.p_optim_start(1:3:15) = [0.5, 0.5, 10., 1., -2.];
-    optimization.p_optim_start(2:3:15) = [2., 2., 2., 2., 2.];
-    optimization.p_optim_start(3:3:15) = [115., 120., 128., 135., 140.];
+    optimization.p_optim_start(1:3:15) = [0.5, 0.5, 0.5, 20., -2.];
+    optimization.p_optim_start(2:3:15) = [2., 2., 2., 5., 4.];
+    optimization.p_optim_start(3:3:15) = [110., 115., 120., 128., 145.];
     
     optimization.p_optim_start(31) = 1.07;  % linear
     optimization.p_optim_start(32) = 1.78;  % const  
@@ -182,7 +182,8 @@ elseif (strcmp(optimization.c_p_param_type, 'gauss_linear_comb'))
     optimization.lb(2:3:30) = 0.5;
     
     optimization.ub = +inf*ones(1,length(optimization.p_optim_start));
-
+    optimization.ub(2:3:30) = 100.;
+    
 end
 
 
