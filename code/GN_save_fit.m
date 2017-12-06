@@ -26,7 +26,7 @@ fit_data.measurement.index_T_dsc = index_T_dsc;
 for fn = fieldnames(optimization_data_struct)'
    fit_data.optimization.(fn{1}) = optimization_data_struct.(fn{1});
 end
-fit_data.optimization.p_optim_end = p_optim_end;
+fit_data.optimization.p_optim_end = p_optim_end.';
 fit_data.optimization.residuum_end = optim_output.residuum_end;
 fit_data.optimization.dqdp_end = optim_output.jacobian_end;
 
@@ -88,12 +88,12 @@ savefig(fig, path_plot_c_p);
 T_ref_dsc = dsc_data_struct.data(index_T_dsc(1):index_T_dsc(2),1);
 q_dsc = (dsc_data_struct.data(index_T_dsc(1):index_T_dsc(2),3) ...
       ./ dsc_data_struct.data(index_T_dsc(1):index_T_dsc(2),4)) * dsc_data_struct.mass;
-q_sim = residuum_end + q_dsc;
+q_sim = optim_output.residuum_end + q_dsc;
 
 clf;
 plot(T_ref_dsc, q_sim, 'DisplayName', 'Simulation'); hold on
 plot(T_ref_dsc, q_dsc, 'DisplayName', 'Measurement');
-plot(T_ref_dsc, residuum_end, 'DisplayName', 'Residuum');
+plot(T_ref_dsc, optim_output.residuum_end, 'DisplayName', 'Residuum');
 legend('show', 'location', 'northwest');
 xlabel('T_{ref} [degC]');
 ylabel('q_{pcm}^{in} [mW]');
@@ -103,7 +103,7 @@ savefig(fig, path_plot_q_pcm_in);
 
 % dqdp plot
 clf;
-image(Jacobian_end, 'CDataMapping', 'scaled');
+image(optim_output.jacobian_end, 'CDataMapping', 'scaled');
 colorbar();
 title('dq/dp')
 xlabel('c_p parameters');

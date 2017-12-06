@@ -44,12 +44,15 @@ m3 = 2*n;  % fixed for just lb, ub of opt variables x
 % Check feasibility of x_start
 if (sum(F2 ~= 0) > 0)
     error('x_start is not feasible w.r.t. equality constraints!')
-elseif (sum(F3 < -TOL_ineq) > 0)
+elseif (sum(F3 < 0) > 0)
     error('x_start is not feasible w.r.t. inequality constraints!')
 end
 
 % Get initial Active Set A
-A = (F3 < TOL_ineq & F3 > -TOL_ineq).';
+active_lb = F3(1:n) < TOL_ineq;
+active_ub = F3(n+1:2*n) < TOL_ineq;
+
+A = [active_lb; active_ub].';
 A_old = A;
 
 
@@ -59,11 +62,14 @@ dx_norm = inf;
 t_k = options.t_k_start;  % initial stepsize
 
 i = 1;
-while (dx_norm > TOL_dx_norm && t_k > TOL_t_k && i < max_iterations)
+while (dx_norm > TOL_dx_norm && t_k > TOL_t_k && i <= max_iterations)
+    
+    A
     
     [F1, J1] = F1_func(x_k);
     [F2, J2] = F2_func(x_k);
     [F3, J3] = F3_func(x_k);
+
     
     % Build total current equality constraints from F2 and actice F3
     F_active = [F2; F3(A)];
