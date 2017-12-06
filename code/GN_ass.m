@@ -1,4 +1,4 @@
-function [x_end] = GN_ass(F1_func, F2_func, x_start, lb, ub, options)
+function [x_end, optim_output] = GN_ass(F1_func, F2_func, x_start, lb, ub, options)
 % Gauss Newton Active Set Strategy to solve inequality constrained Least
 % Squares Problems
 % min || F1 + J1*dx ||
@@ -18,6 +18,7 @@ function [x_end] = GN_ass(F1_func, F2_func, x_start, lb, ub, options)
 % OUTPUT:
 %   x_end    ->  End values of optimization variables after optimization.
 
+tic;  % start optimization duration time measurement
 
 % Abbreviations
 TOL_ineq = options.TOL_ineq;
@@ -26,6 +27,10 @@ TOL_t_k = options.TOL_t_k;
 max_iterations = options.max_iterations;
 
 F3_func = @(p) GN_eval_ineq_constraints(p, lb, ub);
+
+F1_norm_vec = [];
+dx_norm_vec = [];
+t_k_vec     = [];
 
 
 % Some pre calculations
@@ -75,7 +80,12 @@ while (dx_norm > TOL_dx_norm && t_k > TOL_t_k && i < max_iterations)
     % some pre-computations
     F1_norm_k = F1.' * F1;
     J1J1 = J1.' * J1;
-    dxdx = dx.' * dx;
+    dx_norm = dx.' * dx;
+    
+    % Save optimization process variables
+    F1_norm_vec = [F1_norm_vec; F1_norm_k];
+    dx_norm_vec = [dx_norm_vec; dx_norm];
+    t_k_vec     = [t_k_vec; t_k];
     
         
     % cut dx such that lower/upper bounds are not violated
@@ -99,7 +109,7 @@ while (dx_norm > TOL_dx_norm && t_k > TOL_t_k && i < max_iterations)
         F1_norm_kp1 = inf;
     end
         
-    if F1_norm_kp1 < F1_norm_k - c*t_k * (dxdx + dx.' * J1J1 * dx)
+    if F1_norm_kp1 < F1_norm_k - c*t_k * (dx_norm + dx.' * J1J1 * dx)
         t_k = min(t_k / d, 1.);
     else
         while (F1_norm_kp1 >= F1_norm_k - c*t_k * (dx.'*dx) && t_k > TOL_t_k)
@@ -151,8 +161,9 @@ while (dx_norm > TOL_dx_norm && t_k > TOL_t_k && i < max_iterations)
 
     x_k = x_kp1;
     
-    dx_norm = norm(dx);
-    F1_norm = norm(F1_func(x_k));
+    dx_norm = dx.' * dx;
+    [F1, J1] = F1_func(x_k);
+    F1_norm = norm(F1);
     
     fprintf('\nIteration: %d\tF1_norm: %1.3e\tdx_norm: %1.3e\tt_k = %1.3e\n', i, F1_norm, dx_norm, t_k);
     
@@ -174,6 +185,17 @@ end
 
 
 x_end = x_k;
+
+optim_duration = toc;  % end optimization duration time measurement
+
+
+optim_output = struct();
+optim_output.residuum_end = F1;
+optim_output.Jacobian_end = J1;
+optim_output.progress_F1_norm = [F1_norm_vec; F1_norm];
+optim_output.progress_dx_norm = [dx_norm_vec; dx_norm];
+optim_output.progress_t_k = [t_k_vec; t_k];
+optim_output.optim_duration = optim_duration;
 
 
 end
