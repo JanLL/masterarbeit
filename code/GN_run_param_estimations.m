@@ -123,8 +123,8 @@ datetime_cell = num2cell(int32(clock));
 datetime_str = sprintf('%04i-%02i-%02i_%02i:%02i:%02i', datetime_cell{:});
 
 mass_code_str = dsc_measurement.fileSpec(11:13);
-L1_str = num2str(simulation.L1);
-L3_str = num2str(simulation.L3);
+L1_str = strrep(num2str(simulation.L1), '.', ',');
+L3_str = strrep(num2str(simulation.L3), '.', ',');
 N1_str = num2str(simulation.N1);
 N3_str = num2str(simulation.N3);
 
@@ -161,23 +161,20 @@ options.GN_options = GN_options;
 % return
 
 % Run optimization #1
-% try
-%     fit_data = GN_pcm_problem2(simulation, dsc_measurement, optimization, options);
-% catch Err
-%     fprintf(errLogFileID, '%s\tError %s occured with heat_rate=%2.4g.\n', ...
-%         datetime('now'), Err.identifier, dsc_measurement.Tinfo.Tstep);
-%     fprintf('%s\tError %s occured with heat_rate=%2.4g.\n', ...
-%         datetime('now'), Err.identifier, dsc_measurement.Tinfo.Tstep);
-% end
+try
+    fit_data = GN_pcm_problem2(simulation, dsc_measurement, optimization, options);
+catch Err
+    fprintf(errLogFileID, '%s\tError %s occured with heat_rate=%2.4g.\n', ...
+        datetime('now'), Err.identifier, dsc_measurement.Tinfo.Tstep);
+    fprintf('%s\tError %s occured with heat_rate=%2.4g.\n', ...
+        datetime('now'), Err.identifier, dsc_measurement.Tinfo.Tstep);
+end
 
 
 % Optimization #2 settings
-% optimization.start_values = fit_data.optimization.p_optim_end;
+optimization.start_values = fit_data.optimization.p_optim_end;
 dsc_filename = 'ExpDat_16-407-3_mitKorr_10Kmin_H.csv';
 dsc_measurement = DSC204_readFile(dsc_filename);
-
-fit_data = GN_pcm_problem2(simulation, dsc_measurement, optimization, options);
-return
 
 % Run optimization #2
 try
@@ -234,6 +231,12 @@ end
 optimization.start_values = fit_data.optimization.p_optim_end;
 dsc_filename = 'ExpDat_16-407-3_mitKorr_0,6Kmin_H.csv';
 dsc_measurement = DSC204_readFile(dsc_filename);
+
+% Deactivate linear part for 0.3 and 0.6 K/min because of lack of
+% measurements ruining the fit.
+if (strcmp(optimization.c_p_param_type, 'fraser_suzuki'))
+    optimization.p_optim_estimable(6) = false; 
+end
 
 % Run optimization #6
 try

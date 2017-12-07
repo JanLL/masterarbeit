@@ -45,6 +45,8 @@
 [fig, enthalpies] = get_fit_results('2017-12-03_19:49:07_407_L1=40_L3=0.1_N1=500_N3=50'); % Gausse
 
 
+% Own GN solver insteadt lsqnonlin
+[fig, enthalpies] = get_fit_results('2017-12-07_17:07:33_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS');  % nominal heat rate
 
 
 
