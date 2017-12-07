@@ -119,6 +119,7 @@ if options.init_value_test
     return;
 end
 
+
 % Start optimizing
 [p_optim_end, optim_output] = ...
     GN_ass(F1_func, ...

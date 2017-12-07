@@ -37,6 +37,7 @@ t_k_vec     = [];
 F2 = F2_func(x_start);
 F3 = F3_func(x_start);
 
+
 n = length(x_start);
 m2 = length(F2);
 m3 = 2*n;  % fixed for just lb, ub of opt variables x
@@ -55,7 +56,6 @@ active_ub = F3(n+1:2*n) < TOL_ineq;
 A = [active_lb; active_ub].';
 A_old = A;
 
-
 x_k = x_start;
 dx_norm = inf;
 
@@ -63,35 +63,32 @@ t_k = options.t_k_start;  % initial stepsize
 
 i = 1;
 while (dx_norm > TOL_dx_norm && t_k > TOL_t_k && i <= max_iterations)
+        
+    t_k = 1.;
     
-    A
-    
-    [F1, J1] = F1_func(x_k);
-    [F2, J2] = F2_func(x_k);
-    [F3, J3] = F3_func(x_k);
+    if (i == 1)
+        [F1, J1] = F1_func(x_k);
+        [F2, J2] = F2_func(x_k);
+        [F3, J3] = F3_func(x_k);
 
-    
-    % Build total current equality constraints from F2 and actice F3
-    F_active = [F2; F3(A)];
-    J_active = [J2; J3(A,:)];
-    
-    % Solve equality constraint LSQ subproblem
-    [dx, Q1, R_bar] = GN_step_constr(F1, J1, F_active, J_active, options);    
-    lambda = R_bar \ (Q1.' * (J1.' * J1) * dx + Q1.' * J1.' * F1);
-    
+        % Build total current equality constraints from F2 and actice F3
+        F_active = [F2; F3(A)];
+        J_active = [J2; J3(A,:)];
+
+        % Solve equality constraint LSQ subproblem
+        [dx,~,~] = GN_step_constr(F1, J1, F_active, J_active, options);    
+        %lambda = R_bar \ (Q1.' * (J1.' * J1) * dx + Q1.' * J1.' * F1);
+        
+    end
+        
     % Step size control backtracking linesearch with Armojo strategy
-    c = 0.;  % parameter of Armijo Strategy (0, 0.5) for steepness
+    c = 0.2;  % parameter of Armijo Strategy (0, 0.5) for steepness
     d = 0.8;  % parameter of t_k decrease rate
     
     % some pre-computations
     F1_norm_k = F1.' * F1;
     J1J1 = J1.' * J1;
     dx_norm = dx.' * dx;
-    
-    % Save optimization process variables
-    F1_norm_vec = [F1_norm_vec; F1_norm_k];
-    dx_norm_vec = [dx_norm_vec; dx_norm];
-    t_k_vec     = [t_k_vec; t_k];
     
         
     % cut dx such that lower/upper bounds are not violated
@@ -138,11 +135,34 @@ while (dx_norm > TOL_dx_norm && t_k > TOL_t_k && i <= max_iterations)
         end
     end
     
+    
+    x_k = x_kp1;
+    
+    [F1, J1] = F1_func(x_k);
+    [F2, J2] = F2_func(x_k);
+    [F3, J3] = F3_func(x_k);
+
+    % Update active set
+    active_lb = F3(1:n) < 1e-8;
+    active_ub = F3(n+1:2*n) < 1e-8;
+    
+    A_old = A;
+    A = [active_lb; active_ub].';
+        
+    % Build total current equality constraints from F2 and active F3
+    F_active = [F2; F3(A)];
+    J_active = [J2; J3(A,:)];
+
+    % Solve equality constraint LSQ subproblem
+    [dx, Q1, R_bar] = GN_step_constr(F1, J1, F_active, J_active, options);    
+    lambda = R_bar \ (Q1.' * (J1.' * J1) * dx + Q1.' * J1.' * F1);
+    
 
     % Save one constraint from active set with negative lambda to remove
     % later
     lambda_aux = inf*(ones(2*n,1));
     lambda_aux(reshape(A,1,[]) == true) = lambda(m2 + (1:sum(sum(A))));
+    
     idx_lambda_aux_neg = find(lambda_aux < 0);
     
     if (isempty(idx_lambda_aux_neg))
@@ -153,23 +173,18 @@ while (dx_norm > TOL_dx_norm && t_k > TOL_t_k && i <= max_iterations)
     end
     idx_remove_constraint = idx_lambda_aux_neg(idx_remove_temp);    
     
-    % Build new active set if F_3i < TOL
-    F3_kp1 = F3_func(x_kp1);
-    
-    active_lb = F3_kp1(1:n) < 1e-8;
-    active_ub = F3_kp1(n+1:2*n) < 1e-8;
-    
-    A_old = A;
-    A = [active_lb; active_ub].';
-    
     % Remove constraint with negative lambda from previous calculation
     A(idx_remove_constraint) = false;
 
-    x_k = x_kp1;
     
-    dx_norm = dx.' * dx;
-    [F1, J1] = F1_func(x_k);
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%% OUTPUT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    dx_norm = sqrt(dx.' * dx);
     F1_norm = norm(F1);
+    
+    % Save optimization process variables
+    F1_norm_vec = [F1_norm_vec; F1_norm_k];
+    dx_norm_vec = [dx_norm_vec; dx_norm];
+    t_k_vec     = [t_k_vec; t_k];
     
     fprintf('\nIteration: %d\tF1_norm: %1.3e\tdx_norm: %1.3e\tt_k = %1.3e\n', i, F1_norm, dx_norm, t_k);
     

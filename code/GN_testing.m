@@ -24,12 +24,12 @@ p0 = [A0; var0; mu0];
 GN_options = struct;
 GN_options.decomposition = 'SVD';
 GN_options.TOL_ineq = 1e-8;
-GN_options.TOL_dx_norm = 1e-8;
-GN_options.TOL_t_k = 1e-8;
+GN_options.TOL_dx_norm = 1e-200;
+GN_options.TOL_t_k = 1e-200;
 GN_options.max_iterations = 1000;
 GN_options.t_k_start = 0.3;
 
-lb = [-inf, 1.2, -inf];
+lb = [-inf, -inf, -inf];
 ub = [inf, inf, inf];
 
 F1_func = @(p) GN_test_fct_F1(p, x, eta);

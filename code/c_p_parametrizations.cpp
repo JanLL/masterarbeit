@@ -5,13 +5,21 @@
 template<typename T>
 void fraser_suzuki_formula(T x, T& c_p, T& dc_p, const T* params) {
 
-	T h  = *params; params++;
-	T r  = *params; params++;
-	T wr = *params; params++;
-	T sr = *params; params++;
-	T z  = *params; params++;
-	T m  = *params; params++;
-	T b  = *params; params++;
+	double scale_h  = 14.;
+	double scale_r  = 2.;
+	double scale_wr = 10.7;
+	double scale_sr = 0.705;
+	double scale_z  = 129.;
+	double scale_m  = 0.00789;
+	double scale_b  = 1.69;
+
+	T h  = *params * scale_h;  params++;
+	T r  = *params * scale_r;  params++;
+	T wr = *params * scale_wr; params++;
+	T sr = *params * scale_sr; params++;
+	T z  = *params * scale_z;  params++;
+	T m  = *params * scale_m;  params++;
+	T b  = *params * scale_b;  params++;
 
 	T c_p_case0;
 	T c_p_case1;
@@ -27,12 +35,12 @@ void fraser_suzuki_formula(T x, T& c_p, T& dc_p, const T* params) {
 	T log_arg = (1 + (x-z)*(sr*sr-1)/(wr*sr));
 	T exp_arg = -log(r)/(log_sr*log_sr) * log(log_arg)*log(log_arg);
 	
-	c_p_case0 = 0.01*m*x + b;
-	c_p_case1 = h*exp(exp_arg) + 0.01*m*x + b;
+	c_p_case0 = m*x + b;
+	c_p_case1 = h*exp(exp_arg) + m*x + b;
 	condassign(c_p, condition, c_p_case1, c_p_case0);
 
-	dc_p_case0 = 0.01*m;
-	dc_p_case1 = -2.*log(r)/(log_sr*log_sr) * (sr*sr - 1)/(wr*sr) * log(log_arg)/log_arg * h*exp(exp_arg) + 0.01*m;
+	dc_p_case0 = m;
+	dc_p_case1 = -2.*log(r)/(log_sr*log_sr) * (sr*sr - 1)/(wr*sr) * log(log_arg)/log_arg * h*exp(exp_arg) + m;
 	condassign(dc_p, condition, dc_p_case1, dc_p_case0);
 
 	return;

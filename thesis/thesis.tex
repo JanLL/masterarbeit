@@ -835,7 +835,8 @@ In this section we first treat the general nonlinear optimization problem (NLP) 
 	& \ F_3(x) \ge 0 \nonumber
 \end{align}
 
-where $x \in \mathbb{R}^n$ is the optimization variable, $f\text{: } \mathbb{R}^n \rightarrow \mathbb{R}$ is the objective function, $F_2\text{: } \mathbb{R}^n \rightarrow \mathbb{R}^{m_2}$ and $F_3\text{: } \mathbb{R}^n \rightarrow \mathbb{R}^{m_3}$ are the equality and respectively inequality constraints. Index $m_1$ is missing because we will need this later in the context of a least squares problem. The results shown in this chapter can be found in \cite{nonlinear_optimiziation_wright} or \cite{diss_jan}. \\
+where $x \in \mathbb{R}^n$ is the optimization variable, $f\text{: } \mathbb{R}^n \rightarrow \mathbb{R}$ is the objective function, $F_2\text{: } \mathbb{R}^n \rightarrow \mathbb{R}^{m_2}$ and $F_3\text{: } \mathbb{R}^n \rightarrow \mathbb{R}^{m_3}$ are the equality and respectively inequality constraints. Index $m_1$ is missing because we will need this later in the context of a least squares problem. The results shown in this chapter can be found for example in \cite{nonlinear_optimiziation_wright}. \\
+
 The Lagrange function of \eqref{eq:NLP_formulation} is defined as
 
 \begin{equation}
@@ -869,7 +870,7 @@ Before stating the major results from optimization theory we need to introduce t
 \begin{Definition}
 	\textbf{(Tangent space)} \\
 	$T(x) := \left\{ p \in \mathbb{R}^n \ | \ \frac{\partial \tilde F_2(x)}{\partial x} \cdot p = 0 \right\}$ \\
-	$T^+(x) := \left\{ p \in \mathbb{R}^n \ | \ \frac{\partial F_2(x)}{\partial x} \cdot p = 0, \frac{\partial F_{3,i}(x)}{\partial x} \cdot p = 0 \text{ and } \mu_i > 0 \text{ for } i \in I(x) \right\}$ \\
+	$T^+(x) := \left\{ p \in \mathbb{R}^n \ | \ \frac{\partial F_2(x)}{\partial x} \cdot p = 0, \frac{\partial F_{3,i}(x)}{\partial x} \cdot p = 0 \text{ for } i \in I(x) \ \text{with } \mu_i > 0 \right\}$ \\
 	are called \underline{tangent space}. It holds $T(x) \subseteq T^+(x)$.
 \end{Definition}
 

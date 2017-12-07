@@ -11,13 +11,21 @@ function [c_p] = c_p_fs(T, p)
 %
 % Author: Jan Lammel, lammel@stud.uni-heidelberg.de
 
-h = p(1);
-r = p(2);
-wr = p(3);
-sr = p(4);
-z = p(5);
-m = p(6);
-b = p(7);
+scale_h  = 14.;
+scale_r  = 2.;
+scale_wr = 10.7;
+scale_sr = 0.705;
+scale_z  = 129.;
+scale_m  = 0.00789;
+scale_b  = 1.69;
+
+h = p(1) * scale_h;
+r = p(2) * scale_r;
+wr = p(3) * scale_wr;
+sr = p(4) * scale_sr;
+z = p(5) * scale_z;
+m = p(6) * scale_m;
+b = p(7) * scale_b;
 
 
 % determine the nonzero indices
