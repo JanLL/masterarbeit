@@ -2017,7 +2017,7 @@ Next we compare several configurations of the spatial discretization grid (c.f. 
 
 where $T_{grid_i}^{N_{Ag}-1}$ is the temperature using grid $i$ and $T_{eq}^{N_{Ag}-1}$ is the temperature from the reference equidistant grid using $N_{pcm}=50$ and $N_{Ag}=20,000$. Both temperatures are evaluated at the silver plate's last discretization point since this equates to the same physical coordinate $x=L_{Ag}$ by construction in all grids. 
 We set $n_m=0.01$ and $t=0.999$ for all experiments in order to guarantee that the transition of the grid size is finished sufficiently once the PCM starts which is necessary for the heat flux approximation. \\
-In the first set of tests we modified the total number of discretization points $N$ while fixing $n_{pcm}=0.2$. The results are shown in Fig. \ref{fig:grid_mod_N} where in all upcoming cases (a) shows the grid size $\Delta x = \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$ as a function of the computation grid $\tilde{x}$ and (b) maps the corresponding relative error computed by \eqref{eq:relErr_grid}.
+In the first set of tests we modified the total number of discretization points $N$ while fixing $n_{pcm}=0.2$ and $n_{tr}=0.1$. The results are shown in Fig. \ref{fig:grid_mod_N} where in all upcoming cases (a) shows the grid size $\Delta x = \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$ as a function of the computation grid $\tilde{x}$ and (b) maps the corresponding relative error computed by \eqref{eq:relErr_grid}. As one can see in all cases the error increases during the phase transition at a reference crucible temperature of about $130^{\circ} C$ where the maximum is reached for the least amount of tested discretization points $N=200$ with $|\text{Relative error|}=1.5 \cdot 10^{-5}$. Surprisingly the error for $N > 1000$ increases again but in all tested cases the relative error has an order of magnitude lower equal than $10^{-5}$. 
 
 
 \begin{figure}[H]
@@ -2031,9 +2031,11 @@ In the first set of tests we modified the total number of discretization points 
 		\caption{}
 		\label{fig:grid_relErr_mod_N}
 	\end{subfigure}
-	\caption{}
+	\caption{Grid size $\Delta x(\tilde{x}$ (a) and relative error (b) for fixed $n_{tr}=0.1$ and $n_{pcm}=0.2$ while varying total number of discretization points $N$.}
 	\label{fig:grid_mod_N}
 \end{figure}
+
+Next we varied the number of discretization points in the silver plate while fixing $N_{pcm}=50$ and again $n_{tr}=0.1$. The results are qualitatively and quantitatively similar to the previous case as one can observe in fig. \ref{fig:grid_mod_N1}.
 
 
 \begin{figure}[H]
@@ -2047,10 +2049,12 @@ In the first set of tests we modified the total number of discretization points 
 		\caption{}
 		\label{fig:grid_relErr_mod_N1}
 	\end{subfigure}
-	\caption{}
+	\caption{Grid size $\Delta x(\tilde{x}$ (a) and relative error (b) for fixed $N_{pcm}=50$ and $N_{tr}=0.1$ while varying discretization points in the silver plate $N_{Ag}$.}
 	\label{fig:grid_mod_N1}
 \end{figure}
 
+
+Finally $N_{Ag}=300$ and $N_{pcm}=50$ were fixed while varying the grid transition parameter $n_{tr}$. The relative error increases with increasing $n_{tr}$, i.e. softer transitions. The minimal error is achieved at the phase transition with $n_{tr}=0$ ($\Delta x$ is step function) and else with $n_{tr}=0.1$ while the order of magnitude is again lower equal $10^{-5}$ in these two cases.
 
 \begin{figure}[H]
 	\begin{subfigure}{0.49\textwidth}
@@ -2063,9 +2067,13 @@ In the first set of tests we modified the total number of discretization points 
 		\caption{}
 		\label{fig:grid_relErr_mod_n_tr}
 	\end{subfigure}
-	\caption{}
+	\caption{Grid size $\Delta x(\tilde{x}$ (a) and relative error (b) for fixed $N_{Ag}=300$ and $N_{pcm}=50$ while varying the grid transition parameter $n_{tr}$.}
 	\label{fig:grid_mod_n_tr}
 \end{figure}
+
+Summarized a total number of discretization points $N=300$ is sufficient while the transition parameter $n_{tr}$ should not be much larger than $0.1$. Then the magnitude of the relative error is lower equal $10^{-5}$ which is negligible especially when considering that the relative integration tolerance $10^{-7}$ was used.
+
+
 
 
 \subsection{Parameter estimation using parametrization of linear combination of Gaussians}
@@ -2111,6 +2119,11 @@ This is why we perform now the parameter estimation again with the modified heat
 
 
 \section{Discussion}
+
+\begin{itemize}
+	\item A pleasant observation is that the differential equation's solution is not very sensitive with respect to the chosen grid. 
+\end{itemize}
+
 
 \section{Bibliography}
 
