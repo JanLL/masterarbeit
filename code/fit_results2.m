@@ -46,7 +46,14 @@
 
 
 % Own GN solver insteadt lsqnonlin
+% Nominal heat rate
 [fig, enthalpies] = get_fit_results('2017-12-07_17:07:33_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS');  % nominal heat rate
+[fig, enthalpies] = get_fit_results('2017-12-08_15:36:28_407_L1=40_L3=0,1_N1=300_N3=50_GN_Gaussians');  % 3 Gaussians
+[fig, enthalpies] = get_fit_results('2017-12-08_19:30:45_407_L1=40_L3=0,1_N1=300_N3=50_GN_Gaussians');  % 5 Gaussians
+
+
+[fig, enthalpies] = get_fit_results('2017-12-08_22:22:31_407_L1=40_L3=0.1_N1=300_N3=50');  % 5 Gaussians
+
 
 
 
