@@ -31,6 +31,7 @@ dsc_measurement = DSC204_readFile(dsc_filename);
 
 % Optimization
 optimization = struct();
+optimization.solver = 'GN';
 
 optimization.c_p_param_type = 'fraser_suzuki';
 % optimization.c_p_param_type = 'gauss_linear_comb';
@@ -68,44 +69,34 @@ elseif (strcmp(optimization.c_p_param_type, 'gauss_linear_comb'))
     
     c_p_type = 'Gaussians';
     
-%     fit_data = load(['/home/argo/masterarbeit/fits_data/', ...
-%                      '2017-12-03_19:49:07_407_L1=40_L3=0.1_N1=500_N3=50/', ...
-%                      '2017-12-03_20:09:10_407_20Kmin_L1=40_L3=0,1/fit_data.mat']);
-%     optimization.start_values = fit_data.optimization.p_optim_end(1:32).';
-
+    fit_data = load(['/home/argo/masterarbeit/fits_data/', ...
+                     '2017-12-09_11:50:41_407_L1=40_L3=0.1_N1=300_N3=50/', ...
+                     '2017-12-09_11:53:00_407_20Kmin_L1=40_L3=0,1/fit_data.mat']);
+    optimization.start_values = fit_data.optimization.p_optim_end(1:32).';
+    
+    optimization.start_values([1:9, 31:32]) = ...
+        optimization.start_values([1:9, 31:32]) .* (1+0.01*rand(11,1));
     
     
-    % 5 Gausse aktiviert (die Einstellung momentan laeuft recht gut)
-    optimization.start_values = 5*ones(32,1);
-    optimization.start_values(1:3:12) = [1., 1., 20., -2.];
-    optimization.start_values(2:3:12) = [20., 20., 5., 4.];
-    optimization.start_values(3:3:12) = [115., 120., 128., 145.];
-    optimization.start_values(13:3:30) = 0.;
-    
-%     optimization.start_values = 5*ones(32,1);
-%     optimization.start_values(1:3:3) = [20.];
-%     optimization.start_values(2:3:3) = [5.];
-%     optimization.start_values(3:3:3) = [128.];
-%     optimization.start_values(4:3:30) = 0.;
-    
-    % 10 Gaussians
-%     optimization.start_values = ones(32,1);
-%     optimization.start_values(1:3:30) = [0.1, 0.1, 0.1, 0.2, 0.5, 1., 1.,  20., -0.5, -2.];
-%     optimization.start_values(2:3:30) = [2., 2., 2., 2., 2., 2., 5., 4., 3., 3.];
-%     optimization.start_values(3:3:30) = [110, 112., 115., 118, 120., 125, 128., 135, 140, 145.];
-    
-%     optimization.start_values(31) = 1.07;  % linear
-%     optimization.start_values(32) = 1.78;  % const     
+    % 3 scaled Gaussians
+%     optimization.start_values = 1*ones(32,1);
+%     optimization.start_values(1:3:15) = 1.;
+%     optimization.start_values(2:3:15) = 1.;
+%     optimization.start_values(3:3:9) = 1.;
+%     optimization.start_values([12, 15]) = [0.95, 1.05];
+%     optimization.start_values(16:3:30) = 0.;
+%     optimization.start_values(32) = 1.48;
+        
 
     % choose free(true)/fixed(false) parameters to optimize
     optimization.p_optim_estimable = true(length(optimization.start_values), 1);
-%     optimization.p_optim_estimable(13:30) = false;  % deactivate last 5 Gaussians
-    optimization.p_optim_estimable(13:15) = false;
+    optimization.p_optim_estimable(10:30) = false;  % deactivate last 7 Gaussians
+%     optimization.p_optim_estimable(13:15) = false;
     
     optimization.p_optim_fixed = optimization.start_values(~optimization.p_optim_estimable);
     
     optimization.lb = -inf*ones(1,length(optimization.start_values));
-    %optimization.lb(2:3:30) = 2.;
+    %optimization.lb(2:3:30) = 0.02;
     
     optimization.ub = +inf*ones(1,length(optimization.start_values));
     %optimization.ub(2:3:30) = 200.;
@@ -229,14 +220,10 @@ end
 
 % Optimization #6 settings
 optimization.start_values = fit_data.optimization.p_optim_end;
+optimization.p_optim_estimable(end-1) = false;  % fix linear part in 0,6 and 0,3 K/min.
+optimization.p_optim_fixed = optimization.start_values(~optimization.p_optim_estimable);
 dsc_filename = 'ExpDat_16-407-3_mitKorr_0,6Kmin_H.csv';
 dsc_measurement = DSC204_readFile(dsc_filename);
-
-% Deactivate linear part for 0.3 and 0.6 K/min because of lack of
-% measurements ruining the fit.
-if (strcmp(optimization.c_p_param_type, 'fraser_suzuki'))
-    optimization.p_optim_estimable(6) = false; 
-end
 
 % Run optimization #6
 try

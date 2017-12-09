@@ -113,7 +113,7 @@ F2_func = @(p) GN_test_fct_F2(p);
 
 %%%%%%%%%%%%%% INITIAL VALUE TEST %%%%%%%%%%%%%%%%%%%%
 if options.init_value_test
-    [res, Jac] = compute_q_dqdp_mex_expl(optimization.start_values);
+    [res, Jac] = F1_func(optimization.start_values(optimization.p_optim_estimable));
     fit_data = false;
   
     return;

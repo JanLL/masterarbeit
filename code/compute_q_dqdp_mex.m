@@ -10,6 +10,7 @@ p_optim_all(~p_optim_estimable) = p_optim_fixed;
 
 
 % c_p plot
+c_p_error = false;
 T_plot = 30:0.01:160;
 switch c_p_param_type
     case 'old_atan_formula'
@@ -18,6 +19,9 @@ switch c_p_param_type
         c_p_plot = c_p_fs(T_plot, p_optim_all);
     case 'gauss_linear_comb'
         c_p_plot = c_p_gauss_linear_comb(T_plot, p_optim_all);
+        if (any(c_p_gauss_linear_comb(50:2:160, p_optim_all) < 0))
+            c_p_error = true;
+        end
 end
 
 cla(ax2); 
@@ -25,8 +29,16 @@ hold(ax2, 'on')
 plot(ax2, T_plot, c_p_plot, 'DisplayName', 'c_p Simulation');
 legend(ax2, 'show', 'location', 'northwest');
 xlabel(ax2, 'T [degC]');
-ylabel(ax2, 'c_p [mJ/(mg*K]');
+ylabel(ax2, 'c_p [mJ/(mg*K)]');
 drawnow;
+
+% Throw error if c_p gets obviously negative
+if (c_p_error == true)
+    error_struct = struct();
+    error_struct.identifier = 'c_p_linear_comb_gaussians_negative';
+    error_struct.message = 'c_p(T) became negative at one Gaussian extremum!';
+    error(error_struct);
+end
 
 %[residuum, Jac] = heat1D_pcm('optimization', p_optim_all); 
 

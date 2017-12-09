@@ -834,7 +834,29 @@ var(heat_rate_meas)
 
 %% Compute covariance matrix C in solution point
 
-fit_dir = '/home/argo/masterarbeit/fits_data/2017-11-27_22:04:37_407_L1=40_L3=0.1_N1=500_N3=200/';
+% fit_dir = '/home/argo/masterarbeit/fits_data/2017-11-27_22:04:37_407_L1=40_L3=0.1_N1=500_N3=200/';
+fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/';
+
+
+scaling_ampl   = [2.3314, 13.3911, -2.6634, 1, 1, 1, 1, 1, 1, 1];
+scaling_var    = [473.9, 24.51, 121.8, 30, 30, 30, 30, 30, 30, 30];
+scaling_offset = [134.38, 127.9, 145.7, 130, 130, 130, 130, 130, 130, 130];
+scaling_linear = 0.01;
+scaling_const  = 1.;
+
+scaling_gausse_tmp = [scaling_ampl; scaling_var; scaling_offset];
+scaling_gausse = [reshape(scaling_gausse_tmp,1,[]), scaling_linear, scaling_const];
+
+scale_h  = 14.;
+scale_r  = 2.;
+scale_wr = 10.7;
+scale_sr = 0.705;
+scale_z  = 129.;
+scale_m  = 0.00789;
+scale_b  = 1.69;
+
+scaling_fs = [scale_h, scale_r, scale_wr, scale_sr, scale_z, scale_m, scale_b];
+
 
 file_list = dir(fit_dir);
 
@@ -845,13 +867,20 @@ nameSubDirs(ismember(nameSubDirs,{'.','..'})) = [];
 for j=1:length(nameSubDirs)
     
     fit_data = load([fit_dir, nameSubDirs{j}, '/fit_data.mat']);
-    p_optim = fit_data.optimization.p_optim_end;
+    p_optim_scaled = fit_data.optimization.p_optim_end;
     
-    J1 = fit_data.optimization.dqdp_end;
+    p_optim_unscaled = reverse_scale_params(p_optim_scaled, fit_data.optimization.c_p_param_type);
+    p_optim_unscaled = p_optim_unscaled(fit_data.optimization.p_optim_estimable);
+    
+    
+    J1_scaled = fit_data.optimization.dqdp_end(:,fit_data.optimization.p_optim_estimable);
+    J1_unscaled = reverse_scale_J1(J1_scaled, fit_data.optimization.c_p_param_type, ...
+                                   fit_data.optimization.p_optim_estimable);
+    
     F1 = fit_data.optimization.residuum_end;
     
     confidence_lvl = 0.05;
-    [theta, C] = compute_confidence_interval(F1,J1,confidence_lvl);
+    [theta, C] = compute_confidence_interval(F1,J1_unscaled,confidence_lvl);
     p_optim_variance = diag(C);
     np = length(theta); 
     
@@ -859,13 +888,13 @@ for j=1:length(nameSubDirs)
     fprintf('Heat rate: %1.2f\n', fit_data.measurement.dsc_data.Tinfo.Tstep);
     fprintf('Optim Variables: ');
     for i=1:np
-        fprintf('%1.3e\t', p_optim(i));
+        fprintf('%1.3e\t', p_optim_unscaled(i));
     end
     
-    fprintf('\nVariances:       ');
-    for i=1:np
-        fprintf('%1.3e\t', p_optim_variance(i));
-    end
+%     fprintf('\nVariances:       ');
+%     for i=1:np
+%         fprintf('%1.3e\t', p_optim_variance(i));
+%     end
     
     fprintf('\nCuboid:          ');
     for i=1:np
@@ -875,7 +904,7 @@ for j=1:length(nameSubDirs)
     
     fprintf('\n\n');
     
-    
+        
 end
 
 %% Berechnung Faktor b, beta der Messdaten-Kovarianzmatrix
@@ -1004,3 +1033,47 @@ for j=1:length(nameSubDirs)
     print(fig, [fit_dir, nameSubDirs{j}, '/combined_img'], '-dpng', '-r200');
     
 end
+
+
+%% Compute average value of resulting c_p(T) distribution
+
+
+fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/';
+
+file_list = dir(fit_dir);
+
+isub = [file_list(:).isdir]; %# returns logical vector
+nameSubDirs = {file_list(isub).name}';
+nameSubDirs(ismember(nameSubDirs,{'.','..'})) = [];
+
+for j=1:length(nameSubDirs)
+
+    fit_data = load([fit_dir, nameSubDirs{j}, '/fit_data.mat']);
+    p_optim_all_scaled = fit_data.optimization.p_optim_end;
+    p_optim_all_unscaled = reverse_scale(p_optim_all_scaled, fit_data.optimization.c_p_param_type);
+    
+    heat_rate = fit_data.simulation.heat_rate;
+    
+    % TODO: ueber ganze Verteilung ohne linearen und constanten part
+    % integrieren, dann normalisieren und dann davon den Erwartungswert
+    % berechnen.
+    
+    if (strcmp(fit_data.optimization.c_p_param_type, 'gauss_linear_comb'))
+        error('Not implemented yet!')
+        %average_value = sum(p_optim_all_unscaled(1:3:15) .* p_optim_all_unscaled(3:3:15)) / sum(p_optim_all_unscaled(1:3:15));
+    elseif (strcmp(fit_data.optimization.c_p_param_type, 'fraser_suzuki'))
+        error('Not implemented yet!')
+    end 
+        
+    fprintf('Heat rate: %1.2f: %1.3f\n', heat_rate, average_value);
+    
+    
+    
+    
+end
+
+
+
+
+
+

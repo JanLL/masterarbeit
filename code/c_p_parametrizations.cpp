@@ -5,13 +5,13 @@
 template<typename T>
 void fraser_suzuki_formula(T x, T& c_p, T& dc_p, const T* params) {
 
-	double scale_h  = 14.;
-	double scale_r  = 2.;
-	double scale_wr = 10.7;
-	double scale_sr = 0.705;
-	double scale_z  = 129.;
-	double scale_m  = 0.00789;
-	double scale_b  = 1.69;
+	const double scale_h  = 14.;
+	const double scale_r  = 2.;
+	const double scale_wr = 10.7;
+	const double scale_sr = 0.705;
+	const double scale_z  = 129.;
+	const double scale_m  = 0.00789;
+	const double scale_b  = 1.69;
 
 	T h  = *params * scale_h;  params++;
 	T r  = *params * scale_r;  params++;
@@ -76,6 +76,21 @@ void gauss_linear_comb_formula(T x, T& c_p, T& h, const T* params)
 {
 	const int n_gauss = 10;
 
+	// Scaling factors
+	const double scaling_ampl[10] = 
+		{2.3314, 13.3911, -2.6634, 1, 1, 1, 1, 1, 1, 1};
+	const double scaling_var[10] = 
+		{473.9, 24.51, 121.8, 30, 30, 30, 30, 30, 30, 30};
+	const double scaling_offset[10] = 
+		{134.38, 127.9, 145.7, 130, 130, 130, 130, 130, 130, 130};
+	const double scaling_linear = 0.01;
+	const double scaling_const  = 1.;
+	
+	const double* scaling_ampl_ptr   = scaling_ampl;
+	const double* scaling_var_ptr    = scaling_var;
+	const double* scaling_offset_ptr = scaling_offset;
+	
+
 	T p_ampl;
 	T p_var;
 	T p_offset;
@@ -87,9 +102,9 @@ void gauss_linear_comb_formula(T x, T& c_p, T& h, const T* params)
 	h = 0;
 	
 	for (int i=0; i<n_gauss; ++i) {
-		p_ampl   = *params; params++;
-		p_var  = *params; params++;
-		p_offset = *params; params++;
+		p_ampl   = (*params) * (*scaling_ampl_ptr); params++; scaling_ampl_ptr++;
+		p_var  = (*params) * (*scaling_var_ptr); params++; scaling_var_ptr++;
+		p_offset = (*params) * (*scaling_offset_ptr); params++; scaling_offset_ptr++;
 
 		scale_i = -1./(p_var);
 		
@@ -102,8 +117,8 @@ void gauss_linear_comb_formula(T x, T& c_p, T& h, const T* params)
 	T p_linear = *params; params++;
 	T p_const  = *params; params++;
 
-	c_p += 0.01*p_linear*x;
-	c_p += p_const;
+	c_p += scaling_linear * p_linear*x;
+	c_p += scaling_const  * p_const;
 
 
 	return;

@@ -82,7 +82,7 @@ while (dx_norm > TOL_dx_norm && t_k > TOL_t_k && i <= max_iterations)
     end
         
     % Step size control backtracking linesearch with Armojo strategy
-    c = 0.2;  % parameter of Armijo Strategy (0, 0.5) for steepness
+    c = 0.;  % parameter of Armijo Strategy (0, 0.5) for steepness
     d = 0.8;  % parameter of t_k decrease rate
     
     % some pre-computations
@@ -127,6 +127,7 @@ while (dx_norm > TOL_dx_norm && t_k > TOL_t_k && i <= max_iterations)
                 if t_k > TOL_t_k
                     continue
                 else
+                    x_kp1 = x_k;
                     break
                 end
             end    

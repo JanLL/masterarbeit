@@ -322,6 +322,7 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 
 	// RHS boundary, no flux Neumann boundary
 	c_p_fct(x[N1+N3-1], c_p_j, h_j, args.p);
+
 	//rho_pcm_formula(x[N1+N3-1], rho_j, drho_j);
 	rho_j = 0.85; //  [mg/mm^3]
 
@@ -605,6 +606,7 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 
 	} else if (strncmp(command, "optimization", 99) == 0) {
 
+
 		if (initialized == false) {
 			mexErrMsgTxt("Not yet initialized. Use first command \"init\" before perform optimization!");
 		}
@@ -618,6 +620,7 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 			c_p_params[i] = *input_ptr;
 			input_ptr++;
 		}
+
 
 
 		evaluator->resetStatistics();

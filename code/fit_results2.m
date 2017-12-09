@@ -53,22 +53,23 @@
 
 
 [fig, enthalpies] = get_fit_results('2017-12-08_22:22:31_407_L1=40_L3=0.1_N1=300_N3=50');  % 5 Gaussians
+[fig, enthalpies] = get_fit_results('2017-12-09_11:50:41_407_L1=40_L3=0.1_N1=300_N3=50');  % 3 Gaussians
 
 
 
-
+figure(66);
 set(gcf, 'units', 'normalized', 'outerposition', [0 0 0.66 1]);
 children = get(gca, 'Children');
 num_children = length(children);
-for i=1:num_children; children(i).LineWidth = 1.5; end
-set(gca,'FontSize',24)
-set(gca,'xlim', [20 160]);
+for i=1:num_children; children(i).LineWidth = 1.3; end
+set(gca,'FontSize',20)
+%set(gca,'xlim', [20 160]);
 ylabel('c_p [mJ/(mg*K)]');
 print(fig, 'c_p_all', '-dpng', '-r200');
 
-set(gca,'xlim', [110 160]);
-%set(gca,'ylim', [0 330]);
-print(fig, 'c_p_all_zoom', '-dpng', '-r200');
+% set(gca,'xlim', [110 160]);
+% %set(gca,'ylim', [0 330]);
+% print(fig, 'c_p_all_zoom', '-dpng', '-r200');
 close();
 
 
