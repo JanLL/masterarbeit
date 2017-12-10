@@ -43,7 +43,7 @@ if (strcmp(optimization.c_p_param_type, 'fraser_suzuki'))
     
     % Note: Using scaling here, hard coded in c_p_parametrization.cpp and
     % c_p_fs.m
-    h  =  1.;
+    h  =  1.5;
     r  =  1.;
     wr =  1.;
     sr =  1.;
@@ -150,6 +150,7 @@ options.GN_options = GN_options;
 
 % fit_data = GN_pcm_problem2(simulation, dsc_measurement, optimization, options);
 % return
+
 
 % Run optimization #1
 try

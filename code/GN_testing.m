@@ -24,8 +24,8 @@ p0 = [A0; var0; mu0];
 GN_options = struct;
 GN_options.decomposition = 'SVD';
 GN_options.TOL_ineq = 1e-8;
-GN_options.TOL_dx_norm = 1e-200;
-GN_options.TOL_t_k = 1e-200;
+GN_options.TOL_dx_norm = 1e-10;
+GN_options.TOL_t_k = 1e-8;
 GN_options.max_iterations = 1000;
 GN_options.t_k_start = 0.3;
 
@@ -37,9 +37,8 @@ F2_func = @(p) GN_test_fct_F2(p);
 
 
 % Test Active Set Strategy
-p_end = GN_ass(F1_func, F2_func, p0, lb, ub, GN_options);
+[p_end, optim_output] = GN_ass(F1_func, F2_func, p0, lb, ub, GN_options);
 
-p_end'
 
 
 %% Working example without any constraints

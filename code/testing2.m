@@ -1040,6 +1040,88 @@ end
 % close;
 
 
+%% Fuer alle Heizraten c_p(T) und heat flux seperat plotten als .png
+%  c_p erstellen fuer Latex
+
+
+% fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/';
+fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/';
+
+
+file_list = dir(fit_dir);
+
+isub = [file_list(:).isdir]; %# returns logical vector
+nameSubDirs = {file_list(isub).name}';
+nameSubDirs(ismember(nameSubDirs,{'.','..'})) = [];
+
+
+fig1 = figure(1); clf; ax1 = gca; hold on;
+set(fig1, 'Units', 'normalized', 'OuterPosition', [0., 0., 0.8, 1.]); 
+fig2 = figure(2); clf; ax2 = gca; hold on;
+set(fig2, 'Units', 'normalized', 'OuterPosition', [0., 0., 0.8, 1.]); 
+
+for j=1:length(nameSubDirs)
+
+    cla(ax1);
+    cla(ax2);
+    
+    fit_data = load([fit_dir, nameSubDirs{j}, '/fit_data.mat']);
+    p_optim_all = fit_data.optimization.p_optim_end;
+    
+    % c_p(T) plot
+    T_plot = 30:0.01:160;
+    switch fit_data.optimization.c_p_param_type
+        case 'old_atan_formula'
+            c_p_plot = c_p_formula(T_plot, p_optim_all(1:6));
+        case 'fraser_suzuki'
+            c_p_plot = c_p_fs(T_plot, p_optim_all);
+        case 'gauss_linear_comb'
+            c_p_plot = c_p_gauss_linear_comb(T_plot, p_optim_all);
+    end    
+    
+    plot(ax1, T_plot, c_p_plot, 'DisplayName', 'c_p(T)', 'Linewidth', 2.)
+    legend(ax1, 'show', 'location', 'northwest');
+    xlabel(ax1, 'T [degC]');
+    ylabel(ax1, 'c_p [mJ/(mg*K)]');
+    set(ax1,'FontSize',24);
+    xlim(ax1, [30, 160]);
+    title(ax1, sprintf('Heat rate: %1.2f K/min', fit_data.simulation.heat_rate))
+
+    
+    % heat flux plot
+    index_T_dsc = fit_data.measurement.index_T_dsc;
+    meas_data = fit_data.measurement.dsc_data.data;
+    T_ref_dsc = meas_data(index_T_dsc(1):index_T_dsc(2), 1);
+    
+    q_res = fit_data.optimization.residuum_end;
+    q_meas = fit_data.measurement.dsc_data.mass * ...
+             meas_data(index_T_dsc(1):index_T_dsc(2),3) ./ ...
+             meas_data(index_T_dsc(1):index_T_dsc(2),4);
+    q_sim = q_res + q_meas;
+    
+    plot(ax2, T_ref_dsc, q_sim, 'DisplayName', 'Simulation', 'Linewidth', 2.); hold on
+    plot(ax2, T_ref_dsc, q_meas, 'DisplayName', 'Measurement', ...
+         'Linestyle', '--', 'Linewidth', 2.);
+    plot(ax2, T_ref_dsc, q_res, 'DisplayName', 'Residuum', 'Linewidth', 2.);
+    legend(ax2, 'show', 'location', 'northwest');
+    xlabel(ax2, 'T_{ref} [degC]');
+    ylabel(ax2, '\Phi_q^{PCM,in} [mW]');
+    set(ax2,'FontSize',24);
+    xlim(ax2, [T_ref_dsc(1), T_ref_dsc(end)]);
+    title(ax2, sprintf('Heat rate: %1.2f K/min', fit_data.simulation.heat_rate))
+    
+    print(fig1, [fit_dir, nameSubDirs{j}, '/c_p'], '-dpng', '-r200');
+    print(fig2, [fit_dir, nameSubDirs{j}, '/heat_flux'], '-dpng', '-r200');
+    
+    
+end
+
+close(1);
+close(2);
+
+
+
+
 %% Compute average value of resulting c_p(T) distribution
 
 
@@ -1081,7 +1163,7 @@ end
 
 %% Plot optimization progress
 
-fit_dir = '2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS';
+fit_dir = '2017-12-10_14:33:40_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS';
 fit_path = strcat('/home/argo/masterarbeit/fits_data/', fit_dir, '/');
 
 file_list = dir(fit_path);
@@ -1098,20 +1180,26 @@ ax1 = gca; set(ax1, 'YScale', 'log'); hold on
 
 
 for i=1:length(nameSubDirs)
-    
+        
     cla;
     disp(nameSubDirs{i})
     
     filepath = strcat(fit_path, nameSubDirs{i}, '/fit_data.mat');
     fit_data = load(filepath);
     
-    plot(ax1, fit_data.optimization.progress_F1_norm, ...
-        'DisplayName', '||F_1^{(k)}||_2', 'Linewidth', 2.);
-    plot(ax1, fit_data.optimization.progress_dx_norm, ...
-        'DisplayName', '||\Deltax^{(k)}||_2', 'Linewidth', 2.);
-    plot(ax1, fit_data.optimization.progress_t_k, ...
-        'DisplayName', 't^{(k)}', 'Linewidth', 2.);
+    num_iterations = length(fit_data.optimization.progress_dx_norm);
     
+    plot(ax1, 0:num_iterations, fit_data.optimization.progress_F1_norm, ...
+        'DisplayName', '||F_1^{(k)}||_2', 'Linewidth', 2.);
+    plot(ax1, 0:num_iterations-1, fit_data.optimization.progress_dx_norm, ...
+        'DisplayName', '||\Deltax^{(k)}||_2', 'Linewidth', 2.);
+    plot(ax1, 0:num_iterations-1, fit_data.optimization.progress_t_k, ...
+        'DisplayName', 't^{(k)}', 'Linewidth', 2.);
+    plot(ax1, 0:num_iterations, fit_data.optimization.progress_NOC1, ...
+        'DisplayName', '||\nablaL^{(k)}||_2', 'Linewidth', 2.);
+    
+    
+    xlim(ax1, [0, num_iterations]);
     xlabel('#Iteration');
     legend(ax1, 'show', 'location', 'southwest');
     set(ax1,'FontSize',16, 'FontWeight', 'bold');

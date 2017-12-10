@@ -33,6 +33,7 @@ fit_data.optimization.dqdp_end = optim_output.jacobian_end;
 fit_data.optimization.progress_F1_norm = optim_output.progress_F1_norm;
 fit_data.optimization.progress_dx_norm = optim_output.progress_dx_norm;
 fit_data.optimization.progress_t_k = optim_output.progress_t_k;
+fit_data.optimization.progress_NOC1 = optim_output.progress_NOC1;
 
 fit_data.optimization.optim_duration = optim_output.optim_duration;
 

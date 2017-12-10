@@ -31,6 +31,7 @@ F3_func = @(p) GN_eval_ineq_constraints(p, lb, ub);
 F1_norm_vec = [];
 dx_norm_vec = [];
 t_k_vec     = [];
+NOC1_vec    = [];
 
 
 % Some pre calculations
@@ -76,10 +77,15 @@ while (dx_norm > TOL_dx_norm && t_k > TOL_t_k && i <= max_iterations)
         J_active = [J2; J3(A,:)];
 
         % Solve equality constraint LSQ subproblem
-        [dx,~,~] = GN_step_constr(F1, J1, F_active, J_active, options);    
-        %lambda = R_bar \ (Q1.' * (J1.' * J1) * dx + Q1.' * J1.' * F1);
+        [dx, Q1, R_bar] = GN_step_constr(F1, J1, F_active, J_active, options);    
+        lambda = R_bar \ (Q1.' * (J1.' * J1) * dx + Q1.' * J1.' * F1);
         
-        F1_norm_vec = [F1_norm_vec; norm(F1)];
+        F1_norm = norm(F1);       
+        %NOC1 = norm(2*J1.'*F1 - J2.'*lambda); % constraint case dim error...
+        NOC1 = norm(2*J1.'*F1);
+        
+        F1_norm_vec = [F1_norm_vec; F1_norm];
+        NOC1_vec = [NOC1_vec; NOC1];
 
     end
         
@@ -118,7 +124,7 @@ while (dx_norm > TOL_dx_norm && t_k > TOL_t_k && i <= max_iterations)
         t_k = min(t_k / d, 1.);
     else
         while (F1_norm_kp1 >= F1_norm_k - c*t_k * (dx.'*dx) && t_k > TOL_t_k)
-
+            
             x_kp1 = x_k + t_k * dx_tmp;
             try  % Catch error if integration not successful (e.g. when c_p negative)
                 F1_kp1 = F1_func(x_kp1);
@@ -134,7 +140,13 @@ while (dx_norm > TOL_dx_norm && t_k > TOL_t_k && i <= max_iterations)
                 end
             end    
             F1_norm_kp1 = F1_kp1.' * F1_kp1;        
-            t_k = t_k * d;            
+            t_k = t_k * d;    
+            
+            if (t_k < TOL_t_k)
+                x_kp1 = x_k;
+                break
+            end
+            
         end
     end
     
@@ -183,13 +195,17 @@ while (dx_norm > TOL_dx_norm && t_k > TOL_t_k && i <= max_iterations)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%% OUTPUT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     dx_norm = sqrt(dx.' * dx);
     F1_norm = norm(F1);
+    %NOC1 = (2*J1.'*F1 - J2.'*lambda); % constraint case dim error...
+    NOC1 = norm(2*J1.'*F1);
+
     
     % Save optimization process variables
     F1_norm_vec = [F1_norm_vec; F1_norm];
     dx_norm_vec = [dx_norm_vec; dx_norm];
     t_k_vec     = [t_k_vec; t_k];
+    NOC1_vec    = [NOC1_vec; NOC1];
     
-    fprintf('\nIteration: %d\tF1_norm: %1.3e\tdx_norm: %1.3e\tt_k = %1.3e\n', i, F1_norm, dx_norm, t_k);
+    fprintf('\nIteration: %d\tF1_norm: %1.3e\tdx_norm: %1.3e\tt_k = %1.3e\tNOC1: %1.3e\n', i, F1_norm, dx_norm, t_k, NOC1);
     
     for j=0:ceil(length(x_k)/10)-1
         fprintf('param number:\t');
@@ -219,6 +235,7 @@ optim_output.jacobian_end = J1;
 optim_output.progress_F1_norm = F1_norm_vec;
 optim_output.progress_dx_norm = dx_norm_vec;
 optim_output.progress_t_k = t_k_vec;
+optim_output.progress_NOC1 = NOC1_vec;
 optim_output.optim_duration = optim_duration;
 
 
