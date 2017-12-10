@@ -963,7 +963,9 @@ end
 %  c_p erstellen fuer Latex
 
 
-fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0.1_N1=300_N3=50/';
+% fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/';
+fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/';
+
 
 file_list = dir(fit_dir);
 
@@ -979,14 +981,14 @@ ax2 = subplot(2,1,2);
 for j=1:length(nameSubDirs)
 
     clf;
-    if (j <= 6)
+    if (j < 100)
         ax1 = subplot(2,1,1);
         ax2 = subplot(2,1,2);  
-        set(fig, 'Units', 'normalized', 'Position', [0., 0.1, 0.35, 1.0]); 
+        set(fig, 'Units', 'normalized', 'OuterPosition', [0., 0.1, 0.45, 1.]); 
     else
         ax1 = subplot(1,2,1);
         ax2 = subplot(1,2,2);
-        set(fig, 'Units', 'normalized', 'Position', [0.1, 0.1, 1., 0.6]); 
+        set(fig, 'Units', 'normalized', 'OuterPosition', [0., 0., 1.2, 1.]); 
     end
         
     fit_data = load([fit_dir, nameSubDirs{j}, '/fit_data.mat']);
@@ -1003,11 +1005,12 @@ for j=1:length(nameSubDirs)
             c_p_plot = c_p_gauss_linear_comb(T_plot, p_optim_all);
     end    
     
-    plot(ax1, T_plot, c_p_plot, 'DisplayName', 'c_p(T)')
+    plot(ax1, T_plot, c_p_plot, 'DisplayName', 'c_p(T)', 'Linewidth', 2.)
     legend(ax1, 'show', 'location', 'northwest');
     xlabel(ax1, 'T [degC]');
     ylabel(ax1, 'c_p [mJ/(mg*K)]');
-    set(ax1,'FontSize',12);
+    set(ax1,'FontSize',15, 'FontWeight', 'bold');
+    xlim(ax1, [30, 160]);
     
     
     % heat flux plot
@@ -1021,18 +1024,20 @@ for j=1:length(nameSubDirs)
              meas_data(index_T_dsc(1):index_T_dsc(2),4);
     q_sim = q_res + q_meas;
     
-    plot(ax2, T_ref_dsc, q_sim, 'DisplayName', 'Simulation', 'Linewidth', 1.3); hold on
+    plot(ax2, T_ref_dsc, q_sim, 'DisplayName', 'Simulation', 'Linewidth', 2.); hold on
     plot(ax2, T_ref_dsc, q_meas, 'DisplayName', 'Measurement', ...
-         'Linestyle', '--', 'Linewidth', 1.3);
-    plot(ax2, T_ref_dsc, q_res, 'DisplayName', 'Residuum', 'Linewidth', 1.3);
+         'Linestyle', '--', 'Linewidth', 2.);
+    plot(ax2, T_ref_dsc, q_res, 'DisplayName', 'Residuum', 'Linewidth', 2.);
     legend(ax2, 'show', 'location', 'northwest');
     xlabel(ax2, 'T_{ref} [degC]');
     ylabel(ax2, '\Phi_q^{PCM,in} [mW]');
-    set(ax2,'FontSize',12);
+    set(ax2,'FontSize',15, 'FontWeight', 'bold');
+    xlim(ax2, [T_ref_dsc(1), T_ref_dsc(end)]);
 
-    print(fig, [fit_dir, nameSubDirs{j}, '/combined_img'], '-dpng', '-r200');
+    print(fig, [fit_dir, nameSubDirs{j}, '/combined_img'], '-dpng', '-r300');
     
 end
+% close;
 
 
 %% Compute average value of resulting c_p(T) distribution
@@ -1048,6 +1053,7 @@ nameSubDirs(ismember(nameSubDirs,{'.','..'})) = [];
 
 for j=1:length(nameSubDirs)
 
+    
     fit_data = load([fit_dir, nameSubDirs{j}, '/fit_data.mat']);
     p_optim_all_scaled = fit_data.optimization.p_optim_end;
     p_optim_all_unscaled = reverse_scale(p_optim_all_scaled, fit_data.optimization.c_p_param_type);
@@ -1073,7 +1079,45 @@ for j=1:length(nameSubDirs)
 end
 
 
+%% Plot optimization progress
+
+fit_dir = '2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS';
+fit_path = strcat('/home/argo/masterarbeit/fits_data/', fit_dir, '/');
+
+file_list = dir(fit_path);
+
+isub = [file_list(:).isdir]; %# returns logical vector
+nameSubDirs = {file_list(isub).name}';
+nameSubDirs(ismember(nameSubDirs,{'.','..'})) = [];
 
 
+fig = figure(1); clf;
+set(fig, 'Units', 'normalized', 'OuterPosition', [0., 0., 0.5, 1.]); 
 
+ax1 = gca; set(ax1, 'YScale', 'log'); hold on
+
+
+for i=1:length(nameSubDirs)
+    
+    cla;
+    disp(nameSubDirs{i})
+    
+    filepath = strcat(fit_path, nameSubDirs{i}, '/fit_data.mat');
+    fit_data = load(filepath);
+    
+    plot(ax1, fit_data.optimization.progress_F1_norm, ...
+        'DisplayName', '||F_1^{(k)}||_2', 'Linewidth', 2.);
+    plot(ax1, fit_data.optimization.progress_dx_norm, ...
+        'DisplayName', '||\Deltax^{(k)}||_2', 'Linewidth', 2.);
+    plot(ax1, fit_data.optimization.progress_t_k, ...
+        'DisplayName', 't^{(k)}', 'Linewidth', 2.);
+    
+    xlabel('#Iteration');
+    legend(ax1, 'show', 'location', 'southwest');
+    set(ax1,'FontSize',16, 'FontWeight', 'bold');
+    
+    print(fig, [fit_path, nameSubDirs{i}, '/optimization_progress'], '-dpng', '-r300');
+
+    
+end
 

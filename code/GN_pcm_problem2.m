@@ -30,24 +30,24 @@ spatial_gridsize = build_grid(N1, N3, L1, L3, n_tr, n_m, t);
 m_pcm = dsc_measurement.mass;
 heat_rate = dsc_measurement.Tinfo.Tstep;
 
-% switch heat_rate
-%     case 20
-%         heat_rate = 19.97;
-%     case 10
-%         heat_rate = 9.98;
-%     case 5
-%         heat_rate = 4.99;
-%     case 2.5
-%         heat_rate = 2.496;
-%     case 1.25
-%         heat_rate = 1.2476;
-%     case 0.6
-%         heat_rate = 0.5989;
-%     case 0.3
-%         heat_rate = 0.2994;
-%     otherwise
-%         error('Heat rate modification failed!')
-% end
+switch heat_rate
+    case 20
+        heat_rate = 19.97;
+    case 10
+        heat_rate = 9.98;
+    case 5
+        heat_rate = 4.99;
+    case 2.5
+        heat_rate = 2.496;
+    case 1.25
+        heat_rate = 1.2476;
+    case 0.6
+        heat_rate = 0.5989;
+    case 0.3
+        heat_rate = 0.2994;
+    otherwise
+        error('Heat rate modification failed!')
+end
 
 simulation.heat_rate = heat_rate;
 

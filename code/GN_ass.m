@@ -79,6 +79,8 @@ while (dx_norm > TOL_dx_norm && t_k > TOL_t_k && i <= max_iterations)
         [dx,~,~] = GN_step_constr(F1, J1, F_active, J_active, options);    
         %lambda = R_bar \ (Q1.' * (J1.' * J1) * dx + Q1.' * J1.' * F1);
         
+        F1_norm_vec = [F1_norm_vec; norm(F1)];
+
     end
         
     % Step size control backtracking linesearch with Armojo strategy
@@ -183,7 +185,7 @@ while (dx_norm > TOL_dx_norm && t_k > TOL_t_k && i <= max_iterations)
     F1_norm = norm(F1);
     
     % Save optimization process variables
-    F1_norm_vec = [F1_norm_vec; F1_norm_k];
+    F1_norm_vec = [F1_norm_vec; F1_norm];
     dx_norm_vec = [dx_norm_vec; dx_norm];
     t_k_vec     = [t_k_vec; t_k];
     
@@ -214,9 +216,9 @@ optim_duration = toc;  % end optimization duration time measurement
 optim_output = struct();
 optim_output.residuum_end = F1;
 optim_output.jacobian_end = J1;
-optim_output.progress_F1_norm = [F1_norm_vec; F1_norm];
-optim_output.progress_dx_norm = [dx_norm_vec; dx_norm];
-optim_output.progress_t_k = [t_k_vec; t_k];
+optim_output.progress_F1_norm = F1_norm_vec;
+optim_output.progress_dx_norm = dx_norm_vec;
+optim_output.progress_t_k = t_k_vec;
 optim_output.optim_duration = optim_duration;
 
 

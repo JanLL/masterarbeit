@@ -56,6 +56,9 @@
 [fig, enthalpies] = get_fit_results('2017-12-09_11:50:41_407_L1=40_L3=0.1_N1=300_N3=50');  % 3 Gaussians
 
 
+[fig, enthalpies] = get_fit_results('2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS');  % FS
+[fig, enthalpies] = get_fit_results('2017-12-09_22:35:53_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_modHeatRate');  % FS
+
 
 figure(66);
 set(gcf, 'units', 'normalized', 'outerposition', [0 0 0.66 1]);
@@ -63,7 +66,7 @@ children = get(gca, 'Children');
 num_children = length(children);
 for i=1:num_children; children(i).LineWidth = 1.3; end
 set(gca,'FontSize',20)
-%set(gca,'xlim', [20 160]);
+set(gca,'xlim', [105 140]);
 ylabel('c_p [mJ/(mg*K)]');
 print(fig, 'c_p_all', '-dpng', '-r200');
 
@@ -74,7 +77,7 @@ close();
 
 
 
-print(fig, 'c_p_L1=40_L3=0,01', '-dpng', '-r200');
+% print(fig, 'c_p_L1=40_L3=0,01', '-dpng', '-r200');
 
 
 
