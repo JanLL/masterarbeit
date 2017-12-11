@@ -47,9 +47,11 @@ for i=1:length(nameSubDirs)
     ylabel('c_p [mJ/(mg K)]')
     
     % optimization progress plot
-    %plot(ax2{i}, fit_data.optimization.progress_F1_norm, 'DisplayName', '||F1||_2');
-%     plot(ax2{i}, fit_data.optimization.progress_dx_norm, 'DisplayName', '||dx||_2');
-%     plot(ax2{i}, fit_data.optimization.progress_t_k, 'DisplayName', 't_k');
+    plot(ax2{i}, fit_data.optimization.progress_F1_norm, 'DisplayName', '||F1||_2');
+    plot(ax2{i}, fit_data.optimization.progress_dx_norm, 'DisplayName', '||dx||_2');
+    plot(ax2{i}, fit_data.optimization.progress_t_k, 'DisplayName', 't_k');
+    plot(ax2{i}, fit_data.optimization.progress_NOC1, 'DisplayName', 'NOC1');
+
     
 end
 

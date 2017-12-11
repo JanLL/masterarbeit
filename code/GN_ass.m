@@ -230,8 +230,6 @@ optim_duration = toc;  % end optimization duration time measurement
 
 
 optim_output = struct();
-optim_output.residuum_end = F1;
-optim_output.jacobian_end = J1;
 optim_output.progress_F1_norm = F1_norm_vec;
 optim_output.progress_dx_norm = dx_norm_vec;
 optim_output.progress_t_k = t_k_vec;

@@ -32,7 +32,10 @@ if (strcmp(param_type, 'gauss_linear_comb'))
     unscaled_J1 = scaled_J1 .* scaling_gausse_matrix;
     
 elseif (strcmp(param_type, 'fraser_suzuki'))
-    error('todo!!')
+    scaling_fs_matrix = repmat(scaling_fs(p_optim_estimable),n_mp,1);
+    scaling_fs_matrix = 1 ./ scaling_fs_matrix;
+
+    unscaled_J1 = scaled_J1 .* scaling_fs_matrix;
     
 end
 

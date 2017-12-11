@@ -23,9 +23,9 @@ scale_b  = 1.69;
 scaling_fs = [scale_h, scale_r, scale_wr, scale_sr, scale_z, scale_m, scale_b];
 
 if (strcmp(param_type, 'gauss_linear_comb')) 
-    unscaled_params = scaling_gausse .* scaled_params;
+    unscaled_params = scaling_gausse.' .* scaled_params;
 elseif (strcmp(param_type, 'fraser_suzuki'))
-    unscaled_params = scaling_fs .* scaled_params;
+    unscaled_params = scaling_fs.' .* scaled_params;
 end
 
 

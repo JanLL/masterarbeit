@@ -61,6 +61,9 @@
 
 
 [fig, enthalpies] = get_fit_results('2017-12-10_11:59:41_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS');  % FS
+[fig, enthalpies] = get_fit_results('2017-12-10_14:33:40_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS');  % FS
+
+
 
 
 figure(66);

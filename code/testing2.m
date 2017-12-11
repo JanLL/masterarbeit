@@ -832,30 +832,10 @@ mean(heat_rate_meas)
 var(heat_rate_meas)
 
 
-%% Compute covariance matrix C in solution point
+%% Berechnung Konfidenzintervalle der geschaetzten Parameter
 
-% fit_dir = '/home/argo/masterarbeit/fits_data/2017-11-27_22:04:37_407_L1=40_L3=0.1_N1=500_N3=200/';
-fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/';
-
-
-scaling_ampl   = [2.3314, 13.3911, -2.6634, 1, 1, 1, 1, 1, 1, 1];
-scaling_var    = [473.9, 24.51, 121.8, 30, 30, 30, 30, 30, 30, 30];
-scaling_offset = [134.38, 127.9, 145.7, 130, 130, 130, 130, 130, 130, 130];
-scaling_linear = 0.01;
-scaling_const  = 1.;
-
-scaling_gausse_tmp = [scaling_ampl; scaling_var; scaling_offset];
-scaling_gausse = [reshape(scaling_gausse_tmp,1,[]), scaling_linear, scaling_const];
-
-scale_h  = 14.;
-scale_r  = 2.;
-scale_wr = 10.7;
-scale_sr = 0.705;
-scale_z  = 129.;
-scale_m  = 0.00789;
-scale_b  = 1.69;
-
-scaling_fs = [scale_h, scale_r, scale_wr, scale_sr, scale_z, scale_m, scale_b];
+fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-11_13:18:49_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/';
+% fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/';
 
 
 file_list = dir(fit_dir);
@@ -868,10 +848,13 @@ for j=1:length(nameSubDirs)
     
     fit_data = load([fit_dir, nameSubDirs{j}, '/fit_data.mat']);
     p_optim_scaled = fit_data.optimization.p_optim_end;
+    param_type = fit_data.optimization.c_p_param_type;
     
-    p_optim_unscaled = reverse_scale_params(p_optim_scaled, fit_data.optimization.c_p_param_type);
+    % transform to column vector
+    p_optim_scaled = reshape(p_optim_scaled, length(p_optim_scaled),1);
+    
+    p_optim_unscaled = reverse_scale_params(p_optim_scaled, fit_data.optimization.c_p_param_type);    
     p_optim_unscaled = p_optim_unscaled(fit_data.optimization.p_optim_estimable);
-    
     
     J1_scaled = fit_data.optimization.dqdp_end(:,fit_data.optimization.p_optim_estimable);
     J1_unscaled = reverse_scale_J1(J1_scaled, fit_data.optimization.c_p_param_type, ...
@@ -886,9 +869,38 @@ for j=1:length(nameSubDirs)
     
     % Output
     fprintf('Heat rate: %1.2f\n', fit_data.measurement.dsc_data.Tinfo.Tstep);
-    fprintf('Optim Variables: ');
-    for i=1:np
-        fprintf('%1.3e\t', p_optim_unscaled(i));
+    
+    
+%     fprintf('Scaled params:   ');
+%     for i=1:np
+%         fprintf('%1.3e\t', p_optim_scaled(i));
+%     end
+    
+    if (strcmp(param_type, 'gauss_linear_comb')) 
+        fprintf('\nUnscaled params:\n');
+        for i=1:5
+            fprintf('Gauss%d: ', i);
+            fprintf('%+1.3e +/- %1.3e      %+1.3e +/- %1.3e   %+1.3e +/- %1.3e\n', ...
+                p_optim_unscaled(3*i-2), theta(3*i-2), ...
+                p_optim_unscaled(3*i-1), theta(3*i-1), ...
+                p_optim_unscaled(3*i-0), theta(3*i-0))
+        end
+        fprintf('Linear: %+1.3e +/- %1.3e\n', ...
+            p_optim_unscaled(end-1), theta(end-1));
+        fprintf('Const:  %+1.3e +/- %1.3e\n', ...
+            p_optim_unscaled(end), theta(end));
+            
+    elseif (strcmp(param_type, 'fraser_suzuki'))
+        fprintf('\nUnscaled params: ');
+        for i=1:np
+            fprintf('  %+1.3e\t', p_optim_unscaled(i));
+        end
+        
+        fprintf('\nCuboid:          ');
+        for i=1:np
+            fprintf('+/-%1.3e\t', theta(i));
+        end
+
     end
     
 %     fprintf('\nVariances:       ');
@@ -896,11 +908,7 @@ for j=1:length(nameSubDirs)
 %         fprintf('%1.3e\t', p_optim_variance(i));
 %     end
     
-    fprintf('\nCuboid:          ');
-    for i=1:np
-        fprintf('%1.3e\t', theta(i));
-    end
-    
+
     
     fprintf('\n\n');
     
@@ -1044,8 +1052,8 @@ end
 %  c_p erstellen fuer Latex
 
 
-% fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/';
-fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/';
+fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/';
+% fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/';
 
 
 file_list = dir(fit_dir);
@@ -1209,3 +1217,43 @@ for i=1:length(nameSubDirs)
     
 end
 
+
+%% Compute Melting enthalpy from fit_data
+
+fit_dir = '2017-12-10_14:33:40_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS';
+fit_dir = '2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians';
+
+fit_path = strcat('/home/argo/masterarbeit/fits_data/', fit_dir, '/');
+
+file_list = dir(fit_path);
+
+isub = [file_list(:).isdir]; %# returns logical vector
+nameSubDirs = {file_list(isub).name}';
+nameSubDirs(ismember(nameSubDirs,{'.','..'})) = [];
+
+for i=1:length(nameSubDirs)
+        
+    filepath = strcat(fit_path, nameSubDirs{i}, '/fit_data.mat');
+    fit_data = load(filepath);
+    
+    p_optim_end = fit_data.optimization.p_optim_end;
+    
+    p_optim_end(end-1:end) = 0.;  
+    % turn off linear and constant part, s.t. we just have the phase transition part
+    
+    switch fit_data.optimization.c_p_param_type
+        case 'gauss_linear_comb'
+            c_p_fct_handle = @(T) c_p_gauss_linear_comb(T, p_optim_end);
+        case 'fraser_suzuki'
+            c_p_fct_handle = @(T) c_p_fs(T, p_optim_end);
+    end
+    
+    dH = integral(c_p_fct_handle, 30,200);
+    
+    fprintf('Heat rate: %1.2g\t dH = %1.2f\n',fit_data.simulation.heat_rate, dH);
+    
+    
+    
+end
+
+fprintf('\n');

@@ -135,10 +135,10 @@ p_optim_all(~optimization.p_optim_estimable) = p_optim_fixed;
 
 %%%%%%%%%%%%%%%%% SAVE FIT RESULTS %%%%%%%%%%%%%%%%%%
 save_path_root = options.save_path_root;
+[residuum_end, Jac_end] = heat1D_pcm('optimization', p_optim_all);
 
-% optim_progress = [optim_output.progress_F1_norm, ...
-%                   optim_output.progress_dx_norm, ...
-%                   optim_output.progress_t_k];
+optim_output.residuum_end = residuum_end;
+optim_output.jacobian_end = Jac_end;
 
 fit_data = GN_save_fit(...
     save_path_root, simulation, dsc_measurement, index_T_dsc, ...

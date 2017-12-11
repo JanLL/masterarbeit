@@ -2078,58 +2078,120 @@ Summarized a total number of discretization points $N=300$ is sufficient while t
 
 \subsection{Parameter estimation using parametrization of linear combination of Gaussians}
 
+%\begin{figure}[H]
+%		\begin{subfigure}{0.32\textwidth}
+%			\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_22:31:48_407_20Kmin_L1=40_L3=0,1/combined_img.png}
+%			\caption{$\beta = 20 \frac{K}{min}$}
+%		\end{subfigure}
+%		\begin{subfigure}{0.32\textwidth}
+%			\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_22:39:19_407_10Kmin_L1=40_L3=0,1/combined_img.png}
+%			\caption{$\beta = 10 \frac{K}{min}$}
+%		\end{subfigure}
+%		\begin{subfigure}{0.32\textwidth}
+%			\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_22:53:51_407_5Kmin_L1=40_L3=0,1/combined_img.png}
+%			\caption{$\beta = 5 \frac{K}{min}$}
+%		\end{subfigure}
+%		\begin{subfigure}{0.32\textwidth}
+%			\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_22:59:44_407_2,5Kmin_L1=40_L3=0,1/combined_img.png}
+%			\caption{$\beta = 2.5 \frac{K}{min}$}
+%		\end{subfigure}
+%		\begin{subfigure}{0.32\textwidth}
+%			\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_23:42:17_407_1,25Kmin_L1=40_L3=0,1/combined_img.png}
+%			\caption{$\beta = 1.25 \frac{K}{min}$}
+%		\end{subfigure}
+%		\begin{subfigure}{0.32\textwidth}
+%			\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_23:47:19_407_0,6Kmin_L1=40_L3=0,1/combined_img.png}
+%			\caption{$\beta = 0.6 \frac{K}{min}$}
+%		\end{subfigure}
+%		\centering
+%		\begin{subfigure}{0.32\textwidth}
+%			\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_23:53:54_407_0,3Kmin_L1=40_L3=0,1/combined_img.png}
+%			\caption{$\beta = 0.3 \frac{K}{min}$}
+%		\end{subfigure}
+%		\caption{}
+%		\label{fig:5Gaussians_c_p_heat_flux_combo}
+%\end{figure}
+
+
+
+
 \begin{figure}[H]
-		\begin{subfigure}{0.32\textwidth}
-			\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_22:31:48_407_20Kmin_L1=40_L3=0,1/combined_img.png}
-			\caption{$\beta = 20 \frac{K}{min}$}
-		\end{subfigure}
-		\begin{subfigure}{0.32\textwidth}
-			\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_22:39:19_407_10Kmin_L1=40_L3=0,1/combined_img.png}
-			\caption{$\beta = 10 \frac{K}{min}$}
-		\end{subfigure}
-		\begin{subfigure}{0.32\textwidth}
-			\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_22:53:51_407_5Kmin_L1=40_L3=0,1/combined_img.png}
-			\caption{$\beta = 5 \frac{K}{min}$}
-		\end{subfigure}
-		\begin{subfigure}{0.32\textwidth}
-			\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_22:59:44_407_2,5Kmin_L1=40_L3=0,1/combined_img.png}
-			\caption{$\beta = 2.5 \frac{K}{min}$}
-		\end{subfigure}
-		\begin{subfigure}{0.32\textwidth}
-			\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_23:42:17_407_1,25Kmin_L1=40_L3=0,1/combined_img.png}
-			\caption{$\beta = 1.25 \frac{K}{min}$}
-		\end{subfigure}
-		\begin{subfigure}{0.32\textwidth}
-			\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_23:47:19_407_0,6Kmin_L1=40_L3=0,1/combined_img.png}
-			\caption{$\beta = 0.6 \frac{K}{min}$}
-		\end{subfigure}
-		\centering
-		\begin{subfigure}{0.32\textwidth}
-			\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_23:53:54_407_0,3Kmin_L1=40_L3=0,1/combined_img.png}
-			\caption{$\beta = 0.3 \frac{K}{min}$}
-		\end{subfigure}
-		\caption{}
-		\label{fig:5Gaussians_c_p_heat_flux_combo}
+	\begin{subfigure}{1.\textwidth}
+		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_22:31:48_407_20Kmin_L1=40_L3=0,1/c_p.png}
+		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_22:31:48_407_20Kmin_L1=40_L3=0,1/heat_flux.png}
+	\end{subfigure} \\[1ex]
+	
+	\begin{subfigure}{1.\textwidth}
+		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_22:39:19_407_10Kmin_L1=40_L3=0,1/c_p.png}
+		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_22:39:19_407_10Kmin_L1=40_L3=0,1/heat_flux.png}
+	\end{subfigure} \\[1ex]
+	
+	\begin{subfigure}{1.\textwidth}
+		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_22:53:51_407_5Kmin_L1=40_L3=0,1/c_p.png}
+		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_22:53:51_407_5Kmin_L1=40_L3=0,1/heat_flux.png}
+	\end{subfigure} \\[1ex]
+	
+	\begin{subfigure}{1.\textwidth}
+		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_22:59:44_407_2,5Kmin_L1=40_L3=0,1/c_p.png}
+		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_22:59:44_407_2,5Kmin_L1=40_L3=0,1/heat_flux.png}
+	\end{subfigure} \\[1ex]
+	\caption{}
+	\label{fig:optim_c_p_heat_flux_5Gaussians_1}
 \end{figure}
+
+
+\begin{figure}[H]
+	\begin{subfigure}{1.\textwidth}
+		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_23:42:17_407_1,25Kmin_L1=40_L3=0,1/c_p.png}
+		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_23:42:17_407_1,25Kmin_L1=40_L3=0,1/heat_flux.png}
+	\end{subfigure} \\[1ex]
+	
+	\begin{subfigure}{1.\textwidth}
+		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_23:47:19_407_0,6Kmin_L1=40_L3=0,1/c_p.png}
+		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_23:47:19_407_0,6Kmin_L1=40_L3=0,1/heat_flux.png}
+	\end{subfigure} \\[1ex]
+	
+	\begin{subfigure}{1.\textwidth}
+		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_23:53:54_407_0,3Kmin_L1=40_L3=0,1/c_p.png}
+		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_23:53:54_407_0,3Kmin_L1=40_L3=0,1/heat_flux.png}
+	\end{subfigure} \\[1ex]
+	\caption{}
+	\label{fig:optim_c_p_heat_flux_5Gaussians_2}
+\end{figure}
+
+
 
 
 \begin{table}[H]
 	\centering
-	\begin{tabular}{| c | c | c | c | c | c | c | c |} \hline
-		Heat rate $\beta$ & Gauss1 & Gauss2 & Gauss3 & Gauss4 & Gauss5 & Linear & Const \\ 
-		$[K/min]$ & & & & & & & \\ \hline
-		$20$ & & & & & & & \\
-		$10$ & & & & & & & \\
-		$5$ & & & & & & & \\
-		$2.5$ & & & & & & & \\
-		$1.25$ & & & & & & & \\
-		$0.6$ & & & & & & & \\
-		$0.3$ & & & & & & & \\ \hline
+	\begin{tabular}{| c | c | c | c | c | c | c | c | c |} \hline
+		Heat rate $\beta$ & Gauss1 & Gauss2 & Gauss3 & Gauss4 & Gauss5 & Linear & Const & $||\nabla \mathcal{L}||_2$ \\ 
+		$[K/min]$ & & & & & & & & \\ \hline
+		$20$ & & & & & & & & \\
+		$10$ & & & & & & & & \\
+		$5$ & & & & & & & & \\
+		$2.5$ & & & & & & & & \\
+		$1.25$ & & & & & & & & \\
+		$0.6$ & & & & & & & & \\
+		$0.3$ & & & & & & & & \\ \hline
 	\end{tabular}
 	\caption{}
 	\label{tab:parameter_table_5Gaussians}
 \end{table}
 
+\begin{table}[H]
+	\centering
+	\begin{tabular}{| c | c | c | c | c | c | c | c |} \hline
+		Heat rate $\beta$ & 20 & 10 & 5 & 2.5 & 1.25 & 0.6 & 0.3 \\
+		$[K/min]$ & & & & & & & \\ \hline
+		$T_{max} \ [^{\circ}C]$ & & --- & & & & & \\
+		$\Delta H \ [mJ]$ & & & & & & & \\ \hline
+	\end{tabular}
+	\caption{}
+	\label{fig:eval_table_Tmax_deltaH_5Gaussians}
+\end{table}
+
+\todo{Auswertung Mittelwert + Standardabweichung der Peakposition}
 
 \begin{figure}[H]
 	\centering
@@ -2137,6 +2199,9 @@ Summarized a total number of discretization points $N=300$ is sufficient while t
 	\caption{}
 	\label{fig:5Gaussians_all_c_p}
 \end{figure}
+
+
+\todo{Optimierungsdauer}
 
 
 \subsection{Parameter estimation using Fraser-Suzuki parametrization}
@@ -2229,20 +2294,33 @@ Summarized a total number of discretization points $N=300$ is sufficient while t
 
 \begin{table}[H]
 	\centering
-	\begin{tabular}{| c | c | c | c | c | c | c | c | c |} \hline
-		Heat rate $\beta$ & $h$ & $wr$ & $sr$ & $z$ & Linear & Const & $\hat{T}$ & $\Delta H$ \\ 
-		$[K/min]$ & & & & & & & & \\ \hline
-		$20$ & & & & & & & & \\
-		$10$ & & & & & & & & \\
-		$5$ & & & & & & & & \\
-		$2.5$ & & & & & & & & \\
-		$1.25$ & & & & & & & & \\
-		$0.6$ & & & & & & & & \\
-		$0.3$ & & & & & & & & \\ \hline
+	\begin{tabular}{| c | c | c | c | c | c | c |} \hline
+		Heat rate $\beta$ & $h$ & $wr$ & $sr$ & $z$ & Linear & Const \\ 
+		$[K/min]$ & & & & & & \\ \hline
+		$20$ & & & & & & \\
+		$10$ & & & & & &  \\
+		$5$ & & & & & & \\
+		$2.5$ & & & & & & \\
+		$1.25$ & & & & & & \\
+		$0.6$ & & & & & & \\
+		$0.3$ & & & & & & \\ \hline
 	\end{tabular}
 	\caption{}
 	\label{tab:parameter_table_FS}
 \end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{| c | c | c | c | c | c | c | c |} \hline
+		Heat rate $\beta$ & 20 & 10 & 5 & 2.5 & 1.25 & 0.6 & 0.3 \\
+		$[K/min]$ & & & & & & & \\ \hline
+		$T_{max} \ [^{\circ}C]$ & & & & & & & \\
+		$\Delta H \ [mJ]$ & & & & & & & \\ \hline
+	\end{tabular}
+	\caption{}
+	\label{fig:eval_table_Tmax_deltaH_FS}
+\end{table}
+
 
 
 
@@ -2258,40 +2336,39 @@ Summarized a total number of discretization points $N=300$ is sufficient while t
 
 \begin{figure}[H]
 	\begin{subfigure}{0.32\textwidth}
-		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:37:41_407_20Kmin_L1=40_L3=0,1/optimization_progress.png}
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-10_14:33:40_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-10_14:36:10_407_20Kmin_L1=40_L3=0,1/optimization_progress.png}
 		\caption{$\beta = 20 \frac{K}{min}$}
 	\end{subfigure}
 	\begin{subfigure}{0.32\textwidth}
-		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:37:41_407_20Kmin_L1=40_L3=0,1/optimization_progress.png}
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-10_14:33:40_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-10_14:38:49_407_10Kmin_L1=40_L3=0,1/optimization_progress.png}
 		\caption{$\beta = 10 \frac{K}{min}$}
 	\end{subfigure}
 	\begin{subfigure}{0.32\textwidth}
-		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:37:41_407_20Kmin_L1=40_L3=0,1/optimization_progress.png}
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-10_14:33:40_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-10_14:41:20_407_5Kmin_L1=40_L3=0,1/optimization_progress.png}
 		\caption{$\beta = 5 \frac{K}{min}$}
 	\end{subfigure}
 	\begin{subfigure}{0.32\textwidth}
-		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:37:41_407_20Kmin_L1=40_L3=0,1/optimization_progress.png}
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-10_14:33:40_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-10_14:44:26_407_2,5Kmin_L1=40_L3=0,1/optimization_progress.png}
 		\caption{$\beta = 2.5 \frac{K}{min}$}
 	\end{subfigure}
 	\begin{subfigure}{0.32\textwidth}
-		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:37:41_407_20Kmin_L1=40_L3=0,1/optimization_progress.png}
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-10_14:33:40_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-10_14:47:00_407_1,25Kmin_L1=40_L3=0,1/optimization_progress.png}
 		\caption{$\beta = 1.25 \frac{K}{min}$}
 	\end{subfigure}
 	\begin{subfigure}{0.32\textwidth}
-		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:37:41_407_20Kmin_L1=40_L3=0,1/optimization_progress.png}
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-10_14:33:40_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-10_14:49:40_407_0,6Kmin_L1=40_L3=0,1/optimization_progress.png}
 		\caption{$\beta = 0.6 \frac{K}{min}$}
 	\end{subfigure}
-	\centering
 	\begin{subfigure}{0.32\textwidth}
-		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:37:41_407_20Kmin_L1=40_L3=0,1/optimization_progress.png}
-		\caption{$\beta = 0.3 \frac{K}{min}$}
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-10_14:33:40_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-10_14:53:25_407_0,3Kmin_L1=40_L3=0,1/optimization_progress.png}
+		\caption{$\beta = 0.6 \frac{K}{min}$}
 	\end{subfigure}
 	\caption{}
 	\label{fig:optimization_progress_FS}
 \end{figure}
 
-\todo{Optimization progress anhand von neuem Fit (der jetzt richtig laeuft) neue Bilder einfuegen.}
 
+\todo{Optimierungsdauer}
 
 
 \subsection{Parameter estimation with modified heat rate from measurement data}
@@ -2301,7 +2378,7 @@ As one can see there are fluctuations due to the regulation which tries to keep 
 Computing the mean value gives a lower measured heat rate than the nominal value (red line in Fig. \ref{fig:heat_rate_measurement}). 
 This is the case for all used measurements as one can see in table \ref{tab:mod_heat_rate}. 
 Since the reference side' material properties are constant the heat rate at the crucible and the furnace are comparable.
-Although the observed difference is quite small, with increasing time the shift in temperature will accumulate more and more.
+Although the observed difference is quite small, with increasing time the shift in temperature will accumulate.
 Further this could be a reason for the observed shift in the obtained $c_p(T)$ in the previous sections.
 This is why we perform now the parameter estimation again with the modified heat rate $<\beta_{meas}>$ stated in table \ref{tab:mod_heat_rate}.
 
