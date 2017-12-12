@@ -1,4 +1,4 @@
-function [theta, C] = compute_confidence_interval(F1, J1, alpha, scaling)
+function [theta, C] = compute_confidence_interval(F1, J1, alpha)
 % Currently just implemented for unconstrained case!
 % 
 % INPUT:

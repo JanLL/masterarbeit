@@ -52,8 +52,8 @@
 [fig, enthalpies] = get_fit_results('2017-12-08_19:30:45_407_L1=40_L3=0,1_N1=300_N3=50_GN_Gaussians');  % 5 Gaussians
 
 
-[fig, enthalpies] = get_fit_results('2017-12-08_22:22:31_407_L1=40_L3=0.1_N1=300_N3=50');  % 5 Gaussians
-[fig, enthalpies] = get_fit_results('2017-12-09_11:50:41_407_L1=40_L3=0.1_N1=300_N3=50');  % 3 Gaussians
+[fig, enthalpies] = get_fit_results('2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians');  % 5 Gaussians
+[fig, enthalpies] = get_fit_results('2017-12-09_11:50:41_407_L1=40_L3=0.1_N1=300_N3=50_3Gaussians');  % 3 Gaussians
 
 
 [fig, enthalpies] = get_fit_results('2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS');  % FS
@@ -62,6 +62,9 @@
 
 [fig, enthalpies] = get_fit_results('2017-12-10_11:59:41_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS');  % FS
 [fig, enthalpies] = get_fit_results('2017-12-10_14:33:40_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS');  % FS
+
+% test with n_tr = 0.99 instead 0.999
+[fig, enthalpies] = get_fit_results('2017-12-11_18:35:22_407_L1=40_L3=0.1_N1=300_N3=50');  % FS
 
 
 
@@ -75,6 +78,7 @@ set(gca,'FontSize',20)
 set(gca,'xlim', [105 140]);
 ylabel('c_p [mJ/(mg*K)]');
 print(fig, 'c_p_all', '-dpng', '-r200');
+savefig(fig, 'c_p_all.fig');
 
 % set(gca,'xlim', [110 160]);
 % %set(gca,'ylim', [0 330]);

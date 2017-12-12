@@ -349,16 +349,16 @@ The measuring method of a heat flux into a sample over a certain temperature ran
 		\caption{}
 		\label{fig:DTA_principle}
 	\end{subfigure}
-	\caption{}
+	\caption{Principal experimental setup of (a) power compensated DSC and \\ (b) DTA \cite{DSC_buch}.}
 \end{figure}
 
 
-\subsubsection{power compensated DSC}
+\subsubsection{Power compensated DSC}
 In the case of a power compensated DSC (Fig. \ref{fig:DSC_power_compensated_principle}) there are 2 seperated chambers for a reference and the sample. Both have individual heaters and temperature sensors such that a feedback control system keep the temperature in both chambers on the same value. Since we know the electrical power for heating we get the heat flux due to energy conservation. \\
 
 
 
-\subsubsection{heat flux DSC}
+\subsubsection{Heat flux DSC}
 The heat flux DSC is based on differential thermal analysis (DTA, see Fig. \ref{fig:DTA_principle}). 
 In DTA there is just one chamber in which both reference and sample are heated equally. 
 Due to differences in the heat capacity of reference and sample a temperature difference dependent on their temperature will appear.
@@ -369,7 +369,7 @@ Note that the physical quantity measured is an electrical potential difference $
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/dsc_funktionsprinzip.png}
-	\caption{Principle experimental scheme of DSC which has been used for measurements.}
+	\caption{Principle experimental scheme of DSC which has been used for measurements. Two crucibles (an empty reference one and the other filled with the sample to examine) are connected to the furnace with a silver plate. The furnace' temperature increases with time and because of thermal differences a temperature difference $\Delta T$ is measured with temperature sensors placed at the crucibles. The final measurement quantity we obtain by calibration is the heat flux into the sample $\varPhi_s^2$.}
 	\label{fig:heat_flux_DSC}
 \end{figure}
 
@@ -1202,7 +1202,7 @@ We treat this problem with an active set strategy illustrated below, c.f. \cite{
 
 
 \subsubsection{Statistical analysis of estimated parameters}
-In order to quantify how trustworthy the obtained estimated parameters are, a statistical analysis is applied. The results shown in the following part can be found including proofs in \cite{diss_bock} \cite{diss_koerkel}. \\
+In order to quantify how trustworthy the obtained estimated parameters are, a statistical analysis is applied. The results shown in the following part can be found including proofs in \cite{diss_bock}. \\
 
 Since the measurement data $\eta$ is a random variable because of the statistical measurement error, the parameters $x$ are random variables as well. The corresponding covariance matrix of the estimate $x^*$ is defined as
 
@@ -1242,7 +1242,7 @@ where $F_{1-\alpha}$ is the $1-\alpha$ quantile of the Fisher-distribution. The 
 \begin{Theorem} .\\
 	Let 
 	\begin{equation}
-		\theta_i := b \cdot \sqrt{\gamma(\alpha)} \cdot \sqrt{C_{ii}(x^*)} \qquad \text{for } i=1,...,n
+		\theta_i := \sqrt{\gamma(\alpha)} \cdot \sqrt{C_{ii}(x^*)} \qquad \text{for } i=1,...,n
 	\end{equation}
 	
 	with $\gamma(\alpha)$ defined in \eqref{eq:stat_ana_fisher_dist} and $C_{ii}(x^*)$ are the diagonal elements of the covariance matrix obtained by \eqref{eq:stat_ana_covariance_matrix}. Then the linearized confidence region \eqref{eq:stat_ana_lin_confidence_region} is a subset of a cuboid with length $2 \theta_i$:
@@ -1433,7 +1433,7 @@ This gives the linear system
 	\end{bmatrix}
 \end{equation}
   
- we can solve for $\Delta \bar{x}$ and $\Delta \underline{x}$. \\
+ we can solve for $\Delta \bar{x}$ and $\Delta \underline{x}$. Fig. \ref{fig:computation_physical_grid} and \ref{fig:grid_size} show illustrations of the resulting functions for the physical grid $x = \chi(\tilde{x})$ and the gridsize $\Delta x = \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$. Although those are discrete functions they are plotted continuously for better comprehensibility. \\
 
 
 
@@ -1473,7 +1473,7 @@ This gives the linear system
 	
 	\end{axis}
 	\end{tikzpicture}
-	\caption{}
+	\caption{Mapping of the physical grid $x=\chi(\tilde{x})$ as a function of the computation grid $\tilde{x}$.}
 	\label{fig:computation_physical_grid}
 \end{figure}
 
@@ -1491,7 +1491,7 @@ This gives the linear system
 	xtick={7,13,16,25},
 	ytick={0.05, 1., 0.155, 0.895},
 	xticklabels={, , , $N\text{-}1$},
-	yticklabels={$\Delta \underline{x}$, $\Delta \bar{x}$, $\delta \underline{x}(t)$, $\delta {x}(t)$},
+	yticklabels={$\Delta \underline{x}$, $\Delta \bar{x}$, $\delta \underline{x}(t)$, $\delta {\bar{x}}(t)$},
 	xmin=0, xmax=27,
 	ymin=-0.2, ymax=1.1,
 	xlabel=$\tilde{x}$, xlabel style={at=(current axis.right of origin), anchor=west},
@@ -1531,7 +1531,7 @@ This gives the linear system
 	
 	\end{axis}
 	\end{tikzpicture}
-	\caption{$\delta \underline{x}(t) := \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x})\cdot(1-t)$, $\delta \bar{x}(t) := \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x})\cdot t$}
+	\caption{Mapping of the gridsize $\Delta x = \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$ as a function of the computation grid. $N_{pcm}$, $N_m$ and $N_{tr}$ are the total discretization points for the PCM, margin and grid transition part. Start $\delta \bar{x}(t) := \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x})\cdot t$ and end $\delta \underline{x}(t) := \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x})\cdot(1-t)$ of the grid transition are marked.}
 	\label{fig:grid_size}
 \end{figure}
 
@@ -1797,8 +1797,8 @@ An example $c_p(T)$ function generated by this parametrization is shown in Fig. 
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/fits_data/old_Constantan/2017-10-05_00:14:13_407_0,3Kmin_L1=15_L3=0,35/c_p(T).png}
-	\caption{blubb}
+	\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/thesis/images/c_p_example.png}
+	\caption{Example of 5 Gaussians reconstructing a Fraser-Suzuki peak. Each individual Gaussian and total resulting function is plotted where the linear and constant part is included each time.}
 	\label{fig:parametrization_example_linear_comb_gauss}
 \end{figure}
 
@@ -2035,7 +2035,7 @@ In the first set of tests we modified the total number of discretization points 
 	\label{fig:grid_mod_N}
 \end{figure}
 
-Next we varied the number of discretization points in the silver plate while fixing $N_{pcm}=50$ and again $n_{tr}=0.1$. The results are qualitatively and quantitatively similar to the previous case as one can observe in fig. \ref{fig:grid_mod_N1}.
+Next we varied the number of discretization points in the silver plate while fixing $N_{pcm}=50$ and again $n_{tr}=0.1$. The results are qualitatively and quantitatively similar to the previous case as one can observe in Fig. \ref{fig:grid_mod_N1}.
 
 
 \begin{figure}[H]
@@ -2184,8 +2184,8 @@ Summarized a total number of discretization points $N=300$ is sufficient while t
 	\begin{tabular}{| c | c | c | c | c | c | c | c |} \hline
 		Heat rate $\beta$ & 20 & 10 & 5 & 2.5 & 1.25 & 0.6 & 0.3 \\
 		$[K/min]$ & & & & & & & \\ \hline
-		$T_{max} \ [^{\circ}C]$ & & --- & & & & & \\
-		$\Delta H \ [mJ]$ & & & & & & & \\ \hline
+		$T_{max} \ [^{\circ}C]$ & $126.3$ & --- & $126.9$ & $127.9$ & $128.9$ & $129.8$ & $130.5$ \\
+		$\Delta H \ [\frac{mJ}{mg}]$ & $162.8$ & $187.6$ & $211.6$ & $211.5$ & $208.8$ & $195.5$ & $191.1$ \\ \hline
 	\end{tabular}
 	\caption{}
 	\label{fig:eval_table_Tmax_deltaH_5Gaussians}
@@ -2314,14 +2314,14 @@ Summarized a total number of discretization points $N=300$ is sufficient while t
 	\begin{tabular}{| c | c | c | c | c | c | c | c |} \hline
 		Heat rate $\beta$ & 20 & 10 & 5 & 2.5 & 1.25 & 0.6 & 0.3 \\
 		$[K/min]$ & & & & & & & \\ \hline
-		$T_{max} \ [^{\circ}C]$ & & & & & & & \\
-		$\Delta H \ [mJ]$ & & & & & & & \\ \hline
+		$T_{max} \ [^{\circ}C]$ & $129.0$ & $130.0$ & $128.6$ & $128.8$ & $129.4$ & $130.1$ & $130.7$ \\
+		$\Delta H \ [mJ]$ & $162.7$ & $197.0$ & $184.3$ & $176.6$ & $173.1$ & $171.5$ & $172.2$ \\ \hline
 	\end{tabular}
 	\caption{}
 	\label{fig:eval_table_Tmax_deltaH_FS}
 \end{table}
 
-
+\todo{Stat. Parameter aller Werte: $T_{max} = 129.51 \pm 0.78$, hier Standardabweichung}
 
 
 \begin{figure}[H]
@@ -2402,7 +2402,7 @@ This is why we perform now the parameter estimation again with the modified heat
 		$0.6$ & $0.5989$ & $0.00078$ \\
 		$0.3$ & $0.2994$ & $0.00046$ \\ \hline
 	\end{tabular}
-	\caption{Heat rates' mean value $<\beta_{meas}>$ obtained as in fig. \ref{fig:heat_rate_measurement} and corresponding standard deviation $\sigma_{\beta_{meas}}$ for all measurements.}
+	\caption{Heat rates' mean value $<\beta_{meas}>$ obtained as in Fig. \ref{fig:heat_rate_measurement} and corresponding standard deviation $\sigma_{\beta_{meas}}$ for all measurements.}
 	\label{tab:mod_heat_rate}
 \end{table}
 
@@ -2419,7 +2419,8 @@ This is why we perform now the parameter estimation again with the modified heat
 \section{Discussion}
 
 \begin{itemize}
-	\item A pleasant observation is that the differential equation's solution is not very sensitive with respect to the chosen grid. 
+	\item A pleasant observation is that the differential equation's solution is not very sensitive with respect to the chosen grid.  Ausser: $t=0.999$ statt $t=0.99$ ist wichtig.
+	\item Moeglicherweise hier auf diese Messwerte optimiert s.d. moeglichst gleiche $c_p$ rauskommen. Vllt kommen bei anderen Messwerten ganz andere Dinge raus...
 \end{itemize}
 
 

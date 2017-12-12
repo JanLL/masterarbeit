@@ -153,6 +153,8 @@ end
 
 %%%%%%%%%%%%%% SOLVE OPTIMIZATION PROBLEM %%%%%%%%%%%%
 global p_optim_process;
+global firstorderopt;
+firstorderopt = [];
 opt_constraints = {optimization.lb(optimization.p_optim_estimable), ...
                    optimization.ub(optimization.p_optim_estimable)};
 
@@ -173,6 +175,7 @@ tic;
 optim_duration = toc;
 fprintf('Optimization took %2.2f seconds.\n', optim_duration);
 
+
 p_optim_all = zeros(1,length(optimization.p_optim_estimable));
 p_optim_all(optimization.p_optim_estimable) = p_optim_end;
 p_optim_all(~optimization.p_optim_estimable) = p_optim_fixed;
@@ -181,10 +184,11 @@ p_optim_all(~optimization.p_optim_estimable) = p_optim_fixed;
 save_path_root = options.save_path_root;
 [residuum_end, Jac_end] = heat1D_pcm('optimization', p_optim_all);
 
+
 fit_data = save_fit_mex(...
     save_path_root, simulation, dsc_measurement, index_T_dsc, ...
     optimization, p_optim_all, optim_output, optim_duration, ...
-    residuum_end, Jac_end, p_optim_process);
+    residuum_end, Jac_end, p_optim_process, firstorderopt);
 
 
 end

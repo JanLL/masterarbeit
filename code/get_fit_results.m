@@ -15,16 +15,17 @@ fig1 = figure(66); clf; ax1 = gca;
 hold on;
 
 % Figure for integration process plots
-fig2 = figure(67); clf;
-ax2 = {subplot(4,2,1), subplot(4,2,2), subplot(4,2,3), subplot(4,2,4), ...
-       subplot(4,2,5), subplot(4,2,6), subplot(4,2,7)};
-for i=1:7
-    set(ax2{i}, 'YScale', 'log');
-    hold(ax2{i});
-end
+% fig2 = figure(67); clf;
+% ax2 = {subplot(4,2,1), subplot(4,2,2), subplot(4,2,3), subplot(4,2,4), ...
+%        subplot(4,2,5), subplot(4,2,6), subplot(4,2,7)};
+% for i=1:7
+%     set(ax2{i}, 'YScale', 'log');
+%     hold(ax2{i});
+% end
    
-T_domain = 30:0.01:170;
+T_domain = 30:0.001:170;
 enthalpies = zeros(1,7);
+T_max_vec = [];
 
 for i=1:length(nameSubDirs)
     
@@ -42,22 +43,30 @@ for i=1:length(nameSubDirs)
         enthalpies(i) = integral(@(x)c_p_fs(x, fit_data.optimization.p_optim_end), 110, 160);
     end
     
+    [~,idx_max] = max(c_p);
+    T_max = T_domain(idx_max);
+    T_max_vec = [T_max_vec, T_max];
+    fprintf('Heat rate: %1.2g\t T_max: %1.2f\n', fit_data.simulation.heat_rate, ...
+        T_max);
+    
     plot(ax1, T_domain, c_p, 'DisplayName', strcat(num2str(fit_data.measurement.dsc_data.Tinfo.Tstep), ' K/min'))
     xlabel('T [degC]')
     ylabel('c_p [mJ/(mg K)]')
     
     % optimization progress plot
-    plot(ax2{i}, fit_data.optimization.progress_F1_norm, 'DisplayName', '||F1||_2');
-    plot(ax2{i}, fit_data.optimization.progress_dx_norm, 'DisplayName', '||dx||_2');
-    plot(ax2{i}, fit_data.optimization.progress_t_k, 'DisplayName', 't_k');
-    plot(ax2{i}, fit_data.optimization.progress_NOC1, 'DisplayName', 'NOC1');
+%     plot(ax2{i}, fit_data.optimization.progress_F1_norm, 'DisplayName', '||F1||_2');
+%     plot(ax2{i}, fit_data.optimization.progress_dx_norm, 'DisplayName', '||dx||_2');
+%     plot(ax2{i}, fit_data.optimization.progress_t_k, 'DisplayName', 't_k');
+%     plot(ax2{i}, fit_data.optimization.progress_NOC1, 'DisplayName', 'NOC1');
 
     
 end
 
 legend(ax1, 'show', 'location', 'northwest');
 
-
+T_max_mean = mean(T_max_vec);
+T_max_stddev = std(T_max_vec);
+fprintf('Mean Temp: %1.2f\t Std-deviation: %1.2f\n', T_max_mean, T_max_stddev);
 
 
 

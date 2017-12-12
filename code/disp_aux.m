@@ -8,13 +8,16 @@ stop = false;
 % Save optimization variables for all iteration steps
 persistent x_process;
 global p_optim_process;
+global firstorderopt;
+
 
 p_optim_process = false ;
 
-
+firstorderopt = [firstorderopt, optimValues.firstorderopt];
 
 if (optimValues.iteration == size(x_process, 1) && strcmp(state, 'iter'))
     try
+        
         x_process = [x_process; x];
     catch
         size(x_process)

@@ -27,7 +27,7 @@ simulation.T_end = 200.;
 
 simulation.grid_n_tr = 0.1;
 simulation.grid_n_m = 0.01;
-simulation.grid_t = 0.999;
+simulation.grid_t = 0.99;
 
 
 % Measurements
@@ -38,47 +38,50 @@ dsc_measurement = DSC204_readFile(dsc_filename);
 optimization = struct();
 optimization.solver = 'lsqnonlin';
 
-% Fraser Suzuki
-% optimization.c_p_param_type = 'fraser_suzuki';
-% h  =  10.0;
-% r  =  2.0;
-% wr =  15.0;
-% sr =   0.3;
-% z  = 130.0;
-% m  = 1.;
-% b  =   2.0;
-% 
-% optimization.start_values = [h, r, wr, sr, z, m, b];
+%%%%%%%%%%%%% Fraser Suzuki %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+optimization.c_p_param_type = 'fraser_suzuki';
+h  =  1.0;
+r  =  1.0;
+wr =  1.0;
+sr =  1.0;
+z  =  1.0;
+m  =  1.0;
+b  =  1.0;
 
-
-% Gauss Linear combination
-optimization.c_p_param_type = 'gauss_linear_comb';
-
-% fit_data = load(['/home/argo/masterarbeit/fits_data/', ...
-%                  '2017-12-03_19:49:07_407_L1=40_L3=0.1_N1=500_N3=50/', ...
-%                  '2017-12-03_20:09:10_407_20Kmin_L1=40_L3=0,1/fit_data.mat']);
-% optimization.start_values = fit_data.optimization.p_optim_end(1:32);
-%optimization.start_values(2:3:30) = optimization.start_values(2:3:30).^2;
-
-optimization.start_values = [1., 1.,  1.0, ...
-                             1., 1., 1.0, ...
-                             1., 1., 1.0, ...
-                             0., 1., 0.0, ...
-                             0., 1., 0.0, ...
-                             0., 1., 0., ...
-                             0., 1., 0., ...
-                             0., 1., 0., ...
-                             0., 1., 0., ...
-                             0., 1., 0., ...
-                             1., 1.];
-
-
-
+optimization.start_values = [h, r, wr, sr, z, m, b];
 num_opt_params = length(optimization.start_values);
 
 optimization.p_optim_estimable = true(num_opt_params, 1);
-% optimization.p_optim_estimable(2) = false;  % fix "r" in Fraser Suzuki Parametrization
-optimization.p_optim_estimable(10:30) = false;  %  fix 5 Gaussians
+optimization.p_optim_estimable(2) = false;  % fix "r" in Fraser Suzuki Parametrization
+
+
+%%%%%%%%%%%%%%%%% Gauss Linear combination %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% optimization.c_p_param_type = 'gauss_linear_comb';
+% 
+% % fit_data = load(['/home/argo/masterarbeit/fits_data/', ...
+% %                  '2017-12-03_19:49:07_407_L1=40_L3=0.1_N1=500_N3=50/', ...
+% %                  '2017-12-03_20:09:10_407_20Kmin_L1=40_L3=0,1/fit_data.mat']);
+% % optimization.start_values = fit_data.optimization.p_optim_end(1:32);
+% %optimization.start_values(2:3:30) = optimization.start_values(2:3:30).^2;
+% 
+% optimization.start_values = [1., 1.,  1.0, ...
+%                              1., 1., 1.0, ...
+%                              1., 1., 1.0, ...
+%                              0., 1., 0.0, ...
+%                              0., 1., 0.0, ...
+%                              0., 1., 0., ...
+%                              0., 1., 0., ...
+%                              0., 1., 0., ...
+%                              0., 1., 0., ...
+%                              0., 1., 0., ...
+%                              1., 1.];
+% 
+% 
+% 
+% num_opt_params = length(optimization.start_values);
+% 
+% optimization.p_optim_estimable = true(num_opt_params, 1);
+% optimization.p_optim_estimable(16:30) = false;  %  fix 5 Gaussians
 
 
 optimization.lb = zeros(num_opt_params,1);

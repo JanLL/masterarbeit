@@ -893,12 +893,12 @@ for j=1:length(nameSubDirs)
     elseif (strcmp(param_type, 'fraser_suzuki'))
         fprintf('\nUnscaled params: ');
         for i=1:np
-            fprintf('  %+1.3e\t', p_optim_unscaled(i));
+            fprintf('  %+1.4e\t', p_optim_unscaled(i));
         end
         
         fprintf('\nCuboid:          ');
         for i=1:np
-            fprintf('+/-%1.3e\t', theta(i));
+            fprintf('+/-%1.4e\t', theta(i));
         end
 
     end
@@ -1198,20 +1198,20 @@ for i=1:length(nameSubDirs)
     num_iterations = length(fit_data.optimization.progress_dx_norm);
     
     plot(ax1, 0:num_iterations, fit_data.optimization.progress_F1_norm, ...
-        'DisplayName', '||F_1^{(k)}||_2', 'Linewidth', 2.);
+        '-s', 'DisplayName', '||F_1^{(k)}||_2', 'Linewidth', 2.);
     plot(ax1, 0:num_iterations-1, fit_data.optimization.progress_dx_norm, ...
-        'DisplayName', '||\Deltax^{(k)}||_2', 'Linewidth', 2.);
+        '-s', 'DisplayName', '||\Deltax^{(k)}||_2', 'Linewidth', 2.);
     plot(ax1, 0:num_iterations-1, fit_data.optimization.progress_t_k, ...
-        'DisplayName', 't^{(k)}', 'Linewidth', 2.);
+        '-s', 'DisplayName', 't^{(k)}', 'Linewidth', 2.);
     plot(ax1, 0:num_iterations, fit_data.optimization.progress_NOC1, ...
-        'DisplayName', '||\nablaL^{(k)}||_2', 'Linewidth', 2.);
+        '-s', 'DisplayName', '||\nablaL^{(k)}||_2', 'Linewidth', 2.);
     
     
     xlim(ax1, [0, num_iterations]);
     xlabel('#Iteration');
     legend(ax1, 'show', 'location', 'southwest');
     set(ax1,'FontSize',16, 'FontWeight', 'bold');
-    
+        
     print(fig, [fit_path, nameSubDirs{i}, '/optimization_progress'], '-dpng', '-r300');
 
     
@@ -1221,7 +1221,7 @@ end
 %% Compute Melting enthalpy from fit_data
 
 fit_dir = '2017-12-10_14:33:40_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS';
-fit_dir = '2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians';
+% fit_dir = '2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians';
 
 fit_path = strcat('/home/argo/masterarbeit/fits_data/', fit_dir, '/');
 
@@ -1257,3 +1257,78 @@ for i=1:length(nameSubDirs)
 end
 
 fprintf('\n');
+
+
+
+%% Plot 1st order optimality von lsqnonlin
+
+fit_dir = '2017-12-11_16:26:52_407_L1=40_L3=0.1_N1=300_N3=50';
+fit_path = strcat('/home/argo/masterarbeit/fits_data/', fit_dir, '/');
+
+file_list = dir(fit_path);
+
+isub = [file_list(:).isdir]; %# returns logical vector
+nameSubDirs = {file_list(isub).name}';
+nameSubDirs(ismember(nameSubDirs,{'.','..'})) = [];
+
+fig1 = figure();
+ax1 = gca; set(ax1, 'YScale', 'log'); hold on;
+
+for i=1:length(nameSubDirs)
+        
+    cla;
+    
+    filepath = strcat(fit_path, nameSubDirs{i}, '/fit_data.mat');
+    fit_data = load(filepath);
+    
+    plot(ax1, fit_data.optimization.firstorderopt, ...
+        'DisplayName', num2str(fit_data.simulation.heat_rate));
+    
+    legend(ax1, 'show', 'location', 'northeast')
+    
+    
+    print(fig1, [fit_path, nameSubDirs{i}, '/optimization_progress_NOC1'], '-dpng', '-r200');
+    
+end
+
+
+%% Gauss plot mit allen Gaussen einzeln
+
+fit_data = load('/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_23:53:54_407_0,3Kmin_L1=40_L3=0,1/fit_data.mat');
+scaled_params = fit_data.optimization.p_optim_end.';
+params = reverse_scale_params(scaled_params, fit_data.optimization.c_p_param_type);
+
+fig1 = figure(1); clf;
+ax1 = gca; hold on
+
+T_domain = 30:0.01:160;
+
+m = params(end-1);
+b = params(end);
+
+for i=1:5
+    
+    A_i = params(3*i-2);
+    var_i = params(3*i-1);
+    offset_i = params(3*i-0);
+    
+    gauss_eval = A_i * exp(-(T_domain-offset_i).^2 ./ var_i) + m*T_domain + b;
+    
+    plot(ax1, T_domain, gauss_eval, 'DisplayName', sprintf('Gauss%d', i), ...
+        'Linestyle', '-.', 'Linewidth', 1.3);
+    
+end
+
+plot(ax1, T_domain, c_p_gauss_linear_comb(T_domain, scaled_params), ...
+    'DisplayName', 'Total c_p', 'Linewidth', 1.3, 'color', 'black');
+
+set(gca,'FontSize',12)
+xlabel(ax1, 'T [degC]')
+ylabel(ax1, 'c_p [mJ/(mg*K)]');
+legend(ax1, 'show', 'location', 'northwest')
+xlim(ax1, [100 140]);
+
+save_path = '/home/argo/masterarbeit/thesis/images/c_p_example'
+print(fig1, save_path, '-dpng', '-r200');
+    
+

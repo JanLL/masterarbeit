@@ -1,7 +1,7 @@
 function [fit_data] = save_fit_mex(...
     path_root, simulation_data_struct, dsc_data_struct, index_T_dsc, ...
     optimization_data_struct, p_optim_end_all, optim_output, optim_duration, ...
-    residuum_end, Jacobian_end, p_optim_process)
+    residuum_end, Jacobian_end, p_optim_process, firstorderopt)
 % TODO: description!
 
 
@@ -32,6 +32,7 @@ fit_data.optimization.optim_output = optim_output;
 fit_data.optimization.optim_duration = optim_duration;
 fit_data.optimization.dqdp_end = Jacobian_end;
 fit_data.optimization.p_optim_process = p_optim_process;
+fit_data.optimization.firstorderopt = firstorderopt;
 fit_data.optimization.residuum_end = residuum_end;
 
 %%%% Save .m data file
