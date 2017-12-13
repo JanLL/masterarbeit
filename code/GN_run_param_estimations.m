@@ -7,7 +7,7 @@ fprintf(errLogFileID, '\n\nStart new Set of parameter estimations at %s...\n', d
 simulation = struct();
 simulation.L1 = 40.;
 simulation.L3 = 0.1;
-simulation.N1 = 300;
+simulation.N1 = 200;
 simulation.N3 = 50; 
 
 % Silver
@@ -33,8 +33,8 @@ dsc_measurement = DSC204_readFile(dsc_filename);
 optimization = struct();
 optimization.solver = 'GN';
 
-% optimization.c_p_param_type = 'fraser_suzuki';
-optimization.c_p_param_type = 'gauss_linear_comb';
+optimization.c_p_param_type = 'fraser_suzuki';
+% optimization.c_p_param_type = 'gauss_linear_comb';
 
 %%%%%%%%%% Set optimization variables Fraser Suzuki %%%%%%%%%%%%%%%%%%%%%%
 if (strcmp(optimization.c_p_param_type, 'fraser_suzuki'))
@@ -141,9 +141,9 @@ GN_options.decomposition = 'SVD';
 GN_options.TOL_ineq = 1e-8;  % constraint active when -TOL < F_3i < TOL
 
 % Termination criteria
-GN_options.TOL_dx_norm = 1e-8;
+GN_options.TOL_dx_norm = 1e-6;
 GN_options.TOL_t_k = 1e-7;
-GN_options.max_iterations = 1000;
+GN_options.max_iterations = 5000;
 GN_options.t_k_start = 0.3;
 
 options.GN_options = GN_options;

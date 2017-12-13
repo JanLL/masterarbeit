@@ -469,10 +469,6 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		}
 		c_p_params = new double [ np ];
 
-		
-
-
-
 
 		// Some pre-calculations / auxiliary variables
 		g_traj = new Sonic::DMat(nmp, N1+N3);
@@ -506,6 +502,8 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		//daesol2::CorrectorEqnSolverOptions* corrEqnSolvOpt = new daesol2::StdNewtonSolverUMFPACKOptions();
 		//daesol2::BDFStarterOptions* bdfStartOpt = new daesol2::SelfStarterUMFPACKOptions();
 		
+		corrEqnSolvOpt->setUseCorrIteratesForIND(true);
+
 		daesol2::ConsistencySolverOptions *consOpt = new daesol2::NewtonConsistencySolverOptions();
 
 
@@ -566,7 +564,7 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 				);
 
 
-		const double relTol ( 1e-7 );
+		const double relTol ( 1e-8 );
 		integrator->setStepsizeBounds    ( 0, 0   );
 		integrator->setRelativeTolerance ( relTol );
 		integrator->setInitialStepsize   ( 1e-06  );
@@ -595,8 +593,8 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		integrator->registerPlugin( &fwdSensGetter);
 		
 
-	    integrator->deactivateFeature( IIntegrator::Feature_Store_Grid );
-	    integrator->deactivateFeature( IIntegrator::Feature_Store_Tape );  
+	    integrator->activateFeature( IIntegrator::Feature_Store_Grid );
+	    integrator->activateFeature( IIntegrator::Feature_Store_Tape );  
 
 		//integrator->activateFeature( IIntegrator::Feature_Adjoint_Sensitivity_Injection );  
 		//integrator->setAdjointInjectionGrid( solGrid, &adjInjector );
@@ -644,6 +642,21 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 				fwdSensDir    // (1+nxd+np)x(np) matrix with np fwdDirections
 				);
 		//integrator->setForwardTaylorCoefficients ( 0, 0, 0, 0 );
+
+	    // Set forward sensitivity relative error control 
+	    integrator->activateFeature( IIntegrator::Feature_Forward_Sensitivity_Error_Control );
+	    double fwdSensRelTolVec[np];
+	    for (svULong i=0; i < np; ++i) {
+	    	fwdSensRelTolVec[i] = 1e-7;
+	    }
+
+	    // if Fraser-Suzuki disable fwdSensRelTol for parameter "r"
+	    if (np == 7) {
+	    	fwdSensRelTolVec[1] = 1.;
+	    }
+
+	    integrator->setForwardSensitivityRelativeTolerance(fwdSensRelTolVec);
+
 		integrator->setAdjointTaylorCoefficients ( 0, 0, 0, 0, 0 );
 		//std::cout << "Integrate now...\n";
 		clock_t t_begin = clock();
@@ -872,7 +885,7 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		//std::cout << "Setting initial values\n";
 		integrator->setInitialValues(Component_P, np, c_p_params);
 
-
+		integrator->deactivateFeature( IIntegrator::Feature_Forward_Sensitivity_Error_Control );
 		integrator->setForwardTaylorCoefficients ( 0, 0, 0, 0 );
 		/*integrator->setForwardTaylorCoefficients (
 				nFwdDir,      // no of fwd Dirs

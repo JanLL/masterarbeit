@@ -20,14 +20,14 @@ num_meas = length(q_dsc);
 L1 = 40;  % [mm]
 L3 = 0.1;  % [mm]
 
-n_pcm = 0.2;
-N = 10000;
-N3 = N*n_pcm;
-N1 = N - N3;
+% n_pcm = 0.2;
+% N = 300;
+% N3 = N*n_pcm;
+% N1 = N - N3;
 
-% N3 = 50;  % error if N3=0
-% N1 = 20000;
-% N = N1 + N3;
+N3 = 50;  % error if N3=0
+N1 = 300;
+N = N1 + N3;
 
 % Constantan
 % lambda_Const = 23.;  % [mW/(mm*K)]
@@ -95,40 +95,20 @@ spatial_gridsize = dchi(0:N-2)';
 
 
 % c_p parametrization with Fraser-Suzuki-Peak
-h  =  10.0;
-r  =  2.0;
-wr =  5.0;
-sr =   0.3;
-z  = 130.0;
-m  = 0.3;
-b  =   2.0;
+h  =  1.;
+r  =  1.;
+wr =  1.;
+sr =  1.;
+z  =  1.;
+m  =  1.;
+b  =  1.;
 p_fraser_suzuki = [h, r, wr, sr, z, m, b];
-
-p_gauss_lin_comb = [10, 0.1, 130, ...
-                    1,  1,   128, ...
-                    0.5,  1,   126, ...
-                    0.1,  1,   124, ...
-                    0.05, 1,   122, ...
-                    0., 2.];
                 
 fit_data = load(['/home/argo/masterarbeit/fits_data/', ...
-                '2017-10-15_22:45:00_407_L1=50_L3=0.1_N1=200_N3=50/', ...
-                '2017-10-15_23:26:52_407_0,3Kmin_L1=50_L3=0,1/fit_data.mat']);
+                 '2017-12-09_11:50:41_407_L1=40_L3=0.1_N1=300_N3=50_3Gaussians/', ...
+                 '2017-12-09_11:53:00_407_20Kmin_L1=40_L3=0,1/fit_data.mat']);
 
-h_tilde = 1.;            
-p_gauss_lin_comb = [fit_data.optimization.p_optim_end, h_tilde];
-% p_gauss_lin_comb = [38.2793,    1.2498,  123.0044, ...
-%                     1.1022,   13.2169,  104.8824, ...
-%                     0.,    3.7355,  124.3034, ...
-%                     3.8868, 7.1009,  118.2194, ...
-%                     0.5846,   30.5770,   76.8653, ...
-%                     0., 1., 0., ...
-%                     0., 1., 0., ...
-%                     0., 1., 0., ...
-%                     0., 1., 0., ...
-%                     0., 1., 0., ...
-%                     1., 1.6483];
-
+p_gauss_lin_comb = fit_data.optimization.p_optim_end;
 
 %%%%%%%%%% some pre-calculations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -157,30 +137,14 @@ end
 
 meas_data(:,2) = q_dsc;
 
-% %% Test: Get measurement times just from dsc data
-% [~,idx_0] = min(abs(dsc.data(:,1) - T_0));
-% [~,idx_1] = min(abs(dsc.data(:,1) - 29));
-% 
-% idx_0
-% idx_1
-% 
-% t_offset = dsc.data(idx_0,2);
-% 
-% t_meas = (dsc.data(idx_0:end,2) - t_offset) * 60;
-% 
-% % size(meas_data(:,1))
-% % size(t_meas)
-% 
-% meas_data(1:10)
-% t_meas(idx_1 - idx_0:idx_1 - idx_0 + 10)'
-% 
-% 
-% %%
-% return
+
 
 % Set optimization variables
-c_p_param_type = 'fraser_suzuki';
-p_optim_start = p_fraser_suzuki;
+c_p_param_type = 'gauss_linear_comb';
+p_optim_start = p_gauss_lin_comb;
+
+% c_p_param_type = 'fraser_suzuki';
+% p_optim_start = p_fraser_suzuki;
 
 % choose free(true)/fixed(false) parameters to optimize
 p_optim_estimable = true(length(p_optim_start), 1);
@@ -206,6 +170,18 @@ compute_q_dqdp_mex_expl = @(p_optim) compute_q_dqdp_mex(...
 
 
 %%%%%%%%%%%%%% INITIAL VALUE TEST %%%%%%%%%%%%%%%%%%%%
+% Jacobian for FwdSens error computation
+tic;
+[residuum, Jac] = compute_q_dqdp_mex_expl(p_optim_start(p_optim_estimable));
+toc
+
+save(sprintf('/home/argo/masterarbeit/dqdp_%s_fwdSensTol=inactive.mat', c_p_param_type), ...
+    'Jac');
+return
+
+
+
+% Temperature field for grid error computation
 [T] = compute_q_dqdp_mex_expl(p_optim_start(p_optim_estimable));
 
 % save(sprintf('/home/argo/masterarbeit/Temp_N1=%d_N3=%d_L1=%2.2f_L3=%2.2f_relTol=1e-7_new.mat', ...

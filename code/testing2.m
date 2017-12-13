@@ -1337,3 +1337,42 @@ save_path = '/home/argo/masterarbeit/thesis/images/c_p_example'
 print(fig1, save_path, '-dpng', '-r200');
     
 
+%% Comparison FwdSens with/without error control
+
+root_dir = '/home/argo/masterarbeit/';
+
+fwdSens_errTol_inactive_path = [root_dir, 'dqdp_gauss_linear_comb_fwdSensTol=inactive.mat'];
+fwdSens_errTol_active_path = [root_dir, 'dqdp_gauss_linear_comb_fwdSensTol=1e-7.mat'];
+
+fwdSens_errTol_inactive_data = load(fwdSens_errTol_inactive_path);
+fwdSens_errTol_inactive = fwdSens_errTol_inactive_data.Jac;
+% fwdSens_errTol_inactive(fwdSens_errTol_inactive > 1e-8) = nan;
+
+fwdSens_errTol_active_data = load(fwdSens_errTol_active_path);
+fwdSens_errTol_active = fwdSens_errTol_active_data.Jac;
+% fwdSens_errTol_active(fwdSens_errTol_active > 1e-8) = nan;
+
+relErr = 1 - fwdSens_errTol_inactive ./ fwdSens_errTol_active;
+
+% fwdSens unter gewisser Schranke abschneiden weil sonst numerischer
+% relativer Fehler keinen Sinn macht. 1e-2 ist aber eig. zu hoch und selbst
+% hier ist das Max. bei 12 ...
+relErr(fwdSens_errTol_active < 1e-2) = 0;
+relErr(fwdSens_errTol_inactive < 1e-2) = 0;
+
+
+image(relErr(:,[1:9, 31]), 'CDataMapping', 'scaled');
+colorbar;
+
+return
+
+figure(1)
+image(fwdSens_errTol_inactive, 'CDataMapping', 'scaled');
+colorbar;
+
+figure(2)
+image(fwdSens_errTol_active, 'CDataMapping', 'scaled');
+colorbar;
+
+
+
