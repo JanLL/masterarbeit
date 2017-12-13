@@ -808,19 +808,24 @@ idx_end = find(dsc.data(:,2) < 201, 1, 'last');
 
 
 heat_rate_meas = gradient(dsc.data(idx_start:idx_end,1), dsc.data(idx_start:idx_end,2));
+heat_rate_meas_dev = 100*(heat_rate_meas ./ dsc.Tinfo.Tstep - 1);
 
 fig = figure(50); clf; hold on
-plot(dsc.data(idx_start:idx_end,1), heat_rate_meas, 'Color', 'blue', ...
-    'Linewidth', 1., 'DisplayName', 'Heat rate at reference crucible');
+plot(dsc.data(idx_start:idx_end,1), heat_rate_meas, 'color', 'blue', ...
+    'DisplayName', 'Heat rate at reference crucible');
 plot([dsc.data(idx_start,1), dsc.data(end,1)], mean(heat_rate_meas)*ones(1,2), ...
-    'Color', 'red', 'Linewidth', 1.3, 'DisplayName', 'Mean value');
+    'Color', 'red', 'Linewidth', 1.3, 'Linestyle', '-', 'DisplayName', 'Mean value');
+yticks([2.48, 2.485, 2.49, 2.495, 2.5, 2.505, 2.51]);
+yticklabels({'2.48 (-0.8%)', '2.485 (-0.6%)', '2.49 (-0.4%)', '2.495 (-0.2%)', ...
+             '2.5 (0%)', '2.505 (+0.2%)', '2.51 (+0.4%)'})
+
 
 % plot(dsc.data(idx_start:idx_end,2), dsc.data(idx_start:idx_end,3))
 % plot(dsc.data(idx_start:idx_end,2), dsc.data(idx_start:idx_end,1))
 
 ylim([2.48 2.511])
 xlabel('T_{ref} [degC]');
-ylabel('Heat rate [K/min]')
+ylabel('Heat rate (deviation) [K/min]')
 legend('show', 'location', 'northwest')
 set(gca,'FontSize',12);
 
@@ -834,8 +839,8 @@ var(heat_rate_meas)
 
 %% Berechnung Konfidenzintervalle der geschaetzten Parameter
 
-fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-11_13:18:49_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/';
-% fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/';
+% fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-10_14:33:40_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/';
+fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/';
 
 
 file_list = dir(fit_dir);

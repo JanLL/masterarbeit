@@ -33,8 +33,8 @@ dsc_measurement = DSC204_readFile(dsc_filename);
 optimization = struct();
 optimization.solver = 'GN';
 
-optimization.c_p_param_type = 'fraser_suzuki';
-% optimization.c_p_param_type = 'gauss_linear_comb';
+% optimization.c_p_param_type = 'fraser_suzuki';
+optimization.c_p_param_type = 'gauss_linear_comb';
 
 %%%%%%%%%% Set optimization variables Fraser Suzuki %%%%%%%%%%%%%%%%%%%%%%
 if (strcmp(optimization.c_p_param_type, 'fraser_suzuki'))
@@ -70,7 +70,7 @@ elseif (strcmp(optimization.c_p_param_type, 'gauss_linear_comb'))
     c_p_type = 'Gaussians';
     
     fit_data = load(['/home/argo/masterarbeit/fits_data/', ...
-                     '2017-12-09_11:50:41_407_L1=40_L3=0.1_N1=300_N3=50/', ...
+                     '2017-12-09_11:50:41_407_L1=40_L3=0.1_N1=300_N3=50_3Gaussians/', ...
                      '2017-12-09_11:53:00_407_20Kmin_L1=40_L3=0,1/fit_data.mat']);
     optimization.start_values = fit_data.optimization.p_optim_end(1:32).';
     
@@ -84,7 +84,7 @@ elseif (strcmp(optimization.c_p_param_type, 'gauss_linear_comb'))
 %     optimization.start_values(2:3:15) = 1.;
 %     optimization.start_values(3:3:9) = 1.;
 %     optimization.start_values([12, 15]) = [0.95, 1.05];
-%     optimization.start_values(16:3:30) = 0.;
+%     optimization.start_values(10:3:30) = 0.;
 %     optimization.start_values(32) = 1.48;
         
 
@@ -96,7 +96,7 @@ elseif (strcmp(optimization.c_p_param_type, 'gauss_linear_comb'))
     optimization.p_optim_fixed = optimization.start_values(~optimization.p_optim_estimable);
     
     optimization.lb = -inf*ones(1,length(optimization.start_values));
-    %optimization.lb(2:3:30) = 0.02;
+    optimization.lb(2:3:30) = 0.02;
     
     optimization.ub = +inf*ones(1,length(optimization.start_values));
     %optimization.ub(2:3:30) = 200.;

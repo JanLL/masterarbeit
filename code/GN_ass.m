@@ -105,6 +105,7 @@ while (dx_norm > TOL_dx_norm && t_k > TOL_t_k && i <= max_iterations)
         ([lb(~A_tmp(1:n)).'; ub(~A_tmp(n+1:2*n)).'] - [x_k(~A_tmp(1:n)); x_k(~A_tmp(n+1:2*n))]));
     
     if (dx_cut_factor > 1)
+        fprintf('Cut off: %1.2f\n', dx_cut_factor);
         dx_tmp = dx / dx_cut_factor;
     else
         dx_tmp = dx;
@@ -217,6 +218,8 @@ while (dx_norm > TOL_dx_norm && t_k > TOL_t_k && i <= max_iterations)
         index = index(index <= length(x_k));
         fprintf(repmat('%1.3g\t',1,10), x_k(index));
         fprintf('\n');
+        
+        % TODO: Active Set!
     end
     
     i = i+1;
