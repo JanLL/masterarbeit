@@ -89,6 +89,33 @@ savefig(fig, path_plot_c_p);
 T_ref_dsc = dsc_data_struct.data(index_T_dsc(1):index_T_dsc(2),1);
 q_dsc = (dsc_data_struct.data(index_T_dsc(1):index_T_dsc(2),3) ...
       ./ dsc_data_struct.data(index_T_dsc(1):index_T_dsc(2),4)) * dsc_data_struct.mass;
+  
+switch heat_rate
+    case 20
+        T_ref_dsc = T_ref_dsc(1:1:end);
+        q_dsc = q_dsc(1:1:end);
+    case 10
+        T_ref_dsc = T_ref_dsc(1:2:end);
+        q_dsc = q_dsc(1:2:end);
+    case 5
+        T_ref_dsc = T_ref_dsc(1:4:end);
+        q_dsc = q_dsc(1:4:end);
+    case 2.5
+        T_ref_dsc = T_ref_dsc(1:8:end);
+        q_dsc = q_dsc(1:8:end);
+    case 1.25
+        T_ref_dsc = T_ref_dsc(1:8:end);
+        q_dsc = q_dsc(1:16:end);
+    case 0.6
+        T_ref_dsc = T_ref_dsc(1:8:end);
+        q_dsc = q_dsc(1:32:end);
+    case 0.3
+        T_ref_dsc = T_ref_dsc(1:8:end);
+        q_dsc = q_dsc(1:64:end);
+    otherwise
+        error('Heat rate invalid!')
+end  
+  
 q_sim = optim_output.residuum_end + q_dsc;
 
 clf;

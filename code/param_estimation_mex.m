@@ -1,5 +1,5 @@
 %%%%%%%%%% Get measurement data %%%%%%%%%%%%%%%%%%%
-dsc_filename = 'ExpDat_16-407-3_mitKorr_5Kmin_H.csv';
+dsc_filename = 'ExpDat_16-407-3_mitKorr_0,3Kmin_H.csv';
 dsc = DSC204_readFile(dsc_filename);
 
 m_pcm = dsc.mass;
@@ -95,7 +95,7 @@ spatial_gridsize = dchi(0:N-2)';
 
 
 % c_p parametrization with Fraser-Suzuki-Peak
-h  =  1.;
+h  =  1.5;
 r  =  1.;
 wr =  1.;
 sr =  1.;
@@ -138,13 +138,16 @@ end
 meas_data(:,2) = q_dsc;
 
 
+%meas_data = meas_data(1:10:end,:);
+%size(meas_data)
+
 
 % Set optimization variables
-c_p_param_type = 'gauss_linear_comb';
-p_optim_start = p_gauss_lin_comb;
+% c_p_param_type = 'gauss_linear_comb';
+% p_optim_start = p_gauss_lin_comb;
 
-% c_p_param_type = 'fraser_suzuki';
-% p_optim_start = p_fraser_suzuki;
+c_p_param_type = 'fraser_suzuki';
+p_optim_start = p_fraser_suzuki;
 
 % choose free(true)/fixed(false) parameters to optimize
 p_optim_estimable = true(length(p_optim_start), 1);
@@ -175,8 +178,8 @@ tic;
 [residuum, Jac] = compute_q_dqdp_mex_expl(p_optim_start(p_optim_estimable));
 toc
 
-save(sprintf('/home/argo/masterarbeit/dqdp_%s_fwdSensTol=inactive.mat', c_p_param_type), ...
-    'Jac');
+% save(sprintf('/home/argo/masterarbeit/dqdp_%s_fwdSensTol=inactive.mat', c_p_param_type), ...
+%     'Jac');
 return
 
 

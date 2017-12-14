@@ -143,7 +143,7 @@ GN_options.TOL_ineq = 1e-8;  % constraint active when -TOL < F_3i < TOL
 % Termination criteria
 GN_options.TOL_dx_norm = 1e-6;
 GN_options.TOL_t_k = 1e-7;
-GN_options.max_iterations = 5000;
+GN_options.max_iterations = 1000;
 GN_options.t_k_start = 0.3;
 
 options.GN_options = GN_options;
@@ -153,46 +153,46 @@ options.GN_options = GN_options;
 
 
 % Run optimization #1
-try
-    fit_data = GN_pcm_problem2(simulation, dsc_measurement, optimization, options);
-catch Err
-    fprintf(errLogFileID, '%s\tError %s occured with heat_rate=%2.4g.\n', ...
-        datetime('now'), Err.identifier, dsc_measurement.Tinfo.Tstep);
-    fprintf('%s\tError %s occured with heat_rate=%2.4g.\n', ...
-        datetime('now'), Err.identifier, dsc_measurement.Tinfo.Tstep);
-end
-
-
-% Optimization #2 settings
-optimization.start_values = fit_data.optimization.p_optim_end;
-dsc_filename = 'ExpDat_16-407-3_mitKorr_10Kmin_H.csv';
-dsc_measurement = DSC204_readFile(dsc_filename);
-
-% Run optimization #2
-try
-    fit_data = GN_pcm_problem2(simulation, dsc_measurement, optimization, options);
-catch Err
-    fprintf(errLogFileID, '%s\tError %s occured with heat_rate=%2.4g.\n', ...
-        datetime('now'), Err.identifier, dsc_measurement.Tinfo.Tstep);
-end
-
-
-% Optimization #3 settings
-optimization.start_values = fit_data.optimization.p_optim_end;
-dsc_filename = 'ExpDat_16-407-3_mitKorr_5Kmin_H.csv';
-dsc_measurement = DSC204_readFile(dsc_filename);
-
-% Run optimization #3
-try
-    fit_data = GN_pcm_problem2(simulation, dsc_measurement, optimization, options);
-catch Err
-    fprintf(errLogFileID, '%s\tError %s occured with heat_rate=%2.4g.\n', ...
-        datetime('now'), Err.identifier, dsc_measurement.Tinfo.Tstep);
-end
-
-
-% Optimization #4 settings
-optimization.start_values = fit_data.optimization.p_optim_end;
+% try
+%     fit_data = GN_pcm_problem2(simulation, dsc_measurement, optimization, options);
+% catch Err
+%     fprintf(errLogFileID, '%s\tError %s occured with heat_rate=%2.4g.\n', ...
+%         datetime('now'), Err.identifier, dsc_measurement.Tinfo.Tstep);
+%     fprintf('%s\tError %s occured with heat_rate=%2.4g.\n', ...
+%         datetime('now'), Err.identifier, dsc_measurement.Tinfo.Tstep);
+% end
+% 
+% 
+% % Optimization #2 settings
+% optimization.start_values = fit_data.optimization.p_optim_end;
+% dsc_filename = 'ExpDat_16-407-3_mitKorr_10Kmin_H.csv';
+% dsc_measurement = DSC204_readFile(dsc_filename);
+% 
+% % Run optimization #2
+% try
+%     fit_data = GN_pcm_problem2(simulation, dsc_measurement, optimization, options);
+% catch Err
+%     fprintf(errLogFileID, '%s\tError %s occured with heat_rate=%2.4g.\n', ...
+%         datetime('now'), Err.identifier, dsc_measurement.Tinfo.Tstep);
+% end
+% 
+% 
+% % Optimization #3 settings
+% optimization.start_values = fit_data.optimization.p_optim_end;
+% dsc_filename = 'ExpDat_16-407-3_mitKorr_5Kmin_H.csv';
+% dsc_measurement = DSC204_readFile(dsc_filename);
+% 
+% % Run optimization #3
+% try
+%     fit_data = GN_pcm_problem2(simulation, dsc_measurement, optimization, options);
+% catch Err
+%     fprintf(errLogFileID, '%s\tError %s occured with heat_rate=%2.4g.\n', ...
+%         datetime('now'), Err.identifier, dsc_measurement.Tinfo.Tstep);
+% end
+% 
+% 
+% % Optimization #4 settings
+% optimization.start_values = fit_data.optimization.p_optim_end;
 dsc_filename = 'ExpDat_16-407-3_mitKorr_2,5Kmin_H.csv';
 dsc_measurement = DSC204_readFile(dsc_filename);
 

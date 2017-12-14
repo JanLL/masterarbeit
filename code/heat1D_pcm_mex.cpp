@@ -564,12 +564,14 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 				);
 
 
-		const double relTol ( 1e-8 );
-		integrator->setStepsizeBounds    ( 0, 0   );
+		const double relTol ( 1e-9 );
+		integrator->setStepsizeBounds    ( 1e-15, 1e10 );  // bisher: ( 0, 0)
 		integrator->setRelativeTolerance ( relTol );
 		integrator->setInitialStepsize   ( 1e-06  );
-		integrator->setMaxIntSteps       ( 1000   );
+		integrator->setMaxIntSteps       ( 3000   );
 		integrator->setTimeHorizon       ( t_0, t_end   );
+		//integrator->getOptions()->setOption(IOptions::Option_DAESOL_CorrectorAccuracyFactor, 0.);
+		//integrator->getOptions()->setOption(IOptions::Option_DAESOL_CorrectorAbsoluteAccuracy, 1e-3);  // value guessed...
 
 		// Adjoint Sensivity generation
 		nAdjDir = 2;
@@ -647,18 +649,19 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 	    integrator->activateFeature( IIntegrator::Feature_Forward_Sensitivity_Error_Control );
 	    double fwdSensRelTolVec[np];
 	    for (svULong i=0; i < np; ++i) {
-	    	fwdSensRelTolVec[i] = 1e-7;
+	    	fwdSensRelTolVec[i] = 1e-6;
 	    }
 
 	    // if Fraser-Suzuki disable fwdSensRelTol for parameter "r"
 	    if (np == 7) {
 	    	fwdSensRelTolVec[1] = 1.;
+	    	//fwdSensRelTolVec[5] = 1e-2;
 	    }
-
 	    integrator->setForwardSensitivityRelativeTolerance(fwdSensRelTolVec);
 
+
 		integrator->setAdjointTaylorCoefficients ( 0, 0, 0, 0, 0 );
-		//std::cout << "Integrate now...\n";
+		std::cout << "Integrate now...\n";
 		clock_t t_begin = clock();
 		errorCode = integrator->evaluate();
 		clock_t t_end = clock();
