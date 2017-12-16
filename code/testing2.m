@@ -1176,7 +1176,9 @@ end
 
 %% Plot optimization progress
 
-fit_dir = '2017-12-10_14:33:40_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS';
+% fit_dir = '2017-12-15_00:21:25_407_L1=40_L3=0,1_N1=200_N3=50_GN_FS';
+fit_dir = '2017-12-15_13:42:19_407_L1=40_L3=0,1_N1=200_N3=50_GN_FS';
+
 fit_path = strcat('/home/argo/masterarbeit/fits_data/', fit_dir, '/');
 
 file_list = dir(fit_path);
@@ -1216,7 +1218,8 @@ for i=1:length(nameSubDirs)
     xlabel('#Iteration');
     legend(ax1, 'show', 'location', 'southwest');
     set(ax1,'FontSize',16, 'FontWeight', 'bold');
-        
+    grid(ax1, 'on');    
+    
     print(fig, [fit_path, nameSubDirs{i}, '/optimization_progress'], '-dpng', '-r300');
 
     
@@ -1267,7 +1270,7 @@ fprintf('\n');
 
 %% Plot 1st order optimality von lsqnonlin
 
-fit_dir = '2017-12-11_16:26:52_407_L1=40_L3=0.1_N1=300_N3=50';
+fit_dir = '2017-12-16_15:24:58_407_L1=40_L3=0.1_N1=300_N3=50';
 fit_path = strcat('/home/argo/masterarbeit/fits_data/', fit_dir, '/');
 
 file_list = dir(fit_path);
@@ -1375,4 +1378,129 @@ image(fwdSens_errTol_active, 'CDataMapping', 'scaled');
 colorbar;
 
 
+
+%% Compute Minimum von NOC1 Wert von Fit
+
+% fwdSensTol: 1e-5, Integrations-Toleranz: 1e-9
+% fit_dir = '2017-12-14_23:47:55_407_L1=40_L3=0,1_N1=200_N3=50_GN_FS';
+
+% fwdSensTol: 5e-5, Integrations-Toleranz: 1e-9
+% fit_dir = '2017-12-15_00:21:25_407_L1=40_L3=0,1_N1=200_N3=50_GN_FS';
+
+% fwdSensTol: 1e-6, Integrations-Toleranz: 1e-9
+% fit_dir = '2017-12-15_13:02:08_407_L1=40_L3=0,1_N1=200_N3=50_GN_FS';
+
+% fwdSensTol: 5e-7, Integrations-Toleranz: 1e-9
+fit_dir = '2017-12-15_13:42:19_407_L1=40_L3=0,1_N1=200_N3=50_GN_FS';
+
+
+
+fit_path = strcat('/home/argo/masterarbeit/fits_data/', fit_dir, '/');
+
+file_list = dir(fit_path);
+
+isub = [file_list(:).isdir]; %# returns logical vector
+nameSubDirs = {file_list(isub).name}';
+nameSubDirs(ismember(nameSubDirs,{'.','..'})) = [];
+
+fprintf('\n');
+for i=1:length(nameSubDirs)
+        
+    cla;
+    
+    filepath = strcat(fit_path, nameSubDirs{i}, '/fit_data.mat');
+    fit_data = load(filepath);
+    
+    
+    
+    [min_NOC1, argmin_NOC1] = min(fit_data.optimization.progress_NOC1);
+    dx = fit_data.optimization.progress_dx_norm(argmin_NOC1);
+    
+    fprintf('Heat rate: %1.3g\t  min(NOC1): %1.2g\t  @%1.2g\n', fit_data.simulation.heat_rate, min_NOC1, dx);
+%     fprintf('Heat rate: %1.3g\t  min(NOC1): %1.2g\n', fit_data.simulation.heat_rate, fit_data.optimization.progress_NOC1(end));
+    
+    
+end
+
+
+%% Symbolically obtain inflection points of FS
+
+syms T;
+p = sym('p', [1 4]);
+
+f = @(T, p) p(1)*exp(-p(2)*log(1+(T-p(4))*p(3))^2);
+
+% Gives inflection points
+% solve(diff(f(T,p), T, 2) == 0, T)
+
+T_domain = 90:0.01:150;
+fig = figure(1);
+ax1 = gca; cla; hold on;
+grid on;
+
+
+fs_params = ones(7,1);
+fs_params(3) = 1.2;
+
+c_p = c_p_fs(T_domain, fs_params);
+
+h_c_p = plot(ax1, T_domain, c_p, 'DisplayName', 'c_p(T)', 'Linewidth', 1.5);
+
+unscaled_params = reverse_scale_params(fs_params, 'fraser_suzuki');
+h = unscaled_params(1);
+r = unscaled_params(2);
+wr = unscaled_params(3);
+sr = unscaled_params(4);
+z = unscaled_params(5);
+m = unscaled_params(6);
+b = unscaled_params(7);
+
+c1 = log(r) / log(sr)^2;
+c2 = (sr^2 - 1) / (wr*sr);
+
+T_infl_1 = 1/c2 * (exp((sqrt(8*c1 + 1) - 1) / (4*c1)) + c2*z - 1);
+T_infl_2 = 1/c2 * (exp(-(sqrt(8*c1 + 1) + 1) / (4*c1)) + c2*z - 1);
+
+
+f1 = matlabFunction(diff(f(T,p), T, 1));
+
+m1 = f1(T_infl_1, h, c1, c2, z);
+m2 = f1(T_infl_2, h, c1, c2, z);
+
+b1 = c_p_fs(T_infl_1, fs_params) - m1*T_infl_1;
+b2 = c_p_fs(T_infl_2, fs_params) - m2*T_infl_2;
+
+%  Inflection tangents
+T_domain1 = T_infl_1-8.5:0.01:T_infl_1;
+h_infl_tangent = plot(ax1, T_domain1, m1*T_domain1 + b1, '--g', ...
+    'DisplayName', 'Inflection tangets', 'Linewidth', 1.5);
+
+T_domain2 = T_infl_2:0.01:T_infl_2+3.6;
+plot(ax1, T_domain2, m2*T_domain2 + b2, '--g', 'Linewidth', 1.5)
+
+
+% Tangent points
+h_infl = plot(ax1, T_infl_1, c_p_fs(T_infl_1, fs_params), 'x', ...
+    'color', 'red', 'DisplayName', 'Inflection points', 'Linewidth', 1.5);
+plot(ax1, T_infl_2, c_p_fs(T_infl_2, fs_params), 'x', 'color', 'red', ...
+    'Linewidth', 1.5);
+
+% Baseline
+h_base = plot(ax1, T_domain, m*T_domain + b, '--', 'color', 'm', ...
+    'DisplayName', 'Base line', 'Linewidth', 1.5);
+
+T_on =  (b - b1) / (m1 - m);
+T_off = (b - b2) / (m2 - m);
+
+
+
+xticks([T_on, T_infl_1, T_infl_2, T_off]);
+xticklabels({'T_{on}', 'T_{infl,1}', 'T_{infl,2}', 'T_{off}'});
+xlabel('T [degC]')
+ylabel('c_p [mJ/(mg*K)]')
+%legend('show', 'location', 'northwest');
+legend([h_c_p, h_infl, h_infl_tangent, h_base]);
+
+save_path = '/home/argo/masterarbeit/thesis/images/T_on_T_off_illustration';
+print(fig, save_path, '-dpng', '-r200');
 

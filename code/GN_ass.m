@@ -23,6 +23,8 @@ tic;  % start optimization duration time measurement
 % Abbreviations
 TOL_ineq = options.TOL_ineq;
 TOL_dx_norm = options.TOL_dx_norm;
+TOL_NOC1 = options.TOL_NOC1;
+
 TOL_t_k = options.TOL_t_k;
 max_iterations = options.max_iterations;
 
@@ -59,11 +61,12 @@ A_old = A;
 
 x_k = x_start;
 dx_norm = inf;
+NOC1 = inf;
 
 t_k = options.t_k_start;  % initial stepsize
 
 i = 1;
-while (dx_norm > TOL_dx_norm && t_k > TOL_t_k && i <= max_iterations)
+while (NOC1 > TOL_NOC1 && dx_norm > TOL_dx_norm && t_k > TOL_t_k && i <= max_iterations)
         
     t_k = 1.;
     
@@ -94,9 +97,9 @@ while (dx_norm > TOL_dx_norm && t_k > TOL_t_k && i <= max_iterations)
     d = 0.8;  % parameter of t_k decrease rate
     
     % some pre-computations
-    F1_norm_k = F1.' * F1;
+    F1_norm_k = norm(F1);
     J1J1 = J1.' * J1;
-    dx_norm = dx.' * dx;
+    dxdx = dx.' * dx;
     
         
     % cut dx such that lower/upper bounds are not violated
@@ -116,12 +119,12 @@ while (dx_norm > TOL_dx_norm && t_k > TOL_t_k && i <= max_iterations)
     % Line Search with try-block to check for integration errors
     try
         F1_kp1 = F1_func(x_kp1);
-        F1_norm_kp1 = F1_kp1.' * F1_kp1;
+        F1_norm_kp1 = norm(F1_kp1);
     catch
         F1_norm_kp1 = inf;
     end
         
-    if F1_norm_kp1 < F1_norm_k - c*t_k * (dx_norm + dx.' * J1J1 * dx)
+    if F1_norm_kp1 < F1_norm_k - c*t_k * (dxdx + dx.' * J1J1 * dx)
         t_k = min(t_k / d, 1.);
     else
         while (F1_norm_kp1 >= F1_norm_k - c*t_k * (dx.'*dx) && t_k > TOL_t_k)
@@ -140,7 +143,7 @@ while (dx_norm > TOL_dx_norm && t_k > TOL_t_k && i <= max_iterations)
                     break
                 end
             end    
-            F1_norm_kp1 = F1_kp1.' * F1_kp1;        
+            F1_norm_kp1 = norm(F1_kp1);        
             t_k = t_k * d;    
             
             if (t_k < TOL_t_k)
@@ -170,10 +173,15 @@ while (dx_norm > TOL_dx_norm && t_k > TOL_t_k && i <= max_iterations)
     J_active = [J2; J3(A,:)];
 
     % Solve equality constraint LSQ subproblem
-    [dx, Q1, R_bar] = GN_step_constr(F1, J1, F_active, J_active, options);    
-    lambda = R_bar \ (Q1.' * (J1.' * J1) * dx + Q1.' * J1.' * F1);
+    if (NOC1_vec(end) > 0.1 || true)
+        [dx, Q1, R_bar] = GN_step_constr(F1, J1, F_active, J_active, options);    
+        lambda = R_bar \ (Q1.' * (J1.' * J1) * dx + Q1.' * J1.' * F1);
+    else
+        % Gradient direction for testing (currently set inactive!)
+        dx = - 2 * J1.' * F1;
+        lambda = [];
+    end
     
-
     % Save one constraint from active set with negative lambda to remove
     % later
     lambda_aux = inf*(ones(2*n,1));

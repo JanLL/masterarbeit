@@ -23,7 +23,7 @@ hold on;
 %     hold(ax2{i});
 % end
    
-T_domain = 30:0.001:170;
+T_domain = 30:0.01:170;
 enthalpies = zeros(1,7);
 T_max_vec = [];
 

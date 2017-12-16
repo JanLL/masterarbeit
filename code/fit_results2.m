@@ -66,6 +66,9 @@
 % test with n_tr = 0.99 instead 0.999
 [fig, enthalpies] = get_fit_results('2017-12-11_18:35:22_407_L1=40_L3=0.1_N1=300_N3=50');  % FS
 
+% fwdSensTol decreased
+[fig, enthalpies] = get_fit_results('2017-12-14_23:47:55_407_L1=40_L3=0,1_N1=200_N3=50_GN_FS');  % FS
+
 
 
 

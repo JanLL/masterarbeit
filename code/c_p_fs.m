@@ -33,7 +33,7 @@ nonzeroIDX = ( T < z - (wr.*sr)./(sr^2-1) );
 Tnonzero = T(nonzeroIDX);
 
 % first output argument: nominal values
-c_p = 0.01*m*T + b;
+c_p = m*T + b;
 c_p(nonzeroIDX) = c_p(nonzeroIDX) + h*exp(-log(r)/log(sr)^2 * (log(1+(Tnonzero-z)*(sr^2-1)/(wr*sr))).^2);
 
 

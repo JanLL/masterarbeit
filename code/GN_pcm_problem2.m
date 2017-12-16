@@ -72,16 +72,16 @@ switch heat_rate
         T_ref_dsc = T_ref_dsc(1:4:end);
         q_dsc = q_dsc(1:4:end);
     case 2.5
+        T_ref_dsc = T_ref_dsc(1:8:end);
+        q_dsc = q_dsc(1:8:end);
+    case 1.25
         T_ref_dsc = T_ref_dsc(1:16:end);
         q_dsc = q_dsc(1:16:end);
-    case 1.25
-        T_ref_dsc = T_ref_dsc(1:8:end);
-        q_dsc = q_dsc(1:16:end);
     case 0.6
-        T_ref_dsc = T_ref_dsc(1:8:end);
+        T_ref_dsc = T_ref_dsc(1:32:end);
         q_dsc = q_dsc(1:32:end);
     case 0.3
-        T_ref_dsc = T_ref_dsc(1:8:end);
+        T_ref_dsc = T_ref_dsc(1:64:end);
         q_dsc = q_dsc(1:64:end);
     otherwise
         error('Heat rate invalid!')

@@ -31,9 +31,14 @@ if strcmp(options.decomposition,'SVD')
     singular_values = diag(S);
     
     % rank r computation like in matlab function rank()
-    TOL = max(size(J1))*eps(max(singular_values));
+%     TOL = max(size(J1))*eps(max(singular_values));
+    
+    % alternative rank computation
+%     TOL = sqrt(size(J1,1) * size(J1,2)) * sqrt(eps(max(singular_values)));
+    TOL = 1e-3; % hard gecoded, funktioniert nur bei auf 1 skalierten Params.
+    
     r = sum(singular_values > TOL);  
-        
+            
     U1 = U(:,1:n);
     c = U1' * F1;
     

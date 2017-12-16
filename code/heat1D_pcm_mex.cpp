@@ -287,6 +287,7 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 		}
 
 
+	// Print temperature at first PCM segment.
 	//std::cout << x[N1] << std::endl;
 
 	// PCM
@@ -522,6 +523,9 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 
 		intOptions->setOption( IOptions::Option_DAESOL_INDMode, std::string("Iterative").c_str() );
 
+		//svULong BDF_order = 4;
+		//intOptions->setOption( IOptions::Option_DAESOL_MaximumBDFOrder, BDF_order );
+
 
 		// create and configure dimensions
 		TIntegratorDimensions dims;
@@ -565,19 +569,19 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 
 
 		const double relTol ( 1e-9 );
-		integrator->setStepsizeBounds    ( 1e-15, 1e10 );  // bisher: ( 0, 0)
+		integrator->setStepsizeBounds    ( 0, 0 );  // bisher: ( 0, 0)
 		integrator->setRelativeTolerance ( relTol );
 		integrator->setInitialStepsize   ( 1e-06  );
 		integrator->setMaxIntSteps       ( 3000   );
 		integrator->setTimeHorizon       ( t_0, t_end   );
-		//integrator->getOptions()->setOption(IOptions::Option_DAESOL_CorrectorAccuracyFactor, 0.);
-		//integrator->getOptions()->setOption(IOptions::Option_DAESOL_CorrectorAbsoluteAccuracy, 1e-3);  // value guessed...
+		//integrator->getOptions()->setOption(IOptions::Option_DAESOL_CorrectorAccuracyFactor, 1e-8);
+		//integrator->getOptions()->setOption(IOptions::Option_DAESOL_CorrectorAbsoluteAccuracy, 1e-13);  // value guessed...
 
 		// Adjoint Sensivity generation
-		nAdjDir = 2;
+		/*nAdjDir = 2;
 	  	nAdjDirTotal = solGrid.size() * nAdjDir;
 		adjSensDir = new double [ nAdjDirTotal * nxd ]; // in direction N1+1 and N1+2
-	  	memset ( adjSensDir, 0, nAdjDirTotal * nxd * sizeof ( double ) );
+	  	memset ( adjSensDir, 0, nAdjDirTotal * nxd * sizeof ( double ) );*/
 	 
 	  	// Forward Sensivity generation
 		nFwdDir = np;
@@ -652,16 +656,22 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 	    	fwdSensRelTolVec[i] = 1e-6;
 	    }
 
-	    // if Fraser-Suzuki disable fwdSensRelTol for parameter "r"
+	    // Set fwdSensRelTol down for parameters we do not estimate anyway.
 	    if (np == 7) {
-	    	fwdSensRelTolVec[1] = 1.;
+	    	// if Fraser-Suzuki disable fwdSensRelTol for parameter "r"
+	    	fwdSensRelTolVec[1] = 1e-4;
 	    	//fwdSensRelTolVec[5] = 1e-2;
+	    } else if (np == 32) {
+	    	// if Linear Combination of Gaussians, deactivate 3 or 5 Gaussians
+	    	for (svULong i=9; i < 30; ++i)
+	    		fwdSensRelTolVec[i] = 1e-4;
 	    }
+
 	    integrator->setForwardSensitivityRelativeTolerance(fwdSensRelTolVec);
 
 
 		integrator->setAdjointTaylorCoefficients ( 0, 0, 0, 0, 0 );
-		std::cout << "Integrate now...\n";
+		//std::cout << "Integrate now...\n";
 		clock_t t_begin = clock();
 		errorCode = integrator->evaluate();
 		clock_t t_end = clock();
