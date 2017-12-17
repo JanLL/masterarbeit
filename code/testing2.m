@@ -1057,8 +1057,8 @@ end
 %  c_p erstellen fuer Latex
 
 
-fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/';
-% fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/';
+% fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/';
+fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/';
 
 
 file_list = dir(fit_dir);
@@ -1196,7 +1196,9 @@ ax1 = gca; set(ax1, 'YScale', 'log'); hold on
 
 for i=1:length(nameSubDirs)
         
-    cla;
+    clf;
+    ax1 = gca; set(ax1, 'YScale', 'log'); hold on
+
     disp(nameSubDirs{i})
     
     filepath = strcat(fit_path, nameSubDirs{i}, '/fit_data.mat');
@@ -1216,8 +1218,15 @@ for i=1:length(nameSubDirs)
     
     xlim(ax1, [0, num_iterations]);
     xlabel('#Iteration');
-    legend(ax1, 'show', 'location', 'southwest');
-    set(ax1,'FontSize',16, 'FontWeight', 'bold');
+    
+    
+    if (i < 7)
+        legend(ax1, 'show', 'location', 'southwest', 'Orientation', 'vertical');
+    else
+        legend(ax1, 'show', 'location', 'northeast');
+    end
+    
+    set(ax1,'FontSize',20, 'FontWeight', 'bold');
     grid(ax1, 'on');    
     
     print(fig, [fit_path, nameSubDirs{i}, '/optimization_progress'], '-dpng', '-r300');
@@ -1226,10 +1235,10 @@ for i=1:length(nameSubDirs)
 end
 
 
-%% Compute Melting enthalpy from fit_data
+%% Compute Melting enthalpy Delta H, T_on and T_off from fit_data
 
-fit_dir = '2017-12-10_14:33:40_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS';
-% fit_dir = '2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians';
+% fit_dir = '2017-12-10_14:33:40_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS';
+fit_dir = '2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians';
 
 fit_path = strcat('/home/argo/masterarbeit/fits_data/', fit_dir, '/');
 
@@ -1246,20 +1255,26 @@ for i=1:length(nameSubDirs)
     
     p_optim_end = fit_data.optimization.p_optim_end;
     
-    p_optim_end(end-1:end) = 0.;  
+    
     % turn off linear and constant part, s.t. we just have the phase transition part
+    p_optim_end(end-1:end) = 0.;  
     
     switch fit_data.optimization.c_p_param_type
         case 'gauss_linear_comb'
-            c_p_fct_handle = @(T) c_p_gauss_linear_comb(T, p_optim_end);
+            c_p_fct_handle = @(T) max(0, c_p_gauss_linear_comb(T, p_optim_end));
+            dH = integral(c_p_fct_handle, 30,200);
+            
+            fprintf('Heat rate: %1.2g\t dH = %1.3f\n',fit_data.simulation.heat_rate, dH);
         case 'fraser_suzuki'
             c_p_fct_handle = @(T) c_p_fs(T, p_optim_end);
+            dH = integral(c_p_fct_handle, 30,200);
+            [T_on, T_off] = compute_T_on_off(p_optim_end, 'fraser_suzuki');
+            p_unscaled = reverse_scale_params(p_optim_end, 'fraser_suzuki');
+            T_max = p_unscaled(5);
+            
+            fprintf('Heat rate: %1.2g\t dH = %1.2f\t  T_max = %1.3f\tT_on = %1.3f\t  T_off = %1.3f\n', ...
+                fit_data.simulation.heat_rate, dH, T_max, T_on, T_off);
     end
-    
-    dH = integral(c_p_fct_handle, 30,200);
-    
-    fprintf('Heat rate: %1.2g\t dH = %1.2f\n',fit_data.simulation.heat_rate, dH);
-    
     
     
 end
@@ -1435,6 +1450,8 @@ f = @(T, p) p(1)*exp(-p(2)*log(1+(T-p(4))*p(3))^2);
 
 T_domain = 90:0.01:150;
 fig = figure(1);
+set(fig, 'Units', 'normalized', 'Position', [0., 0., 0.8, 1.]); 
+
 ax1 = gca; cla; hold on;
 grid on;
 
@@ -1464,6 +1481,10 @@ T_infl_2 = 1/c2 * (exp(-(sqrt(8*c1 + 1) + 1) / (4*c1)) + c2*z - 1);
 
 f1 = matlabFunction(diff(f(T,p), T, 1));
 
+% Check if param "z" is extremum
+% solve(f1(T,p(1),p(2),p(3),p(4)) == 0,T)
+
+
 m1 = f1(T_infl_1, h, c1, c2, z);
 m2 = f1(T_infl_2, h, c1, c2, z);
 
@@ -1489,9 +1510,8 @@ plot(ax1, T_infl_2, c_p_fs(T_infl_2, fs_params), 'x', 'color', 'red', ...
 h_base = plot(ax1, T_domain, m*T_domain + b, '--', 'color', 'm', ...
     'DisplayName', 'Base line', 'Linewidth', 1.5);
 
-T_on =  (b - b1) / (m1 - m);
-T_off = (b - b2) / (m2 - m);
 
+[T_on, T_off] = compute_T_on_off(fs_params, 'fraser_suzuki')
 
 
 xticks([T_on, T_infl_1, T_infl_2, T_off]);
@@ -1499,8 +1519,11 @@ xticklabels({'T_{on}', 'T_{infl,1}', 'T_{infl,2}', 'T_{off}'});
 xlabel('T [degC]')
 ylabel('c_p [mJ/(mg*K)]')
 %legend('show', 'location', 'northwest');
-legend([h_c_p, h_infl, h_infl_tangent, h_base]);
+legend([h_c_p, h_infl, h_infl_tangent, h_base], 'location', 'northwest');
+set(ax1, 'FontSize',20)
+
 
 save_path = '/home/argo/masterarbeit/thesis/images/T_on_T_off_illustration';
 print(fig, save_path, '-dpng', '-r200');
+
 
