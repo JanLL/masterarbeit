@@ -1527,3 +1527,162 @@ save_path = '/home/argo/masterarbeit/thesis/images/T_on_T_off_illustration';
 print(fig, save_path, '-dpng', '-r200');
 
 
+
+%% Berechnung T_on, T_off von mit Formel berechnetem c_p
+
+fig = figure(1); clf
+ax1 = gca; hold on;
+
+% Left base line
+c_p_meas_data = calc_cp('ExpDat_16-407-3_mitKorr_0,6Kmin_H.csv');
+c_p_meas = c_p_meas_data(:,2);
+T = c_p_meas_data(:,1);
+
+plot(ax1, T, c_p_meas, 'DisplayName', 'unfiltered')
+
+idx1 = find(T > 136.1, 1, 'first');
+idx2 = find(T < 153.4, 1, 'last');
+
+T_area = T(idx1:idx2);
+c_p_meas_area = c_p_meas(idx1:idx2);
+
+poly_coeffs = polyfit(T_area,c_p_meas_area,1);
+m_base2 = poly_coeffs(1);
+b_base2 = poly_coeffs(2);
+
+% plot(T_area, b + m*T_area, '--')
+
+% Right base line
+c_p_meas_data = calc_cp('ExpDat_16-407-3_mitKorr_20Kmin_H.csv');
+c_p_meas = c_p_meas_data(:,2);
+T = c_p_meas_data(:,1);
+
+idx1 = find(T > 35.4, 1, 'first');
+idx2 = find(T < 73.6, 1, 'last');
+
+T_area = T(idx1:idx2);
+c_p_meas_area = c_p_meas(idx1:idx2);
+
+poly_coeffs = polyfit(T_area,c_p_meas_area,1);
+m_base1 = poly_coeffs(1);
+b_base1 = poly_coeffs(2);
+
+
+% Loop over all heat rates, get inflection tangents and compute
+% intersection with base lines.
+
+dsc_list = {'ExpDat_16-407-3_mitKorr_20Kmin_H.csv', ...
+            'ExpDat_16-407-3_mitKorr_10Kmin_H.csv', ...
+            'ExpDat_16-407-3_mitKorr_5Kmin_H.csv', ...
+            'ExpDat_16-407-3_mitKorr_2,5Kmin_H.csv', ...
+            'ExpDat_16-407-3_mitKorr_1,25Kmin_H.csv', ...
+            'ExpDat_16-407-3_mitKorr_0,6Kmin_H.csv', ...
+            'ExpDat_16-407-3_mitKorr_0,3Kmin_H.csv'};
+        
+T_infl_areas = ...
+    [130.9, 134.9, 148.2, 150.5; ...
+     129.6, 132.1, 142.9, 144.4; ...
+     128.5, 131.3, 137.9, 138.9; ...
+     126.9, 130.5, 134.8, 136.0; ...
+     128.7, 131.1, 133.1, 134.4; ...
+     128.2, 131.2, 132.4, 133.6; ...
+     128.4, 130.9, 132.2, 133.2];
+
+ 
+for i=1:length(dsc_list)
+    
+    dsc = DSC204_readFile(dsc_list{i});
+
+    c_p_meas_data = calc_cp(dsc);
+    c_p_meas = c_p_meas_data(:,2);
+    T = c_p_meas_data(:,1);
+
+    % Compute T_on
+    T_lin1 = T_infl_areas(i,1);
+    T_lin2 = T_infl_areas(i,2);
+    
+    idx1 = find(T > T_lin1, 1, 'first');
+    idx2 = find(T < T_lin2, 1, 'last');
+    
+    T_area = T(idx1:idx2);
+    c_p_meas_area = c_p_meas(idx1:idx2);
+    
+%     size(T_area)
+%     size(c_p_meas_area)
+
+    poly_coeffs = polyfit(T_area,c_p_meas_area,1);
+    m1 = poly_coeffs(1);
+    b1 = poly_coeffs(2);
+
+    T_on = (b_base1 - b1) / (m1 - m_base1);
+    
+    % Compute T_off
+    T_lin1 = T_infl_areas(i,3);
+    T_lin2 = T_infl_areas(i,4);
+    
+    idx1 = find(T > T_lin1, 1, 'first');
+    idx2 = find(T < T_lin2, 1, 'last');
+    
+    T_area = T(idx1:idx2);
+    c_p_meas_area = c_p_meas(idx1:idx2);
+
+    poly_coeffs = polyfit(T_area,c_p_meas_area,1);
+    m2 = poly_coeffs(1);
+    b2 = poly_coeffs(2);
+
+    T_off = (b_base2 - b2) / (m2 - m_base2);
+    
+    heat_rate = dsc.Tinfo.Tstep;
+    fprintf('Heat Rate: %1.3f\t T_on: %1.2f\t  T_off: %1.3f\n', ...
+        heat_rate, T_on, T_off);
+    
+end
+
+
+
+return
+
+
+
+
+return
+
+%  Filter signal (does not work so well...)
+% windowSize = 1;
+% b = (1/windowSize)*ones(1,windowSize);
+% a = 1;
+% 
+% c_p_filtered1 = filter(b, a, c_p_meas);
+% c_p_filtered2 = filter(b, a, c_p_filtered1);
+% 
+% plot(ax1, T, c_p_filtered2, '--', 'DisplayName', 'filtered');
+% 
+% dc_p = gradient(c_p_meas, T);
+% ddc_p = gradient(dc_p, T);
+% plot(ax1, T, ddc_p);
+
+
+% Fit to cubic spline
+
+T_domain = 110:0.001:160;
+dT = 3;
+s = spline(T(1:dT:end), c_p_meas(1:dT:end));
+s1 = fnder(s, 1);
+s2 = fnder(s, 2);
+
+c_p_spline = ppval(s, T_domain);
+c_p_spline1 = ppval(s1, T_domain);
+c_p_spline2 = ppval(s2, T_domain);
+
+% plot(ax1, T_domain, c_p_spline, '--')
+% plot(ax1, T_domain, c_p_spline1, '--')
+plot(ax1, T_domain, c_p_spline2, '--')
+
+
+legend('show', 'location', 'northwest')
+grid
+
+
+
+
+
