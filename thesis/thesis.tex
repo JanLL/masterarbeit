@@ -1213,6 +1213,8 @@ We treat this problem with an active set strategy illustrated below, c.f. \cite{
 
 
 \subsubsection{Statistical analysis of estimated parameters}
+\label{sec:statistical_analysis_estim_params}
+
 In order to quantify how trustworthy the obtained estimated parameters are, a statistical analysis is applied. The results shown in the following part can be found including proofs in \cite{diss_bock}. \\
 
 Since the measurement data $\eta$ is a random variable because of the statistical measurement error, the parameters $x$ are random variables as well. The corresponding covariance matrix of the estimate $x^*$ is defined as
@@ -1769,6 +1771,8 @@ The x-coordinates of the control points were fixed on a predefined grid with $P_
 As optimization variables we used the corresponding y-coordinates $P_i^y$.
 
 \subsubsection{Fraser-Suzuki Peak}
+\label{sec:parametrization_FS}
+
 A parametrization with fewer degrees of freedom and used in general for chromatography and spectroscopy distributions is the Fraser-Suzuki peak \cite{fraser_suzuki_1} \cite{fraser_suzuki_many_fcts}
 
 \begin{align}
@@ -1792,6 +1796,8 @@ where $h$, $r$, $sr$, $wr$ and $z$ are the parameters of Fraser-Suzuki. Furtherm
 
 
 \subsubsection{Linear combination of Gaussian functions}
+\label{sec:parametrization_Gausse}
+
 As we switched for the derivative computation with respect to the optimization variables from finite differences to IND, implementation problems with NURBS occurred. 
 The case structure of the basis polynomial \eqref{eq:NURBS_basis_polynomial} conducts to switch the RHS of the differential equation. This is only supported by the $condassign(a,b,c,d)$ function which assigns $a=c$ if $b>0$ and $a=d$ else. Additionally to $N_{i,0}$ the denominators need this $condassign$ command in order to check for a division by zero. 
 Furthermore the piecewise interpolation of the resulting curve $C(u)$ could be realized as well with the $condassign$ command but in total this leads to a lot of unnecessary numerical operations and makes the program quite complex. \\
@@ -1799,7 +1805,7 @@ An alternative simple parametrization which is similar flexible than NURBS is a 
 
 
 \begin{equation}
-	c_p(T) = \sum_{i=1}^{n_{\text{Gauss}}} A_i \exp\left(- \frac{(T - T_{\text{offset}_i})^2}{\sigma_i^2}\right) + m \cdot T + b
+	c_p(T) = \sum_{i=1}^{n_{\text{Gauss}}} A_i \exp\left(- \frac{(T - T_{\text{offset}_i})^2}{var_i}\right) + m \cdot T + b
 	\label{eq:parametrization_linear_comb_Gauss}
 \end{equation} \\
 
@@ -1968,6 +1974,7 @@ This result forms the basis of reproducing the heat flux measurement values in t
 
 
 \subsection{Parameter estimation using finite differences and NURBS parametrization}
+\label{sec:param_estim_NURBS}
 
 For the first attempt of estimating $c_p(T)$  we used the NURBS parametrization (see Sec. \ref{sec:nurbs}). In total we used 33 control points where the y-coordinates ($\hat{=} c_p$) are optimization variables and the the x-coordinate ($\hat{=}$ temperature) were fixed to 
 
@@ -2088,41 +2095,9 @@ Summarized a total number of discretization points $N=300$ is sufficient while t
 
 
 \subsection{Parameter estimation using parametrization of linear combination of Gaussians}
-
-%\begin{figure}[H]
-%		\begin{subfigure}{0.32\textwidth}
-%			\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_22:31:48_407_20Kmin_L1=40_L3=0,1/combined_img.png}
-%			\caption{$\beta = 20 \frac{K}{min}$}
-%		\end{subfigure}
-%		\begin{subfigure}{0.32\textwidth}
-%			\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_22:39:19_407_10Kmin_L1=40_L3=0,1/combined_img.png}
-%			\caption{$\beta = 10 \frac{K}{min}$}
-%		\end{subfigure}
-%		\begin{subfigure}{0.32\textwidth}
-%			\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_22:53:51_407_5Kmin_L1=40_L3=0,1/combined_img.png}
-%			\caption{$\beta = 5 \frac{K}{min}$}
-%		\end{subfigure}
-%		\begin{subfigure}{0.32\textwidth}
-%			\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_22:59:44_407_2,5Kmin_L1=40_L3=0,1/combined_img.png}
-%			\caption{$\beta = 2.5 \frac{K}{min}$}
-%		\end{subfigure}
-%		\begin{subfigure}{0.32\textwidth}
-%			\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_23:42:17_407_1,25Kmin_L1=40_L3=0,1/combined_img.png}
-%			\caption{$\beta = 1.25 \frac{K}{min}$}
-%		\end{subfigure}
-%		\begin{subfigure}{0.32\textwidth}
-%			\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_23:47:19_407_0,6Kmin_L1=40_L3=0,1/combined_img.png}
-%			\caption{$\beta = 0.6 \frac{K}{min}$}
-%		\end{subfigure}
-%		\centering
-%		\begin{subfigure}{0.32\textwidth}
-%			\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_23:53:54_407_0,3Kmin_L1=40_L3=0,1/combined_img.png}
-%			\caption{$\beta = 0.3 \frac{K}{min}$}
-%		\end{subfigure}
-%		\caption{}
-%		\label{fig:5Gaussians_c_p_heat_flux_combo}
-%\end{figure}
-
+So far finite differences were used to compute the optimization jacobian \eqref{eq:optimization_jacobian}. Because of the problems described in section \ref{sec:param_estim_NURBS} from now on internal numerical differentiation is used instead which is done with the software package SolvIND. \\
+In this section the parameter estimation is performed using the parametrization of 5 Gaussians, linear and constant part (see section \ref{sec:parametrization_Gausse}). Five Gaussians were used since this is the minimum number such that the residuum almost vanishes as one can see in the upcoming figures. The optimization was performed again with the matlab routine $lsqnonlin$. \\
+In Fig. \ref{fig:optim_c_p_heat_flux_5Gaussians_1} and \ref{fig:optim_c_p_heat_flux_5Gaussians_2} the results are shown where on the left there is for all heat rates always the obtained function for the specific heat capacity $c_p(T)$. On the right measurement, simulation and resulting residuum of the heat flux is plotted and as one can see residuum is nearly zero for all heat rates. Examining the received specific heat capacities one notice first that for a heat rate of $10 \frac{K}{min}$ there are two peaks. The reason is a bending in the measured heat flux at approximately $130^{\circ} C$ probably from an error in measurement. Next things to observe which makes $c_p(T)$ differ from our expectations can be seen very well in the result for heat rate $5 \frac{K}{min}$. Firstly the decrease of the peak's maximum is not linear but has two different areas. Secondly after the peak $c_p(T)$ has values lower than the base line for a small temperature range. These are likely unphysical optimization artifacts due to overfitting to a naturally simplified, i.e incomplete model. Although positive is that the $c_p(T)$ curves do not differ exorbitantly from each other. A more detailed comparison between them follows at the end of this section.
 
 
 
@@ -2170,13 +2145,13 @@ Summarized a total number of discretization points $N=300$ is sufficient while t
 	\label{fig:optim_c_p_heat_flux_5Gaussians_2}
 \end{figure}
 
-
+In order to quantify the obtained parameters quality a statistical analysis (see section \ref{sec:statistical_analysis_estim_params}) is applied. The results are shown in table \ref{tab:parameter_table_5Gaussians} where a probability of error $\alpha=5\%$ has been used.
 
 
 \begin{table}[H]
 	\centering
 	\begin{tabular}{| c | c | c | c | c | c | c | c | c |} \hline
-		Heat rate $\beta$ & Gauss1 & Gauss2 & Gauss3 & Gauss4 & Gauss5 & Linear & Const & $||\nabla \mathcal{L}||_2$ \\ 
+		Heat rate $\beta$ & Gauss 1 & Gauss 2 & Gauss 3 & Gauss 4 & Gauss 5 & Linear & Constant & $||\nabla \mathcal{L}||_2$ \\ 
 		$[K/min]$ & & & & & & & & \\ \hline
 		$20$ & & & & & & & & \\
 		$10$ & & & & & & & & \\
@@ -2186,9 +2161,19 @@ Summarized a total number of discretization points $N=300$ is sufficient while t
 		$0.6$ & & & & & & & & \\
 		$0.3$ & & & & & & & & \\ \hline
 	\end{tabular}
-	\caption{}
+	\caption{Parameters and error from statistical analysis using error of probability $\alpha=0.05$. One Gaussian consist of three parameters (c.f. section \ref{sec:parametrization_Gausse}): top: amplitude $A_i$, middle: variance $var_i$, bottom: offset in temperature $T_{offset_i}$}
 	\label{tab:parameter_table_5Gaussians}
 \end{table}
+
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/c_p_all.png}
+	\caption{Zoomed in view of the specific heat capacities $c_p(T)$ obtained by optimization for all heat rates.}
+	\label{fig:5Gaussians_all_c_p}
+\end{figure}
+
 
 \begin{table}[H]
 	\centering
@@ -2196,63 +2181,20 @@ Summarized a total number of discretization points $N=300$ is sufficient while t
 		Heat rate $\beta$ & 20 & 10 & 5 & 2.5 & 1.25 & 0.6 & 0.3 \\
 		$[K/min]$ & & & & & & & \\ \hline
 		$T_{max} \ [^{\circ}C]$ & $126.3$ & ---$^*$ & $126.9$ & $127.9$ & $128.9$ & $129.8$ & $130.5$ \\[0.7ex]
-		$\Delta H \ [\frac{mJ}{mg}]$ & $174.3$ & $198.7$ & $214.0$ & $213.3$ & $209.7$ & $196.0$ & $191.2$ \\ \hline
+		$\Delta H^{**} \ [\frac{mJ}{mg}]$ & $174.3$ & $198.7$ & $214.0$ & $213.3$ & $209.7$ & $196.0$ & $191.2$ \\ \hline
 	\end{tabular}
-	\caption{\todo{$^*$ erklaeren, erklaeren das hier der letzte negative Peak (entspricht neg. Schmelzenthalpie) ignoriert wurde indem max(0, ...) genommen wurde } }
+	\caption{For all heat rates: Temperature $T_{max}$ where $c_p(T)$ has its maximum and the melting enthalpy $\Delta H$, i.e. the integral of $c_p(T)$ minus the base line over the temperature. Decreases below the baseline after the peak were ignored here. \\
+	$^*$ $T_{max}$ for $\beta=10\frac{K}{min}$ was omitted as there are two maxima.}
 	\label{fig:eval_table_Tmax_deltaH_5Gaussians}
 \end{table}
 
 \todo{Auswertung Mittelwert + Standardabweichung der Peakposition}
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/c_p_all.png}
-	\caption{}
-	\label{fig:5Gaussians_all_c_p}
-\end{figure}
-
 
 \todo{Optimierungsdauer}
 
 
 \subsection{Parameter estimation using Fraser-Suzuki parametrization}
 \label{sec:param_estimation_fs}
-
-
-
-%\begin{figure}[H]
-%	\begin{subfigure}{0.32\textwidth}
-%		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:37:41_407_20Kmin_L1=40_L3=0,1/combined_img.png}
-%		\caption{$\beta = 20 \frac{K}{min}$}
-%	\end{subfigure}
-%	\begin{subfigure}{0.32\textwidth}
-%		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:40:03_407_10Kmin_L1=40_L3=0,1/combined_img.png}
-%		\caption{$\beta = 10 \frac{K}{min}$}
-%	\end{subfigure}
-%	\begin{subfigure}{0.32\textwidth}
-%		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:43:30_407_5Kmin_L1=40_L3=0,1/combined_img.png}
-%		\caption{$\beta = 5 \frac{K}{min}$}
-%	\end{subfigure}
-%	\begin{subfigure}{0.32\textwidth}
-%		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:45:47_407_2,5Kmin_L1=40_L3=0,1/combined_img.png}
-%		\caption{$\beta = 2.5 \frac{K}{min}$}
-%	\end{subfigure}
-%	\begin{subfigure}{0.32\textwidth}
-%		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:48:35_407_1,25Kmin_L1=40_L3=0,1/combined_img.png}
-%		\caption{$\beta = 1.25 \frac{K}{min}$}
-%	\end{subfigure}
-%	\begin{subfigure}{0.32\textwidth}
-%		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:52:16_407_0,6Kmin_L1=40_L3=0,1/combined_img.png}
-%		\caption{$\beta = 0.6 \frac{K}{min}$}
-%	\end{subfigure}
-%	\centering
-%	\begin{subfigure}{0.32\textwidth}
-%		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:56:18_407_0,3Kmin_L1=40_L3=0,1/combined_img.png}
-%		\caption{$\beta = 0.3 \frac{K}{min}$}
-%	\end{subfigure}
-%	\caption{}
-%	\label{fig:FS_c_p_heat_flux_combo}
-%\end{figure}
 
 
 
@@ -2434,9 +2376,40 @@ This is why we perform now the parameter estimation again with the modified heat
 
 \section{Discussion}
 
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{| c | c | c | c | c | c | c | c |} \hline
+		Heat rate $\beta$ & 20 & 10 & 5 & 2.5 & 1.25 & 0.6 & 0.3 \\
+		$[K/min]$ & & & & & & & \\ \hline
+		\textbf{DIN formula \eqref{eq:c_p_formula_DIN}} & & & & & & & \\[0.7ex]
+		$T_{max} \ [^{\circ}C]$ & & & & & & & \\[0.7ex]
+		$T_{on} [^{\circ} C]$ & & & & & & & \\[0.7ex]
+		$T_{off} [^{\circ} C]$ & & & & & & & \\[0.7ex]
+		$\Delta H \ [mJ]$ & & & & & & & \\ \hline
+		
+		\textbf{Gaussians} & & & & & & & \\[0.7ex]
+		$T_{max} \ [^{\circ}C]$ & & & & & & & \\[0.7ex]
+		$T_{on} [^{\circ} C]$ & & & & & & & \\[0.7ex]
+		$T_{off} [^{\circ} C]$ & & & & & & & \\[0.7ex]
+		$\Delta H \ [mJ]$ & & & & & & & \\ \hline
+		
+		
+		\textbf{Fraser-Suzuki} & & & & & & & \\[0.7ex]
+		$T_{max} \ [^{\circ}C]$ & $129.0$ & $130.0$ & $128.6$ & $128.8$ & $129.4$ & $130.1$ & $130.7$ \\[0.7ex]
+		$T_{on} [^{\circ} C]$ & $118.1$ & $119.1$ & $121.0$ & $122.9$ & $124.4$ & $125.7$ & $126.3$ \\[0.7ex]
+		$T_{off} [^{\circ} C]$ & $136.1$ & $135.7$ & $133.6$ & $132.6$ & $132.4$ & $132.5$ & $132.7$ \\[0.7ex]
+		$\Delta H \ [mJ]$ & $162.7$ & $197.0$ & $184.3$ & $176.6$ & $173.1$ & $171.5$ & $172.2$ \\ \hline
+	\end{tabular}
+	\caption{}
+	\label{fig:eval_table_discussion}
+\end{table}
+
+
+
 \begin{itemize}
 	\item A pleasant observation is that the differential equation's solution is not very sensitive with respect to the chosen grid.  Ausser: $t=0.999$ statt $t=0.99$ ist wichtig.
-	\item Moeglicherweise hier auf diese Messwerte optimiert s.d. moeglichst gleiche $c_p$ rauskommen. Vllt kommen bei anderen Messwerten ganz andere Dinge raus...
+	\item Problem: Moeglicherweise hier auf diese Messwerte optimiert s.d. moeglichst gleiche $c_p$ rauskommen. Vllt kommen bei anderen Messwerten ganz andere Dinge raus...
 \end{itemize}
 
 
