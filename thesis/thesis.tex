@@ -1009,6 +1009,8 @@ with the generalized inverse $J^+$. An important result \cite{diss_bock} is
 \end{Lemma}
 
 \subsubsection{Numerical solution}
+\label{sec:GN_numerical_solution}
+
 For the numerical solution of \eqref{eq:GN_KKT_system} we will successively introduce the unconstrained, the equality constrained and the general equality and inequality constrained case because they are built up on each other, c.f. \cite{numerical_methods_lsq_Bjorck}. All algorithms compute steps $\Delta x^{(k)}$ in iteration $k$. The final solution is then computed iteratively by
 
 \begin{equation}
@@ -1799,7 +1801,8 @@ A parametrization with fewer degrees of freedom and used in general for chromato
 	\label{eq:fraser_suzuki}
 \end{align}
 
-where $h$, $r$, $sr$, $wr$ and $z$ are the parameters of Fraser-Suzuki. Furthermore the parameters for a linear part $m$ and a constant part $b$ were added. In order to keep the argument of the logarithm positive it must hold $0 < sr < 1$ and $wr > 0$.
+where $h$, $r$, $sr$, $wr$ and $z$ are the parameters of Fraser-Suzuki. Furthermore the parameters for a linear part $m$ and a constant part $b$ were added. 
+%In order to keep the argument of the logarithm positive it must hold $0 < sr < 1$ and $wr > 0$.
 
 \begin{figure}[H]
 	\centering
@@ -2111,7 +2114,7 @@ Summarized a total number of discretization points $N=300$ is sufficient while t
 
 \subsection{Parameter estimation using parametrization of linear combination of Gaussians}
 So far finite differences were used to compute the optimization jacobian \eqref{eq:optimization_jacobian}. Because of the problems described in section \ref{sec:param_estim_NURBS} from now on internal numerical differentiation is used instead which is done with the software package SolvIND. \\
-In this section the parameter estimation is performed using the parametrization of 5 Gaussians, linear and constant part (see section \ref{sec:parametrization_Gausse}). Five Gaussians were used since this is the minimum number such that the residuum almost vanishes as one can see in the upcoming figures. The optimization was performed again with the matlab routine $lsqnonlin$. \\
+In this section the parameter estimation is performed using the parametrization of 5 Gaussians, linear and constant part (see section \ref{sec:parametrization_Gausse}). Five Gaussians were used since this is the minimum number such that the residuum almost vanishes as one can see in the upcoming figures. The optimization was performed again with the matlab routine $lsqnonlin$. Start values for the first heat rate $\beta = 20 \frac{K}{min}$ were used from previously existing results with already reduced residuum. Afterwards the optimizations were performed in a decreasing order of heat rates where parameters estimated in this process were used as start values in subsequent steps. I.e. estimated parameters at heat rate $\beta=20 \frac{K}{min}$ were used as start values for the parameter estimation at heat rate $\beta=10 \frac{K}{min}$ and so on. \\
 In Fig. \ref{fig:optim_c_p_heat_flux_5Gaussians_1} and \ref{fig:optim_c_p_heat_flux_5Gaussians_2} the results are shown where on the left there is for all heat rates always the obtained function for the specific heat capacity $c_p(T)$. On the right measurement, simulation and resulting residuum of the heat flux is plotted and as one can see residuum is nearly zero for all heat rates. Examining the received specific heat capacities one notice first that for a heat rate of $10 \frac{K}{min}$ there are two peaks. The reason is a bending in the measured heat flux at approximately $130^{\circ} C$ probably from an error in measurement. Next things to observe which makes $c_p(T)$ differ from our expectations can be seen very well in the result for heat rate $5 \frac{K}{min}$. Firstly the decrease of the peak's maximum is not linear but has two different areas. Secondly after the peak $c_p(T)$ has values lower than the base line for a small temperature range. These are likely unphysical optimization artifacts due to overfitting to a naturally simplified, i.e incomplete model. Although positive is that the $c_p(T)$ curves do not differ exorbitantly from each other. A more detailed comparison between them follows at the end of this section.
 
 
@@ -2136,7 +2139,7 @@ In Fig. \ref{fig:optim_c_p_heat_flux_5Gaussians_1} and \ref{fig:optim_c_p_heat_f
 		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_22:59:44_407_2,5Kmin_L1=40_L3=0,1/c_p.png}
 		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_22:59:44_407_2,5Kmin_L1=40_L3=0,1/heat_flux.png}
 	\end{subfigure} \\[1ex]
-	\caption{}
+	\caption{Parameter estimation results for specific heat capacity $c_p$ and heat flux into PCM $\varPhi_q^{pcm,in}$ for heat rates $\beta=\{ 20, 10, 5, 2.5 \} \frac{K}{min}$.}
 	\label{fig:optim_c_p_heat_flux_5Gaussians_1}
 \end{figure}
 
@@ -2156,7 +2159,7 @@ In Fig. \ref{fig:optim_c_p_heat_flux_5Gaussians_1} and \ref{fig:optim_c_p_heat_f
 		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_23:53:54_407_0,3Kmin_L1=40_L3=0,1/c_p.png}
 		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_23:53:54_407_0,3Kmin_L1=40_L3=0,1/heat_flux.png}
 	\end{subfigure} \\[1ex]
-	\caption{}
+	\caption{Parameter estimation results for specific heat capacity $c_p$ and heat flux into PCM $\varPhi_q^{pcm,in}$ for heat rates $\beta=\{ 1.25, 0.6, 0.3 \} \frac{K}{min}$.}
 	\label{fig:optim_c_p_heat_flux_5Gaussians_2}
 \end{figure}
 
@@ -2214,6 +2217,9 @@ The optimization process took on average about $7$ minutes and 50 iterations per
 \subsection{Parameter estimation using Fraser-Suzuki parametrization}
 \label{sec:param_estimation_fs}
 
+In order to avoid overfitting seen in the previous section we apply now the Fraser-Suzuki parametrization (c.f. section \ref{sec:parametrization_FS}) where we fixed $r=2$. As we then just have in total 6 parameters instead of 17 with the Gaussians and therefore the available function space is smaller a kind of regularization is active. \\
+The optimization was performed here with a self written Gauss Newton solver based on section \ref{sec:GN_numerical_solution} using a singular value decomposition of $J_1(p_{c_p})$. An active set strategy for lower and upper bounds of the optimization variables has been implemented to ensure $0 \le sr \le 1$ and $wr \ge 0$ for a reasonable peak but it became apparent that the optimizer does not approach these limiting values anyway. Therefore lower and upper bounds were disabled and we solve an unconstrained problem.
+
 
 
 \begin{figure}[H]
@@ -2236,7 +2242,7 @@ The optimization process took on average about $7$ minutes and 50 iterations per
 		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:45:47_407_2,5Kmin_L1=40_L3=0,1/c_p.png}
 		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:45:47_407_2,5Kmin_L1=40_L3=0,1/heat_flux.png}
 	\end{subfigure}
-	\caption{}
+	\caption{Parameter estimation results for specific heat capacity $c_p$ and heat flux into PCM $\varPhi_q^{pcm,in}$ for heat rates $\beta=\{ 20, 10, 5, 2.5 \} \frac{K}{min}$.}
 	\label{fig:optim_c_p_heat_flux_FS_1}
 \end{figure}
 
@@ -2256,7 +2262,7 @@ The optimization process took on average about $7$ minutes and 50 iterations per
 		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:56:18_407_0,3Kmin_L1=40_L3=0,1/c_p.png}
 		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:56:18_407_0,3Kmin_L1=40_L3=0,1/heat_flux.png}
 	\end{subfigure}
-	\caption{}
+	\caption{Parameter estimation results for specific heat capacity $c_p$ and heat flux into PCM $\varPhi_q^{pcm,in}$ for heat rates $\beta=\{ 1.25, 0.6, 0.3 \} \frac{K}{min}$.}
 	\label{fig:optim_c_p_heat_flux_FS_2}
 \end{figure}
 
@@ -2282,19 +2288,19 @@ The optimization process took on average about $7$ minutes and 50 iterations per
 
 \begin{table}[H]
 	\centering
-	\begin{tabular}{| c | c | c | c | c | c | c | c |} \hline
-		Heat rate $\beta$ & 20 & 10 & 5 & 2.5 & 1.25 & 0.6 & 0.3 \\
-		$[K/min]$ & & & & & & & \\ \hline
-		$T_{max} \ [^{\circ}C]$ & $129.0$ & $130.0$ & $128.6$ & $128.8$ & $129.4$ & $130.1$ & $130.7$ \\[0.7ex]
-		$T_{on} [^{\circ} C]$ & $118.1$ & $119.1$ & $121.0$ & $122.9$ & $124.4$ & $125.7$ & $126.3$ \\[0.7ex]
-		$T_{off} [^{\circ} C]$ & $136.1$ & $135.7$ & $133.6$ & $132.6$ & $132.4$ & $132.5$ & $132.7$ \\[0.7ex]
-		$\Delta H \ [mJ]$ & $162.7$ & $197.0$ & $184.3$ & $176.6$ & $173.1$ & $171.5$ & $172.2$ \\ \hline
+	\begin{tabular}{| c | c | c | c | c | c | c | c || c |} \hline
+		Heat rate $\beta$ & $20$ & $10$ & $5$ & $2.5$ & $1.25$ & $0.6$ & $0.3$ & Mean$^*$ \\
+		$[K/min]$ & & & & & & & & \\ \hline
+		$T_{max} \ [^{\circ}C]$ & $129.0$ & $130.0$ & $128.6$ & $128.8$ & $129.4$ & $130.1$ & $130.7$ & $129.51 \pm 0.78 \ (0.6\%)$ \\[0.7ex]
+		$T_{on} [^{\circ} C]$ & $118.1$ & $119.1$ & $121.0$ & $122.9$ & $124.4$ & $125.7$ & $126.3$ & \\[0.7ex]
+		$T_{off} [^{\circ} C]$ & $136.1$ & $135.7$ & $133.6$ & $132.6$ & $132.4$ & $132.5$ & $132.7$ & \\[0.7ex]
+		$\Delta H \ [mJ]$ & $162.7$ & $197.0$ & $184.3$ & $176.6$ & $173.1$ & $171.5$ & $172.2$ & \\ \hline
 	\end{tabular}
-	\caption{}
+	\caption{$T_{max}$ and $\Delta H$ analog to table \ref{tab:eval_table_Tmax_deltaH_5Gaussians}. $T_{on}$ and $T_{off}$ are defined as shown in Fig. \ref{fig:T_on/off_illustration}. \\
+	$^{*}$ Corrected sample standard deviation used here.}
 	\label{fig:eval_table_Tmax_deltaH_FS}
 \end{table}
 
-\todo{Stat. Parameter aller Werte: $T_{max} = 129.51 \pm 0.78$, hier Standardabweichung}
 
 
 \begin{figure}[H]
@@ -2303,6 +2309,13 @@ The optimization process took on average about $7$ minutes and 50 iterations per
 	\caption{}
 	\label{fig:FS_all_c_p}
 \end{figure}
+
+
+\begin{itemize}
+	\item \todo{stopping criterion}
+	\item \todo{optimierungsdauer}
+	\item \todo{auf integration progress eingehen}
+\end{itemize}
 
 
 
@@ -2339,9 +2352,6 @@ The optimization process took on average about $7$ minutes and 50 iterations per
 	\caption{}
 	\label{fig:optimization_progress_FS}
 \end{figure}
-
-
-\todo{Optimierungsdauer}
 
 
 \subsection{Parameter estimation with modified heat rate from measurement data}
