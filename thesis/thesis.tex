@@ -2303,7 +2303,7 @@ The resulting specific heat capacity $c_p(T)$ and corresponding heat flux $\varP
 	\label{fig:optim_c_p_heat_flux_FS_2}
 \end{figure}
 
-Next again a statistical analysis of the obtained parameters is performed analog to last section, results are shown in table \ref{tab:parameter_table_FS}. One notice that the parameters' confidence region are very similar for all heat rates. The best determined parameter is the peak position $z$ and on the other hand the linear parameter $m$ has the highest relative uncertainty. Though at all the obtained parameters are much more accurate than the ones with Gaussian parametrization.
+Next again a statistical analysis of the obtained parameters is performed analog to last section, results are shown in table \ref{tab:parameter_table_FS}. One notice that the parameters' confidence region are very similar for all heat rates. The best determined parameter is the peak position $z$ and on the other hand the linear parameter $m$ has the highest relative uncertainty. Though at all the obtained parameters are much more accurate than the ones with Gaussian parametrization. 
 
 
 \begin{table}[H]
@@ -2324,6 +2324,10 @@ Next again a statistical analysis of the obtained parameters is performed analog
 	\label{tab:parameter_table_FS}
 \end{table}
 
+
+We now compare the obtained specific heat capacity functions $c_p(T)$ from the different heat rates, plotted in Fig. \ref{fig:FS_all_c_p}. Their characteristic values are listed in table \ref{tab:eval_table_Tmax_deltaH_FS}. The maximum position $T_{max}$ is is best determined with a variation of less than one percent. End temperatures of the phase transition $T_{off}$ are as well very similar especially considering heat rates $0.3$ to $2.5 \frac{K}{min}$. The increasing part of the peak affects $T_on$ which is monotonically decreasing with higher heat rates which is symptomatic for a systematic error. Regarding the melting enthalpy $\Delta H$ the outlier at heat rate $10 \frac{K}{min}$ can be explained by the bending in the measurement heat flux data remarked earlier. \\
+
+
 \begin{table}[H]
 	\centering
 	\begin{tabular}{| c | c | c | c | c | c | c | c || c |} \hline
@@ -2337,7 +2341,7 @@ Next again a statistical analysis of the obtained parameters is performed analog
 	\caption{$T_{max}$ and $\Delta H$ analog to table \ref{tab:eval_table_Tmax_deltaH_5Gaussians}. $T_{on}$ and $T_{off}$ are defined as shown in Fig. \ref{fig:T_on/off_illustration}.
 	$^{*}$ Corrected sample standard deviation used here.
 	$^{**}$ Value from heat rate $10 \frac{K}{min}$ was omitted for mean computation due to outlying value and mentioned measurement error.}
-	\label{fig:eval_table_Tmax_deltaH_FS}
+	\label{tab:eval_table_Tmax_deltaH_FS}
 \end{table}
 
 
@@ -2452,21 +2456,18 @@ This is why we perform now the parameter estimation again with the modified heat
 \begin{table}[H]
 	\centering
 	\begin{tabular}{| c | c | c |} \hline 
-		$\beta \ [K/min]$ & $\bar{\beta}_{meas} \ [K/min]$ & $\sigma_{\beta_{meas}} \ [K/min]$ \\ \hline
-		$20$ & $19.97$ & $0.033$ \\
-		$10$ & $9.98$ & $0.019$ \\
-		$5$ & $4.991$ & $0.0095$ \\
-		$2.5$ & $2.4956$ & $0.0040$ \\
-		$1.25$ & $1.2476$ & $0.0017$ \\
-		$0.6$ & $0.5989$ & $0.00078$ \\
-		$0.3$ & $0.2994$ & $0.00046$ \\ \hline
+		$\beta \ [K/min]$ & $\beta_{meas} \ [K/min]$ & $\left(1 - \frac{\beta_{meas}}{\beta}\right) \cdot 100\%$  \\ \hline
+		$20$ & $19.97 \pm 0.033 \ (0.17\%)$ & $0.15\%$ \\
+		$10$ & $9.98 \pm 0.019 \ (0.19\%)$ & $0.20\%$ \\
+		$5$ & $4.991 \pm 0.0095 \ (0.19\%)$ & $0.18\%$ \\
+		$2.5$ & $2.4956 \pm 0.0040 \ (0.16\%)$ & $0.18\%$ \\
+		$1.25$ & $1.2476 \pm 0.0017 \ (0.14\%)$ & $0.19\%$ \\
+		$0.6$ & $0.5989 \pm 0.00078 \ (0.13\%)$ & $0.18\%$ \\
+		$0.3$ & $0.2994 \pm 0.00046 \ (0.15\%)$ & $0.20\%$ \\ \hline
 	\end{tabular}
-	\caption{Heat rates' mean value $\bar{\beta}_{meas}$ obtained as in Fig. \ref{fig:heat_rate_measurement} and corresponding standard deviation $\sigma_{\beta_{meas}}$ for all measurements.}
+	\caption{Heat rate measurement value $\beta_{meas}$ obtained as depicted in Fig. \ref{fig:heat_rate_measurement} including corresponding corrected sample standard deviation. Relative variation from nominal heat rate $\beta$ in last column.}
 	\label{tab:mod_heat_rate}
 \end{table}
-
-\todo{Tablle aktualisieren: nur 2 Spalten nominal und Messwert inklusive Fehler.} \\
-\todo{Standardabweichung: corrected sample standard deviation}
 
 
 \begin{figure}[H]
