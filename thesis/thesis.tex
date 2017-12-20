@@ -2212,7 +2212,7 @@ Finally the first order optimality value given by $lsqnonlin$ at the end of the 
 		Constant & $1.52 \pm 1.9\%$ & $1.60 \pm 19\%$ & $1.63 \pm 2.1\%$ & $1.65 \pm 1.4\%$ & $1.65 \pm 1.2\%$ & $2.63 \pm 3\%$ & $2.86 \pm 15\%$ \\ \hline \hline
 		[NOC1]$^*$ & $2.6$ & $12.4$ & $8.5$ & $6.7$ & $7.5$ & $4.5$ & $5.3$ \\ \hline
 	\end{tabular}
-	\caption{Parameters and error for all heat rates $\beta$ from statistical analysis using error of probability $\alpha=0.05$. One Gaussian consist of three parameters (c.f. section \ref{sec:parametrization_Gausse}): top: amplitude $A_i$, middle: variance $var_i$, bottom: offset in temperature $T_{offset_i}$ \\
+	\caption{Estimated parameters for all heat rates $\beta$ and error from statistical analysis using error of probability $\alpha=0.05$. One Gaussian consist of three parameters (c.f. section \ref{sec:parametrization_Gausse}): top: amplitude $A_i$, middle: variance $var_i$, bottom: offset in temperature $T_{offset_i}$ \\
 	$^*$ value from $lsqnonlin$ output.}
 	\label{tab:parameter_table_5Gaussians}
 \end{table}
@@ -2252,7 +2252,7 @@ The optimization process took on average about $7$ minutes and 50 iterations per
 \label{sec:param_estimation_fs}
 
 In order to avoid overfitting seen in the previous section we apply now the Fraser-Suzuki parametrization (c.f. section \ref{sec:parametrization_FS}) where we fixed $r=2$. As we then just have in total 6 parameters instead of 17 with the Gaussians and therefore the available function space is smaller a kind of regularization is active. \\
-The optimization was performed here with a self written Gauss Newton solver based on section \ref{sec:GN_numerical_solution} using a singular value decomposition of $J_1(p_{c_p})$. An active set strategy for lower and upper bounds of the optimization variables has been implemented to ensure $0 \le sr \le 1$ and $wr \ge 0$ for a reasonable peak but it became apparent that the optimizer does not approach these limiting values anyway. Therefore lower and upper bounds were disabled and we solve an unconstrained problem. Start values for heat rate $20 \frac{K}{min}$ were chosen to be $h=14$, $wr=10.7$, $sr=0.705$, $z=129$, $m=0.0079$ and $b=1.69$ and following heat rates use the last result analog to the case of Gaussian parametrization. \\
+The optimization was performed here with a self written Gauss Newton solver based on section \ref{sec:GN_numerical_solution} using a singular value decomposition of $J_1(p_{c_p})$. An active set strategy for lower and upper bounds of the optimization variables has been implemented to ensure $0 \le sr \le 1$ and $wr \ge 0$ for a reasonable peak but it became apparent that the optimizer does not approach these limiting values anyway. Therefore lower and upper bounds were disabled and we solve an unconstrained problem. Start values for heat rate $20 \frac{K}{min}$ were chosen to be $h=14$, $wr=10.7$, $sr=0.705$, $z=129$, $m=0.0079$ and $b=1.69$ and following heat rates use the last result analog to the case of Gaussian parametrization. The linear parameter $m$ was fixed to the previously obtained result for the heat rates $0.6$ and $0.3 \frac{K}{min}$ because of the problems remarked in the last section. \\
 The resulting specific heat capacity $c_p(T)$ and corresponding heat flux $\varPhi_q^{pcm,in}$ for all heat rates after optimization is shown in Fig. \ref{fig:optim_c_p_heat_flux_FS_1} and \ref{fig:optim_c_p_heat_flux_FS_2}. As one can see the heat flux residuum is bigger than before especially at the increasing side of the peak. Furthermore the heat flux base line after the peak exhibits an increased residuum as well. On the other hand the obtained specific heat capacities are very similar as expected. A detailed comparison follows.
 
 
@@ -2282,6 +2282,8 @@ The resulting specific heat capacity $c_p(T)$ and corresponding heat flux $\varP
 \end{figure}
 
 
+
+
 \begin{figure}[H]
 	\begin{subfigure}{1.\textwidth}
 		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:48:35_407_1,25Kmin_L1=40_L3=0,1/c_p.png}
@@ -2301,24 +2303,24 @@ The resulting specific heat capacity $c_p(T)$ and corresponding heat flux $\varP
 	\label{fig:optim_c_p_heat_flux_FS_2}
 \end{figure}
 
-
+Next again a statistical analysis of the obtained parameters is performed analog to last section, results are shown in table \ref{tab:parameter_table_FS}. One notice that the parameters' confidence region are very similar for all heat rates. The best determined parameter is the peak position $z$ and on the other hand the linear parameter $m$ has the highest relative uncertainty. Though at all the obtained parameters are much more accurate than the ones with Gaussian parametrization.
 
 
 \begin{table}[H]
 	%\centering
 	\hspace{-1.2cm}
 	\begin{tabular}{| c | c | c | c | c | c | c |} \hline
-		Heat rate $\beta$ & $h$ & $wr$ & $sr$ & $z$ & Linear & Const \\ 
+		Heat rate $\beta$ & $h$ & $wr$ & $sr$ & $z$ & Linear $m$ & Const $b$ \\ 
 		$[K/min]$ & & & & & & \\ \hline
 		$20$ & $14.0 \pm 4.8\%$ & $10.7 \pm 5.8\%$ & $0.71 \pm 9.1\%$ & $129.0 \pm 0.35\%$ & $0.0080 \pm 18\%$ & $1.69 \pm 6.9\%$ \\
-		$10$ & & & & & &  \\
-		$5$ & & & & & & \\
-		$2.5$ & & & & & & \\
-		$1.25$ & & & & & & \\
-		$0.6$ & & & & & & \\
-		$0.3$ & $40.3 \pm 3.4\%$ & $3.69 \pm 4.4\%$ & $0.51 \pm 8.4\%$ & $130.75 \pm 0.078\%$ & ---$^*$ & $1.94 \pm 12.6\%$ \\ \hline
+		$10$ & $17.9 \pm 4.1\%$ & $9.83 \pm 5.1\%$ & $0.608 \pm 7.9\%$ & $130.0 \pm 0.25\%$ & $0.0055 \pm 29\%$ & $1.75 \pm 8.2\%$  \\
+		$5$ & $22.7 \pm 4.8\%$ & $7.4 \pm 5.6\%$ & $0.712 \pm 9.7\%$ & $128.6 \pm 0.25\%$ & $0.0071 \pm 34\%$ & $1.68 \pm 13.6\%$ \\
+		$2.5$ & $28.4 \pm 4.9\%$ & $5.71 \pm 5.7\%$ & $0.721 \pm 10.3\%$ & $128.8 \pm 0.20\%$ & $0.0089 \pm 35\%$ & $1.61 \pm 18\%$ \\
+		$1.25$ & $33.4 \pm 4.2\%$ & $4.73 \pm 4.9\%$ & $0.68 \pm 8.9\%$ & $129.4 \pm 0.14\%$ & $0.010 \pm 34\%$ & $1.55 \pm 22\%$ \\
+		$0.6$ & $37.8 \pm 4.2\%$ & $4.08 \pm 4.8\%$ & $0.600 \pm 9.1\%$ & $130.2 \pm 0.11\%$ & $0.010^*$ & $1.73 \pm 13\%$ \\
+		$0.3$ & $40.3 \pm 3.4\%$ & $3.69 \pm 4.4\%$ & $0.51 \pm 8.4\%$ & $130.8 \pm 0.078\%$ & $0.010^*$ & $1.94 \pm 12.6\%$ \\ \hline
 	\end{tabular}
-	\caption{\todo{Rest eintragen,momentan Werte von $2017-12-20_02:01:34$ aber offenbar identisch bei versch. Abbruchkriterien weil sich eh praktisch nichts mehr aendert.}}
+	\caption{Estimated parameters for all heat rates $\beta$ and error from statistical analysis using error of probability $\alpha=0.05$. $^*$ Parameter fixed to value from previous heat rate.}
 	\label{tab:parameter_table_FS}
 \end{table}
 
