@@ -2355,10 +2355,10 @@ We now compare the obtained specific heat capacity functions $c_p(T)$ from the d
 \end{figure}
 
 
-Finally the Gauss Newton optimization process has been examined, depicted in Fig. \ref{fig:optimization_progress_FS} for all heat rates. In the following the used norm will always refer to the euclidean norm $|| \cdot ||_2$.
+Finally the Gauss Newton optimization process has been examined. As remarked we solve an unconstrained linear least squares problem using Algorithm \ref{alg:Gauss_Newton_unconstrained}. Termination criteria parameters were set to $[NOC1]_{TOL}=10^{-2}$, $\Delta x_{TOL}=10^{-5}$, $t_{TOL}=10^{-6}$ and iterations$_{max}=1000$ where just the first two were triggered and a stepsize decrease rate $d=0.8$ has been used. Results are depicted in Fig. \ref{fig:optimization_progress_FS} for all heat rates where the norm of residuum $||F_1^{(k)}||_2$, Gauss Newton step $||\Delta x^{(k)}||_2$, gradient of Lagrange function (here objective function since unconstrained) $|| \nabla \mathcal{L} ||_2 = || \nabla F_1^T F_1 ||_2 = || 2 J_1^T F_1 ||_2$ and step size $t^{(k)}$ were recorded in each iteration $k$. One notice that the residuum decreases perceptibly only in the first iteration step. This is related to the fact that $||\Delta x^{(k)}||_2$ declines monotonically in a few iterations to an order of $10^{-5}$ where is starts to fluctuate as one can see very well for heat rate $5 \frac{K}{min}$.
 
 
-Algorithm \ref{alg:Gauss_Newton_unconstrained} shows ...
+
 
 \begin{algorithm}
 
@@ -2383,7 +2383,7 @@ Algorithm \ref{alg:Gauss_Newton_unconstrained} shows ...
 		Compute next potential state $x^{(k+1)} = x^{(k)} + t^{(k)} \cdot \Delta x^{(k)}$ and \\ \quad corresponding residuum $F_1(x^{(k+1)})$ \\
 		
 		\If{$t^{(k)} > t_{TOL} \text{ and } || F_1(x^{(k+1)}) ||_2 \ge || F_1(x^{(k)}) ||_2$}
-		{Set $t^{(k)} = \frac{t^{(k)}}{d}$ \\
+		{Set $t^{(k)} = t^{(k)} \cdot d$ \\
 		goto (7)}
 		\Else{
 			Set $k := k + 1$ \\
@@ -2396,7 +2396,7 @@ Algorithm \ref{alg:Gauss_Newton_unconstrained} shows ...
 
 
 \begin{itemize}
-	\item \todo{stopping criterion}
+	\item \todo{fwdSensRelTol erwaehnen}
 	\item \todo{optimierungsdauer}
 	\item \todo{auf integration progress eingehen}
 \end{itemize}
@@ -2532,20 +2532,27 @@ This is why we perform now the parameter estimation again with the modified heat
 		$T_{max} \ [^{\circ}C]$ & & & & & & & \\[0.7ex]
 		$T_{on} [^{\circ} C]$ & & & & & & & \\[0.7ex]
 		$T_{off} [^{\circ} C]$ & & & & & & & \\[0.7ex]
-		$\Delta H \ [mJ]$ & & & & & & & \\ \hline
+		$\Delta H \ [\frac{mJ}{mg}]$ & & & & & & & \\ \hline
+
+		\textbf{DIN formula \eqref{eq:c_p_formula_DIN}} & & & & & & & \\
+		\textbf{fitted on Fraser-Suzuki} & & & & & & & \\
+		$T_{max} \ [^{\circ}C]$ & $143.3$ & $139.8$ & $135.5$ & $133.4$ & $132.4$ & $132.0$ & $131.8$ \\[0.7ex]
+		$T_{on} [^{\circ} C]$ & $124.3$ & $123.5$ & $124.0$ & $125.1$ & $126.1$ & $126.9$ & $127.2$ \\[0.7ex]
+		$T_{off} [^{\circ} C]$ & $153.5$ & $146.3$ & $140.0$ & $136.5$ & $134.6$ & $133.6$ & $133.3$ \\[0.7ex]
+		$\Delta H \ [\frac{mJ}{mg}]$ & $148.6$ & $195.2$ & $190.6$ & $185.1$ & $183.1$ & $181.3$ & $176.7$ \\ \hline
 		
 		\textbf{Gaussians} & & & & & & & \\[0.7ex]
 		$T_{max} \ [^{\circ}C]$ & & & & & & & \\[0.7ex]
 		$T_{on} [^{\circ} C]$ & & & & & & & \\[0.7ex]
 		$T_{off} [^{\circ} C]$ & & & & & & & \\[0.7ex]
-		$\Delta H \ [mJ]$ & & & & & & & \\ \hline
+		$\Delta H \ [\frac{mJ}{mg}]$ & & & & & & & \\ \hline
 		
 		
 		\textbf{Fraser-Suzuki} & & & & & & & \\[0.7ex]
 		$T_{max} \ [^{\circ}C]$ & $129.0$ & $130.0$ & $128.6$ & $128.8$ & $129.4$ & $130.1$ & $130.7$ \\[0.7ex]
 		$T_{on} [^{\circ} C]$ & $118.1$ & $119.1$ & $121.0$ & $122.9$ & $124.4$ & $125.7$ & $126.3$ \\[0.7ex]
 		$T_{off} [^{\circ} C]$ & $136.1$ & $135.7$ & $133.6$ & $132.6$ & $132.4$ & $132.5$ & $132.7$ \\[0.7ex]
-		$\Delta H \ [mJ]$ & $162.7$ & $197.0$ & $184.3$ & $176.6$ & $173.1$ & $171.5$ & $172.2$ \\ \hline
+		$\Delta H \ [\frac{mJ}{mg}]$ & $162.7$ & $197.0$ & $184.3$ & $176.6$ & $173.1$ & $171.5$ & $172.2$ \\ \hline
 	\end{tabular}
 	\caption{}
 	\label{fig:eval_table_discussion}

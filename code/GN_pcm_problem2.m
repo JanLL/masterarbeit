@@ -114,6 +114,7 @@ meas_data(:,2) = q_dsc;
 
 % Optimization
 p_optim_fixed = optimization.start_values(~optimization.p_optim_estimable);
+optimization.GN_options = options.GN_options;
 
 % Initialize Mex File
 sim_params_vec = [L1, L3, N1, N3, lambda_Const, rho_Const, c_p_Const, ...

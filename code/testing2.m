@@ -84,14 +84,15 @@ return
 %    'DSC204_F1_Phoenix_Messungen/Messungen/Messungen/', ...
 %    'ExpDat_16-407-3_mitKorr_*Kmin_H.csv']);
 
-dsc_list = {'ExpDat_16-407-3_mitKorr_0,3Kmin_H.csv', ...
-            'ExpDat_16-407-3_mitKorr_0,6Kmin_H.csv', ...
-            'ExpDat_16-407-3_mitKorr_1,25Kmin_H.csv', ...
-            'ExpDat_16-407-3_mitKorr_2,5Kmin_H.csv', ...
-            'ExpDat_16-407-3_mitKorr_5Kmin_H.csv', ...
+dsc_list = {'ExpDat_16-407-3_mitKorr_20Kmin_H.csv', ...
             'ExpDat_16-407-3_mitKorr_10Kmin_H.csv', ...
-            'ExpDat_16-407-3_mitKorr_20Kmin_H.csv'};
-
+            'ExpDat_16-407-3_mitKorr_5Kmin_H.csv', ...
+            'ExpDat_16-407-3_mitKorr_2,5Kmin_H.csv', ...
+            'ExpDat_16-407-3_mitKorr_1,25Kmin_H.csv', ...
+            'ExpDat_16-407-3_mitKorr_0,6Kmin_H.csv', ...
+            'ExpDat_16-407-3_mitKorr_0,3Kmin_H.csv'};
+            
+        
 fig1 = figure(1); hold on
 ax1 = gca();
 fig2 = figure(2); hold on
@@ -123,6 +124,7 @@ xlabel('T_{ref}[degC]');
 ylabel('\eta^{\Phi}[mW]');
 set(gca, 'xlim', [30 160]);
 legend('show', 'location', 'northwest');
+xlim([80, 160]);
 
 print(fig1, [save_root_dir, 'heat_flux_measurement'], '-dpng', '-r200');
 close();
@@ -135,6 +137,7 @@ xlabel('T [degC]');
 ylabel('c_p [mJ/(mg*K)]');
 set(gca, 'xlim', [30 160]);
 legend('show', 'location', 'northwest');
+xlim([80, 160]);
 
 print(fig2, [save_root_dir, 'c_p_DIN_formula'], '-dpng', '-r200');
 close();
@@ -830,17 +833,22 @@ legend('show', 'location', 'northwest')
 set(gca,'FontSize',12);
 
 
-print(fig, '/home/argo/masterarbeit/thesis/images/heat_rate_ref_crucible', '-dpng', '-r200');
+% print(fig, '/home/argo/masterarbeit/thesis/images/heat_rate_ref_crucible', '-dpng', '-r200');
 
+fprintf('%1.4f +/- %1.4f (%1.4f%%)\n', mean(heat_rate_meas), std(heat_rate_meas), ...
+    std(heat_rate_meas) / mean(heat_rate_meas) * 100);
 
-mean(heat_rate_meas)
-var(heat_rate_meas)
 
 
 %% Berechnung Konfidenzintervalle der geschaetzten Parameter
 
-% fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-10_14:33:40_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/';
-fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/';
+% fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-15_13:42:19_407_L1=40_L3=0,1_N1=200_N3=50_GN_FS/';
+% fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/';
+% fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/';
+
+% fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-20_02:01:34_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/';
+
+fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/';
 
 
 file_list = dir(fit_dir);
@@ -850,69 +858,91 @@ nameSubDirs = {file_list(isub).name}';
 nameSubDirs(ismember(nameSubDirs,{'.','..'})) = [];
 
 for j=1:length(nameSubDirs)
-    
+        
     fit_data = load([fit_dir, nameSubDirs{j}, '/fit_data.mat']);
     p_optim_scaled = fit_data.optimization.p_optim_end;
     param_type = fit_data.optimization.c_p_param_type;
+    heat_rate = fit_data.simulation.heat_rate;
     
     % transform to column vector
-    p_optim_scaled = reshape(p_optim_scaled, length(p_optim_scaled),1);
+    p_optim_scaled = reshape(p_optim_scaled, length(p_optim_scaled),1);    
     
     p_optim_unscaled = reverse_scale_params(p_optim_scaled, fit_data.optimization.c_p_param_type);    
     p_optim_unscaled = p_optim_unscaled(fit_data.optimization.p_optim_estimable);
-    
+        
     J1_scaled = fit_data.optimization.dqdp_end(:,fit_data.optimization.p_optim_estimable);
     J1_unscaled = reverse_scale_J1(J1_scaled, fit_data.optimization.c_p_param_type, ...
                                    fit_data.optimization.p_optim_estimable);
     
     F1 = fit_data.optimization.residuum_end;
     
+        
     confidence_lvl = 0.05;
     [theta, C] = compute_confidence_interval(F1,J1_unscaled,confidence_lvl);
     p_optim_variance = diag(C);
     np = length(theta); 
     
+    
+    % Matlab internal routine
+%     theta_nlparci = nlparci(p_optim_unscaled, F1, 'covar', C);
+%     theta_nlparci = nlparci(p_optim_unscaled, F1, 'jacobian', J1_unscaled(:,1:17));
+    
+    
     % Output
     fprintf('Heat rate: %1.2f\n', fit_data.measurement.dsc_data.Tinfo.Tstep);
     
     
-%     fprintf('Scaled params:   ');
-%     for i=1:np
-%         fprintf('%1.3e\t', p_optim_scaled(i));
-%     end
-    
     if (strcmp(param_type, 'gauss_linear_comb')) 
-        fprintf('\nUnscaled params:\n');
+        % own computation
         for i=1:5
             fprintf('Gauss%d: ', i);
-            fprintf('%+1.3e +/- %1.3e      %+1.3e +/- %1.3e   %+1.3e +/- %1.3e\n', ...
-                p_optim_unscaled(3*i-2), theta(3*i-2), ...
-                p_optim_unscaled(3*i-1), theta(3*i-1), ...
-                p_optim_unscaled(3*i-0), theta(3*i-0))
+            fprintf('%+1.3e +/- %1.3e (%1.2f%%)      %+1.3e +/- %1.3e (%1.2f%%)   %+1.3e +/- %1.3e (%1.2f%%)\n', ...
+                p_optim_unscaled(3*i-2), theta(3*i-2), (theta(3*i-2) / p_optim_unscaled(3*i-2)) * 100, ...
+                p_optim_unscaled(3*i-1), theta(3*i-1), (theta(3*i-1) / p_optim_unscaled(3*i-1)) * 100, ...
+                p_optim_unscaled(3*i-0), theta(3*i-0), (theta(3*i-0) / p_optim_unscaled(3*i-0)) * 100)
         end
-        fprintf('Linear: %+1.3e +/- %1.3e\n', ...
-            p_optim_unscaled(end-1), theta(end-1));
-        fprintf('Const:  %+1.3e +/- %1.3e\n', ...
-            p_optim_unscaled(end), theta(end));
-            
+        fprintf('Linear: %+1.3e +/- %1.3e (%1.2f%%)\n', ...
+            p_optim_unscaled(end-1), theta(end-1), (theta(end-1) / p_optim_unscaled(end-1)) * 100);
+        fprintf('Const:  %+1.3e +/- %1.3e (%1.2f%%)\n', ...
+            p_optim_unscaled(end), theta(end), (theta(end) / p_optim_unscaled(end)) * 100);
+
+        % results from nlparci
+%         fprintf('\n');
+%         for i=1:5
+%             fprintf('Gauss%d: ', i);
+%             fprintf('%+1.3e +/- %1.3e      %+1.3e +/- %1.3e   %+1.3e +/- %1.3e\n', ...
+%                 p_optim_unscaled(3*i-2), theta_nlparci(3*i-2), ...
+%                 p_optim_unscaled(3*i-1), theta_nlparci(3*i-1), ...
+%                 p_optim_unscaled(3*i-0), theta_nlparci(3*i-0))
+%         end
+%         fprintf('Linear: %+1.3e +/- %1.3e\n', ...
+%             p_optim_unscaled(end-1), theta_nlparci(end-1));
+%         fprintf('Const:  %+1.3e +/- %1.3e\n', ...
+%             p_optim_unscaled(end), theta_nlparci(end));
+
+        
     elseif (strcmp(param_type, 'fraser_suzuki'))
-        fprintf('\nUnscaled params: ');
-        for i=1:np
-            fprintf('  %+1.4e\t', p_optim_unscaled(i));
+    
+        param_names1 = {'h', 'wr', 'sr', 'z', 'm', 'b'};
+        param_names2 = {'h', 'wr', 'sr', 'z', 'b'};
+
+        
+        if (length(theta) == 6)
+            for k=1:length(param_names1)
+                fprintf('%s:\t%1.4f +/- %1.4f (%1.3f%%)\n', param_names1{k}, p_optim_unscaled(k), theta(k), theta(k) / p_optim_unscaled(k) * 100);
+            end
         end
         
-        fprintf('\nCuboid:          ');
-        for i=1:np
-            fprintf('+/-%1.4e\t', theta(i));
+        if (length(theta) == 5)
+            for k=1:length(param_names2)
+                fprintf('%s:\t%1.4f +/- %1.4f (%1.4f%%)\n', param_names2{k}, p_optim_unscaled(k), theta(k), theta(k) / p_optim_unscaled(k) * 100);
+            end
+            
+            fit_data.optimization.p_optim_end
+            
         end
-
-    end
-    
-%     fprintf('\nVariances:       ');
-%     for i=1:np
-%         fprintf('%1.3e\t', p_optim_variance(i));
-%     end
-    
+        
+    end    
 
     
     fprintf('\n\n');
@@ -1058,7 +1088,9 @@ end
 
 
 % fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/';
-fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/';
+% fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/';
+% fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/';
+fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/';
 
 
 file_list = dir(fit_dir);
@@ -1074,12 +1106,14 @@ fig2 = figure(2); clf; ax2 = gca; hold on;
 set(fig2, 'Units', 'normalized', 'OuterPosition', [0., 0., 0.8, 1.]); 
 
 for j=1:length(nameSubDirs)
-
+    
     cla(ax1);
     cla(ax2);
     
     fit_data = load([fit_dir, nameSubDirs{j}, '/fit_data.mat']);
     p_optim_all = fit_data.optimization.p_optim_end;
+    
+
     
     % c_p(T) plot
     T_plot = 30:0.01:160;
@@ -1100,7 +1134,6 @@ for j=1:length(nameSubDirs)
     xlim(ax1, [30, 160]);
     title(ax1, sprintf('Heat rate: %1.2f K/min', fit_data.simulation.heat_rate))
 
-    
     % heat flux plot
     index_T_dsc = fit_data.measurement.index_T_dsc;
     meas_data = fit_data.measurement.dsc_data.data;
@@ -1110,6 +1143,34 @@ for j=1:length(nameSubDirs)
     q_meas = fit_data.measurement.dsc_data.mass * ...
              meas_data(index_T_dsc(1):index_T_dsc(2),3) ./ ...
              meas_data(index_T_dsc(1):index_T_dsc(2),4);
+         
+    switch fit_data.simulation.heat_rate
+        case 20
+            T_ref_dsc = T_ref_dsc(1:1:end);
+            q_meas = q_meas(1:1:end);
+        case 10
+            T_ref_dsc = T_ref_dsc(1:2:end);
+            q_meas = q_meas(1:2:end);
+        case 5
+            T_ref_dsc = T_ref_dsc(1:4:end);
+            q_meas = q_meas(1:4:end);
+        case 2.5
+            T_ref_dsc = T_ref_dsc(1:8:end);
+            q_meas = q_meas(1:8:end);
+        case 1.25
+            T_ref_dsc = T_ref_dsc(1:16:end);
+            q_meas = q_meas(1:16:end);
+        case 0.6
+            T_ref_dsc = T_ref_dsc(1:32:end);
+            q_meas = q_meas(1:32:end);
+        case 0.3
+            T_ref_dsc = T_ref_dsc(1:64:end);
+            q_meas = q_meas(1:64:end);
+        otherwise
+            error('Heat rate invalid!')
+    end
+         
+         
     q_sim = q_res + q_meas;
     
     plot(ax2, T_ref_dsc, q_sim, 'DisplayName', 'Simulation', 'Linewidth', 2.); hold on
@@ -1118,7 +1179,7 @@ for j=1:length(nameSubDirs)
     plot(ax2, T_ref_dsc, q_res, 'DisplayName', 'Residuum', 'Linewidth', 2.);
     legend(ax2, 'show', 'location', 'northwest');
     xlabel(ax2, 'T_{ref} [degC]');
-    ylabel(ax2, '\Phi_q^{PCM,in} [mW]');
+    ylabel(ax2, '\Phi_q^{pcm,in} [mW]');
     set(ax2,'FontSize',24);
     xlim(ax2, [T_ref_dsc(1), T_ref_dsc(end)]);
     title(ax2, sprintf('Heat rate: %1.2f K/min', fit_data.simulation.heat_rate))
@@ -1135,49 +1196,14 @@ close(2);
 
 
 
-%% Compute average value of resulting c_p(T) distribution
-
-
-fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/';
-
-file_list = dir(fit_dir);
-
-isub = [file_list(:).isdir]; %# returns logical vector
-nameSubDirs = {file_list(isub).name}';
-nameSubDirs(ismember(nameSubDirs,{'.','..'})) = [];
-
-for j=1:length(nameSubDirs)
-
-    
-    fit_data = load([fit_dir, nameSubDirs{j}, '/fit_data.mat']);
-    p_optim_all_scaled = fit_data.optimization.p_optim_end;
-    p_optim_all_unscaled = reverse_scale(p_optim_all_scaled, fit_data.optimization.c_p_param_type);
-    
-    heat_rate = fit_data.simulation.heat_rate;
-    
-    % TODO: ueber ganze Verteilung ohne linearen und constanten part
-    % integrieren, dann normalisieren und dann davon den Erwartungswert
-    % berechnen.
-    
-    if (strcmp(fit_data.optimization.c_p_param_type, 'gauss_linear_comb'))
-        error('Not implemented yet!')
-        %average_value = sum(p_optim_all_unscaled(1:3:15) .* p_optim_all_unscaled(3:3:15)) / sum(p_optim_all_unscaled(1:3:15));
-    elseif (strcmp(fit_data.optimization.c_p_param_type, 'fraser_suzuki'))
-        error('Not implemented yet!')
-    end 
-        
-    fprintf('Heat rate: %1.2f: %1.3f\n', heat_rate, average_value);
-    
-    
-    
-    
-end
-
-
 %% Plot optimization progress
 
+fit_dir = '2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used';
+
+% fit_dir = '2017-12-20_02:01:34_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS';
+% fit_dir = '2017-12-17_22:56:22_407_L1=40_L3=0,1_N1=200_N3=50_GN_Gaussians';
 % fit_dir = '2017-12-15_00:21:25_407_L1=40_L3=0,1_N1=200_N3=50_GN_FS';
-fit_dir = '2017-12-15_13:42:19_407_L1=40_L3=0,1_N1=200_N3=50_GN_FS';
+% fit_dir = '2017-12-15_13:42:19_407_L1=40_L3=0,1_N1=200_N3=50_GN_FS';
 
 fit_path = strcat('/home/argo/masterarbeit/fits_data/', fit_dir, '/');
 
@@ -1189,7 +1215,7 @@ nameSubDirs(ismember(nameSubDirs,{'.','..'})) = [];
 
 
 fig = figure(1); clf;
-set(fig, 'Units', 'normalized', 'OuterPosition', [0., 0., 0.5, 1.]); 
+set(fig, 'Units', 'normalized', 'OuterPosition', [0., 0., 0.5, 1.1]); 
 
 ax1 = gca; set(ax1, 'YScale', 'log'); hold on
 
@@ -1219,20 +1245,21 @@ for i=1:length(nameSubDirs)
     xlim(ax1, [0, num_iterations]);
     xlabel('#Iteration');
     
+    legend(ax1, 'show', 'location', 'northeast', 'Orientation', 'horizontal');
     
-    if (i < 7)
-        legend(ax1, 'show', 'location', 'southwest', 'Orientation', 'vertical');
-    else
-        legend(ax1, 'show', 'location', 'northeast');
-    end
+%     if (i == 4 || i == 6 || i == 7 )
+%         legend(ax1, 'show', 'location', 'southwest', 'Orientation', 'vertical');
+%     else
+%         legend(ax1, 'show', 'location', 'northeast');
+%     end
     
     set(ax1,'FontSize',20, 'FontWeight', 'bold');
     grid(ax1, 'on');    
     
     print(fig, [fit_path, nameSubDirs{i}, '/optimization_progress'], '-dpng', '-r300');
-
-    
+ 
 end
+
 
 
 %% Compute Melting enthalpy Delta H, T_on and T_off from fit_data
@@ -1317,7 +1344,8 @@ end
 
 %% Gauss plot mit allen Gaussen einzeln
 
-fit_data = load('/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/2017-12-08_23:53:54_407_0,3Kmin_L1=40_L3=0,1/fit_data.mat');
+fit_data_path = '/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/2017-12-19_21:17:51_407_10Kmin_L1=40_L3=0,1/';
+fit_data = load([fit_data_path, 'fit_data.mat']);
 scaled_params = fit_data.optimization.p_optim_end.';
 params = reverse_scale_params(scaled_params, fit_data.optimization.c_p_param_type);
 
@@ -1351,7 +1379,8 @@ ylabel(ax1, 'c_p [mJ/(mg*K)]');
 legend(ax1, 'show', 'location', 'northwest')
 xlim(ax1, [100 140]);
 
-save_path = '/home/argo/masterarbeit/thesis/images/c_p_example'
+save_path = [fit_data_path, 'Gaussians_splitted'];
+% save_path = '/home/argo/masterarbeit/thesis/images/c_p_example'
 print(fig1, save_path, '-dpng', '-r200');
     
 
@@ -1438,7 +1467,7 @@ for i=1:length(nameSubDirs)
 end
 
 
-%% Symbolically obtain inflection points of FS
+%% Berechnung Wendepunkte und T_on, T_off von FS und plotte huebsches Bild
 
 syms T;
 p = sym('p', [1 4]);
@@ -1459,6 +1488,8 @@ grid on;
 fs_params = ones(7,1);
 fs_params(3) = 1.2;
 
+fs_params = [1.20   1.00   0.89   0.68   1.05   0.80   0.96].';
+
 c_p = c_p_fs(T_domain, fs_params);
 
 h_c_p = plot(ax1, T_domain, c_p, 'DisplayName', 'c_p(T)', 'Linewidth', 1.5);
@@ -1471,6 +1502,8 @@ sr = unscaled_params(4);
 z = unscaled_params(5);
 m = unscaled_params(6);
 b = unscaled_params(7);
+
+
 
 c1 = log(r) / log(sr)^2;
 c2 = (sr^2 - 1) / (wr*sr);
@@ -1511,20 +1544,21 @@ h_base = plot(ax1, T_domain, m*T_domain + b, '--', 'color', 'm', ...
     'DisplayName', 'Base line', 'Linewidth', 1.5);
 
 
+
 [T_on, T_off] = compute_T_on_off(fs_params, 'fraser_suzuki')
 
 
-xticks([T_on, T_infl_1, T_infl_2, T_off]);
-xticklabels({'T_{on}', 'T_{infl,1}', 'T_{infl,2}', 'T_{off}'});
-xlabel('T [degC]')
-ylabel('c_p [mJ/(mg*K)]')
-%legend('show', 'location', 'northwest');
-legend([h_c_p, h_infl, h_infl_tangent, h_base], 'location', 'northwest');
-set(ax1, 'FontSize',20)
-
-
-save_path = '/home/argo/masterarbeit/thesis/images/T_on_T_off_illustration';
-print(fig, save_path, '-dpng', '-r200');
+% xticks([T_on, T_infl_1, T_infl_2, T_off]);
+% xticklabels({'T_{on}', 'T_{infl,1}', 'T_{infl,2}', 'T_{off}'});
+% xlabel('T [degC]')
+% ylabel('c_p [mJ/(mg*K)]')
+% %legend('show', 'location', 'northwest');
+% legend([h_c_p, h_infl, h_infl_tangent, h_base], 'location', 'northwest');
+% set(ax1, 'FontSize',20)
+% 
+% 
+% save_path = '/home/argo/masterarbeit/thesis/images/T_on_T_off_illustration';
+% print(fig, save_path, '-dpng', '-r200');
 
 
 
@@ -1538,7 +1572,6 @@ c_p_meas_data = calc_cp('ExpDat_16-407-3_mitKorr_0,6Kmin_H.csv');
 c_p_meas = c_p_meas_data(:,2);
 T = c_p_meas_data(:,1);
 
-plot(ax1, T, c_p_meas, 'DisplayName', 'unfiltered')
 
 idx1 = find(T > 136.1, 1, 'first');
 idx2 = find(T < 153.4, 1, 'last');
@@ -1568,6 +1601,13 @@ m_base1 = poly_coeffs(1);
 b_base1 = poly_coeffs(2);
 
 
+plot(ax1, T, c_p_meas, 'DisplayName', 'unfiltered')
+plot(ax1, T, T*m_base2 + 2.24 * ones(length(T)), 'DisplayName', 'unfiltered')
+
+% fprintf('m_base1 = %1.3f\t  b_base1 = %1.2f\n', m_base1, b_base1);
+% fprintf('m_base2 = %1.3f\t  b_base2 = %1.2f\n', m_base2, b_base2);
+
+
 % Loop over all heat rates, get inflection tangents and compute
 % intersection with base lines.
 
@@ -1588,7 +1628,7 @@ T_infl_areas = ...
      128.2, 131.2, 132.4, 133.6; ...
      128.4, 130.9, 132.2, 133.2];
 
- 
+fprintf('\n');
 for i=1:length(dsc_list)
     
     dsc = DSC204_readFile(dsc_list{i});
@@ -1639,14 +1679,6 @@ for i=1:length(dsc_list)
 end
 
 
-
-return
-
-
-
-
-return
-
 %  Filter signal (does not work so well...)
 % windowSize = 1;
 % b = (1/windowSize)*ones(1,windowSize);
@@ -1664,23 +1696,155 @@ return
 
 % Fit to cubic spline
 
-T_domain = 110:0.001:160;
-dT = 3;
-s = spline(T(1:dT:end), c_p_meas(1:dT:end));
-s1 = fnder(s, 1);
-s2 = fnder(s, 2);
+% T_domain = 110:0.001:160;
+% dT = 3;
+% s = spline(T(1:dT:end), c_p_meas(1:dT:end));
+% s1 = fnder(s, 1);
+% s2 = fnder(s, 2);
+% 
+% c_p_spline = ppval(s, T_domain);
+% c_p_spline1 = ppval(s1, T_domain);
+% c_p_spline2 = ppval(s2, T_domain);
+% 
+% % plot(ax1, T_domain, c_p_spline, '--')
+% % plot(ax1, T_domain, c_p_spline1, '--')
+% plot(ax1, T_domain, c_p_spline2, '--')
+% 
+% 
+% legend('show', 'location', 'northwest')
+% grid
 
-c_p_spline = ppval(s, T_domain);
-c_p_spline1 = ppval(s1, T_domain);
-c_p_spline2 = ppval(s2, T_domain);
-
-% plot(ax1, T_domain, c_p_spline, '--')
-% plot(ax1, T_domain, c_p_spline1, '--')
-plot(ax1, T_domain, c_p_spline2, '--')
 
 
-legend('show', 'location', 'northwest')
-grid
+
+%% || gradient(L) ||_2 und firstorderopt von lsqnonlin ausgeben
+
+% fit_dir = '2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians';
+fit_dir = '2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used';
+
+
+
+fit_path = strcat('/home/argo/masterarbeit/fits_data/', fit_dir, '/');
+
+file_list = dir(fit_path);
+
+isub = [file_list(:).isdir]; %# returns logical vector
+nameSubDirs = {file_list(isub).name}';
+nameSubDirs(ismember(nameSubDirs,{'.','..'})) = [];
+
+fprintf('\n');
+for i=1:length(nameSubDirs)
+    
+    filepath = strcat(fit_path, nameSubDirs{i}, '/fit_data.mat');
+    fit_data = load(filepath);
+
+    F1 = fit_data.optimization.residuum_end;
+    J1 = fit_data.optimization.dqdp_end;
+    
+    grad_L_norm = norm(2* J1.' * F1);
+    lsqnonlin_NOC1 = fit_data.optimization.optim_output.firstorderopt;
+    
+    fprintf('Heatrate: %2.2f\t  %1.2f\t   %1.2f\n', fit_data.simulation.heat_rate, lsqnonlin_NOC1, grad_L_norm);
+    
+
+end
+
+
+
+%% Fit Fraser-Suzuki on c_p obtained by DIN formula
+
+dsc_list = {'ExpDat_16-407-3_mitKorr_20Kmin_H.csv', ...
+            'ExpDat_16-407-3_mitKorr_10Kmin_H.csv', ...
+            'ExpDat_16-407-3_mitKorr_5Kmin_H.csv', ...
+            'ExpDat_16-407-3_mitKorr_2,5Kmin_H.csv', ...
+            'ExpDat_16-407-3_mitKorr_1,25Kmin_H.csv', ...
+            'ExpDat_16-407-3_mitKorr_0,6Kmin_H.csv', ...
+            'ExpDat_16-407-3_mitKorr_0,3Kmin_H.csv'};
+            
+save_path_root = '/home/argo/masterarbeit/simulationen-data/c_p_DIN_FS_fit/';
+        
+fig1 = figure(1);
+ax1 = gca(); hold on
+
+
+% Start values for FS Fit
+h = 1.;
+r = 1.;
+wr = 1.5;
+sr = 1.;
+z = 1.09;
+m = 1.3;
+b = 0.84;
+
+p = [h, r, wr, sr, z, m, b];
+
+p = [1.1428    1.0000    0.9527    0.6780    1.0501    0.7961    0.9617];
+
+for i=1:length(dsc_list)
+    
+    cla;
+    
+    dsc = DSC204_readFile(dsc_list{i});
+    
+    c_p = calc_cp(dsc);
+    
+    index_T_dsc = [find(dsc.data(:,1) > 29, 1, 'first'), ...
+                   find(dsc.data(:,1) < 157.9, 1, 'last')];
+    
+    T_data = dsc.data(index_T_dsc(1):index_T_dsc(2),1);
+    c_p_data = c_p(index_T_dsc(1):index_T_dsc(2),2);
+    
+    T_data = T_data(~isnan(c_p_data));
+    c_p_data = c_p_data(~isnan(c_p_data));
+    
+    
+    c_p_fs_mod = @(p, T) c_p_fs(T, p);
+    
+    % Initial test
+    c_p = c_p_fs_mod(p, T_data);
+    
+    
+    lsqcurvefit_options = optimoptions(@lsqcurvefit, 'Display', 'none', ...
+        'MaxIterations', 1000, 'MaxFunctionEvaluations', 10000, ...
+        'FunctionTolerance', 1e-13, 'StepTolerance', 1e-10);
+    lb = -inf * ones(7,1);
+    ub = +inf * ones(7,1);
+    
+    lb(2) = 1.;
+    ub(2) = 1.;
+    
+    p = lsqcurvefit(c_p_fs_mod, p, T_data, c_p_data, lb, ub, lsqcurvefit_options);
+    
+    c_p_fit = c_p_fs(T_data, p);
+    
+    plot(ax1, T_data, c_p_data, 'x', 'DisplayName', 'Measurement data');
+    plot(ax1, T_data, c_p_fit, 'DisplayName', 'Fraser-Suzuki Fit');
+    legend(ax1, 'show', 'location', 'northwest')
+    
+    p_unscaled = reverse_scale_params(p.', 'fraser_suzuki').';
+    
+    save_path = [save_path_root, num2str(dsc.Tinfo.Tstep), 'Kmin'];
+    print(fig1, save_path, '-dpng', '-r200');
+
+    [T_on, T_off] = compute_T_on_off(p.', 'fraser_suzuki');
+    
+    p_latent = p;
+    p_latent(6:7) = 0.;  % disable linear and constant part
+    c_p_fct_handle = @(T) c_p_fs(T, p_latent);
+    dH = integral(c_p_fct_handle, 30,200);
+    
+    fprintf('\nHeat rate: %1.2f\n', dsc.Tinfo.Tstep);
+    fprintf('Params scaled: %1.2f   %1.2f   %1.2f   %1.2f   %1.2f   %1.2f   %1.2f\n', ...
+        p(1), p(2), p(3), p(4), p(5), p(6), p(7));
+    fprintf('Params unscaled: %1.2f   %1.2f   %1.2f   %1.2f   %1.2f   %1.2f   %1.2f\n', ...
+        p_unscaled(1), p_unscaled(2), p_unscaled(3), p_unscaled(4), ...
+        p_unscaled(5), p_unscaled(6), p_unscaled(7));
+    fprintf('T_on: %1.3f     T_off: %1.3f    T_max: %1.3f   dH: %1.3f\n', ...
+        T_on, T_off, p_unscaled(5), dH);
+    
+end
+
+
 
 
 

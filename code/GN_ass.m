@@ -76,16 +76,20 @@ while (NOC1 > TOL_NOC1 && dx_norm > TOL_dx_norm && t_k > TOL_t_k && i <= max_ite
         [F3, J3] = F3_func(x_k);
 
         % Build total current equality constraints from F2 and actice F3
-        F_active = [F2; F3(A)];
-        J_active = [J2; J3(A,:)];
+        F2_active = [F2; F3(A)];
+        J2_active = [J2; J3(A,:)];
 
         % Solve equality constraint LSQ subproblem
-        [dx, Q1, R_bar] = GN_step_constr(F1, J1, F_active, J_active, options);    
+        [dx, Q1, R_bar] = GN_step_constr(F1, J1, F2_active, J2_active, options);    
         lambda = R_bar \ (Q1.' * (J1.' * J1) * dx + Q1.' * J1.' * F1);
         
-        F1_norm = norm(F1);       
-        %NOC1 = norm(2*J1.'*F1 - J2.'*lambda); % constraint case dim error...
-        NOC1 = norm(2*J1.'*F1);
+        F1_norm = norm(F1);
+        if (isempty(lambda) || isempty(J2_active))
+            NOC1 = norm(2*J1.'*F1);
+        else
+            NOC1 = norm(2*J1.'*F1 - J2_active.'*lambda);
+        end
+        
         
         F1_norm_vec = [F1_norm_vec; F1_norm];
         NOC1_vec = [NOC1_vec; NOC1];
@@ -170,11 +174,11 @@ while (NOC1 > TOL_NOC1 && dx_norm > TOL_dx_norm && t_k > TOL_t_k && i <= max_ite
         
     % Build total current equality constraints from F2 and active F3
     F_active = [F2; F3(A)];
-    J_active = [J2; J3(A,:)];
+    J2_active = [J2; J3(A,:)];
 
     % Solve equality constraint LSQ subproblem
     if (NOC1_vec(end) > 0.1 || true)
-        [dx, Q1, R_bar] = GN_step_constr(F1, J1, F_active, J_active, options);    
+        [dx, Q1, R_bar] = GN_step_constr(F1, J1, F_active, J2_active, options);    
         lambda = R_bar \ (Q1.' * (J1.' * J1) * dx + Q1.' * J1.' * F1);
     else
         % Gradient direction for testing (currently set inactive!)
@@ -204,9 +208,11 @@ while (NOC1 > TOL_NOC1 && dx_norm > TOL_dx_norm && t_k > TOL_t_k && i <= max_ite
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%% OUTPUT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     dx_norm = sqrt(dx.' * dx);
     F1_norm = norm(F1);
-    %NOC1 = (2*J1.'*F1 - J2.'*lambda); % constraint case dim error...
-    NOC1 = norm(2*J1.'*F1);
-
+    if (isempty(lambda) || isempty(J2_active))
+        NOC1 = norm(2*J1.'*F1);
+    else
+        NOC1 = norm(2*J1.'*F1 - J2_active.'*lambda);
+    end
     
     % Save optimization process variables
     F1_norm_vec = [F1_norm_vec; F1_norm];

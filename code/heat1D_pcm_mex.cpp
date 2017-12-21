@@ -653,13 +653,13 @@ void mexFunction (int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 	    integrator->activateFeature( IIntegrator::Feature_Forward_Sensitivity_Error_Control );
 	    double fwdSensRelTolVec[np];
 	    for (svULong i=0; i < np; ++i) {
-	    	fwdSensRelTolVec[i] = 1e-6;
+	    	fwdSensRelTolVec[i] = 5e-6;
 	    }
 
 	    // Set fwdSensRelTol down for parameters we do not estimate anyway.
 	    if (np == 7) {
 	    	// if Fraser-Suzuki disable fwdSensRelTol for parameter "r"
-	    	fwdSensRelTolVec[1] = 1e-4;
+	    	fwdSensRelTolVec[1] = 1e-5;
 	    	//fwdSensRelTolVec[5] = 1e-2;
 	    } else if (np == 32) {
 	    	// if Linear Combination of Gaussians, deactivate 3 or 5 Gaussians
