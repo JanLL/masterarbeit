@@ -14,6 +14,7 @@
 \usepackage{subcaption}
 \usepackage{bbm}
 \usepackage{pdflscape}
+\usepackage[linesnumbered,ruled]{algorithm2e}
 
 
 
@@ -2352,6 +2353,46 @@ We now compare the obtained specific heat capacity functions $c_p(T)$ from the d
 	\caption{Zoomed in view of the specific heat capacities $c_p(T)$ obtained by optimization for all heat rates.}
 	\label{fig:FS_all_c_p}
 \end{figure}
+
+
+Finally the Gauss Newton optimization process has been examined, depicted in Fig. \ref{fig:optimization_progress_FS} for all heat rates. In the following the used norm will always refer to the euclidean norm $|| \cdot ||_2$.
+
+
+Algorithm \ref{alg:Gauss_Newton_unconstrained} shows ...
+
+\begin{algorithm}
+
+	\SetKwInOut{Input}{Input}
+	\SetKwInOut{Output}{Output}
+	    
+	\Input{Start value $x_{start}$, stepsize decrease rate $d$ \\ 
+	termination criteria $[NOC1]_{TOL}$, $\Delta x_{TOL}$, $t_{TOL}$ and iterations$_{max}$}
+	\Output{End value $x_{end}$ \\ \mbox{}\\}
+
+	Initialize $k=0$, $x^{(0)} = x_{start}$
+	
+	\While{
+			$|| \nabla f ||_2 = || 2 J_1^T F1 ||_2 > [NOC1]_{TOL} \ \text{and}$ \\
+			\qquad \qquad $|| \Delta x^{(k)} ||_2 > \Delta x_{TOL} \ \text{and}$ \\
+			\qquad \qquad $t^{(k)} > t_{TOL} \ \text{and}$ \\
+			\qquad \qquad $k < \text{iterations}_{max}$}
+	{
+		Compute residuum $F_1(x^{(k)})$ and jacobian $J_1(x^{(k)})$ \\
+		Solve $J_1(x^{(k)})^T J_1(x^{(k)}) \Delta x^{(k)} = J_1(x^{(k)})^T F_1(x^{(k)})$ \\
+		Set $t^{(k)} = 1$ \\
+		Compute next potential state $x^{(k+1)} = x^{(k)} + t^{(k)} \cdot \Delta x^{(k)}$ and \\ \quad corresponding residuum $F_1(x^{(k+1)})$ \\
+		
+		\If{$t^{(k)} > t_{TOL} \text{ and } || F_1(x^{(k+1)}) ||_2 \ge || F_1(x^{(k)}) ||_2$}
+		{Set $t^{(k)} = \frac{t^{(k)}}{d}$ \\
+		goto (7)}
+		\Else{
+			Set $k := k + 1$ \\
+		}
+	}
+	Set $x_{end} = x^{(k)}$
+	\caption{Unconstrained Gauss Newton}
+	\label{alg:Gauss_Newton_unconstrained}
+\end{algorithm}
 
 
 \begin{itemize}
