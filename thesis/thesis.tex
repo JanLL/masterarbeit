@@ -125,19 +125,19 @@
  
 
  \addsec{Abstract}
- bla bla bla
+ \todo{!}
  
  
  \newpage
 
 \addsec{Zusammenfassung}
-blubb !
+\todo{!}
 
 \newpage
 \pagenumbering{arabic}
 
 \section{Introduction}
-In this thesis we examine so called phase change materials (PCM). A popular application are heating pads (see Fig. \ref{fig:heating_pad}) which are liquid in a fully charged state. Folding induces a phase change to a solid state where energy is released and therefore the temperature increases. They can be easily recharged by applying a temperature above the melting point (e.g. with boiling water). 
+In this thesis we examine so called phase change materials (PCM). A popular application are heating pads (see Fig. \ref{fig:heating_pad}) which are liquid in fully charged state. Folding induces a phase change to a solid state where energy is released and therefore the temperature increases. They can be easily recharged by applying a temperature above the melting point (e.g. with boiling water). 
 
 \begin{wrapfigure}{l}{0.45\textwidth}
 	\includegraphics[width=0.45\textwidth]{/home/argo/masterarbeit/thesis/images/handwaermer[wiki].jpg}
@@ -145,8 +145,8 @@ In this thesis we examine so called phase change materials (PCM). A popular appl
 	\label{fig:heating_pad}
 \end{wrapfigure}
 
-In general PCMs work as an energy buffer. Another application are industry processes to store the process heat for later usage \cite{pcm_process_heat}. Furthermore they can be used to optimize photovoltaic cells because their efficiency is temperature dependent and has a maximum at a certain point. PCMs are able to stabilize the temperature where the efficiency is maximal \cite{pcm_solar_cells}. 
-As a last example we deal with insulations of houses. During the day when it is hot, the PCM becomes liquid and absorb heat from outside, so they work as a cooling system. On the contrary at night when it is cold outside the PCM becomes solid, releases heat and work as a heating \cite{pcm_house_insulation}. 
+In general PCMs work as an energy buffer. Another application are industry processes to store the process heat for later usage \cite{pcm_process_heat}. Furthermore they can be used to optimize photovoltaic cells because their efficiency is temperature dependent with a maximum at a certain point. PCMs are able to stabilize the temperature where the efficiency is maximal \cite{pcm_solar_cells}. 
+A last example are insulations of houses. During the day when it is hot, the PCM becomes liquid and absorb heat from outside, so they work as a cooling system. On the contrary at night when it is cold outside the PCM becomes solid, releases heat and work as a heating \cite{pcm_house_insulation}. 
 
 
 An important physical quantity is the specific heat capacity $c_p$ which tells us at which temperature the phase transition occurs and how much energy can be stored. The major goal of this thesis is to simulate the measuring process of a differential scanning calorimetry (DSC) where a PCM undergoes a phase transition and perform a parameter estimation in order to get the PCM's specific heat capacity. \\
@@ -178,7 +178,9 @@ Heat $Q$ is the energy that flows from a warmer to a colder object because of th
 
 
 
-Probably the most important physical quantity for us is the specific heat capacity $c_p$ which is a temperature dependent material property that tells us how much energy is needed to increase the temperature of $1kg$ of this material by $1K$. Since we are primarily interested in the phase change we handle with the so called apparent specific heat capacity which includes a peak at the melting point with a certain area equal to the melting enthalpy. For a pure substance this peak would be ideally a Dirac delta function (see Fig. \ref{fig:physics_c_p_dirac_delta}). A constant heat flux entering such a pure substance increases the temperature until phase change. Then the heat is absorbed in order to perform the phase transition while the temperature stays constant. Finally after the phase change has finished the temperature increases again. 
+Probably the most important physical quantity for us is the specific heat capacity $c_p$ which is a temperature dependent material property that tells us how much energy is needed to increase the temperature of $1kg$ of this material by $1K$. 
+Since we are primarily interested in the phase change we handle with specific heat capacities which have a peak at the melting point with a certain area equal to the melting enthalpy. 
+For a pure substance this peak would be ideally a Dirac delta function (see Fig. \ref{fig:physics_c_p_dirac_delta}). A constant heat flux entering such a pure substance increases the temperature until phase change. Then the heat is absorbed in order to perform the phase transition while the temperature stays constant. Finally after the phase change has finished the temperature increases again. 
 In mixed substances like PE in our case with different lengths of the individual polymer chains or due to lattice defects the peak extends over a temperature range. In the case of lattice defects the atom's binding energies are decreased which lowers the phase transition's temperature partially. The corresponding shape of the specific heat capacity is shown in Fig. \ref{fig:physics_fraser_suzuki} and is called Fraser-Suzuki peak. It is not known what shape of $c_p(T)$ we should expect exactly for a polymer and therefore task in this thesis to find out. \\
 The last physical quantity to introduce is the melting enthalpy $\Delta H$ which is in the case of constant pressure the heat needed to perform the phase transition. Considering the graph $c_p(T)$, the area of the phase change peak is equal to the melting enthalpy. This is illustrated in Fig. \ref{fig:physics_fraser_suzuki}.
 
@@ -283,7 +285,7 @@ Next the total heat flux $\varPhi$ into the volume $V$ is
 	\varPhi = - \int_{\partial V} \phi \cdot n \ dA = - \int_{V} \nabla \cdot \phi \ dV
 \end{equation}
 
-where $\phi$ is the heat flux density, $n$ is the normal vector pointing outside $dA$ (therefore the minus in front) and $\partial V$ is the surface of $V$. We have used Gauss theorem to transform the surface integral into a volume integral. \\
+where $\phi$ is the heat flux density, $n$ is the normal vector pointing outside infinitesimal surface element $dA$ (therefore the minus in front) and $\partial V$ is the surface of $V$. We have used Gauss theorem to transform the surface integral into a volume integral. \\
 Now we assume that there are no further sources and sinks of inner energy for volume $V$ such that it holds
 
 \begin{equation}
@@ -298,7 +300,7 @@ for $\rho u$ continuous \todo{stimmt das?!}. The heat flux density is now comput
 	\label{eq:fouriers_law}
 \end{equation}
 
-with the heat conductivity $\lambda$. Since \eqref{eq:heat_eq_derivation_1} must hold for all volumes we can equate the integrands and insert \eqref{eq:fouriers_law} such that we get for a constant mass density $\rho$ and $u = u(T(x,t))$
+where $\lambda$ is the heat conductivity. Since \eqref{eq:heat_eq_derivation_1} must hold for all volumes we can equate the integrands and insert \eqref{eq:fouriers_law} such that we get for a constant mass density $\rho$ and $u = u(T(x,t))$
 
 \begin{align}
 	\frac{\partial}{\partial t}(\rho u) = & \ \nabla \cdot \left[ \lambda \cdot \nabla T \right] \\
@@ -382,11 +384,11 @@ Note that the physical quantity measured is an electrical potential difference $
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/dsc_funktionsprinzip.png}
-	\caption{Principle experimental scheme of DSC which has been used for measurements. Two crucibles (an empty reference one and the other filled with the sample to examine) are connected to the furnace with a silver plate. The furnace' temperature increases with time and because of thermal differences a temperature difference $\Delta T$ is measured with temperature sensors placed at the crucibles. The final measurement quantity we obtain by calibration is the heat flux into the sample $\varPhi_s^2$.}
+	\caption{Principle experimental scheme of DSC from which the used measurement data comes from. Two crucibles (an empty reference one and the other filled with the sample to examine) are connected to the furnace with a silver plate. The furnace' temperature increases with time and because of thermal differences a temperature difference $\Delta T$ is measured with temperature sensors placed at the crucibles. The final measurement quantity we obtain by calibration is the heat flux into the sample $\varPhi_s^2$.}
 	\label{fig:heat_flux_DSC}
 \end{figure}
 
-The heat flux DSC (see Fig. \ref{fig:heat_flux_DSC}) extends now DTA by computing the heat flux into the sample $\Phi_S^2$ from the temperature difference using an additional calibration. 
+The heat flux DSC (see Fig. \ref{fig:heat_flux_DSC}) extends now DTA by computing the heat flux into the sample $\varPhi_S^2$ from the temperature difference using an additional calibration. 
 Pure materials with known melting temperature $T_{\text{Kal}}$ and melting heat $\Delta Q_{\text{Kal}}$ are measured, giving the measuring signal $\Delta U(t)$ with a peak at the phase change. 
 The area of this peak is assumed to be proportional with constant $sens$ called sensitivity to the melting heat due to
 
@@ -461,7 +463,7 @@ This is done for a set of calibration materials such that we get a mapping $sens
 	\caption{Sensitivity calibration graphs: (a) Computing for a material with known melting point $T_{\text{Kal}}$ and enthalpy $\Delta Q_{\text{Kal}}$ the area $A_{\Delta U}$ under the measuring signal $\Delta U(t)$ graph which is related to melting enthalpy via factor $sens$. Perform this for several materials such that in (b) we can interpolate $sens=\frac{A_{\Delta U}}{\Delta Q_{\text{Kal}}}$ for a certain temperature range.}
 \end{figure}
 
-With the mapping $\Phi(T_{ref}) = \frac{\Delta U(T_{ref})}{sens(T_{ref})}$ the heat flux into the sample then can be computed for a measurement signal $\Delta U$ of unknown materials. 
+With the mapping $\varPhi(T_{ref}) = \frac{\Delta U(T_{ref})}{sens(T_{ref})}$ the heat flux into the sample then can be computed for a measurement signal $\Delta U$ of unknown materials. 
 
 
 
@@ -471,11 +473,11 @@ With the mapping $\Phi(T_{ref}) = \frac{\Delta U(T_{ref})}{sens(T_{ref})}$ the h
 The common way to perform the DSC calibration, measurement and compute the specific heat capacity $c_p$ is described in detail in DIN 11357 \cite{DIN_11357}. By assuming a proportionality between the heat flux into the sample and the sample's heat capacity one gets the equation
 
 \begin{equation}
-	c_p^S(T) = c_p^{R}(T) \cdot \frac{m^R}{m^S} \cdot \frac{\Phi^S(T) - \Phi^0(T)}{\Phi^R(T) - \Phi^0(T)}
+	c_p^S(T) = c_p^{R}(T) \cdot \frac{m^R}{m^S} \cdot \frac{\varPhi^S(T) - \varPhi^0(T)}{\varPhi^R(T) - \varPhi^0(T)}
 	\label{eq:c_p_formula_DIN}
 \end{equation}
 
-where $S$ and $R$ denote the sample respectively reference. Reference means here a material with known specific heat capacity $c_p^R(T)$, not to be mistaken with the reference side of the experimental setup. In our case this reference material is Saphir. $m$ is the mass and $\Phi^0$ is the heat flux if both crucibles are empty to compensate asymmetries. \\
+where $S$ and $R$ denote the sample respectively reference. Reference means here a material with known specific heat capacity $c_p^R(T)$, not to be mistaken with the reference side of the experimental setup. In our case this reference material is Saphir. Furthermore $m$ is the mass and $\Phi^0$ is the heat flux if both crucibles are empty to compensate asymmetries. \\
 In Fig. \ref{fig:heat_flux_measurements} the measurement data of the heat flux into the PCM is shown for all heat rates dependent on the temperature at the reference crucible. Using \eqref{eq:c_p_formula_DIN} the computed specific heat capacities for the PCM are shown in Fig. \ref{fig:c_p_DIN_formula}. As one can see for higher heat rates the peak position shifts to higher temperatures and furthermore the peak is smeared out. This is known as the smearing problem since $c_p$ is a material property and must be equal for all heat rates.
 
 
@@ -491,7 +493,7 @@ In Fig. \ref{fig:heat_flux_measurements} the measurement data of the heat flux i
 		\caption{}
 		\label{fig:c_p_DIN_formula}
 	\end{subfigure}
-	\caption{(a) Heat flux measurement values $\eta^{\varPhi}(T_{ref})$ and (b) computed $c_p(T)$ using eq. \eqref{eq:c_p_formula_DIN} with distinctly and visible smearing effect for higher heat rates.}
+	\caption{(a) Heat flux measurement values $\eta^{\varPhi}(T_{ref})$ and (b) computed $c_p(T)$ using eq. \eqref{eq:c_p_formula_DIN} with distinctly smearing effect for higher heat rates.}
 \end{figure}
 
 
