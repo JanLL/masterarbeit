@@ -306,7 +306,7 @@ for $\rho u$ continuous \todo{stimmt das?!}. The heat flux density is now comput
 	\label{eq:fouriers_law}
 \end{equation}
 
-where $\lambda$ is the heat conductivity. Since \eqref{eq:heat_eq_derivation_1} must hold for all volumes we can equate the integrands and insert \eqref{eq:fouriers_law} such that we get for a constant mass density $\rho$ and $u = u(T(x,t))$
+where $\lambda$ is the heat conductivity. Since \cref{eq:heat_eq_derivation_1} must hold for all volumes we can equate the integrands and insert \cref{eq:fouriers_law} such that we get for a constant mass density $\rho$ and $u = u(T(x,t))$
 
 \begin{align}
 	\frac{\partial}{\partial t}(\rho u) = & \ \nabla \cdot \left[ \lambda \cdot \nabla T \right] \\
@@ -484,7 +484,7 @@ The common way to perform the DSC calibration, measurement and compute the speci
 \end{equation}
 
 where $S$ and $R$ denote the sample respectively reference. Reference means here a material with known specific heat capacity $c_p^R(T)$, not to be mistaken with the reference side of the experimental setup. In our case this reference material is Saphir. Furthermore $m$ is the mass and $\Phi^0$ is the heat flux if both crucibles are empty to compensate asymmetries. \\
-In \cref{fig:heat_flux_measurements} the measurement data of the heat flux into the PCM is shown for all heat rates dependent on the temperature at the reference crucible. Using \eqref{eq:c_p_formula_DIN} the computed specific heat capacities for the PCM are shown in \cref{fig:c_p_DIN_formula}. As one can see for higher heat rates the peak position shifts to higher temperatures and furthermore the peak is smeared out. This is known as the smearing problem since $c_p$ is a material property and must be equal for all heat rates.
+In \cref{fig:heat_flux_measurements} the measurement data of the heat flux into the PCM is shown for all heat rates dependent on the temperature at the reference crucible. Using \cref{eq:c_p_formula_DIN} the computed specific heat capacities for the PCM are shown in \cref{fig:c_p_DIN_formula}. As one can see for higher heat rates the peak position shifts to higher temperatures and furthermore the peak is smeared out. This is known as the smearing problem since $c_p$ is a material property and must be equal for all heat rates.
 
 
 \begin{figure}[H]
@@ -499,7 +499,7 @@ In \cref{fig:heat_flux_measurements} the measurement data of the heat flux into 
 		\caption{}
 		\label{fig:c_p_DIN_formula}
 	\end{subfigure}
-	\caption{(a) Heat flux measurement values $\eta^{\varPhi}(T_{ref})$ and (b) computed $c_p(T)$ using eq. \eqref{eq:c_p_formula_DIN} with distinctly smearing effect for higher heat rates.}
+	\caption{(a) Heat flux measurement values $\eta^{\varPhi}(T_{ref})$ and (b) computed $c_p(T)$ using eq. \cref{eq:c_p_formula_DIN} with distinctly smearing effect for higher heat rates.}
 \end{figure}
 
 
@@ -546,7 +546,7 @@ subtract both equations and reorder again we get
 
 which has a higher error order but at the expense of an additional function evaluation. \\
 
-Second order derivatives can be gained analogously by adding \eqref{eq:finite_differences_taylor_exp_+} and \eqref{eq:finite_differences_taylor_exp_-}:
+Second order derivatives can be gained analogously by adding \cref{eq:finite_differences_taylor_exp_+} and \cref{eq:finite_differences_taylor_exp_-}:
 
 \begin{equation}
 \frac{\partial^2 f}{\partial^2 x}(x) = \frac{f(x-h) - 2 \cdot f(x) + f(x+h)}{h^2} + \mathcal{O}(h^3)
@@ -573,7 +573,7 @@ In the spatial discretization of partial differential equations one often choose
 
 
 
-Multiplying \eqref{eq:finite_differences_taylor_exp_non-homogenous_1} with $\alpha$ and adding \eqref{eq:finite_differences_taylor_exp_non-homogenous_2} gives
+Multiplying \cref{eq:finite_differences_taylor_exp_non-homogenous_1} with $\alpha$ and adding \cref{eq:finite_differences_taylor_exp_non-homogenous_2} gives
 
 \begin{align}
 \alpha f(x-h) + f(x+\alpha h) = \alpha f(x) + \alpha \frac{h^2}{2} \frac{\partial^2 f}{\partial^2 x}(x) + f(x) + \frac{\alpha^2 h^2}{2} \frac{\partial^2 f}{\partial^2 x}(x) + \mathcal{O}(h^3)  \\
@@ -585,7 +585,7 @@ Multiplying \eqref{eq:finite_differences_taylor_exp_non-homogenous_1} with $\alp
 \label{eq:2_point_formula_inhomogeneous}
 \end{equation} \\
 
-Note that for a homogeneous grid ($\alpha=1$) this is obviously equal to \eqref{eq:finite_difference_2nd_der}. \\
+Note that for a homogeneous grid ($\alpha=1$) this is obviously equal to \cref{eq:finite_difference_2nd_der}. \\
 
 \begin{figure}[H]
 	\centering
@@ -650,7 +650,7 @@ The last $m$ intermediate variables represent the solution vector. So finally th
 	\label{tab:first_order_forward_sweep}
 \end{table}
 
-In order to illustrate this algorithm we will apply it on the example function \eqref{eq:AD_example}:
+In order to illustrate this algorithm we will apply it on the example function \cref{eq:AD_example}:
 
 \begin{table}[H]
 	\centering
@@ -667,7 +667,7 @@ In order to illustrate this algorithm we will apply it on the example function \
 		Extract  solution & $y_1 = v_5$ & $\dot{y}_1 = \dot{v}_5$ \\
 		& $y_2 = v_6$ & $\dot{y}_2 = \dot{v}_6$ \\ \hline
 	\end{tabular}
-	\caption{First order forward sweep applied on \eqref{eq:AD_example}.}
+	\caption{First order forward sweep applied on \cref{eq:AD_example}.}
 \end{table}
 
 
@@ -703,7 +703,7 @@ Next all contributions to the adjoint intermediate variables will be successivel
 	\label{tab:first_order_adjoint_sweep}
 \end{table}
 
-Again we apply this algorithm on the exemplary function \eqref{eq:AD_example}:
+Again we apply this algorithm on the exemplary function \cref{eq:AD_example}:
 
 \begin{table}[H]
 	\centering
@@ -725,7 +725,7 @@ Again we apply this algorithm on the exemplary function \eqref{eq:AD_example}:
 		& $y_2 = v_6$ & $\bar{x}_2 = \bar{v}_{-1}$ \\
 		& & $\bar{x}_1 = \bar{v}_{-2}$	\\ \hline
 	\end{tabular}
-	\caption{First order adjoint sweep applied on \eqref{eq:AD_example}}
+	\caption{First order adjoint sweep applied on \cref{eq:AD_example}}
 \end{table} 
 
 
@@ -772,7 +772,7 @@ It is defined as
 
 where $\alpha \in \mathbb{R}$, $\alpha_{0m},\alpha_{km} \ne 0 \ \forall \ m$ are the coefficients which can be computed by multiplying the step width with the derivative of the interpolation polynomial.  \\
 BDF methods up to order 6 are used in practice because these are zero-stable \cite{numerik1_skript_koerkel}. \\
-Since \eqref{eq:bdf_formula} is a non-linear system of equations it is solved iteratively using Newton's method. In order to obtain a good starting point a so called predictor is used, which is the integration polynomial of the previous integration step. With this initial guess for $x_{m+k}$ the Newton method can be applied to get the so called corrector polynomial, which satisfies the differential equation at $t_{m+k}$. \\
+Since \cref{eq:bdf_formula} is a non-linear system of equations it is solved iteratively using Newton's method. In order to obtain a good starting point a so called predictor is used, which is the integration polynomial of the previous integration step. With this initial guess for $x_{m+k}$ the Newton method can be applied to get the so called corrector polynomial, which satisfies the differential equation at $t_{m+k}$. \\
 As we want the numerical integrator both to perform large integration steps to minimize the required time to solve the IVP and limit the inevitable numerical errors on a predefined value we are dependent on a strategy to choose the step width $h_{m+k-1}$ accordingly. This is done by estimating the local error in each integration step. Either the local error is smaller than some tolerance then the step width will be increased, otherwise decreased until the local error tolerance is satisfied. \\
 
 
@@ -873,7 +873,7 @@ In this section we first treat the general nonlinear optimization problem (NLP) 
 
 where $x \in \mathbb{R}^n$ is the optimization variable, $f\text{: } \mathbb{R}^n \rightarrow \mathbb{R}$ is the objective function, $F_2\text{: } \mathbb{R}^n \rightarrow \mathbb{R}^{m_2}$ and $F_3\text{: } \mathbb{R}^n \rightarrow \mathbb{R}^{m_3}$ are the equality and respectively inequality constraints. Index $m_1$ is missing because we will need this later in the context of a least squares problem. The results shown in this chapter can be found for example in \cite{nonlinear_optimiziation_wright}. \\
 
-The Lagrange function of \eqref{eq:NLP_formulation} is defined as
+The Lagrange function of \cref{eq:NLP_formulation} is defined as
 
 \begin{equation}
 	\mathcal{L}(x,\lambda,\mu) := f(x) - \lambda^T F_2(x) - \mu^T F_3(x)
@@ -1021,7 +1021,7 @@ with the generalized inverse $J^+$. An important result \cite{diss_bock} is
 \subsubsection{Numerical solution}
 \label{sec:GN_numerical_solution}
 
-For the numerical solution of \eqref{eq:GN_KKT_system} we will successively introduce the unconstrained, the equality constrained and the general equality and inequality constrained case because they are built up on each other, c.f. \cite{numerical_methods_lsq_Bjorck}. All algorithms compute steps $\Delta x^{(k)}$ in iteration $k$. The final solution is then computed iteratively by
+For the numerical solution of \cref{eq:GN_KKT_system} we will successively introduce the unconstrained, the equality constrained and the general equality and inequality constrained case because they are built up on each other, c.f. \cite{numerical_methods_lsq_Bjorck}. All algorithms compute steps $\Delta x^{(k)}$ in iteration $k$. The final solution is then computed iteratively by
 
 \begin{equation}
 	x^{(k+1)} = x^{(k)} + t^{(k)} \Delta x^{(k)}
@@ -1052,7 +1052,7 @@ Based on decomposing $J_1$ two solutions are shown:
 			0
 		\end{pmatrix}
 	\end{equation}
-	where $Q$ is an orthogonal matrix and $\bar{R}$ is an upper triangular matrix. Inserting in the objective function \eqref{eq:numerical_solution_LSQ} and omitting factor $\frac{1}{2}$ gives
+	where $Q$ is an orthogonal matrix and $\bar{R}$ is an upper triangular matrix. Inserting in the objective function \cref{eq:numerical_solution_LSQ} and omitting factor $\frac{1}{2}$ gives
 	
 	\begin{align}
 		|| F_1 + J_1 \Delta x ||_2^2 & = || F_1 + Q R \Delta x ||_2^2 = || Q( Q^T F_1 + R \Delta x ||_2^2 \\
@@ -1092,7 +1092,7 @@ Based on decomposing $J_1$ two solutions are shown:
 	\end{equation}
 	
 	with $U, V$ orthogonal and $\bar{\Sigma}$ diagonal. Let $r := rank(J_1) \le n$. Then $\bar{\Sigma}$ has the singular values $\sigma_1 \ge \sigma_2 \ge ... \ge \sigma_r > 0 > ... > 0$ on the diagonal. \\
-	Inserting modifies \eqref{eq:numerical_solution_LSQ} where we omit again factor $\frac{1}{2}$ by
+	Inserting modifies \cref{eq:numerical_solution_LSQ} where we omit again factor $\frac{1}{2}$ by
 	
 	\begin{align}
 		|| F_1 + J_1 \Delta x ||_2^2 & = || F_1 + U \Sigma \overbrace{V^T \Delta x}^{=: \Delta y} ||_2^2 = || U ( U^T F_1 + \Sigma \Delta y ||_2^2 \label{eq:numerical_solution_LSQ_SVD} \\
@@ -1108,7 +1108,7 @@ Based on decomposing $J_1$ two solutions are shown:
 		& = || \underbrace{U_1^T F_1}_{=: c} + \bar{\Sigma} \Delta y ||_2^2 + || U_2^T F_1 ||_2^2 \nonumber
 	\end{align}
 	
-	For $rank(J_1) < n$ the solution $\Delta y$ is not unique to minimize \eqref{eq:numerical_solution_LSQ_SVD}. By choosing
+	For $rank(J_1) < n$ the solution $\Delta y$ is not unique to minimize \cref{eq:numerical_solution_LSQ_SVD}. By choosing
 	
 	\begin{align}
 		\Delta y_i^* = 
@@ -1173,7 +1173,7 @@ With the solution $\Delta y_1^*$, recalling $\Delta x = Q \Delta y$ and the defi
 	\min_{\Delta y_2} \ \frac{1}{2} || (F_1 + A_1 \Delta y_1^*) + A_2 \Delta y_2 ||_2^2
 \end{align}
 
-which is an unconstrained least squares problem we discussed before. At last we need to compute $\Delta x = Q \Delta y$ for the final solution of \eqref{eq:numerical_soln_eq_constrained_LSQ}. \\
+which is an unconstrained least squares problem we discussed before. At last we need to compute $\Delta x = Q \Delta y$ for the final solution of \cref{eq:numerical_soln_eq_constrained_LSQ}. \\
 This procedure is called null space method. Another possibility is the method of direct elimination, see \cite{numerical_methods_lsq_Bjorck} for a detailed description.
 
 
@@ -1211,8 +1211,8 @@ We treat this problem with an active set strategy illustrated below, c.f. \cite{
 	If new inequality constraint gets active, add to active set $I^{(k)}$ and goto 1. \\
 	else goto 2.
 	
-	\item $x^{(k)}$ is stationary point of \eqref{active_set_strategy_substep}. Compute corresponding Lagrange multiplier $(\lambda, \mu)$. \\
-	If $\mu_i \ge 0 \ \forall \ i \in I^{(k)}$, $(x^{(k)},\lambda^{(k)},\mu^{(k)})$ is KKT-point of \eqref{eq:numerical_soln_ineq_constrained_LSQ}. \\
+	\item $x^{(k)}$ is stationary point of \cref{active_set_strategy_substep}. Compute corresponding Lagrange multiplier $(\lambda, \mu)$. \\
+	If $\mu_i \ge 0 \ \forall \ i \in I^{(k)}$, $(x^{(k)},\lambda^{(k)},\mu^{(k)})$ is KKT-point of \cref{eq:numerical_soln_ineq_constrained_LSQ}. \\
 	else remove \textbf{one} constraint with $\mu_i < 0$ from active set and goto 1.
 	
 \end{enumerate}
@@ -1248,7 +1248,7 @@ Since the measurement data $\eta$ is a random variable because of the statistica
 
 \begin{align}
 	C(x^*) = & \mathbb{E} [ \Delta x \Delta x^T ]
-	\ \stackrel{\eqref{eq:GN_solution_formal}}{=} \ J^+(x^*)
+	\ \stackrel{\cref{eq:GN_solution_formal}}{=} \ J^+(x^*)
 	\begin{pmatrix}
 	\beta^2  \mathbbm{1} & 0 \\
 	0 & 0
@@ -1285,7 +1285,7 @@ where $F_{1-\alpha}$ is the $1-\alpha$ quantile of the Fisher-distribution. The 
 		\theta_i := \sqrt{\gamma(\alpha)} \cdot \sqrt{C_{ii}(x^*)} \qquad \text{for } i=1,...,n
 	\end{equation}
 	
-	with $\gamma(\alpha)$ defined in \eqref{eq:stat_ana_fisher_dist} and $C_{ii}(x^*)$ are the diagonal elements of the covariance matrix obtained by \eqref{eq:stat_ana_covariance_matrix}. Then the linearized confidence region \eqref{eq:stat_ana_lin_confidence_region} is a subset of a cuboid with length $2 \theta_i$:
+	with $\gamma(\alpha)$ defined in \cref{eq:stat_ana_fisher_dist} and $C_{ii}(x^*)$ are the diagonal elements of the covariance matrix obtained by \cref{eq:stat_ana_covariance_matrix}. Then the linearized confidence region \cref{eq:stat_ana_lin_confidence_region} is a subset of a cuboid with length $2 \theta_i$:
 	\begin{equation}
 		G_L(\alpha, x^*) \subseteq [x_1^* - \theta_1, x_1^* + \theta_1] \times ... \times [x_n^* - \theta_n, x_n^* + \theta_n]
 	\end{equation}
@@ -1298,7 +1298,7 @@ where $F_{1-\alpha}$ is the $1-\alpha$ quantile of the Fisher-distribution. The 
 \section{Simulation of DSC measuring process}
 \subsection{Mathematical model}
 
-Our 1D mathematical model is based on the following assumptions. First the heat transport is exclusively done by thermal diffusion (c.f. \cref{sec:heat_equation}, equation \eqref{eq:heat_equation}), so convection and thermal radiation are neglected. Furthermore the mass density $\rho$ and heat conductivity $\lambda$ of the PCM are constant.
+Our 1D mathematical model is based on the following assumptions. First the heat transport is exclusively done by thermal diffusion (c.f. \cref{sec:heat_equation}, equation \cref{eq:heat_equation}), so convection and thermal radiation are neglected. Furthermore the mass density $\rho$ and heat conductivity $\lambda$ of the PCM are constant.
 
 \begin{equation}
 \rho c_p(T(x,t)) \frac{\partial T}{\partial t}(x,t) = \nabla \cdot \left[\lambda \cdot \nabla T(x,t)  \right]
@@ -1333,7 +1333,7 @@ At time $t_0=0$ we assume that the temperature is equal everywhere:
 	T^i(t_0=0) = T_0 \ \forall \ i \in \{ 0,1,...,N-1 \}
 \end{equation}
 
-For the spatial discretization of the heat equation we applied the method of lines. Since the heat conductivity $\lambda$ is constant everywhere, on the RHS of heat equation \eqref{eq:heat_equation} is a second derivative with respect to space. The resulting initial value problem is given by
+For the spatial discretization of the heat equation we applied the method of lines. Since the heat conductivity $\lambda$ is constant everywhere, on the RHS of heat equation \cref{eq:heat_equation} is a second derivative with respect to space. The resulting initial value problem is given by
 
 \begin{align}
 \hspace{-2cm}
@@ -1362,7 +1362,7 @@ T^{N-1}
 T^i(t_0=0) = & \ T_0 \ \ \forall \ \ i \in \{ 0,1,...,N-1 \} \nonumber
 \end{align}
 
-where using \eqref{eq:2_point_formula_inhomogeneous} the abbreviation for the discretized second derivative is defined as
+where using \cref{eq:2_point_formula_inhomogeneous} the abbreviation for the discretized second derivative is defined as
 
 \begin{align}
 	\tilde{\Delta} T^i := \frac{1}{\Delta x_{i-1}^2} \left[ \frac{2}{1+\alpha_{i-1}} T^{i-1} - \frac{2}{\alpha_{i-1}} T^{i} + \frac{2}{\alpha_{i-1} (\alpha_{i-1} + 1)} T^{i+1} \right]
@@ -1376,7 +1376,7 @@ and the factor coming from the inhomogeneous grid is
 
 The system is structured in three parts. First there is the furnace which increases its temperature with the heating rate $\beta$. Afterwards comes the silver plate until index $N$-$N_{pcm}$-$1$ and finally the PCM with temperature dependent specific heat capacity $c_p$. \\
 
-Solving \eqref{eq:heat_equation_discretized} yields the temperature but we are primarily interested in the heat flux into the PCM $\varPhi_{q}^{\text{pcm,in}}$ marked in \cref{fig:mathematical_model_discretized}. For the conversion from temperature to heat flux we use Fourier's law \eqref{eq:fouriers_law} where the gradient is discretized:
+Solving \cref{eq:heat_equation_discretized} yields the temperature but we are primarily interested in the heat flux into the PCM $\varPhi_{q}^{\text{pcm,in}}$ marked in \cref{fig:mathematical_model_discretized}. For the conversion from temperature to heat flux we use Fourier's law \cref{eq:fouriers_law} where the gradient is discretized:
 
 \begin{align}
 	\varPhi_{q}^{\text{pcm,in}}(T) = & - \bar{\lambda} \frac{T^{N_{\text{pcm}}} - T^{N_{\text{pcm}}-1}}{\Delta x_{N_{\text{pcm}}-1}} \cdot A_{\text{pcm}} \\
@@ -1430,7 +1430,7 @@ Furthermore we get $\gamma$ by
 \begin{align}
 	\frac{\partial \chi}{\partial \tilde{x}}(\tilde{x}=N-N_{pcm}-N_m) = & \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x}) \cdot (1-t) \\
 	\Leftrightarrow \frac{\Delta \bar{x} - \Delta \underline{x}}{1 + e^{\gamma(N-N_{pcm}-N_m - b)}} + \Delta \underline{x} = & \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x}) \cdot (1-t)  \\
-	\stackrel{\eqref{eq:spatial_grid_b}}{\Leftrightarrow}  1 + e^{\gamma \frac{N_{tr}}{2}} = & \frac{1}{1 - t}  \\[2ex]
+	\stackrel{\cref{eq:spatial_grid_b}}{\Leftrightarrow}  1 + e^{\gamma \frac{N_{tr}}{2}} = & \frac{1}{1 - t}  \\[2ex]
 	\Leftrightarrow \gamma = \frac{2}{N \cdot n_{tr}} \ln(\frac{t}{1-t})
 \end{align}
 \end{subequations}
@@ -1614,14 +1614,14 @@ Inserting the boundary conditions and a coefficient comparison in $x$ gives
 By construction this leads to homogenous boundary conditions of $\Gamma(x,t)$:
 
 \begin{align}
-	T(0,t) & = \bar{T}(0,t) + \Gamma(0,t) = T_0 + \beta \cdot t + \Gamma(0,t) \stackrel{\eqref{eq:analytical_soln_bc_dirichlet}}{=} T_0 + \beta \cdot t \\
+	T(0,t) & = \bar{T}(0,t) + \Gamma(0,t) = T_0 + \beta \cdot t + \Gamma(0,t) \stackrel{\cref{eq:analytical_soln_bc_dirichlet}}{=} T_0 + \beta \cdot t \\
 	 &\Rightarrow \Gamma(0,t) = 0 \\[2ex]
-	\frac{\partial T}{\partial x}(L_1,t) & = \underbrace{\frac{\partial \bar{T}}{\partial x}(L_1,t)}_{= 0} + \frac{\partial \Gamma}{\partial x}(L_1,t) \stackrel{\eqref{eq:analytical_soln_bc_neumann}}{=} 0 \\
+	\frac{\partial T}{\partial x}(L_1,t) & = \underbrace{\frac{\partial \bar{T}}{\partial x}(L_1,t)}_{= 0} + \frac{\partial \Gamma}{\partial x}(L_1,t) \stackrel{\cref{eq:analytical_soln_bc_neumann}}{=} 0 \\
 	 &\Rightarrow \frac{\partial \Gamma}{\partial x}(L_1,t) = 0
 \end{align}
 
 
-Inserting $\bar{T}$ and $\Gamma$ into \eqref{eq:analytical_soln_pde} gives
+Inserting $\bar{T}$ and $\Gamma$ into \cref{eq:analytical_soln_pde} gives
 
 \begin{align}
 	\frac{\partial \bar{T}}{\partial t} + \frac{\partial \Gamma}{\partial t} - a \left[ \frac{\partial^2 \bar{T}}{\partial x^2} + \frac{\partial^2 \Gamma}{\partial x^2} \right] = 0
@@ -1650,7 +1650,7 @@ this leads to the boundary value problem in $\Gamma(x,t)$
 \end{subequations}
 
 
-The homogeneous solution (i.e. $\bar{q}=0$) can be obtained by an ansatz of seperation of variables $\Gamma(x,t) = \mathcal{T}(t) \cdot X(x)$, \eqref{eq:analytical_soln_pde_gamma} is then equivalent to
+The homogeneous solution (i.e. $\bar{q}=0$) can be obtained by an ansatz of seperation of variables $\Gamma(x,t) = \mathcal{T}(t) \cdot X(x)$, \cref{eq:analytical_soln_pde_gamma} is then equivalent to
 
 \begin{equation}
 	\dot{\mathcal{T}} X = a \mathcal{T} X'' \quad \Leftrightarrow \quad \frac{1}{a} \frac{\dot{\mathcal{T}}}{\mathcal{T}} = \frac{X''}{X} = const =: - \lambda
@@ -1679,7 +1679,7 @@ The general solution of $X_n(x)$ is then given by
 	\tilde{X}_n(x) = c_1 \cdot \sin\left(\frac{(2n -1)\pi}{2 L_1} \cdot x\right) =: c_1 \cdot X_n(x)
 \end{equation}
 
-In order to solve the non-homogeneous boundary value problem \eqref{eq:analytical_soln_gamma} $\Gamma$, $\bar{q}$ and $\bar{f}$ are expanded in a Fourier series with $X_n(x)$ as basis where $c_1$ is incorporated in the corresponding Fourier coefficient:
+In order to solve the non-homogeneous boundary value problem \cref{eq:analytical_soln_gamma} $\Gamma$, $\bar{q}$ and $\bar{f}$ are expanded in a Fourier series with $X_n(x)$ as basis where $c_1$ is incorporated in the corresponding Fourier coefficient:
 
 \begin{subequations}
 	\centering
@@ -1699,7 +1699,7 @@ The Fourier coefficients $\bar{q}_n(t)$ and $\bar{f}_n$ are then computed by
 	\end{align}
 \end{subequations}
 
-Inserting this into \eqref{eq:analytical_soln_pde_gamma} gives us
+Inserting this into \cref{eq:analytical_soln_pde_gamma} gives us
 
 \begin{align*}
 	\sum_{n=1}^{\infty} \dot{\mathcal{T}}_n(t) X_n(x) - a \sum_{n=1}^{\infty} \mathcal{T}_n(t) X_n''(x) = \sum_{n=1}^{\infty} \bar{q}_n(t) X_n(x) \nonumber \\
@@ -1719,7 +1719,7 @@ where the solution of the homogeneous part (i.e. $\bar{q}_n(t) = 0$) is
 	\mathcal{T}_n^h(t) = A_n \cdot e^{-a \lambda_n t}
 \end{equation}
 
-Applying the method of variation of constants by setting $A_n = A_n(t)$ and inserting in \eqref{eq:analytical_soln_inhomo_ode} gives
+Applying the method of variation of constants by setting $A_n = A_n(t)$ and inserting in \cref{eq:analytical_soln_inhomo_ode} gives
 
 \begin{align}
 	\dot{A_n}(t) & = \bar{q}_n(t) \cdot e^{a \lambda_n t} = -\frac{4 \beta}{\pi (2n - 1)} e^{a \lambda_n \tau} \\
@@ -1727,7 +1727,7 @@ Applying the method of variation of constants by setting $A_n = A_n(t)$ and inse
 	& = -\frac{4 \beta}{\pi (2n - 1)} \frac{1}{a \lambda_n} \left[ e^{a \lambda_n t} - 1 \right] + A_{n,c}
 \end{align}
 
-The solution of the inhomogeneous ODE \eqref{eq:analytical_soln_inhomo_ode} then is
+The solution of the inhomogeneous ODE \cref{eq:analytical_soln_inhomo_ode} then is
 \begin{align}
 	\mathcal{T}_n(t) & = A_n(t) \cdot e^{-a \lambda_n t}  \\
 	& = -\frac{4 \beta}{\pi (2n - 1)} \frac{1}{a \lambda_n} \left[1 - e^{-a \lambda_n t} \right] + A_{n,c} e^{- a \lambda_n t} \nonumber
@@ -1745,7 +1745,7 @@ From $\mathcal{T}_n(0) = A_{n,c}$, $\bar{f}_n=0$ and again a coefficient compari
 	A_{n,c} = 0
 \end{equation}
 
-Finally the solution of the boundary value problem \eqref{eq:analytical_soln_pde} of the reference side reads as
+Finally the solution of the boundary value problem \cref{eq:analytical_soln_pde} of the reference side reads as
 
 \begin{align}
 	& \ \ T(x,t) = \bar{T}(x,t) + \Gamma(x,t) \nonumber \\
@@ -1827,9 +1827,9 @@ where $h$, $r$, $sr$, $wr$ and $z$ are the parameters of Fraser-Suzuki. Furtherm
 \label{sec:parametrization_Gausse}
 
 As we switched for the derivative computation with respect to the optimization variables from finite differences to IND, implementation problems with NURBS occurred. 
-The case structure of the basis polynomial \eqref{eq:NURBS_basis_polynomial} conducts to switch the RHS of the differential equation. This is only supported by the $condassign(a,b,c,d)$ function which assigns $a=c$ if $b>0$ and $a=d$ else. Additionally to $N_{i,0}$ the denominators need this $condassign$ command in order to check for a division by zero. 
+The case structure of the basis polynomial \cref{eq:NURBS_basis_polynomial} conducts to switch the RHS of the differential equation. This is only supported by the $condassign(a,b,c,d)$ function which assigns $a=c$ if $b>0$ and $a=d$ else. Additionally to $N_{i,0}$ the denominators need this $condassign$ command in order to check for a division by zero. 
 Furthermore the piecewise interpolation of the resulting curve $C(u)$ could be realized as well with the $condassign$ command but in total this leads to a lot of unnecessary numerical operations and makes the program quite complex. \\
-An alternative simple parametrization which is similar flexible than NURBS is a linear combination of Gaussian functions which is stated in \eqref{eq:parametrization_linear_comb_Gauss}. Per Gaussian there are three optimization variables: Amplitude $A_i$, a shift in the $T$-axis $T_{\text{offset}_i}$ and the standard deviation $\sigma_i$. Additionally there is a linear and constant part with variables $m$ and $b$. So in total there are $3 \cdot n_{\text{Gauss}} + 2$ optimization variables. \\
+An alternative simple parametrization which is similar flexible than NURBS is a linear combination of Gaussian functions which is stated in \cref{eq:parametrization_linear_comb_Gauss}. Per Gaussian there are three optimization variables: Amplitude $A_i$, a shift in the $T$-axis $T_{\text{offset}_i}$ and the standard deviation $\sigma_i$. Additionally there is a linear and constant part with variables $m$ and $b$. So in total there are $3 \cdot n_{\text{Gauss}} + 2$ optimization variables. \\
 
 
 \begin{equation}
@@ -1867,7 +1867,7 @@ In order to perform the parameter estimation for $c_p(T)$ we need to solve the l
 	\label{eq:parameter_estimation_least_squares_problem}
 \end{align}
 
-where $p_{c_p} \in \mathbb{R}^{n_p}$ are optimization variables parametrizing the specific heat capacity $c_p(T)$, $n_{{mp}}$ is the number of measurement points, $\varPhi_{q}^{pcm,in}$ is the simulated heat flux into the PCM from the solution of the heat equation $T(t_i;T_0,p_{c_p})$ and $\varPhi_q^{\eta_i}$ is the heat flux measurement value at measurement time $t_i$. The side condition $\dot{T} = f(T,t;p_{c_p})$ with $T(0) = T_0$ is equal to the initial value problem \eqref{eq:heat_equation_discretized} of solving the heat equation. $\bar{p}_{c_p}$ and $\underline{p}_{c_p}$ are upper respectively lower bounds of the optimization variables. \\
+where $p_{c_p} \in \mathbb{R}^{n_p}$ are optimization variables parametrizing the specific heat capacity $c_p(T)$, $n_{{mp}}$ is the number of measurement points, $\varPhi_{q}^{pcm,in}$ is the simulated heat flux into the PCM from the solution of the heat equation $T(t_i;T_0,p_{c_p})$ and $\varPhi_q^{\eta_i}$ is the heat flux measurement value at measurement time $t_i$. The side condition $\dot{T} = f(T,t;p_{c_p})$ with $T(0) = T_0$ is equal to the initial value problem \cref{eq:heat_equation_discretized} of solving the heat equation. $\bar{p}_{c_p}$ and $\underline{p}_{c_p}$ are upper respectively lower bounds of the optimization variables. \\
 
 The measurement data is given as $\varPhi_q^{\eta_i}(T_{ref}^{\eta_i})$ where $T_{ref}^{\eta_i}$ is the temperature at the reference crucible at measurement time $t_i$. Since we need to pass these times $t_i$ to the differential equation solver for the evaluation of the temperature and sensitivities we obtain them by solving the non-linear equation 
 
@@ -1875,7 +1875,7 @@ The measurement data is given as $\varPhi_q^{\eta_i}(T_{ref}^{\eta_i})$ where $T
 	T_{ref}^{\eta_i} - T_{ref}^{sim}(t_i) = 0 \quad \forall \ i \in \{1,2,...,n_{mp}\}
 \end{align}
 
-using Newton's method where $T_{ref}^{sim}(t)$ is the analytical solution of the heat equation on the reference side \eqref{eq:analytical_soln_final_formula}. This is depicted in \cref{fig:obtaining_measurement_times}.
+using Newton's method where $T_{ref}^{sim}(t)$ is the analytical solution of the heat equation on the reference side \cref{eq:analytical_soln_final_formula}. This is depicted in \cref{fig:obtaining_measurement_times}.
 
 
 \begin{figure}[H]
@@ -1955,16 +1955,16 @@ with
 	\forall \ i \in \{1,...,n_{mp} \} \nonumber
 \end{align}
 
-using \eqref{eq:heat_flux_computation_final}. The non-zero entries are in column $N_{pcm}$ and $N_{pcm}+1$. \\
+using \cref{eq:heat_flux_computation_final}. The non-zero entries are in column $N_{pcm}$ and $N_{pcm}+1$. \\
 The sensitivities $\frac{\partial T}{\partial p_{c_p}}(t_i) \in \mathbb{R}^{N \times n_p}$ are obtained by internal numerical differentiation while solving the differential equation in forward mode with the software SolvIND \cite{diss_jan}. \\
 
 
 
 
 \section{Numerical experiments and results}
-All conducted numerical experiments involve the following subproblems: The numerical integration where we solve \eqref{eq:heat_equation_discretized} gives us the temperature $T$ and sensitivities $\frac{\partial T}{\partial p}$. This was accomplished with the numerical integrator DAESOL-II embedded in SolvIND. The integration tolerance was set to $10^{-7}$ and the sensitivities were obtained in forward mode.
-The heat flux $\varPhi_q^{pcm,in}$ is then computed with \eqref{eq:heat_flux_computation_final} and the optimization Jacobian $J_1(p_{c_p})$ with \eqref{eq:optimization_jacobian} \todo{Approx.-fehler vom heat flux nimmt mit steigendem N3 ab, bei Vergleich von N3=50 -> 200 hat sich nichts grossartig veraendert -> N3=50 reicht aus}. The parameter estimation is then performed by solving the least squares problem \eqref{eq:parameter_estimation_least_squares_problem}. \todo{welches programm fuer die optimierung} \\
-At solving the reference side with the analytical solution \eqref{eq:analytical_soln_final_formula} we stopped the actually infinite sum after 100 summands since the summand is proportional to $n^{-3}$. \\
+All conducted numerical experiments involve the following subproblems: The numerical integration where we solve \cref{eq:heat_equation_discretized} gives us the temperature $T$ and sensitivities $\frac{\partial T}{\partial p}$. This was accomplished with the numerical integrator DAESOL-II embedded in SolvIND. The integration tolerance was set to $10^{-7}$ and the sensitivities were obtained in forward mode.
+The heat flux $\varPhi_q^{pcm,in}$ is then computed with \cref{eq:heat_flux_computation_final} and the optimization Jacobian $J_1(p_{c_p})$ with \cref{eq:optimization_jacobian} \todo{Approx.-fehler vom heat flux nimmt mit steigendem N3 ab, bei Vergleich von N3=50 -> 200 hat sich nichts grossartig veraendert -> N3=50 reicht aus}. The parameter estimation is then performed by solving the least squares problem \cref{eq:parameter_estimation_least_squares_problem}. \todo{welches programm fuer die optimierung} \\
+At solving the reference side with the analytical solution \cref{eq:analytical_soln_final_formula} we stopped the actually infinite sum after 100 summands since the summand is proportional to $n^{-3}$. \\
 
 The material properties used throughout were for silver $c_{p,Ag}=0.235 \frac{mJ}{mg \ K}$, $\rho_{Ag}=10.49 \frac{mg}{mm^3}$ and $\lambda_{Ag}=430 \frac{mW}{mm \ K}$ and for the PCM $\rho_{pcm}=0.85 \frac{mg}{mm^3}$ and $\lambda_{pcm}=0.96 \frac{mW}{mm \ K}$. The initial temperature was set to $T_0=10^\circ C$ and the simulation stopped for the furnace temperature $T^0=200^\circ C$ such that the phase transition is completely finished. \\
 
@@ -2063,7 +2063,7 @@ Next we compare several configurations of the spatial discretization grid (c.f. 
 
 where $T_{grid_i}^{N_{Ag}-1}$ is the temperature using grid $i$ and $T_{eq}^{N_{Ag}-1}$ is the temperature from the reference equidistant grid using $N_{pcm}=50$ and $N_{Ag}=20,000$. Both temperatures are evaluated at the silver plate's last discretization point since this equates to the same physical coordinate $x=L_{Ag}$ by construction in all grids. 
 We set $n_m=0.01$ and $t=0.999$ for all experiments in order to guarantee that the transition of the grid size is finished sufficiently once the PCM starts which is necessary for the heat flux approximation. \\
-In the first set of tests we modified the total number of discretization points $N$ while fixing $n_{pcm}=0.2$ and $n_{tr}=0.1$. The results are shown in \cref{fig:grid_mod_N} where in all upcoming cases (a) shows the grid size $\Delta x = \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$ as a function of the computation grid $\tilde{x}$ and (b) maps the corresponding relative error computed by \eqref{eq:relErr_grid}. As one can see in all cases the error increases during the phase transition at a reference crucible temperature of about $130^{\circ} C$ where the maximum is reached for the least amount of tested discretization points $N=200$ with $|\text{Relative error|}=1.5 \cdot 10^{-5}$. Surprisingly the error for $N > 1000$ increases again but in all tested cases the relative error has an order of magnitude lower equal than $10^{-5}$. 
+In the first set of tests we modified the total number of discretization points $N$ while fixing $n_{pcm}=0.2$ and $n_{tr}=0.1$. The results are shown in \cref{fig:grid_mod_N} where in all upcoming cases (a) shows the grid size $\Delta x = \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$ as a function of the computation grid $\tilde{x}$ and (b) maps the corresponding relative error computed by \cref{eq:relErr_grid}. As one can see in all cases the error increases during the phase transition at a reference crucible temperature of about $130^{\circ} C$ where the maximum is reached for the least amount of tested discretization points $N=200$ with $|\text{Relative error|}=1.5 \cdot 10^{-5}$. Surprisingly the error for $N > 1000$ increases again but in all tested cases the relative error has an order of magnitude lower equal than $10^{-5}$. 
 
 
 \begin{figure}[H]
@@ -2123,7 +2123,7 @@ Summarized a total number of discretization points $N=300$ is sufficient while t
 
 
 \subsection{Parameter estimation using parametrization of linear combination of Gaussians}
-So far finite differences were used to compute the optimization jacobian \eqref{eq:optimization_jacobian}. Because of the problems described in \cref{sec:param_estim_NURBS} from now on internal numerical differentiation is used instead which is done with the software package SolvIND. \\
+So far finite differences were used to compute the optimization jacobian \cref{eq:optimization_jacobian}. Because of the problems described in \cref{sec:param_estim_NURBS} from now on internal numerical differentiation is used instead which is done with the software package SolvIND. \\
 In this section the parameter estimation is performed using the parametrization of 5 Gaussians, linear and constant part (see \cref{sec:parametrization_Gausse}). Five Gaussians were used since this is the minimum number such that the residuum almost vanishes as one can see in the upcoming figures. The optimization was performed again with the matlab routine $lsqnonlin$. Start values for the first heat rate $\beta = 20 \frac{K}{min}$ were used from previously existing results with already reduced residuum. Afterwards the optimizations were performed in a decreasing order of heat rates where parameters estimated in this process were used as start values in subsequent steps. I.e. estimated parameters at heat rate $\beta=20 \frac{K}{min}$ were used as start values for the parameter estimation at heat rate $\beta=10 \frac{K}{min}$ and so on. \\
 In \cref{fig:optim_c_p_heat_flux_5Gaussians_1,fig:optim_c_p_heat_flux_5Gaussians_2} the results are shown where on the left there is for all heat rates always the obtained function for the specific heat capacity $c_p(T)$. On the right measurement, simulation and resulting residuum of the heat flux is plotted and as one can see residuum is nearly zero for all heat rates. Examining the received specific heat capacities one notice first that for a heat rate of $10 \frac{K}{min}$ there are two peaks. The reason is a bending in the measured heat flux at approximately $130^{\circ} C$ probably from an error in measurement. Next things to observe which makes $c_p(T)$ differ from our expectations can be seen very well in the result for heat rate $5 \frac{K}{min}$. Firstly the decrease of the peak's maximum is not linear but has two different areas. Secondly after the peak $c_p(T)$ has values lower than the base line for a small temperature range. These are likely unphysical optimization artifacts due to overfitting to a naturally simplified, i.e incomplete model. Although positive is that the $c_p(T)$ curves do not differ exorbitantly from each other. A more detailed comparison between them follows at the end of this section.
 
@@ -2536,13 +2536,13 @@ This is why we perform now the parameter estimation again with the modified heat
 	\begin{tabular}{| c | c | c | c | c | c | c | c |} \hline
 		Heat rate $\beta$ & 20 & 10 & 5 & 2.5 & 1.25 & 0.6 & 0.3 \\
 		$[K/min]$ & & & & & & & \\ \hline
-		\textbf{DIN formula \eqref{eq:c_p_formula_DIN}} & & & & & & & \\[0.7ex]
+		\textbf{DIN formula \cref{eq:c_p_formula_DIN}} & & & & & & & \\[0.7ex]
 		$T_{max} \ [^{\circ}C]$ & & & & & & & \\[0.7ex]
 		$T_{on} [^{\circ} C]$ & & & & & & & \\[0.7ex]
 		$T_{off} [^{\circ} C]$ & & & & & & & \\[0.7ex]
 		$\Delta H \ [\frac{mJ}{mg}]$ & & & & & & & \\ \hline
 
-		\textbf{DIN formula \eqref{eq:c_p_formula_DIN}} & & & & & & & \\
+		\textbf{DIN formula \cref{eq:c_p_formula_DIN}} & & & & & & & \\
 		\textbf{fitted on Fraser-Suzuki} & & & & & & & \\
 		$T_{max} \ [^{\circ}C]$ & $143.3$ & $139.8$ & $135.5$ & $133.4$ & $132.4$ & $132.0$ & $131.8$ \\[0.7ex]
 		$T_{on} [^{\circ} C]$ & $124.3$ & $123.5$ & $124.0$ & $125.1$ & $126.1$ & $126.9$ & $127.2$ \\[0.7ex]
