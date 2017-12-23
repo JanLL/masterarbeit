@@ -14,13 +14,18 @@
 \usepackage{subcaption}
 \usepackage{bbm}
 \usepackage{pdflscape}
-\usepackage[linesnumbered,ruled]{algorithm2e}
+\usepackage[linesnumbered,ruled,resetcount,algosection]{algorithm2e}
 
+
+\usepackage{varioref}
+\usepackage[hidelinks]{hyperref}
+\usepackage{cleveref}
 
 
 \numberwithin{equation}{section}
 \numberwithin{figure}{section}
 \numberwithin{table}{section}
+%\numberwithin{algorithm}{section}
 
 %\theoremstyle{break}
 \newtheorem{Definition}{Definition}
@@ -137,7 +142,7 @@
 \pagenumbering{arabic}
 
 \section{Introduction}
-In this thesis we examine so called phase change materials (PCM). A popular application are heating pads (see Fig. \ref{fig:heating_pad}) which are liquid in fully charged state. Folding induces a phase change to a solid state where energy is released and therefore the temperature increases. They can be easily recharged by applying a temperature above the melting point (e.g. with boiling water). 
+In this thesis we examine so called phase change materials (PCM). A popular application are heating pads (see \cref{fig:heating_pad}) which are liquid in fully charged state. Folding induces a phase change to a solid state where energy is released and therefore the temperature increases. They can be easily recharged by applying a temperature above the melting point (e.g. with boiling water). 
 
 \begin{wrapfigure}{l}{0.45\textwidth}
 	\includegraphics[width=0.45\textwidth]{/home/argo/masterarbeit/thesis/images/handwaermer[wiki].jpg}
@@ -150,7 +155,7 @@ A last example are insulations of houses. During the day when it is hot, the PCM
 
 
 An important physical quantity is the specific heat capacity $c_p$ which tells us at which temperature the phase transition occurs and how much energy can be stored. The major goal of this thesis is to simulate the measuring process of a differential scanning calorimetry (DSC) where a PCM undergoes a phase transition and perform a parameter estimation in order to get the PCM's specific heat capacity. \\
-As we will see in more detail in section \ref{sec:physics_DSC} the common way of computing $c_p(T)$ from DSC measurement data yields different results depending on the heat rate, a measurement parameter. Since $c_p(T)$ is a material property this is unphysical and this issue is known as the smearing problem. \\
+As we will see in more detail in \cref{sec:physics_DSC} the common way of computing $c_p(T)$ from DSC measurement data yields different results depending on the heat rate, a measurement parameter. Since $c_p(T)$ is a material property this is unphysical and this issue is known as the smearing problem. \\
 By applying the parameter estimation we aim to avoid this problem. Furthermore the heat rate is proportional to the time duration of the experiment. If we get the same $c_p(T)$ for all heat rates we are able to accelerate the measuring process and therefore the research on this materials drastically. 
  
 
@@ -158,7 +163,7 @@ By applying the parameter estimation we aim to avoid this problem. Furthermore t
 \section{Physical Background}
 \subsection{Physical quantities and phase transition}
 
-First of all some important physical quantities will be introduced because they are crucial for further comprehension. A summary is shown in Table \ref{tab:important_physical_quantities} with the consistently used symbol in this thesis and the physical unit. \\
+First of all some important physical quantities will be introduced because they are crucial for further comprehension. A summary is shown in \cref{tab:important_physical_quantities} with the consistently used symbol in this thesis and the physical unit. \\
 Heat $Q$ is the energy that flows from a warmer to a colder object because of the temperature difference. The heat flux density $\phi$ tells us how much heat flows through an unit area in one second. It can be computed by Fourier's law: $\phi = - \lambda \nabla T$. By considering a particular area this changes to the heat flux $\varPhi$. Heat conductivity $\lambda$ is a material property how much energy is transported on a distance of $1m$, unit area and temperature difference of $1K$ in one second.
 
 \begin{table}[H]
@@ -179,10 +184,10 @@ Heat $Q$ is the energy that flows from a warmer to a colder object because of th
 
 
 Probably the most important physical quantity for us is the specific heat capacity $c_p$ which is a temperature dependent material property that tells us how much energy is needed to increase the temperature of $1kg$ of this material by $1K$. 
-Since we are primarily interested in the phase change we handle with specific heat capacities which have a peak at the melting point with a certain area equal to the melting enthalpy. 
-For a pure substance this peak would be ideally a Dirac delta function (see Fig. \ref{fig:physics_c_p_dirac_delta}). A constant heat flux entering such a pure substance increases the temperature until phase change. Then the heat is absorbed in order to perform the phase transition while the temperature stays constant. Finally after the phase change has finished the temperature increases again. 
-In mixed substances like PE in our case with different lengths of the individual polymer chains or due to lattice defects the peak extends over a temperature range. In the case of lattice defects the atom's binding energies are decreased which lowers the phase transition's temperature partially. The corresponding shape of the specific heat capacity is shown in Fig. \ref{fig:physics_fraser_suzuki} and is called Fraser-Suzuki peak. It is not known what shape of $c_p(T)$ we should expect exactly for a polymer and therefore task in this thesis to find out. \\
-The last physical quantity to introduce is the melting enthalpy $\Delta H$ which is in the case of constant pressure the heat needed to perform the phase transition. Considering the graph $c_p(T)$, the area of the phase change peak is equal to the melting enthalpy. This is illustrated in Fig. \ref{fig:physics_fraser_suzuki}.
+Since we are primarily interested in the phase change we handle with specific heat capacities with latent part, a peak at the melting point with a certain area equal to the melting enthalpy. Further the specific heat capacity not belonging to the phase transition is called sensitive part and is described by the base line. 
+For a pure substance this peak would be ideally a Dirac delta function (see  \cref{fig:physics_c_p_dirac_delta}). A constant heat flux entering such a pure substance increases the temperature until phase change. Then the heat is absorbed in order to perform the phase transition while the temperature stays constant. Finally after the phase change has finished the temperature increases again. 
+In mixed substances like PE in our case with different lengths of the individual polymer chains or due to lattice defects the peak extends over a temperature range. In the case of lattice defects the atom's binding energies are decreased which lowers the phase transition's temperature partially. The corresponding shape of the specific heat capacity is shown in \cref{fig:physics_fraser_suzuki} and is called Fraser-Suzuki peak. It is not known what shape of $c_p(T)$ we should expect exactly for a polymer and therefore task in this thesis to find out. \\
+The last physical quantity to introduce is the melting enthalpy $\Delta H$ which is in the case of constant pressure the heat needed to perform the phase transition. Considering the graph $c_p(T)$, the area of the phase change peak is equal to the melting enthalpy. This is illustrated in \cref{fig:physics_fraser_suzuki}.
 
 
 
@@ -255,7 +260,7 @@ area legend]
 \end{figure}
 
 
-Finally we introduce peak characteristics maximal turning point $T_{max}$, $T_{on}$ and $T_{off}$ where latter two are computed as the intersection of the inflection points' tangent with the base line of $c_p(T)$, i.e. the sensitive part. An illustration is given below in Fig. \ref{fig:T_on/off_illustration}.
+Finally we introduce peak characteristics maximal turning point $T_{max}$, $T_{on}$ and $T_{off}$ where latter two are computed as the intersection of the inflection points' tangent with the base line of $c_p(T)$, i.e. the sensitive part. An illustration is given below in  \cref{fig:T_on/off_illustration}.
 
 
 \begin{figure}[H]
@@ -370,12 +375,12 @@ The measuring method of a heat flux into a sample over a certain temperature ran
 
 
 \subsubsection{Power compensated DSC}
-In the case of a power compensated DSC (Fig. \ref{fig:DSC_power_compensated_principle}) there are 2 seperated chambers for a reference and the sample. Both have individual heaters and temperature sensors such that a feedback control system keep the temperature in both chambers on the same value. Since we know the electrical power for heating we get the heat flux due to energy conservation. \\
+In the case of a power compensated DSC (\cref{fig:DSC_power_compensated_principle}) there are 2 seperated chambers for a reference and the sample. Both have individual heaters and temperature sensors such that a feedback control system keep the temperature in both chambers on the same value. Since we know the electrical power for heating we get the heat flux due to energy conservation. \\
 
 
 
 \subsubsection{Heat flux DSC}
-The heat flux DSC is based on differential thermal analysis (DTA, see Fig. \ref{fig:DTA_principle}). 
+The heat flux DSC is based on differential thermal analysis (DTA, see \cref{fig:DTA_principle}). 
 In DTA there is just one chamber in which both reference and sample are heated equally. 
 Due to differences in the heat capacity of reference and sample a temperature difference dependent on their temperature will appear.
 This can be used to find typical temperatures of known substances to identify the sample's components. \\
@@ -389,7 +394,7 @@ Note that the physical quantity measured is an electrical potential difference $
 	\label{fig:heat_flux_DSC}
 \end{figure}
 
-The heat flux DSC (see Fig. \ref{fig:heat_flux_DSC}) extends now DTA by computing the heat flux into the sample $\varPhi_S^2$ from the temperature difference using an additional calibration. 
+The heat flux DSC (see \cref{fig:heat_flux_DSC}) extends now DTA by computing the heat flux into the sample $\varPhi_S^2$ from the temperature difference using an additional calibration. 
 Pure materials with known melting temperature $T_{\text{Kal}}$ and melting heat $\Delta Q_{\text{Kal}}$ are measured, giving the measuring signal $\Delta U(t)$ with a peak at the phase change. 
 The area of this peak is assumed to be proportional with constant $sens$ called sensitivity to the melting heat due to
 
@@ -397,7 +402,7 @@ The area of this peak is assumed to be proportional with constant $sens$ called 
 	A_{\Delta U} \propto \Delta Q_{\text{Kal}} \quad \Rightarrow \quad sens = \frac{A_{\Delta U}}{\Delta Q_{\text{Kal}}}
 \end{equation} 
 
-This is done for a set of calibration materials such that we get a mapping $sens(T)$ by interpolating the data points $(T_{\text{Kal,i}}, sens_i)$, see Fig. \ref{fig:dsc-calibration_sens(T)}.
+This is done for a set of calibration materials such that we get a mapping $sens(T)$ by interpolating the data points $(T_{\text{Kal,i}}, sens_i)$, see \cref{fig:dsc-calibration_sens(T)}.
 
 \begin{figure}[H]
 	\centering
@@ -479,7 +484,7 @@ The common way to perform the DSC calibration, measurement and compute the speci
 \end{equation}
 
 where $S$ and $R$ denote the sample respectively reference. Reference means here a material with known specific heat capacity $c_p^R(T)$, not to be mistaken with the reference side of the experimental setup. In our case this reference material is Saphir. Furthermore $m$ is the mass and $\Phi^0$ is the heat flux if both crucibles are empty to compensate asymmetries. \\
-In Fig. \ref{fig:heat_flux_measurements} the measurement data of the heat flux into the PCM is shown for all heat rates dependent on the temperature at the reference crucible. Using \eqref{eq:c_p_formula_DIN} the computed specific heat capacities for the PCM are shown in Fig. \ref{fig:c_p_DIN_formula}. As one can see for higher heat rates the peak position shifts to higher temperatures and furthermore the peak is smeared out. This is known as the smearing problem since $c_p$ is a material property and must be equal for all heat rates.
+In \cref{fig:heat_flux_measurements} the measurement data of the heat flux into the PCM is shown for all heat rates dependent on the temperature at the reference crucible. Using \eqref{eq:c_p_formula_DIN} the computed specific heat capacities for the PCM are shown in \cref{fig:c_p_DIN_formula}. As one can see for higher heat rates the peak position shifts to higher temperatures and furthermore the peak is smeared out. This is known as the smearing problem since $c_p$ is a material property and must be equal for all heat rates.
 
 
 \begin{figure}[H]
@@ -499,16 +504,16 @@ In Fig. \ref{fig:heat_flux_measurements} the measurement data of the heat flux i
 
 
 \newpage
-\section{Mathematical Background}
+\section{Mathematical background}
 
 \subsection{Derivative generation}
 In the context of continuous optimization we are dependent on derivative information in order to minimize some function. 
 There are several possibilities to obtain these derivatives. We will introduce here the concept of finite differences and automatic differentiation which were used in this thesis. 
 Beside them the methods of symbolic- and complex step-differentiation exist and are explained in detail in \cite{diss_jan}.
 
-\subsubsection{Finite Differences}
+\subsubsection{Finite differences}
 \label{subsubsec:finite_differences}
-Derivatives generated by finite differences are needed beside the optimization task also in the spatial discretization of a partial differential equation which will be explained in more detail in section \ref{subsection:pde_discretization}.
+Derivatives generated by finite differences are needed beside the optimization task also in the spatial discretization of a partial differential equation which will be explained in more detail in \cref{subsection:pde_discretization}.
 They can be derived easily from Taylor-series expansion. Considering the function $f: \mathcal{R} \rightarrow \mathcal{R}^m$ the Taylor series looks as follows:
 
 
@@ -539,7 +544,7 @@ subtract both equations and reorder again we get
 \frac{\partial f}{\partial x}(x) = \frac{f(x+h) - f(x-h)}{2 h} + \mathcal{O}(h^3)
 \end{equation}
 
-which has a higher error order but at the expense of two function evaluations. \\
+which has a higher error order but at the expense of an additional function evaluation. \\
 
 Second order derivatives can be gained analogously by adding \eqref{eq:finite_differences_taylor_exp_+} and \eqref{eq:finite_differences_taylor_exp_-}:
 
@@ -552,7 +557,7 @@ Second order derivatives can be gained analogously by adding \eqref{eq:finite_di
 
 
 
-In the spatial discretization of partial differential equations one often choose a finer grid for areas of interest. So for the resulting non-equidistant grid (see Fig. \ref{fig:2_point_formula_illustration}) one needs a more general formula which is derived by considering again the Taylor expansion
+In the spatial discretization of partial differential equations one often choose a finer grid for areas of interest. So for the resulting non-equidistant grid (see \cref{fig:2_point_formula_illustration}) one needs a more general formula which is derived by considering again the Taylor expansion
 
 
 
@@ -593,7 +598,7 @@ Note that for a homogeneous grid ($\alpha=1$) this is obviously equal to \eqref{
 For simplicity we restricted the function argument $x \in \mathcal{R}$. In the case $x \in \mathcal{R}^n$ the Jacobian is gained by performing directional derivatives. So e.g. for the one-sided first derivative $n+1$ function evaluations are necessary. \\
 
 The great advantage of finite differences are their simple implementation. We can treat the (arbitrarily elaborate) function as a black box, perturb the input arguments a bit, perform $n+1$ function evaluations and get an approximation of the derivative. \\
-This simplicity is at the expense of accuracy. If we choose $h$ too small, cancellation occurs. Otherwise with $h$ large the remainder term of the Taylor expansion gets large as well. So there exist an optimal $h$ to minimize the error although then the derivative approximation is still not exact.
+This simplicity is at the expense of accuracy. If we choose $h$ too small, cancellation occurs. Otherwise with $h$ large the remainder term of the Taylor expansion gets large. So there exist an optimal $h$ to minimize the error although then the derivative approximation is still not exact.
 
 
 
@@ -616,6 +621,7 @@ F(x) =
 \exp((1+x_1)^2) + x_3 \\
 x_2 \cdot \sin(1+x_1)
 \end{bmatrix}
+\label{eq:AD_example}
 \end{equation}
 
 
@@ -624,10 +630,9 @@ In the forward mode the directional derivative $\dot{y}$ is computed for a given
 
 \begin{equation}
 \dot{y} = \frac{\partial f}{\partial x}(x) \cdot \dot{x}
-\label{eq:AD_example}
 \end{equation}
 
-The algorithm called first order forward sweep is structured into three parts. First the auxiliary variables $v_{1-n},...,v_0$ and $\dot{v}_{1-n},...,\dot{v}_0$ are initialized with the evaluation point $x$ and the direction of the directional derivative $\dot{x}$. So if we want to get $\frac{\partial f}{\partial x_2}$ we would need to set $\dot{x} = \begin{bmatrix}
+The algorithm called first order forward sweep (see \cref{tab:first_order_forward_sweep}) is structured into three parts. First the auxiliary variables $v_{1-n},...,v_0$ and $\dot{v}_{1-n},...,\dot{v}_0$ are initialized with the evaluation point $x$ and the direction of the directional derivative $\dot{x}$. So if we want to get $\frac{\partial f}{\partial x_2}$ we would need to set $\dot{x} = \begin{bmatrix}
 0 & 1 & 0 & \dots & 0
 \end{bmatrix}^T$. One can see here that with one forward sweep we get one column of the Jacobian $ \frac{\partial f}{\partial x}$. 
 After the initialization the actual forward sweep begins where the $k$ elemental functions of $f$ are evaluated and saved in the intermediate values $v_i$. Simultaneously their derivatives  $\dot{v}_i$ are computed using previously calculated intermediate values. E.g. for $v_2 = \varphi_2(v_0, v_1)$ it holds $\dot{v}_2 = \frac{\partial \varphi_2}{\partial v_0} \dot{v_0} + \frac{\partial \varphi_2}{\partial v_1} \dot{v_1}$. \\
@@ -675,8 +680,8 @@ Beside the forward mode there is the adjoint mode where the adjoint directional 
 \bar{x}^T = \bar{y}^T \frac{\partial f}{\partial x}(x)
 \end{equation}
 
-The algorithm is shown in Table \ref{tab:first_order_adjoint_sweep}. In contrary to the forward mode we need here an additional set of adjoint intermediate variables $\bar{v}_i$. These contain the adjoint sensitivity information which are initialized to zero in the first step. \\
-The following forward sweep is analog to the one shown in Table \ref{tab:first_order_forward_sweep}, however here we compute just the intermediate function evaluations without derivatives. We need these function values in the next part. \\
+The algorithm is shown in \cref{tab:first_order_adjoint_sweep} where operator $+ \hspace{-0.12cm} =$ is defined as $x + \hspace{-0.12cm} = y \ \Leftrightarrow \ x = x + y$. In contrary to the forward mode we need here an additional set of adjoint intermediate variables $\bar{v}_i$. These contain the adjoint sensitivity information which are initialized to zero in the first step. \\
+The following forward sweep is analog to the one shown in \cref{tab:first_order_forward_sweep}, however here we compute just the intermediate function evaluations without derivatives. We need these function values in the next part. \\
 The actual adjoint directional derivatives are now computed in the reverse sweep which consists of three sub-steps. First of all the adjoint directions $\bar{y}$ is chosen. So for example, if we want the second row of the Jacobian $\frac{\partial f_2}{\partial x}$ we need to set $\bar{y} = \begin{bmatrix}
 0 & 1 & 0 & \dots & 0
 \end{bmatrix}^T$.
@@ -709,13 +714,13 @@ Again we apply this algorithm on the exemplary function \eqref{eq:AD_example}:
 		& $v_{-1}=x_2$ & $\bar{v}_5=\bar{y}_1$ \\
 		& $v_{0}=x_3$ &  \\	\hline
 		Sweep & $v_1=1+v_{-2}$ & $\bar{v}_{-1} +\hspace{-0.1cm}= \bar{v}_6 \cdot v_4$ \\
-		& $v_2=v_{1}^2$ & $\bar{v}_{4} +\hspace{-0.1cm}= \bar{v}_6 \cdot v_{-1} $ \\
-		& $v_3=\exp(v_2)$ & $\bar{v}_{3} +\hspace{-0.1cm}= \bar{v}_5 \cdot 1 $ \\
-		& $v_4= \sin(v_1)$ & $\bar{v}_{0} +\hspace{-0.1cm}= \bar{v}_5 \cdot 1 $ \\
-		& $v_5=v_{3} + v_0$ & $\bar{v}_{1} +\hspace{-0.1cm}= \bar{v}_4 \cdot \cos(v_1) $ \\
-		& $v_6=v_{-1} \cdot v_4$ & $\bar{v}_{2} +\hspace{-0.1cm}= \bar{v}_3 \cdot \exp(v_2) $ \\
-		& & $\bar{v_1} +\hspace{-0.1cm}= \bar{v}_2 \cdot 2 v_1$ \\
-		& & $\bar{v_{-2}} +\hspace{-0.1cm}= \bar{v}_1 \cdot 1$	\\ \hline
+		& $v_2=v_{1}^2$ & $\bar{v}_{4} \ \ +\hspace{-0.1cm}= \bar{v}_6 \cdot v_{-1} $ \\
+		& $v_3=\exp(v_2)$ & $\bar{v}_{3} \ \ +\hspace{-0.1cm}= \bar{v}_5 \cdot 1 $ \\
+		& $v_4= \sin(v_1)$ & $\bar{v}_{0} \ \ +\hspace{-0.1cm}= \bar{v}_5 \cdot 1 $ \\
+		& $v_5=v_{3} + v_0$ & $\bar{v}_{1} \ \ +\hspace{-0.1cm}= \bar{v}_4 \cdot \cos(v_1) $ \\
+		& $v_6=v_{-1} \cdot v_4$ & $\bar{v}_{2} \ \ +\hspace{-0.1cm}= \bar{v}_3 \cdot \exp(v_2) $ \\
+		& & $\bar{v}_1 \ \ +\hspace{-0.1cm}= \bar{v}_2 \cdot 2 v_1$ \\
+		& & $\bar{v}_{-2} +\hspace{-0.1cm}= \bar{v}_1 \cdot 1$	\\ \hline
 		Extract solution & $y_1 = v_5$ & $\bar{x}_3 = \bar{v}_0$ \\
 		& $y_2 = v_6$ & $\bar{x}_2 = \bar{v}_{-1}$ \\
 		& & $\bar{x}_1 = \bar{v}_{-2}$	\\ \hline
@@ -787,7 +792,7 @@ Given a partial differential equation (PDE) in the differential variable $u(t,x)
 	u(x,t) \ \rightarrow \ \{ u_0(t), u_1(t), ..., u_{N-1}(t) \}
 \end{equation}
 
-This is illustrated in Fig. \ref{fig:pde_discretization_method_of_lines} in one space dimension $x$ at time $\hat{t}$.
+This is illustrated in \cref{fig:pde_discretization_method_of_lines} in one space dimension $x$ at time $\hat{t}$.
 
 \begin{figure}[H]
 	\centering
@@ -822,7 +827,7 @@ This is illustrated in Fig. \ref{fig:pde_discretization_method_of_lines} in one 
 \end{figure}
 
 
-Spatial derivatives within the PDE are approximated using the finite difference formulas derived in section \ref{subsubsec:finite_differences}. \\
+Spatial derivatives within the PDE are approximated using the finite difference formulas derived in \cref{subsubsec:finite_differences}. \\
 The differential variables $u_i$ of the resulting system are then just dependent on time $t$ such that we have an ODE system now. The PDE's boundary conditions (BC) are applied by using the differential variables at the border, in the 1D case this would be obviously $u_0$ and $u_{N-1}$. \\
 Dirichlet boundary conditions 
 \begin{equation}
@@ -1293,14 +1298,14 @@ where $F_{1-\alpha}$ is the $1-\alpha$ quantile of the Fisher-distribution. The 
 \section{Simulation of DSC measuring process}
 \subsection{Mathematical model}
 
-Our 1D mathematical model is based on the following assumptions. First the heat transport is exclusively done by thermal diffusion (c.f. section \ref{sec:heat_equation}, equation \eqref{eq:heat_equation}), so convection and thermal radiation are neglected. Furthermore the mass density $\rho$ and heat conductivity $\lambda$ of the PCM are constant.
+Our 1D mathematical model is based on the following assumptions. First the heat transport is exclusively done by thermal diffusion (c.f. \cref{sec:heat_equation}, equation \eqref{eq:heat_equation}), so convection and thermal radiation are neglected. Furthermore the mass density $\rho$ and heat conductivity $\lambda$ of the PCM are constant.
 
 \begin{equation}
 \rho c_p(T(x,t)) \frac{\partial T}{\partial t}(x,t) = \nabla \cdot \left[\lambda \cdot \nabla T(x,t)  \right]
 \label{eq:heat_equation}
 \end{equation}
 
-Moreover we assume that the reference and sample crucible (see Fig. \ref{fig:heat_flux_DSC}) are independent of each other which allows us to simulate each side on its own. 
+Moreover we assume that the reference and sample crucible (see \cref{fig:heat_flux_DSC}) are independent of each other which allows us to simulate each side on its own. 
 
 \begin{figure}[H]
 	\centering
@@ -1309,7 +1314,7 @@ Moreover we assume that the reference and sample crucible (see Fig. \ref{fig:hea
 	\label{fig:mathematical_model_discretized}
 \end{figure}
 
-Correspondingly in Fig. \ref{fig:mathematical_model_discretized} one can see the spatially discretized model of the sample side, where on the very left is the furnace. Heat then flows through the silver plate finally into the PCM. Since the furnace is heated in such a way by regulating that the temperature at the reference crucible increases linearly with a heating rate $\beta$ and due to constant material properties of silver with respect to temperature the furnace' temperature increases as well with a constant rate $\beta$. From this follows the first boundary condition
+Correspondingly in \cref{fig:mathematical_model_discretized} one can see the spatially discretized model of the sample side, where on the very left is the furnace. Heat then flows through the silver plate finally into the PCM. Since the furnace is heated in such a way by regulating that the temperature at the reference crucible increases linearly with a heating rate $\beta$ and due to constant material properties of silver with respect to temperature the furnace' temperature increases as well with a constant rate $\beta$. From this follows the first boundary condition
 
 \begin{equation}
 	T^0 = T_0 + \beta t
@@ -1371,7 +1376,7 @@ and the factor coming from the inhomogeneous grid is
 
 The system is structured in three parts. First there is the furnace which increases its temperature with the heating rate $\beta$. Afterwards comes the silver plate until index $N$-$N_{pcm}$-$1$ and finally the PCM with temperature dependent specific heat capacity $c_p$. \\
 
-Solving \eqref{eq:heat_equation_discretized} yields the temperature but we are primarily interested in the heat flux into the PCM $\varPhi_{q}^{\text{pcm,in}}$ marked in Fig. \ref{fig:mathematical_model_discretized}. For the conversion from temperature to heat flux we use Fourier's law \eqref{eq:fouriers_law} where the gradient is discretized:
+Solving \eqref{eq:heat_equation_discretized} yields the temperature but we are primarily interested in the heat flux into the PCM $\varPhi_{q}^{\text{pcm,in}}$ marked in \cref{fig:mathematical_model_discretized}. For the conversion from temperature to heat flux we use Fourier's law \eqref{eq:fouriers_law} where the gradient is discretized:
 
 \begin{align}
 	\varPhi_{q}^{\text{pcm,in}}(T) = & - \bar{\lambda} \frac{T^{N_{\text{pcm}}} - T^{N_{\text{pcm}}-1}}{\Delta x_{N_{\text{pcm}}-1}} \cdot A_{\text{pcm}} \\
@@ -1468,7 +1473,7 @@ This gives the linear system
 	\end{bmatrix}
 \end{equation}
   
- we can solve for $\Delta \bar{x}$ and $\Delta \underline{x}$. Fig. \ref{fig:computation_physical_grid} and \ref{fig:grid_size} show illustrations of the resulting functions for the physical grid $x = \chi(\tilde{x})$ and the gridsize $\Delta x = \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$. Although those are discrete functions they are plotted continuously for better comprehensibility. \\
+ we can solve for $\Delta \bar{x}$ and $\Delta \underline{x}$. \Cref{fig:computation_physical_grid,fig:grid_size} show illustrations of the resulting functions for the physical grid $x = \chi(\tilde{x})$ and the gridsize $\Delta x = \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$. Although those are discrete functions they are plotted continuously for better comprehensibility. \\
 
 
 
@@ -1832,7 +1837,7 @@ An alternative simple parametrization which is similar flexible than NURBS is a 
 	\label{eq:parametrization_linear_comb_Gauss}
 \end{equation} \\
 
-An example $c_p(T)$ function generated by this parametrization is shown in Fig. \ref{fig:parametrization_example_linear_comb_gauss}
+An example $c_p(T)$ function generated by this parametrization is shown in \cref{fig:parametrization_example_linear_comb_gauss}
 
 
 \begin{figure}[H]
@@ -1870,7 +1875,7 @@ The measurement data is given as $\varPhi_q^{\eta_i}(T_{ref}^{\eta_i})$ where $T
 	T_{ref}^{\eta_i} - T_{ref}^{sim}(t_i) = 0 \quad \forall \ i \in \{1,2,...,n_{mp}\}
 \end{align}
 
-using Newton's method where $T_{ref}^{sim}(t)$ is the analytical solution of the heat equation on the reference side \eqref{eq:analytical_soln_final_formula}. This is depicted in Fig. \ref{fig:obtaining_measurement_times}.
+using Newton's method where $T_{ref}^{sim}(t)$ is the analytical solution of the heat equation on the reference side \eqref{eq:analytical_soln_final_formula}. This is depicted in \cref{fig:obtaining_measurement_times}.
 
 
 \begin{figure}[H]
@@ -1912,7 +1917,7 @@ using Newton's method where $T_{ref}^{sim}(t)$ is the analytical solution of the
 \begin{flushright}
 	
 \end{flushright}
-For the optimization process using Gauss-Newton method (see section \ref{sec:Gauss_Newton}) we first define the residuum vector which euclidean norm $|| \cdot ||_2^2$ will be minimized as 
+For the optimization process using Gauss-Newton method (see \cref{sec:Gauss_Newton}) we first define the residuum vector which euclidean norm $|| \cdot ||_2^2$ will be minimized as 
 
 \begin{equation}
 	F_1(p_{c_p}) :=
@@ -1967,8 +1972,8 @@ Except the forward simulation with an equidistant grid as reference for the erro
 
 
 \subsection{Smearing effect on simulated heat flux for different heat rates}
-The first basic numerical experiment consists of showing that our mathematical model is capable of reproducing heat fluxes exhibiting the smearing effect similar to those measured (see Sec \ref{sec:smearing_problem}). This was achieved by a forward simulation for several different heat rates using  the same specific heat capacity (see Fig. \ref{fig:smearing_effect_c_p}) each time. \\
-The resulting heat fluxes for all heat rates from the forward simulation can be seen in Fig. \ref{fig:smearing_effect_simulation_heat_flux}. They exhibit obviously a widening of the peak and a shift of the maximum to higher temperatures for increasing heat rates similar to the measured heat fluxes shown in Fig. \ref{fig:smearing_effect_measurement_heat_flux}. \\
+The first basic numerical experiment consists of showing that our mathematical model is capable of reproducing heat fluxes exhibiting the smearing effect similar to those measured (see \cref{sec:smearing_problem}). This was achieved by a forward simulation for several different heat rates using  the same specific heat capacity (see \cref{fig:smearing_effect_c_p}) each time. \\
+The resulting heat fluxes for all heat rates from the forward simulation can be seen in \cref{fig:smearing_effect_simulation_heat_flux}. They exhibit obviously a widening of the peak and a shift of the maximum to higher temperatures for increasing heat rates similar to the measured heat fluxes shown in \cref{fig:smearing_effect_measurement_heat_flux}. \\
 This result forms the basis of reproducing the heat flux measurement values in the simulation and in the further numerical experiments perform a parameter estimation to obtain the specific heat capacity. 
 
 
@@ -1999,7 +2004,7 @@ This result forms the basis of reproducing the heat flux measurement values in t
 \subsection{Parameter estimation using finite differences and NURBS parametrization}
 \label{sec:param_estim_NURBS}
 
-For the first attempt of estimating $c_p(T)$  we used the NURBS parametrization (see Sec. \ref{sec:nurbs}). In total we used 33 control points where the y-coordinates ($\hat{=} c_p$) are optimization variables and the the x-coordinate ($\hat{=}$ temperature) were fixed to 
+For the first attempt of estimating $c_p(T)$  we used the NURBS parametrization (see \cref{sec:nurbs}). In total we used 33 control points where the y-coordinates ($\hat{=} c_p$) are optimization variables and the the x-coordinate ($\hat{=}$ temperature) were fixed to 
 
 \begin{equation}
 	P^x = [0, 30, 60, 90, 100, 102, 104, ..., 148, 150, 160, 180, 200]
@@ -2008,10 +2013,10 @@ For the first attempt of estimating $c_p(T)$  we used the NURBS parametrization 
 such that the peak has enough degrees of freedom for temperatures $T \in [100, 150]$. \\
 Due to the early working state we used the matlab routines $ode15s$ for integration and $lsqnonlin$ to solve the least squares problem where the Jacobian was computed via external numerical differentiation. The integration tolerance was set here to $10^{-7}$ as well. Besides that material properties of Constantan were used instead of silver for the heat transport plate from furnace to PCM. In particular these are $c_{p,Const}=0.41\frac{mJ}{mg \ K}$, $\rho_{Const}=10.49\frac{mg}{mm^3}$ and $\lambda_{Const}=23\frac{mW}{mm \ K}$. \\
 Minimizing the heat flux residuum worked best in this setting for $L_{Const}=15mm$ (instead of $L_{Ag}$ here) and $L_{pcm}=0.5mm$. \\
-The results after optimizing, using the measurement data of heat rate $\beta = 10 \frac{K}{min}$, are shown in Fig. \ref{fig:NURBS_results}. As one can see it was possible to minimize the residuum of heat flux quite well aside from some oscillations which have their origin in $c_p(T)$ due to numerical problems. Beside the oscillations there is one major difference in the peak shape from what we would expect, that is after the peak a temporary decrease followed by a big slope.
-Finally $lsqnonlin$ gives us the approximation of the used Jacobian $J_1(p_{c_p})$ at the end of the optimization process which was computed internally via finite differences, see Fig. \ref{fig:NURBS_results}c. Since in our NURBS parametrization the y-coordinates of the control points are free optimization variables and the locality of those the x-axis of these Jacobian plots was set being the x-coordinates of the control points. This way there is a direct connection between $J_1(p_{c_p})$ and which zone of $c_p(T)$ it affects. The y-axis was labeled using the reference crucible temperature since the heat flux measurement values are given as a function of those, analog to the heat flux plot.
+The results after optimizing, using the measurement data of heat rate $\beta = 10 \frac{K}{min}$, are shown in \cref{fig:NURBS_results}. As one can see it was possible to minimize the residuum of heat flux quite well aside from some oscillations which have their origin in $c_p(T)$ due to numerical problems. Beside the oscillations there is one major difference in the peak shape from what we would expect, that is after the peak a temporary decrease followed by a big slope.
+Finally $lsqnonlin$ gives us the approximation of the used Jacobian $J_1(p_{c_p})$ at the end of the optimization process which was computed internally via finite differences, see \cref{fig:NURBS_results}c. Since in our NURBS parametrization the y-coordinates of the control points are free optimization variables and the locality of those the x-axis of these Jacobian plots was set being the x-coordinates of the control points. This way there is a direct connection between $J_1(p_{c_p})$ and which zone of $c_p(T)$ it affects. The y-axis was labeled using the reference crucible temperature since the heat flux measurement values are given as a function of those, analog to the heat flux plot.
 Two things are worth mentioning. First the order of magnitude which is increased by several orders for areas of $c_p(T)$ up to temperatures of $100^\circ C$ and measurement values above $110^\circ C$ reference temperature during phase transition. Interestingly the specific heat capacity's oscillations occur in a zone of low sensitivities which explains why $lsqnonlin$ does not improve here further. 
-Secondly considering the zone of increased magnitude in detail (see Fig \ref{fig:NURBS_results}d) one recognize sign switching oscillations where continuity is expected. This is a strong indication that the approximation of $J_1(p_{c_p})$ via finite differences is of poor quality and not reliable why we switch to internal numerical differentiation later. \\
+Secondly considering the zone of increased magnitude in detail (see \cref{fig:NURBS_results}d) one recognize sign switching oscillations where continuity is expected. This is a strong indication that the approximation of $J_1(p_{c_p})$ via finite differences is of poor quality and not reliable why we switch to internal numerical differentiation later. \\
 The optimization took in this case about 40 minutes on my laptop and stopped because the norm of step was below the tolerance $10^{-6}$.
 
 
@@ -2022,10 +2027,10 @@ The optimization took in this case about 40 minutes on my laptop and stopped bec
 	{\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_c_p(T).png}}
 
 	\subcaptionbox{Approximated Jacobian $J_1(p_{c_p})$.}[.49\linewidth]
-	{\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_jac.png}}
+	{\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_jac2.png}}
 	\hspace{0.5cm}
 	\subcaptionbox{Zoomed in view of approximated $J_1(p_{c_p})$.}[.49\linewidth]
-	{\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_jac_zoom.png}}
+	{\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_jac_zoom2.png}}
 	\caption{Specific heat capacity, heat flux and optimization Jacobian at the end of the optimization process.}
 	\label{fig:NURBS_results}
 \end{figure}
@@ -2035,7 +2040,7 @@ The optimization took in this case about 40 minutes on my laptop and stopped bec
 
 \subsection{Error analysis of integration tolerance and spatial discretization grid}
 In this section we quantify the occurring numerical errors due to the used integration tolerance and spatial discretization grid in order to ensure that these do not influence the results significantly. \\
-From here on the numerical integrator DAESOL-II within the SolvIND Suite and the material properties of silver for the silver plate were used for all upcoming numerical experiments. The relative error comparing integration tolerances $10^{-7}$ and $10^{-8}$  is shown in Fig. \ref{fig:integration_tolerance_error}.
+From here on the numerical integrator DAESOL-II within the SolvIND Suite and the material properties of silver for the silver plate were used for all upcoming numerical experiments. The relative error comparing integration tolerances $10^{-7}$ and $10^{-8}$  is shown in \cref{fig:integration_tolerance_error}.
 The temperature at the last discretization point of the silver plate was evaluated for all measurement time points which equates a temperature at the reference crucible $T_{ref}$. 
 As one can see the maximum relative error $1.7 \cdot 10^{-6}$ occurs approximately at the PCM's phase transition. 
 From the magnitude we can conclude that a integration tolerance of $10^{-7}$ is sufficient. \\
@@ -2049,7 +2054,7 @@ From the magnitude we can conclude that a integration tolerance of $10^{-7}$ is 
 \end{figure}
 
 
-Next we compare several configurations of the spatial discretization grid (c.f. Sec. \ref{sec:spatial_discretization_grid}) with an equidistant reference grid with $\Delta x = \frac{L_{pcm}}{N_{pcm}}$ everywhere. The used physical lengths $L_{Ag}=40mm$ and $L_{pcm}=0.1mm$ where the optimization worked best together with a sufficiently large number of discretization points within the PCM such that the heat flux approximation is adequate results in a huge number of total discretization points in an equidistant grid. E.g. with $N_{pcm}=50$ the total number of discretization points would be $N=20,050$ which is not practical in the optimization process. Therefore we compute the relative error
+Next we compare several configurations of the spatial discretization grid (c.f. \cref{sec:spatial_discretization_grid}) with an equidistant reference grid with $\Delta x = \frac{L_{pcm}}{N_{pcm}}$ everywhere. The used physical lengths $L_{Ag}=40mm$ and $L_{pcm}=0.1mm$ where the optimization worked best together with a sufficiently large number of discretization points within the PCM such that the heat flux approximation is adequate results in a huge number of total discretization points in an equidistant grid. E.g. with $N_{pcm}=50$ the total number of discretization points would be $N=20,050$ which is not practical in the optimization process. Therefore we compute the relative error
 
 \begin{equation}
 	| \text{Relative error}_i| = \left| 1 - \frac{T_{{grid}_i}^{N_{Ag}-1}(T_{ref})}{T_{eq}^{N_{Ag}-1}(T_{ref})} \right|
@@ -2058,7 +2063,7 @@ Next we compare several configurations of the spatial discretization grid (c.f. 
 
 where $T_{grid_i}^{N_{Ag}-1}$ is the temperature using grid $i$ and $T_{eq}^{N_{Ag}-1}$ is the temperature from the reference equidistant grid using $N_{pcm}=50$ and $N_{Ag}=20,000$. Both temperatures are evaluated at the silver plate's last discretization point since this equates to the same physical coordinate $x=L_{Ag}$ by construction in all grids. 
 We set $n_m=0.01$ and $t=0.999$ for all experiments in order to guarantee that the transition of the grid size is finished sufficiently once the PCM starts which is necessary for the heat flux approximation. \\
-In the first set of tests we modified the total number of discretization points $N$ while fixing $n_{pcm}=0.2$ and $n_{tr}=0.1$. The results are shown in Fig. \ref{fig:grid_mod_N} where in all upcoming cases (a) shows the grid size $\Delta x = \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$ as a function of the computation grid $\tilde{x}$ and (b) maps the corresponding relative error computed by \eqref{eq:relErr_grid}. As one can see in all cases the error increases during the phase transition at a reference crucible temperature of about $130^{\circ} C$ where the maximum is reached for the least amount of tested discretization points $N=200$ with $|\text{Relative error|}=1.5 \cdot 10^{-5}$. Surprisingly the error for $N > 1000$ increases again but in all tested cases the relative error has an order of magnitude lower equal than $10^{-5}$. 
+In the first set of tests we modified the total number of discretization points $N$ while fixing $n_{pcm}=0.2$ and $n_{tr}=0.1$. The results are shown in \cref{fig:grid_mod_N} where in all upcoming cases (a) shows the grid size $\Delta x = \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$ as a function of the computation grid $\tilde{x}$ and (b) maps the corresponding relative error computed by \eqref{eq:relErr_grid}. As one can see in all cases the error increases during the phase transition at a reference crucible temperature of about $130^{\circ} C$ where the maximum is reached for the least amount of tested discretization points $N=200$ with $|\text{Relative error|}=1.5 \cdot 10^{-5}$. Surprisingly the error for $N > 1000$ increases again but in all tested cases the relative error has an order of magnitude lower equal than $10^{-5}$. 
 
 
 \begin{figure}[H]
@@ -2076,7 +2081,7 @@ In the first set of tests we modified the total number of discretization points 
 	\label{fig:grid_mod_N}
 \end{figure}
 
-Next we varied the number of discretization points in the silver plate while fixing $N_{pcm}=50$ and again $n_{tr}=0.1$. The results are qualitatively and quantitatively similar to the previous case as one can observe in Fig. \ref{fig:grid_mod_N1}.
+Next we varied the number of discretization points in the silver plate while fixing $N_{pcm}=50$ and again $n_{tr}=0.1$. The results are qualitatively and quantitatively similar to the previous case as one can observe in \cref{fig:grid_mod_N1}.
 
 
 \begin{figure}[H]
@@ -2118,9 +2123,9 @@ Summarized a total number of discretization points $N=300$ is sufficient while t
 
 
 \subsection{Parameter estimation using parametrization of linear combination of Gaussians}
-So far finite differences were used to compute the optimization jacobian \eqref{eq:optimization_jacobian}. Because of the problems described in section \ref{sec:param_estim_NURBS} from now on internal numerical differentiation is used instead which is done with the software package SolvIND. \\
-In this section the parameter estimation is performed using the parametrization of 5 Gaussians, linear and constant part (see section \ref{sec:parametrization_Gausse}). Five Gaussians were used since this is the minimum number such that the residuum almost vanishes as one can see in the upcoming figures. The optimization was performed again with the matlab routine $lsqnonlin$. Start values for the first heat rate $\beta = 20 \frac{K}{min}$ were used from previously existing results with already reduced residuum. Afterwards the optimizations were performed in a decreasing order of heat rates where parameters estimated in this process were used as start values in subsequent steps. I.e. estimated parameters at heat rate $\beta=20 \frac{K}{min}$ were used as start values for the parameter estimation at heat rate $\beta=10 \frac{K}{min}$ and so on. \\
-In Fig. \ref{fig:optim_c_p_heat_flux_5Gaussians_1} and \ref{fig:optim_c_p_heat_flux_5Gaussians_2} the results are shown where on the left there is for all heat rates always the obtained function for the specific heat capacity $c_p(T)$. On the right measurement, simulation and resulting residuum of the heat flux is plotted and as one can see residuum is nearly zero for all heat rates. Examining the received specific heat capacities one notice first that for a heat rate of $10 \frac{K}{min}$ there are two peaks. The reason is a bending in the measured heat flux at approximately $130^{\circ} C$ probably from an error in measurement. Next things to observe which makes $c_p(T)$ differ from our expectations can be seen very well in the result for heat rate $5 \frac{K}{min}$. Firstly the decrease of the peak's maximum is not linear but has two different areas. Secondly after the peak $c_p(T)$ has values lower than the base line for a small temperature range. These are likely unphysical optimization artifacts due to overfitting to a naturally simplified, i.e incomplete model. Although positive is that the $c_p(T)$ curves do not differ exorbitantly from each other. A more detailed comparison between them follows at the end of this section.
+So far finite differences were used to compute the optimization jacobian \eqref{eq:optimization_jacobian}. Because of the problems described in \cref{sec:param_estim_NURBS} from now on internal numerical differentiation is used instead which is done with the software package SolvIND. \\
+In this section the parameter estimation is performed using the parametrization of 5 Gaussians, linear and constant part (see \cref{sec:parametrization_Gausse}). Five Gaussians were used since this is the minimum number such that the residuum almost vanishes as one can see in the upcoming figures. The optimization was performed again with the matlab routine $lsqnonlin$. Start values for the first heat rate $\beta = 20 \frac{K}{min}$ were used from previously existing results with already reduced residuum. Afterwards the optimizations were performed in a decreasing order of heat rates where parameters estimated in this process were used as start values in subsequent steps. I.e. estimated parameters at heat rate $\beta=20 \frac{K}{min}$ were used as start values for the parameter estimation at heat rate $\beta=10 \frac{K}{min}$ and so on. \\
+In \cref{fig:optim_c_p_heat_flux_5Gaussians_1,fig:optim_c_p_heat_flux_5Gaussians_2} the results are shown where on the left there is for all heat rates always the obtained function for the specific heat capacity $c_p(T)$. On the right measurement, simulation and resulting residuum of the heat flux is plotted and as one can see residuum is nearly zero for all heat rates. Examining the received specific heat capacities one notice first that for a heat rate of $10 \frac{K}{min}$ there are two peaks. The reason is a bending in the measured heat flux at approximately $130^{\circ} C$ probably from an error in measurement. Next things to observe which makes $c_p(T)$ differ from our expectations can be seen very well in the result for heat rate $5 \frac{K}{min}$. Firstly the decrease of the peak's maximum is not linear but has two different areas. Secondly after the peak $c_p(T)$ has values lower than the base line for a small temperature range. These are likely unphysical optimization artifacts due to overfitting to a naturally simplified, i.e incomplete model. Although positive is that the $c_p(T)$ curves do not differ exorbitantly from each other. A more detailed comparison between them follows at the end of this section.
 
 
 
@@ -2175,8 +2180,8 @@ In Fig. \ref{fig:optim_c_p_heat_flux_5Gaussians_1} and \ref{fig:optim_c_p_heat_f
 	\label{fig:optim_c_p_heat_flux_5Gaussians_2}
 \end{figure}
 
-In order to quantify the obtained parameters quality a statistical analysis (see section \ref{sec:statistical_analysis_estim_params}) is applied. The results are shown in table \ref{tab:parameter_table_5Gaussians} where a probability of error $\alpha=5\%$ has been used. As one can see there are huge differences in the accuracy of the obtained parameters. Heat rate $10 \frac{K}{min}$ is remarkable and will be discussed individually. The Gaussian offset $T_{offset}$ is mostly well determined especially for lower heat rates. Amplitude and variance on the other hand often have deviations of up to hundred percent. The linear parameter has a big error for heat rates $0.6$ and $0.3 \frac{K}{min}$ which makes sense because the heat flux measurement values start at about $100^{\circ}C$ such that the observing temperature domain is too small for linear influences. Constant offset on the other hand was determined pretty good. \\
-Considering now the results for heat rate $10 \frac{K}{min}$ reveals a problem of this parametrization. Fig. \ref{fig:Gaussians_splitted_pathologic} shows how the individual Gaussians build up the specific heat capacity. Since the linear parameter is nearly zero the linear increase in front of the peak is done by Gaussian 1, 3 and 4. These are extraordinary inaccurate just as the actual linear parameter. Therefore identifiability is not guaranteed here. \\
+In order to quantify the obtained parameters quality a statistical analysis (see \cref{sec:statistical_analysis_estim_params}) is applied. The results are shown in \cref{tab:parameter_table_5Gaussians} where a probability of error $\alpha=5\%$ has been used. As one can see there are huge differences in the accuracy of the obtained parameters. Heat rate $10 \frac{K}{min}$ is remarkable and will be discussed individually. The Gaussian offset $T_{offset}$ is mostly well determined especially for lower heat rates. Amplitude and variance on the other hand often have deviations of up to hundred percent. The linear parameter has a big error for heat rates $0.6$ and $0.3 \frac{K}{min}$ which makes sense because the heat flux measurement values start at about $100^{\circ}C$ such that the observing temperature domain is too small for linear influences. Constant offset on the other hand was determined pretty good. \\
+Considering now the results for heat rate $10 \frac{K}{min}$ reveals a problem of this parametrization. \Cref{fig:Gaussians_splitted_pathologic} shows how the individual Gaussians build up the specific heat capacity. Since the linear parameter is nearly zero the linear increase in front of the peak is done by Gaussian 1, 3 and 4. These are extraordinary inaccurate just as the actual linear parameter. Therefore identifiability is not guaranteed here. \\
 Finally the first order optimality value given by $lsqnonlin$ at the end of the optimization process is listed as well. Since for all heat rates this value is not even close to zero we can not state that a local minimum has been found.
 
 
@@ -2216,7 +2221,7 @@ Finally the first order optimality value given by $lsqnonlin$ at the end of the 
 		Constant & $1.52 \pm 1.9\%$ & $1.60 \pm 19\%$ & $1.63 \pm 2.1\%$ & $1.65 \pm 1.4\%$ & $1.65 \pm 1.2\%$ & $2.63 \pm 3\%$ & $2.86 \pm 15\%$ \\ \hline \hline
 		[NOC1]$^*$ & $2.6$ & $12.4$ & $8.5$ & $6.7$ & $7.5$ & $4.5$ & $5.3$ \\ \hline
 	\end{tabular}
-	\caption{Estimated parameters for all heat rates $\beta$ and error from statistical analysis using error of probability $\alpha=0.05$. One Gaussian consist of three parameters (c.f. section \ref{sec:parametrization_Gausse}): top: amplitude $A_i$, middle: variance $var_i$, bottom: offset in temperature $T_{offset_i}$ \\
+	\caption{Estimated parameters for all heat rates $\beta$ and error from statistical analysis using error of probability $\alpha=0.05$. One Gaussian consist of three parameters (c.f. \cref{sec:parametrization_Gausse}): top: amplitude $A_i$, middle: variance $var_i$, bottom: offset in temperature $T_{offset_i}$ \\
 	$^*$ value from $lsqnonlin$ output.}
 	\label{tab:parameter_table_5Gaussians}
 \end{table}
@@ -2224,7 +2229,7 @@ Finally the first order optimality value given by $lsqnonlin$ at the end of the 
 \end{landscape}
 \newpage
 
-As mentioned we now compare all the obtained $c_p(T)$ curves in more detail. Fig. \ref{fig:5Gaussians_all_c_p} shows all of them at once. As one can see the functions especially regarding heat rates $0.3$ to $5 \frac{K}{min}$ are quite similar although shapes differ and there is a shift in the maximum's temperature $T_{max}$. This characteristic property is depicted beside the melting enthalpy $\Delta H$ in table \ref{tab:eval_table_Tmax_deltaH_5Gaussians}. The differences in shape cause a big deviation in the melting enthalpy where the position of the maximum is better determined. \\
+As mentioned we now compare all the obtained $c_p(T)$ curves in more detail. \Cref{fig:5Gaussians_all_c_p} shows all of them at once. As one can see the functions especially regarding heat rates $0.3$ to $5 \frac{K}{min}$ are quite similar although shapes differ and there is a shift in the maximum's temperature $T_{max}$. This characteristic property is depicted beside the melting enthalpy $\Delta H$ in \cref{tab:eval_table_Tmax_deltaH_5Gaussians}. The differences in shape cause a big deviation in the melting enthalpy where the position of the maximum is better determined. \\
 The optimization process took on average about $7$ minutes and 50 iterations per heat rate.
 
 
@@ -2255,9 +2260,9 @@ The optimization process took on average about $7$ minutes and 50 iterations per
 \subsection{Parameter estimation using Fraser-Suzuki parametrization}
 \label{sec:param_estimation_fs}
 
-In order to avoid overfitting seen in the previous section we apply now the Fraser-Suzuki parametrization (c.f. section \ref{sec:parametrization_FS}) where we fixed $r=2$. As we then just have in total 6 parameters instead of 17 with the Gaussians and therefore the available function space is smaller a kind of regularization is active. \\
-The optimization was performed here with a self written Gauss Newton solver based on section \ref{sec:GN_numerical_solution} using a singular value decomposition of $J_1(p_{c_p})$. An active set strategy for lower and upper bounds of the optimization variables has been implemented to ensure $0 \le sr \le 1$ and $wr \ge 0$ for a reasonable peak but it became apparent that the optimizer does not approach these limiting values anyway. Therefore lower and upper bounds were disabled and we solve an unconstrained problem. Start values for heat rate $20 \frac{K}{min}$ were chosen to be $h=14$, $wr=10.7$, $sr=0.705$, $z=129$, $m=0.0079$ and $b=1.69$ and following heat rates use the last result analog to the case of Gaussian parametrization. The linear parameter $m$ was fixed to the previously obtained result for the heat rates $0.6$ and $0.3 \frac{K}{min}$ because of the problems remarked in the last section. \\
-The resulting specific heat capacity $c_p(T)$ and corresponding heat flux $\varPhi_q^{pcm,in}$ for all heat rates after optimization is shown in Fig. \ref{fig:optim_c_p_heat_flux_FS_1} and \ref{fig:optim_c_p_heat_flux_FS_2}. As one can see the heat flux residuum is bigger than before especially at the increasing side of the peak. Furthermore the heat flux base line after the peak exhibits an increased residuum as well. On the other hand the obtained specific heat capacities are very similar as expected. A detailed comparison follows.
+In order to avoid overfitting seen in the previous section we apply now the Fraser-Suzuki parametrization (c.f. \cref{sec:parametrization_FS}) where we fixed $r=2$. As we then just have in total 6 parameters instead of 17 with the Gaussians and therefore the available function space is smaller a kind of regularization is active. \\
+The optimization was performed here with a self written Gauss Newton solver based on \cref{sec:GN_numerical_solution} using a singular value decomposition of $J_1(p_{c_p})$. An active set strategy for lower and upper bounds of the optimization variables has been implemented to ensure $0 \le sr \le 1$ and $wr \ge 0$ for a reasonable peak but it became apparent that the optimizer does not approach these limiting values anyway. Therefore lower and upper bounds were disabled and we solve an unconstrained problem. Start values for heat rate $20 \frac{K}{min}$ were chosen to be $h=14$, $wr=10.7$, $sr=0.705$, $z=129$, $m=0.0079$ and $b=1.69$ and following heat rates use the last result analog to the case of Gaussian parametrization. The linear parameter $m$ was fixed to the previously obtained result for the heat rates $0.6$ and $0.3 \frac{K}{min}$ because of the problems remarked in the last section. \\
+The resulting specific heat capacity $c_p(T)$ and corresponding heat flux $\varPhi_q^{pcm,in}$ for all heat rates after optimization is shown in \cref{fig:optim_c_p_heat_flux_FS_1,fig:optim_c_p_heat_flux_FS_2}. As one can see the heat flux residuum is bigger than before especially at the increasing side of the peak. Furthermore the heat flux base line after the peak exhibits an increased residuum as well. On the other hand the obtained specific heat capacities are very similar as expected. A detailed comparison follows.
 
 
 
@@ -2307,7 +2312,7 @@ The resulting specific heat capacity $c_p(T)$ and corresponding heat flux $\varP
 	\label{fig:optim_c_p_heat_flux_FS_2}
 \end{figure}
 
-Next again a statistical analysis of the obtained parameters is performed analog to last section, results are shown in table \ref{tab:parameter_table_FS}. One notice that the parameters' confidence region are very similar for all heat rates. The best determined parameter is the peak position $z$ and on the other hand the linear parameter $m$ has the highest relative uncertainty. Though at all the obtained parameters are much more accurate than the ones with Gaussian parametrization. 
+Next again a statistical analysis of the obtained parameters is performed analog to last section, results are shown in \cref{tab:parameter_table_FS}. One notice that the parameters' confidence region are very similar for all heat rates. The best determined parameter is the peak position $z$ and on the other hand the linear parameter $m$ has the highest relative uncertainty. Though at all the obtained parameters are much more accurate than the ones with Gaussian parametrization. 
 
 
 \begin{table}[H]
@@ -2329,7 +2334,7 @@ Next again a statistical analysis of the obtained parameters is performed analog
 \end{table}
 
 
-We now compare the obtained specific heat capacity functions $c_p(T)$ from the different heat rates, plotted in Fig. \ref{fig:FS_all_c_p}. Their characteristic values are listed in table \ref{tab:eval_table_Tmax_deltaH_FS}. The maximum position $T_{max}$ is is best determined with a variation of less than one percent. End temperatures of the phase transition $T_{off}$ are as well very similar especially considering heat rates $0.3$ to $2.5 \frac{K}{min}$. The increasing part of the peak affects $T_on$ which is monotonically decreasing with higher heat rates which is symptomatic for a systematic error. Regarding the melting enthalpy $\Delta H$ the outlier at heat rate $10 \frac{K}{min}$ can be explained by the bending in the measurement heat flux data remarked earlier. \\
+We now compare the obtained specific heat capacity functions $c_p(T)$ from the different heat rates, plotted in \cref{fig:FS_all_c_p}. Their characteristic values are listed in \cref{tab:eval_table_Tmax_deltaH_FS}. The maximum position $T_{max}$ is is best determined with a variation of less than one percent. End temperatures of the phase transition $T_{off}$ are as well very similar especially considering heat rates $0.3$ to $2.5 \frac{K}{min}$. The increasing part of the peak affects $T_on$ which is monotonically decreasing with higher heat rates which is symptomatic for a systematic error. Regarding the melting enthalpy $\Delta H$ the outlier at heat rate $10 \frac{K}{min}$ can be explained by the bending in the measurement heat flux data remarked earlier. \\
 
 
 \begin{table}[H]
@@ -2342,7 +2347,7 @@ We now compare the obtained specific heat capacity functions $c_p(T)$ from the d
 		$T_{off} [^{\circ} C]$ & $136.1$ & $135.7$ & $133.6$ & $132.6$ & $132.4$ & $132.5$ & $132.7$ & $133.7 \pm 1.6 \ (1.2\%)$ \\[0.7ex]
 		$\Delta H^{**} \ [\frac{mJ}{mg}]$ & $162.7$ & $197.0$ & $184.3$ & $176.6$ & $173.1$ & $171.5$ & $172.2$ & $173.4 \pm 7.1 \ (4.1\%)$ \\ \hline
 	\end{tabular}
-	\caption{$T_{max}$ and $\Delta H$ analog to table \ref{tab:eval_table_Tmax_deltaH_5Gaussians}. $T_{on}$ and $T_{off}$ are defined as shown in Fig. \ref{fig:T_on/off_illustration}.
+	\caption{$T_{max}$ and $\Delta H$ analog to \cref{tab:eval_table_Tmax_deltaH_5Gaussians}. $T_{on}$ and $T_{off}$ are defined as shown in \cref{fig:T_on/off_illustration}.
 	$^{*}$ Corrected sample standard deviation used here.
 	$^{**}$ Value from heat rate $10 \frac{K}{min}$ was omitted for mean computation due to outlying value and mentioned measurement error.}
 	\label{tab:eval_table_Tmax_deltaH_FS}
@@ -2358,7 +2363,7 @@ We now compare the obtained specific heat capacity functions $c_p(T)$ from the d
 \end{figure}
 
 
-Finally the Gauss Newton optimization process has been examined. As remarked we solve an unconstrained linear least squares problem using Algorithm \ref{alg:Gauss_Newton_unconstrained}. Termination criteria parameters were set to $[NOC1]_{TOL}=10^{-2}$, $\Delta x_{TOL}=10^{-5}$, $t_{TOL}=10^{-6}$ and iterations$_{max}=1000$ where just the first two were triggered and a stepsize decrease rate $d=0.8$ has been used. Results are depicted in Fig. \ref{fig:optimization_progress_FS} for all heat rates where the norm of residuum $||F_1^{(k)}||_2$, Gauss Newton step $||\Delta x^{(k)}||_2$, gradient of Lagrange function (here objective function since unconstrained) $|| \nabla \mathcal{L} ||_2 = || \nabla F_1^T F_1 ||_2 = || 2 J_1^T F_1 ||_2$ and step size $t^{(k)}$ were recorded in each iteration $k$. One notice that the residuum decreases perceptibly only in the first iteration step. This is related to the fact that $||\Delta x^{(k)}||_2$ declines monotonically in a few iterations to an order of $10^{-5}$ where is starts to fluctuate as one can see very well for heat rate $5 \frac{K}{min}$.
+Finally the Gauss Newton optimization process has been examined. As remarked we solve an unconstrained linear least squares problem using \cref{alg:Gauss_Newton_unconstrained}. Termination criteria parameters were set to $[NOC1]_{TOL}=10^{-2}$, $\Delta x_{TOL}=10^{-5}$, $t_{TOL}=10^{-6}$ and iterations$_{max}=1000$ where just the first two were triggered and a stepsize decrease rate $d=0.8$ has been used. Results are depicted in \cref{fig:optimization_progress_FS} for all heat rates where the norm of residuum $||F_1^{(k)}||_2$, Gauss Newton step $||\Delta x^{(k)}||_2$, gradient of Lagrange function (here objective function since unconstrained) $|| \nabla \mathcal{L} ||_2 = || \nabla F_1^T F_1 ||_2 = || 2 J_1^T F_1 ||_2$ and step size $t^{(k)}$ were recorded in each iteration $k$. One notice that the residuum decreases perceptibly only in the first iteration step. This is related to the fact that $||\Delta x^{(k)}||_2$ declines monotonically in a few iterations to an order of $10^{-5}$ where is starts to fluctuate as one can see very well for heat rate $5 \frac{K}{min}$.
 
 
 
@@ -2480,14 +2485,14 @@ Finally the Gauss Newton optimization process has been examined. As remarked we 
 
 \subsection{Parameter estimation with modified heat rate from measurement data}
 So far just the nominal heat rate of the appropriate measurement scheme was used. 
-Fig. \ref{fig:heat_rate_measurement} shows the measurement data of the heat rate at the reference crucible $\frac{\partial T_{ref}(t)}{\partial t}(T_{ref})$ exemplary for a nominal heat rate $\beta = 2.5 \frac{K}{min}$. 
+\Cref{fig:heat_rate_measurement} shows the measurement data of the heat rate at the reference crucible $\frac{\partial T_{ref}(t)}{\partial t}(T_{ref})$ exemplary for a nominal heat rate $\beta = 2.5 \frac{K}{min}$. 
 As one can see there are fluctuations due to the regulation which tries to keep the heat rate at the nominal value. 
-Computing the mean value gives a lower measured heat rate than the nominal value (red line in Fig. \ref{fig:heat_rate_measurement}). 
-This is the case for all used measurements as one can see in table \ref{tab:mod_heat_rate}. 
+Computing the mean value gives a lower measured heat rate than the nominal value (red line in \cref{fig:heat_rate_measurement}). 
+This is the case for all used measurements as one can see in \cref{tab:mod_heat_rate}. 
 Since the reference side' material properties are constant the heat rate at the crucible and the furnace are comparable.
 Although the observed difference is quite small, with increasing time the shift in temperature will accumulate.
 Further this could be a reason for the observed shift in the obtained $c_p(T)$ in the previous sections.
-This is why we perform now the parameter estimation again with the modified heat rate $\bar{\beta}_{meas}$ stated in table \ref{tab:mod_heat_rate}.
+This is why we perform now the parameter estimation again with the modified heat rate $\bar{\beta}_{meas}$ stated in \cref{tab:mod_heat_rate}.
 
 
 \begin{figure}[H]
@@ -2509,7 +2514,7 @@ This is why we perform now the parameter estimation again with the modified heat
 		$0.6$ & $0.5989 \pm 0.00078 \ (0.13\%)$ & $0.18\%$ \\
 		$0.3$ & $0.2994 \pm 0.00046 \ (0.15\%)$ & $0.20\%$ \\ \hline
 	\end{tabular}
-	\caption{Heat rate measurement value $\beta_{meas}$ obtained as depicted in Fig. \ref{fig:heat_rate_measurement} including corresponding corrected sample standard deviation. Relative variation from nominal heat rate $\beta$ in last column.}
+	\caption{Heat rate measurement value $\beta_{meas}$ obtained as depicted in \cref{fig:heat_rate_measurement} including corresponding corrected sample standard deviation. Relative variation from nominal heat rate $\beta$ in last column.}
 	\label{tab:mod_heat_rate}
 \end{table}
 
@@ -2546,8 +2551,6 @@ This is why we perform now the parameter estimation again with the modified heat
 		
 		\textbf{Gaussians} & & & & & & & \\[0.7ex]
 		$T_{max} \ [^{\circ}C]$ & & & & & & & \\[0.7ex]
-		$T_{on} [^{\circ} C]$ & & & & & & & \\[0.7ex]
-		$T_{off} [^{\circ} C]$ & & & & & & & \\[0.7ex]
 		$\Delta H \ [\frac{mJ}{mg}]$ & & & & & & & \\ \hline
 		
 		
