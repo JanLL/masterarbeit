@@ -15,6 +15,7 @@
 \usepackage{bbm}
 \usepackage{pdflscape}
 \usepackage[linesnumbered,ruled,resetcount,algosection]{algorithm2e}
+\usepackage{nicefrac}
 
 
 \usepackage{varioref}
@@ -1026,13 +1027,22 @@ with the generalized inverse $J^+$. An important result \cite{diss_bock} is
 \subsubsection{Numerical solution}
 \label{sec:GN_numerical_solution}
 
-For the numerical solution of \cref{eq:GN_KKT_system} we will successively introduce the unconstrained, the equality constrained and the general equality and inequality constrained case because they are built up on each other, c.f. \cite{numerical_methods_lsq_Bjorck}. All algorithms compute steps $\Delta x^{(k)}$ in iteration $k$. The final solution is then computed iteratively by
+For the numerical solution of \cref{eq:GN_KKT_system} we will successively introduce the unconstrained, the equality constrained and the general equality and inequality constrained case because they are built up on each other, c.f. \cite{numerical_methods_lsq_Bjorck}. Respectively the Gauss-Newton direction $\Delta x^{(k)}$ is computed for iteration $k$. The final solution is then computed iteratively by
 
 \begin{equation}
 	x^{(k+1)} = x^{(k)} + t^{(k)} \Delta x^{(k)}
 \end{equation}
 
-The iteration index is omitted except for the active set strategy for better legibility.
+with stepsize $t^{(k)} \in (0,1]$ for global convergence. In this context a \textit{level function} $T(x)$ is introduced which must be decreased in each iteration. For the general equality and inequality constrained case the choice
+
+\begin{equation}
+	T_1(x) = \frac{1}{2} || F_1(x) ||_2^2 + \sum_{i=1}^{m_2} \beta_i | F_{2,i}(x) | + \sum_{i=1}^{m_3} \gamma_i | \min\{0,F_{3,i}(x)\} |
+\end{equation}
+
+with $\beta_i > |\lambda_i|$ and $\gamma_i > |\mu_i|$, i.e. larger than the absolute value of the corresponding Lagrange multiplier, guarantees global convergence to a local minimum under certain conditions, see \cite{diss_bock} theorem 3.2.6. \\
+Finding an appropriate sequence of stepsizes $\{ t^{(k)} \}_k$ is in general known as \textit{line search} and there are a lot of different strategies to achieve this (see e.g. \cite{nonlinear_optimiziation_wright}), exemplary the Armijo strategy to ensure a sufficient decrease of the level function. Another example is the restrictive monotonicity test (RMT) which is based on an estimate of the functions curvature $\omega$. \\
+
+The iteration index is omitted in the following paragraphs except for the active set strategy for better legibility.
 
 \paragraph{Unconstrained case}\mbox{}\\
 In the unconstrained case we want to solve the problem
@@ -1130,6 +1140,46 @@ Based on decomposing $J_1$ two solutions are shown:
 	\end{equation}
 
 \end{itemize}
+
+\vspace{0.5cm}
+\Cref{alg:Gauss_Newton_unconstrained} depicts exemplary the procedure of finding a local minimum of an unconstrained least squares problem using Gauss-Newton iterates. The algorithm is terminated successfully if the necessary optimality condition [NOC1] is satisfied numerically, i.e. below a tolerance. Further it stops if the computed Gauss-Newton direction $\Delta x^{(k)}$ or the stepsize $t^{(k)}$ becomes too small or if a maximum number of iterations is reached. Stepsize control is achieved via the trivial level function $T(x) = ||F_1(x)||_2$ and a step is accepted for a decrease in the level function. Otherwise the step $t^{(k)}$ is reduced by an factor $d$. \\
+This algorithm has been used in \cref{sec:param_estimation_fs} in order to analyse the sequence of Gauss-Newton iterates at the parameter estimation.  \\
+
+
+
+\begin{algorithm}[H]
+	
+	\SetKwInOut{Input}{Input}
+	\SetKwInOut{Output}{Output}
+	
+	\Input{Start value $x_{start}$, stepsize decrease rate $d$ \\ 
+		termination criteria $[NOC1]_{TOL}$, $\Delta x_{TOL}$, $t_{TOL}$ and iterations$_{max}$}
+	\Output{End value $x_{end}$ \\ \mbox{}\\}
+	
+	Initialize $k=0$, $x^{(0)} = x_{start}$
+	
+	\While{
+		$|| \nabla f ||_2 = || 2 J_1^T F1 ||_2 > [NOC1]_{TOL} \ \text{and}$ \\
+		\qquad \qquad $|| \Delta x^{(k)} ||_2 > \Delta x_{TOL} \ \text{and}$ \\
+		\qquad \qquad $t^{(k)} > t_{TOL} \ \text{and}$ \\
+		\qquad \qquad $k < \text{iterations}_{max}$}
+	{
+		Compute residuum $F_1(x^{(k)})$ and jacobian $J_1(x^{(k)})$ \\
+		Solve $J_1(x^{(k)})^T J_1(x^{(k)}) \Delta x^{(k)} = J_1(x^{(k)})^T F_1(x^{(k)})$ \\
+		Set $t^{(k)} = 1$ \\
+		Compute next potential state $x^{(k+1)} = x^{(k)} + t^{(k)} \cdot \Delta x^{(k)}$ and \\ \quad corresponding residuum $F_1(x^{(k+1)})$ \\
+		
+		\If{$t^{(k)} > t_{TOL} \text{ and } || F_1(x^{(k+1)}) ||_2 \ge || F_1(x^{(k)}) ||_2$}
+		{Set $t^{(k)} = t^{(k)} \cdot d$ \\
+			goto (7)}
+		\Else{
+			Set $k := k + 1$ \\
+		}
+	}
+	Set $x_{end} = x^{(k)}$
+	\caption{Unconstrained Gauss-Newton}
+	\label{alg:Gauss_Newton_unconstrained}
+\end{algorithm}
 
 
 \paragraph{Equality constrained case}\mbox{}\\
@@ -1414,7 +1464,7 @@ is apparent by the heat rate $\beta$ at temperature $T^0$. Zero flux Neumann bou
 \end{figure}
 
 
-Solving \cref{eq:heat_equation_discretized} yields the temperature but we are primarily interested in the heat flux into the PCM $\varPhi_{q}^{pcm,in}$. For the conversion from temperature to heat flux we use Fourier's law \cref{eq:fouriers_law} where the gradient is discretized:
+Solving \cref{eq:heat_equation_discretized} yields the temperature but we are primarily interested in the heat flux into the PCM $\varPhi_{q}^{pcm,in}$ since measurement data of this quantity is available. For the conversion from temperature to heat flux we use Fourier's law \cref{eq:fouriers_law} where the gradient is discretized:
 
 \begin{align}
 	\varPhi_{q}^{pcm,in}(T) = & - \bar{\lambda} \frac{T^{N_{Ag}} - T^{N_{Ag}-1}}{\Delta x_{N_{Ag}-1}} \cdot A_{pcm} \\
@@ -1839,7 +1889,7 @@ As optimization variables we used the corresponding y-coordinates $P_i^y$.
 \subsubsection{Fraser-Suzuki Peak}
 \label{sec:parametrization_FS}
 
-A parametrization with fewer degrees of freedom and used in general for chromatography and spectroscopy distributions is the Fraser-Suzuki peak \cite{fraser_suzuki_1} \cite{fraser_suzuki_many_fcts}
+A parametrization with fewer degrees of freedom and used frequently for chromatography and spectroscopy distributions is the Fraser-Suzuki peak \cite{fraser_suzuki_1} \cite{fraser_suzuki_many_fcts}
 
 \begin{align}
 	c_p(T) =
@@ -1998,11 +2048,24 @@ The sensitivities $\frac{\partial T}{\partial p_{c_p}}(t_i) \in \mathbb{R}^{N \t
 
 
 \section{Numerical experiments and results}
-All conducted numerical experiments involve the following subproblems: The numerical integration where we solve \cref{eq:heat_equation_discretized} gives us the temperature $T$ and sensitivities $\frac{\partial T}{\partial p}$. This was accomplished with the numerical integrator DAESOL-II embedded in SolvIND. The integration tolerance was set to $10^{-7}$ and the sensitivities were obtained in forward mode.
-The heat flux $\varPhi_q^{pcm,in}$ is then computed with \cref{eq:heat_flux_computation_final} and the optimization Jacobian $J_1(p_{c_p})$ with \cref{eq:optimization_jacobian} \todo{Approx.-fehler vom heat flux nimmt mit steigendem N3 ab, bei Vergleich von N3=50 -> 200 hat sich nichts grossartig veraendert -> N3=50 reicht aus}. The parameter estimation is then performed by solving the least squares problem \cref{eq:parameter_estimation_least_squares_problem}. \todo{welches programm fuer die optimierung} \\
+All conducted numerical experiments involve the following subproblems: The numerical integration where we solve \cref{eq:heat_equation_discretized} gives us the temperature vector $T = \begin{pmatrix} T^0 & ... & T^{N-1}  \end{pmatrix}^T$ and sensitivities $\frac{\partial T}{\partial p}$. This was accomplished with the numerical integrator DAESOL-II embedded in SolvIND. The integration tolerance was set to $10^{-7}$ and the sensitivities were obtained in forward mode.
+The heat flux $\varPhi_q^{pcm,in}$ is then computed with \cref{eq:heat_flux_computation_final} and the optimization Jacobian $J_1(p_{c_p})$ with \cref{eq:optimization_jacobian}. Usual choice for PCM discretization points was set to $N_{pcm}=50$ as the heat flux approximation error is negligible then. The parameter estimation is then performed by solving the least squares problem \cref{eq:parameter_estimation_least_squares_problem} either with the Matlab routine $lsqnonlin$ which uses a trust-region method and Gauss-Newton directions based on interior-reflective Newton method described in \cite{lsqnonlin_alg1} and \cite{lsqnonlin_alg2}. Later then a self written Gauss-Newton solver has been used.
 At solving the reference side with the analytical solution \cref{eq:analytical_soln_final_formula} we stopped the actually infinite sum after 100 summands since the summand is proportional to $n^{-3}$. \\
 
-The material properties used throughout were for silver $c_{p,Ag}=0.235 \frac{mJ}{mg \ K}$, $\rho_{Ag}=10.49 \frac{mg}{mm^3}$ and $\lambda_{Ag}=430 \frac{mW}{mm \ K}$ and for the PCM $\rho_{pcm}=0.85 \frac{mg}{mm^3}$ and $\lambda_{pcm}=0.96 \frac{mW}{mm \ K}$. The initial temperature was set to $T_0=10^\circ C$ and the simulation stopped for the furnace temperature $T^0=200^\circ C$ such that the phase transition is completely finished. \\
+The constant material properties used throughout are shown in \cref{tab:const_material_properties}.
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{| c | c | c | c |} \hline
+		& $c_p \ [\frac{mJ}{mg \ K}]$ & $\rho \ [\frac{mg}{mm^3}]$ & $\lambda \ [\frac{mW}{mm \ K}]$ \\ \hline
+		Silver (Ag) & $0.235$ & $10.49$ & $430$ \\
+		PCM & ---$^*$ & $0.85$ & $0.96$ \\ \hline
+	\end{tabular}
+	\caption{Material properties for specific heat capacity $c_p$, mass density $\rho$ and heat conductivity $\lambda$ used in numerical experiments. $^*$ Specific heat capacity of PCM temperature dependent and parametrized, c.f. \cref{sec:parametrizations}.}
+	\label{tab:const_material_properties}
+\end{table}
+
+The initial temperature was set to $T_0=10^\circ C$ and the simulation stopped for the furnace temperature $T^0(t_f)=200^\circ C$ such that the phase transition is completely finished. \\
 
 Except the forward simulation with an equidistant grid as reference for the error analysis of different spatial grids, all experiments have been done on my laptop using Linux Ubuntu Mate, 2 Cores Intel(R) Core(TM) i3-4100M CPU @ 2.50GHz and 8GB RAM. Former was computed on the IWR-Compute Server Quadxeon2 (4 x Dual Core E7220 2.93 GHz, 256 GB RAM).
 
@@ -2037,7 +2100,7 @@ This result forms the basis of reproducing the heat flux measurement values in t
 
 
 
-\subsection{Parameter estimation using finite differences and NURBS parametrization}
+\subsection{Preliminary parameter estimation using NURBS parametrization and optimization jacobian computed via finite differences}
 \label{sec:param_estim_NURBS}
 
 For the first attempt of estimating $c_p(T)$  we used the NURBS parametrization (see \cref{sec:nurbs}). In total we used 33 control points where the y-coordinates ($\hat{=} c_p$) are optimization variables and the the x-coordinate ($\hat{=}$ temperature) were fixed to 
@@ -2074,7 +2137,7 @@ The optimization took in this case about 40 minutes on my laptop and stopped bec
 
 
 
-\subsection{Error analysis of integration tolerance and spatial discretization grid}
+\subsection{Error analysis with respect to integration tolerance}
 In this section we quantify the occurring numerical errors due to the used integration tolerance and spatial discretization grid in order to ensure that these do not influence the results significantly. \\
 From here on the numerical integrator DAESOL-II within the SolvIND Suite and the material properties of silver for the silver plate were used for all upcoming numerical experiments. The relative error comparing integration tolerances $10^{-7}$ and $10^{-8}$  is shown in \cref{fig:integration_tolerance_error}.
 The temperature at the last discretization point of the silver plate was evaluated for all measurement time points which equates a temperature at the reference crucible $T_{ref}$. 
@@ -2090,6 +2153,7 @@ From the magnitude we can conclude that a integration tolerance of $10^{-7}$ is 
 \end{figure}
 
 
+\subsection{Error analysis with respect to spatial discretization grid}
 Next we compare several configurations of the spatial discretization grid (c.f. \cref{sec:spatial_discretization_grid}) with an equidistant reference grid with $\Delta x = \frac{L_{pcm}}{N_{pcm}}$ everywhere. The used physical lengths $L_{Ag}=40mm$ and $L_{pcm}=0.1mm$ where the optimization worked best together with a sufficiently large number of discretization points within the PCM such that the heat flux approximation is adequate results in a huge number of total discretization points in an equidistant grid. E.g. with $N_{pcm}=50$ the total number of discretization points would be $N=20,050$ which is not practical in the optimization process. Therefore we compute the relative error
 
 \begin{equation}
@@ -2099,6 +2163,8 @@ Next we compare several configurations of the spatial discretization grid (c.f. 
 
 where $T_{grid_i}^{N_{Ag}-1}$ is the temperature using grid $i$ and $T_{eq}^{N_{Ag}-1}$ is the temperature from the reference equidistant grid using $N_{pcm}=50$ and $N_{Ag}=20,000$. Both temperatures are evaluated at the silver plate's last discretization point since this equates to the same physical coordinate $x=L_{Ag}$ by construction in all grids. 
 We set $n_m=0.01$ and $t=0.999$ for all experiments in order to guarantee that the transition of the grid size is finished sufficiently once the PCM starts which is necessary for the heat flux approximation. \\
+
+\subsubsection{Vary total number of discretization points $N$}
 In the first set of tests we modified the total number of discretization points $N$ while fixing $n_{pcm}=0.2$ and $n_{tr}=0.1$. The results are shown in \cref{fig:grid_mod_N} where in all upcoming cases (a) shows the grid size $\Delta x = \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$ as a function of the computation grid $\tilde{x}$ and (b) maps the corresponding relative error computed by \cref{eq:relErr_grid}. As one can see in all cases the error increases during the phase transition at a reference crucible temperature of about $130^{\circ} C$ where the maximum is reached for the least amount of tested discretization points $N=200$ with $|\text{Relative error|}=1.5 \cdot 10^{-5}$. Surprisingly the error for $N > 1000$ increases again but in all tested cases the relative error has an order of magnitude lower equal than $10^{-5}$. 
 
 
@@ -2117,6 +2183,7 @@ In the first set of tests we modified the total number of discretization points 
 	\label{fig:grid_mod_N}
 \end{figure}
 
+\subsubsection{Vary number of discretization points within the silver plate $N_{Ag}$}
 Next we varied the number of discretization points in the silver plate while fixing $N_{pcm}=50$ and again $n_{tr}=0.1$. The results are qualitatively and quantitatively similar to the previous case as one can observe in \cref{fig:grid_mod_N1}.
 
 
@@ -2136,6 +2203,7 @@ Next we varied the number of discretization points in the silver plate while fix
 \end{figure}
 
 
+\subsubsection{Vary grid transition coefficient $n_{tr}$}
 Finally $N_{Ag}=300$ and $N_{pcm}=50$ were fixed while varying the grid transition parameter $n_{tr}$. The relative error increases with increasing $n_{tr}$, i.e. softer transitions. The minimal error is achieved at the phase transition with $n_{tr}=0$ ($\Delta x$ is step function) and else with $n_{tr}=0.1$ while the order of magnitude is again lower equal $10^{-5}$ in these two cases.
 
 \begin{figure}[H]
@@ -2216,7 +2284,7 @@ In \cref{fig:optim_c_p_heat_flux_5Gaussians_1,fig:optim_c_p_heat_flux_5Gaussians
 	\label{fig:optim_c_p_heat_flux_5Gaussians_2}
 \end{figure}
 
-In order to quantify the obtained parameters quality a statistical analysis (see \cref{sec:statistical_analysis_estim_params}) is applied. The results are shown in \cref{tab:parameter_table_5Gaussians} where a probability of error $\alpha=5\%$ has been used. As one can see there are huge differences in the accuracy of the obtained parameters. Heat rate $10 \frac{K}{min}$ is remarkable and will be discussed individually. The Gaussian offset $T_{offset}$ is mostly well determined especially for lower heat rates. Amplitude and variance on the other hand often have deviations of up to hundred percent. The linear parameter has a big error for heat rates $0.6$ and $0.3 \frac{K}{min}$ which makes sense because the heat flux measurement values start at about $100^{\circ}C$ such that the observing temperature domain is too small for linear influences. Constant offset on the other hand was determined pretty good. \\
+In order to quantify the obtained parameters quality a statistical analysis (see \cref{sec:parameter_estimation}) is applied. The results are shown in \cref{tab:parameter_table_5Gaussians} where a probability of error $\alpha=5\%$ has been used. As one can see there are huge differences in the accuracy of the obtained parameters. Heat rate $10 \frac{K}{min}$ is remarkable and will be discussed individually. The Gaussian offset $T_{offset}$ is mostly well determined especially for lower heat rates. Amplitude and variance on the other hand often have deviations of up to hundred percent. The linear parameter has a big error for heat rates $0.6$ and $0.3 \frac{K}{min}$ which makes sense because the heat flux measurement values start at about $100^{\circ}C$ such that the observing temperature domain is too small for linear influences. Constant offset on the other hand was determined reasonably. \\
 Considering now the results for heat rate $10 \frac{K}{min}$ reveals a problem of this parametrization. \Cref{fig:Gaussians_splitted_pathologic} shows how the individual Gaussians build up the specific heat capacity. Since the linear parameter is nearly zero the linear increase in front of the peak is done by Gaussian 1, 3 and 4. These are extraordinary inaccurate just as the actual linear parameter. Therefore identifiability is not guaranteed here. \\
 Finally the first order optimality value given by $lsqnonlin$ at the end of the optimization process is listed as well. Since for all heat rates this value is not even close to zero we can not state that a local minimum has been found.
 
@@ -2402,41 +2470,6 @@ We now compare the obtained specific heat capacity functions $c_p(T)$ from the d
 Finally the sequence of Gauss-Newton iterates has been examined. As remarked we solve an unconstrained linear least squares problem using \cref{alg:Gauss_Newton_unconstrained}. Termination criteria parameters were set to $[NOC1]_{TOL}=10^{-2}$, $\Delta x_{TOL}=10^{-5}$, $t_{TOL}=10^{-6}$ and iterations$_{max}=1000$ where just the first two were triggered and a stepsize decrease rate $d=0.8$ has been used. Results are depicted in \cref{fig:optimization_progress_FS} for all heat rates where the norm of residuum $||F_1^{(k)}||_2$, Gauss Newton step $||\Delta x^{(k)}||_2$, gradient of Lagrange function (here objective function since unconstrained) $|| \nabla \mathcal{L} ||_2 = || \nabla F_1^T F_1 ||_2 = || 2 J_1^T F_1 ||_2$ and step size $t^{(k)}$ were recorded in each iteration $k$. One notice that the residuum decreases perceptibly only in the first iteration step. This is related to the fact that $||\Delta x^{(k)}||_2$ declines monotonically in a few iterations to an order of $10^{-5}$ where is starts to fluctuate as one can see very well for heat rate $5 \frac{K}{min}$.
 
 
-
-
-\begin{algorithm}
-
-	\SetKwInOut{Input}{Input}
-	\SetKwInOut{Output}{Output}
-	    
-	\Input{Start value $x_{start}$, stepsize decrease rate $d$ \\ 
-	termination criteria $[NOC1]_{TOL}$, $\Delta x_{TOL}$, $t_{TOL}$ and iterations$_{max}$}
-	\Output{End value $x_{end}$ \\ \mbox{}\\}
-
-	Initialize $k=0$, $x^{(0)} = x_{start}$
-	
-	\While{
-			$|| \nabla f ||_2 = || 2 J_1^T F1 ||_2 > [NOC1]_{TOL} \ \text{and}$ \\
-			\qquad \qquad $|| \Delta x^{(k)} ||_2 > \Delta x_{TOL} \ \text{and}$ \\
-			\qquad \qquad $t^{(k)} > t_{TOL} \ \text{and}$ \\
-			\qquad \qquad $k < \text{iterations}_{max}$}
-	{
-		Compute residuum $F_1(x^{(k)})$ and jacobian $J_1(x^{(k)})$ \\
-		Solve $J_1(x^{(k)})^T J_1(x^{(k)}) \Delta x^{(k)} = J_1(x^{(k)})^T F_1(x^{(k)})$ \\
-		Set $t^{(k)} = 1$ \\
-		Compute next potential state $x^{(k+1)} = x^{(k)} + t^{(k)} \cdot \Delta x^{(k)}$ and \\ \quad corresponding residuum $F_1(x^{(k+1)})$ \\
-		
-		\If{$t^{(k)} > t_{TOL} \text{ and } || F_1(x^{(k+1)}) ||_2 \ge || F_1(x^{(k)}) ||_2$}
-		{Set $t^{(k)} = t^{(k)} \cdot d$ \\
-		goto (7)}
-		\Else{
-			Set $k := k + 1$ \\
-		}
-	}
-	Set $x_{end} = x^{(k)}$
-	\caption{Unconstrained Gauss Newton}
-	\label{alg:Gauss_Newton_unconstrained}
-\end{algorithm}
 
 
 \begin{itemize}
@@ -2715,6 +2748,20 @@ This is why we perform now the parameter estimation again with the modified heat
 	Numerical Methods for Parameter Estimation
 	in Dynamical Systems with Noise --- with Applications in Systems Biology
 	Dissertation Andreas Sommer, 2016
+	
+\bibitem{lsqnonlin_alg1}
+	An Interior, Trust Region Approach for Nonlinear Minimization Subject to Bounds.
+	Coleman, T.F. and Y. Li., 
+	SIAM Journal on Optimization, Vol. 6, 1996, pp. 418–445.
+  
+\bibitem{lsqnonlin_alg2}
+	On the Convergence of Reflective Newton Methods for Large-Scale Nonlinear Minimization Subject to Bounds.
+	Coleman, T.F. and Y. Li., 
+	Mathematical Programming, Vol. 67, Number 2, 1994, pp. 189–224.
+	
+\bibitem{bock2000_RMT}
+	Bock H.G., Kostina E., Schlöder J.P. (2000) On the Role of Natural Level Functions to Achieve Global Convergence for Damped Newton Methods. In: Powell M.J.D., Scholtes S. (eds) System Modelling and Optimization. CSMO 1999. IFIP — The International Federation for Information Processing, vol 46. Springer, Boston, MA
+	
   
 \end{thebibliography}
 
