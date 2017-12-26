@@ -260,13 +260,13 @@ area legend]
 \end{figure}
 
 
-Finally we introduce peak characteristics maximal turning point $T_{max}$, $T_{on}$ and $T_{off}$ where latter two are computed as the intersection of the inflection points' tangent with the base line of $c_p(T)$, i.e. the sensitive part. An illustration is given below in  \cref{fig:T_on/off_illustration}.
+Finally we introduce peak characteristics maximal turning point $T_{max}$, $T_{on}$ and $T_{off}$ where latter two are computed as the intersection of the inflection points' tangent with the base line of $c_p(T)$, i.e. the sensitive part. In the used parametrizations of the specific heat capacity in this thesis the base line is linear. An illustration is given below in \cref{fig:T_on/off_illustration}.
 
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/thesis/images/T_on_T_off_illustration.png}
-	\caption{Illustration of computation peak characteristics $T_on$ and $T_off$.}
+	\caption{Illustration of computation peak characteristics $T_{max}$, $T_{on}$ and $T_{off}$.}
 	\label{fig:T_on/off_illustration}
 \end{figure}
 
@@ -299,7 +299,7 @@ Now we assume that there are no further sources and sinks of inner energy for vo
 	\label{eq:heat_eq_derivation_1}
 \end{equation}
 
-for $\rho u$ continuous \todo{stimmt das?!}. The heat flux density is now computed with Fourier's law
+for $\rho u$ continuously differentiable. The heat flux density is now computed with Fourier's law
 
 \begin{equation}
 	\phi = - \lambda \cdot \nabla T
@@ -466,7 +466,7 @@ This is done for a set of calibration materials such that we get a mapping $sens
 		\caption{}
 		\label{fig:dsc-calibration_sens(T)}
 	\end{subfigure}
-	\caption{Sensitivity calibration graphs: (a) Computing for a material with known melting point $T_{\text{Kal}}$ and enthalpy $\Delta Q_{\text{Kal}}$ the area $A_{\Delta U}$ under the measuring signal $\Delta U(t)$ graph which is related to melting enthalpy via factor $sens$. Perform this for several materials such that in (b) we can interpolate $sens=\frac{A_{\Delta U}}{\Delta Q_{\text{Kal}}}$ for a certain temperature range.}
+	\caption{Sensitivity calibration illustration graphs: (a) Computing for a material with known melting point $T_{\text{Kal}}$ and enthalpy $\Delta Q_{\text{Kal}}$ the area $A_{\Delta U}$ under the measuring signal $\Delta U(t)$ graph which is related to melting enthalpy via factor $sens$. Perform this for several materials such that in (b) we can interpolate $sens=\frac{A_{\Delta U}}{\Delta Q_{\text{Kal}}}$ for a certain temperature range.}
 \end{figure}
 
 With the mapping $\varPhi(T_{ref}) = \frac{\Delta U(T_{ref})}{sens(T_{ref})}$ the heat flux into the sample then can be computed for a measurement signal $\Delta U$ of unknown materials. 
@@ -483,7 +483,7 @@ The common way to perform the DSC calibration, measurement and compute the speci
 	\label{eq:c_p_formula_DIN}
 \end{equation}
 
-where $S$ and $R$ denote the sample respectively reference. Reference means here a material with known specific heat capacity $c_p^R(T)$, not to be mistaken with the reference side of the experimental setup. In our case this reference material is Saphir. Furthermore $m$ is the mass and $\Phi^0$ is the heat flux if both crucibles are empty to compensate asymmetries. \\
+where $S$ and $R$ denote the sample respectively reference. Reference means here a material with known specific heat capacity $c_p^R(T)$, not to be mistaken with the reference side of the experimental setup. In our case this reference material is sapphire. Furthermore $m$ is the mass and $\Phi^0$ is the heat flux if both crucibles are empty to compensate asymmetries in the experimental setup. \\
 In \cref{fig:heat_flux_measurements} the measurement data of the heat flux into the PCM is shown for all heat rates dependent on the temperature at the reference crucible. Using \cref{eq:c_p_formula_DIN} the computed specific heat capacities for the PCM are shown in \cref{fig:c_p_DIN_formula}. As one can see for higher heat rates the peak position shifts to higher temperatures and furthermore the peak is smeared out. This is known as the smearing problem since $c_p$ is a material property and must be equal for all heat rates.
 
 
@@ -604,9 +604,9 @@ This simplicity is at the expense of accuracy. If we choose $h$ too small, cance
 
 
 \subsubsection{Automatic Differentiation and Internal Numerical Differentiation}
-The basic idea of Automatic Differentiation (AD) is to subdivide a function $f: \mathcal{R}^n \rightarrow \mathcal{R}^m$ into so called elementary functions $\varphi_i$ from which the derivative is known. 
+The basic idea \cite{eval_derivatives_walther_griewank} of Automatic Differentiation (AD) is to subdivide a function $f: \mathcal{R}^n \rightarrow \mathcal{R}^m$ into so called elementary functions $\varphi_i$ from which the derivative is known. 
 
-The evaluation of these elementary functions give intermediate values $v_i = \varphi(v_j)_{j \prec i}$ where the dependency relation $\prec$ is defined as
+The evaluation of these elementary functions give intermediate values $v_i = \varphi_i(v_j)_{j \prec i}$ where the dependency relation $\prec$ is defined as
 
 \begin{equation}
 j \prec i \Leftrightarrow v_j \text{\textit{ is an argument of }} \varphi_i.
@@ -626,13 +626,14 @@ x_2 \cdot \sin(1+x_1)
 
 
 \paragraph{Forward Mode}\mbox{}\\
-In the forward mode the directional derivative $\dot{y}$ is computed for a given direction in the function arguments $\dot{x}$ at a evaluation point $x$:
+In the forward mode the directional derivative $\dot{y}$ is computed for a given direction $\dot{x}$ at a evaluation point $x$:
 
 \begin{equation}
 \dot{y} = \frac{\partial f}{\partial x}(x) \cdot \dot{x}
 \end{equation}
 
-The algorithm called first order forward sweep (see \cref{tab:first_order_forward_sweep}) is structured into three parts. First the auxiliary variables $v_{1-n},...,v_0$ and $\dot{v}_{1-n},...,\dot{v}_0$ are initialized with the evaluation point $x$ and the direction of the directional derivative $\dot{x}$. So if we want to get $\frac{\partial f}{\partial x_2}$ we would need to set $\dot{x} = \begin{bmatrix}
+Here the notation $\dot{x}$ is not to be mistaken with the time derivative often used in physics context.
+The algorithm called \textit{first order forward sweep} (see \cref{tab:first_order_forward_sweep}) is structured into three parts. First the auxiliary variables $v_{1-n},...,v_0$ and $\dot{v}_{1-n},...,\dot{v}_0$ are initialized with the evaluation point $x$ and the direction of the directional derivative $\dot{x}$. So if we want to get $\frac{\partial f}{\partial x_2}$ we would need to set $\dot{x} = \begin{bmatrix}
 0 & 1 & 0 & \dots & 0
 \end{bmatrix}^T$. One can see here that with one forward sweep we get one column of the Jacobian $ \frac{\partial f}{\partial x}$. 
 After the initialization the actual forward sweep begins where the $k$ elemental functions of $f$ are evaluated and saved in the intermediate values $v_i$. Simultaneously their derivatives  $\dot{v}_i$ are computed using previously calculated intermediate values. E.g. for $v_2 = \varphi_2(v_0, v_1)$ it holds $\dot{v}_2 = \frac{\partial \varphi_2}{\partial v_0} \dot{v_0} + \frac{\partial \varphi_2}{\partial v_1} \dot{v_1}$. \\
@@ -731,7 +732,7 @@ Again we apply this algorithm on the exemplary function \cref{eq:AD_example}:
 
 Until now the fundamental principles of AD have been explained, i.e. just the first order derivative in forward and adjoint mode. Higher derivatives of arbitrary order can be obtained by using the method of Taylor coefficient propagation which is based on the propagation of a Taylor polynomial through a function evaluation. The higher derivatives can then be extracted by scaling of the polynomial coefficients. \\
 
-In this thesis we are actually interested in the sensitivities $\frac{\partial y}{\partial p}$ of an differential equation $\dot{y}=f(t,y;p)$ with respect to parameters $p$. This can be done by solving the variational differential equation which can be derived as follows using the integral form of a general differential equation with parameters $p$ and assuming $f$ smooth and $y_0$ independent of $p$.
+In this thesis we are actually interested in the sensitivities $\frac{\partial y}{\partial p}$ of an differential equation $\dot{y}=f(t,y;p)$ with respect to parameters $p$. This can be done by solving the variational differential equation (see e.g. \cite{diff_equations_numerics}) which can be derived as follows using the integral form of a general differential equation with parameters $p$ and assuming $f$ smooth and $y_0$ independent of $p$.
 
 \begin{align}
 	y(t;p) = \ & y_0 + \int_{t_0}^{t} f(\tau,y(\tau;p);p) d\tau \\
@@ -746,8 +747,10 @@ Taking the derivative with respect to time on both sides gives the variational d
 \end{align}
 
 Solving this differential equation is one possibility to get $\frac{\partial y}{\partial p}$. If $y \in \mathbb{R}^n$ and $p \in \mathbb{R}^{n_p}$ the total differential equation system to solve would consist of $n + n \cdot n_p$ equations which is not adequate approach. \\
-Another method is the application of AD on differential equations called Internal Numerical Differentiation (IND). Since the numerical integrator uses a stepsize control in order to limit the relative locale error, the idea of IND is to freeze these adaptive components and just use all mathematical operations of the used integration scheme as elemental operations. So it is straight forward to apply the chain rule on all these elemental operations in order to get the derivative $\frac{\partial y}{\partial p}$ just as explained above.  \\
-The details on IND and generation of higher derivatives via taylor coefficient propagation (TCP) can be found in \cite{diss_jan}.
+Another method is called Internal Numerical Differentiation (IND). Since the numerical integrator uses a stepsize control in order to limit the relative local error, the idea of IND is to freeze these adaptive components. 
+Applying AD then means treating all mathematical operations of the used integration scheme as elemental operations. So it is straight forward to apply the chain rule on all these elemental operations in order to get the derivative $\frac{\partial y}{\partial p}$ just as explained above. 
+The application of AD is advantageous because one obtains exact numerical derivatives while the computed differential equation's nominal trajectory is still error controlled. \\
+The details on IND and generation of higher derivatives via taylor coefficient propagation (TCP) are elucidated in \cite{diss_jan}.
 
 
 \subsection{Numerical solution of initial value problems (IVP)}
@@ -760,9 +763,9 @@ In this section numerical methods will be introduced to solve initial value prob
 
 where $t_0$ is the initial time and $x_0$ the initial value. \\
 
-There are a lot of different numerical methods like explicit/implicit Euler, Runge-Kutta (RK) or linear multistep methods (LMM). The solver we used in this thesis applies the method of Backward Differentiation Formulas (BDF) which will be explained further now.
+There are a lot of different numerical methods (see e.g. \cite{diff_equations_numerics}) like Runge-Kutta (RK) or linear multistep methods (LMM). The solver we used in this thesis applies the method of Backward Differentiation Formulas (BDF) which will be explained further now.
 
-The basic idea of the BDF method of order $k$ is to interpolate the last $(k+1)$ solution points $x_m,...,x_{m+k}$ with an polynomial such that the unknown point $x_{m+k}$ satisfies the ODE at $t_{m+k}$. 
+Basic idea of the BDF method of order $k$ is to interpolate the last $(k+1)$ solution points $x_m,...,x_{m+k}$ with an polynomial such that the unknown point $x_{m+k}$ satisfies the ODE at $t_{m+k}$. 
 It is defined as
 
 \begin{equation}
@@ -775,8 +778,9 @@ BDF methods up to order 6 are used in practice because these are zero-stable \ci
 Since \cref{eq:bdf_formula} is a non-linear system of equations it is solved iteratively using Newton's method. In order to obtain a good starting point a so called predictor is used, which is the integration polynomial of the previous integration step. With this initial guess for $x_{m+k}$ the Newton method can be applied to get the so called corrector polynomial, which satisfies the differential equation at $t_{m+k}$. \\
 As we want the numerical integrator both to perform large integration steps to minimize the required time to solve the IVP and limit the inevitable numerical errors on a predefined value we are dependent on a strategy to choose the step width $h_{m+k-1}$ accordingly. This is done by estimating the local error in each integration step. Either the local error is smaller than some tolerance then the step width will be increased, otherwise decreased until the local error tolerance is satisfied. \\
 
+\todo{Collocation?}
 
-
+%The stated methods solve the initial value problem in an iterative manner, in contrary to collocation where the problem can be solved in one big system
 
 
 
@@ -947,19 +951,20 @@ Finally we introduce for later usage
 Since we are performing a parameter estimation we will treat now an equality constrained nonlinear least squares problem
 
 \begin{align}
-	\min_x \ & \frac{1}{2}|| F_1(x) ||_2^2 \\
+	\min_x \ & \frac{1}{2}|| F_1(x) ||_2^2 \label{eq:least_squares_problem} \\
 	s.t. \ & F_2(x) = 0 \nonumber
 \end{align}
 
-with $x \in \mathbb{R}^n$, $F_1: \mathbb{R}^n \rightarrow \mathbb{R}^{m_1}$ and $F_2: \mathbb{R}^n \rightarrow \mathbb{R}^{m_2}$. Inequality constraints will be introduced in the context of the active set strategy (ASS) later. \\
-Instead of applying the KKT-conditions on this problem we first linearize in order to avoid the need of computing the Hessian. This method is called Gauss-Newton (GN) and the resulting problem reads as
+with $x \in \mathbb{R}^n$, $F_1: \mathbb{R}^n \rightarrow \mathbb{R}^{m_1}$ and $F_2: \mathbb{R}^n \rightarrow \mathbb{R}^{m_2}$. Inequality constraints will be introduced in the context of the active set strategy later in paragraph equality and inequality constrained case of \cref{sec:GN_numerical_solution}. \\
+Instead of applying the KKT-conditions on this problem we first linearize in order to compute then the solution iteratively using Newton's method. Advantageous here is that we do not need to compute the computationally costly Hessian of the objective function. This method is called Gauss-Newton (GN) and the resulting problem reads as
 
 \begin{align}
-\min_{\Delta x} \ & \frac{1}{2}|| F_1(x) + J_1(x) \Delta x ||_2^2 \\
+\min_{\Delta x} \ & \frac{1}{2}|| F_1(x) + J_1(x) \Delta x ||_2^2 \label{eq:least_squares_problem_linearized} \\
 s.t. \ & F_2(x) + J_2(x) \Delta x = 0 \nonumber
 \end{align}
 
-with $J_1(x) = \frac{\partial F_1(x)}{\partial x} \in \mathbb{R}^{m_1 \times n}$ and $J_2(x) = \frac{\partial F_2(x)}{\partial x} \in \mathbb{R}^{m_2 \times n}$. In the following we will omit the function argument for better readability, i.e. $F_i(x) \equiv F_i$ and $J_i(x) \equiv J_i$ for $i \in \{1,2\}$.
+with $J_1(x) = \frac{\partial F_1(x)}{\partial x} \in \mathbb{R}^{m_1 \times n}$ and $J_2(x) = \frac{\partial F_2(x)}{\partial x} \in \mathbb{R}^{m_2 \times n}$. In the following we will omit the function argument for better readability, i.e. $F_i(x) \equiv F_i$ and $J_i(x) \equiv J_i$ for $i \in \{1,2\}$. \\
+Crucial is the equivalence of the solution of \cref{eq:least_squares_problem,eq:least_squares_problem_linearized} which is shown with inequality constraints in \cite{diss_bock} Lemma 3.1.18.
 Applying KKT conditions on this system gives the system
 
 \begin{equation}
@@ -1177,7 +1182,7 @@ which is an unconstrained least squares problem we discussed before. At last we 
 This procedure is called null space method. Another possibility is the method of direct elimination, see \cite{numerical_methods_lsq_Bjorck} for a detailed description.
 
 
-\paragraph{Equality and inequality constrained case using active set strategy}\mbox{}\\
+\paragraph{Equality and inequality constrained case using active set strategy} \label{par:theory_active_set_strategy} \mbox{}\\
 In the general case with inequality constraints we consider the problem
 
 \begin{align}
@@ -1186,7 +1191,7 @@ s.t. & \ F_2 + J_2 \Delta x = 0 \nonumber \\
 &  \ F_3 + J_3 \Delta x \ge 0 \nonumber
 \end{align}
 
-We treat this problem with an active set strategy illustrated below, c.f. \cite{diss_bock}:
+We treat this problem with an active set strategy illustrated below, c.f. \cite{diss_bock}. It is based on the fact that inactive inequality constraints do not contribute to the computation of $\Delta x$ since their Lagrange multiplier is zero.
 
 \begin{enumerate}
 	\item Set $k := 0$, Let $x^{(0)}$ be a feasible point and $I^{(0)}$ corresponding active set.
@@ -1239,34 +1244,60 @@ We treat this problem with an active set strategy illustrated below, c.f. \cite{
 %\end{enumerate}
 
 
-\subsubsection{Statistical analysis of estimated parameters}
-\label{sec:statistical_analysis_estim_params}
+%\subsubsection{Statistical analysis of estimated parameters}
+%\label{sec:statistical_analysis_estim_params}
+\subsubsection{Parameter estimation}
+\label{sec:parameter_estimation}
+
+The task of parameter estimation or parameter identification is an inverse problem. An usual formulation is the least squares problem
+
+\begin{align}
+	\min_p \sum_{i=1}^{n_{mp}}  \frac{(h_i(x(t_i;p),p) - \eta_i)^2}{\sigma^2}
+\end{align}
+
+since it is an maximum likelihood estimator \cite{disseration_andreas_sommer}, its differentiability and Gauss-Newton (c.f. \cref{sec:GN_numerical_solution}) can be applied with
+
+\begin{align}
+F_1(p) := 
+\begin{pmatrix}
+h_1(x(t_1;p),p) - \eta_1 \\
+\vdots \\
+h_{n_{mp}}(x(t_{n_{mp}};p),p) - \eta_{n_{mp}}
+\end{pmatrix}
+\end{align}
+
+where $p$ are the parameters to be estimated. $h_i$ are the model equations for the measurement quantity $\eta_i$ and $n_{mp}$ are the number of measurement values. Here the model is an initial value problem with solution $x(t;p)$. \\
+The measurement error is assumed to be independently normal distributed with zero mean and common variance $\sigma^2$ such that for a correct model and true parameters $p^*$ it holds
+\begin{align}
+	\eta_i = h_i(x(t_i;p^*),p^*) + \epsilon_i, \quad \epsilon_i \in \mathcal{N}(0,\sigma^2) \quad \text{for} \ i=1,...,n_{mp}
+\end{align}
+
 
 In order to quantify how trustworthy the obtained estimated parameters are, a statistical analysis is applied. The results shown in the following part can be found including proofs in \cite{diss_bock}. \\
 
-Since the measurement data $\eta$ is a random variable because of the statistical measurement error, the parameters $x$ are random variables as well. The corresponding covariance matrix of the estimate $x^*$ is defined as
+Since the measurement data $\eta$ is a random variable the estimated parameters $p$ are random variables as well. The corresponding covariance matrix of the estimate $p^*$ is defined as
 
 \begin{align}
-	C(x^*) = & \mathbb{E} [ \Delta x \Delta x^T ]
-	\ \stackrel{\cref{eq:GN_solution_formal}}{=} \ J^+(x^*)
+	C(p^*) = & \mathbb{E} [ \Delta p \Delta p^T ]
+	\ \stackrel{\cref{eq:GN_solution_formal}}{=} \ J^+(p^*)
 	\begin{pmatrix}
 	\beta^2  \mathbbm{1} & 0 \\
 	0 & 0
 	\end{pmatrix}
-	(J^+)^T(x^*) 
+	(J^+)^T(p^*) 
 	\label{eq:stat_ana_covariance_matrix}
 \end{align}
 
-for the case that the measurement covariance matrix $\Sigma$ are known except a common factor $\beta$, that is $\Sigma = \beta \hat{\Sigma}$ with $\hat{\Sigma}$ the used measurement covariance matrix in the parameter estimation. An approximation $b$ of this factor can be computed a-posteriori by
+for the case that the measurement variances $\sigma^2$ are known except a common factor $\beta^2$, that is $\sigma^2 = \beta^2 \hat{\sigma}^2$ with $\hat{\sigma}^2$ the used measurement variances in the parameter estimation. An approximation $b^2$ of this factor can be computed a-posteriori by
 
 \begin{equation}
-	\beta^2 \approx b^2 = \frac{|| F_1(x^*) ||_2^2}{n_{mp} - (n_p - n_c)}
+	\beta^2 \approx b^2 = \frac{|| F_1(p^*) ||_2^2}{n_{mp} - (n_p - n_c)}
 \end{equation}
 
 with $n_c$ number of active equality constraints. We define a confidence region in which the true parameter values are with a probability $1-\alpha$. Its linearization reads as
 \begin{align}
-	G_L(\alpha, x^*) = \left\{ x \in \mathbb{R}^n \ | \ \right. & F_2(x^*) + J_2(x^*)(x - x^*) = 0, \label{eq:stat_ana_lin_confidence_region} \\ 
-	& \left. || F_1(x^*) + J_1(x^*)(x - x^*) ||_2^2 - || F_1(x^*)||_2^2 \le \gamma(\alpha) \right\} \nonumber	
+	G_L(\alpha, p^*) = \left\{ p \in \mathbb{R}^n \ | \ \right. & F_2(p^*) + J_2(p^*)(p - p^*) = 0, \label{eq:stat_ana_lin_confidence_region} \\ 
+	& \left. || F_1(p^*) + J_1(p^*)(p - p^*) ||_2^2 - || F_1(p^*)||_2^2 \le \gamma(\alpha) \right\} \nonumber	
 \end{align}
 
 with 
@@ -1282,12 +1313,12 @@ where $F_{1-\alpha}$ is the $1-\alpha$ quantile of the Fisher-distribution. The 
 \begin{Theorem} .\\
 	Let 
 	\begin{equation}
-		\theta_i := \sqrt{\gamma(\alpha)} \cdot \sqrt{C_{ii}(x^*)} \qquad \text{for } i=1,...,n
+		\theta_i := \sqrt{\gamma(\alpha)} \cdot \sqrt{C_{ii}(p^*)} \qquad \text{for } i=1,...,n
 	\end{equation}
 	
-	with $\gamma(\alpha)$ defined in \cref{eq:stat_ana_fisher_dist} and $C_{ii}(x^*)$ are the diagonal elements of the covariance matrix obtained by \cref{eq:stat_ana_covariance_matrix}. Then the linearized confidence region \cref{eq:stat_ana_lin_confidence_region} is a subset of a cuboid with length $2 \theta_i$:
+	with $\gamma(\alpha)$ defined in \cref{eq:stat_ana_fisher_dist} and $C_{ii}(p^*)$ are the diagonal elements of the covariance matrix obtained by \cref{eq:stat_ana_covariance_matrix}. Then the linearized confidence region \cref{eq:stat_ana_lin_confidence_region} is a subset of a cuboid with length $2 \theta_i$:
 	\begin{equation}
-		G_L(\alpha, x^*) \subseteq [x_1^* - \theta_1, x_1^* + \theta_1] \times ... \times [x_n^* - \theta_n, x_n^* + \theta_n]
+		G_L(\alpha, p^*) \subseteq [p_1^* - \theta_1, p_1^* + \theta_1] \times ... \times [p_n^* - \theta_n, p_n^* + \theta_n]
 	\end{equation}
 	
 \end{Theorem}
@@ -1914,10 +1945,7 @@ using Newton's method where $T_{ref}^{sim}(t)$ is the analytical solution of the
 \end{figure}
 
 
-\begin{flushright}
-	
-\end{flushright}
-For the optimization process using Gauss-Newton method (see \cref{sec:Gauss_Newton}) we first define the residuum vector which euclidean norm $|| \cdot ||_2^2$ will be minimized as 
+For the optimization process using Gauss-Newton method (see \cref{sec:Gauss_Newton}) we first define the residuum vector whose euclidean norm $|| \cdot ||_2^2$ will be minimized as 
 
 \begin{equation}
 	F_1(p_{c_p}) :=
@@ -1988,12 +2016,12 @@ This result forms the basis of reproducing the heat flux measurement values in t
 	\end{subfigure} \\
 	\begin{subfigure}{0.49\textwidth}
 		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/smearing_effect_simulation_heat_fluxes.png}
-		\caption{Heat fluxes from simulation for different heat rates.}
+		\caption{Heat fluxes from simulation for specified heat rates.}
 		\label{fig:smearing_effect_simulation_heat_flux}
 	\end{subfigure}
 	\begin{subfigure}{0.49\textwidth}
 		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/heat_flux_measurement.png}
-		\caption{Heat flux measurement values for different heat rates.}
+		\caption{Heat flux measurement values for specified heat rates.}
 		\label{fig:smearing_effect_measurement_heat_flux}
 	\end{subfigure}
 	\caption{}
@@ -2029,7 +2057,7 @@ The optimization took in this case about 40 minutes on my laptop and stopped bec
 	\subcaptionbox{Approximated Jacobian $J_1(p_{c_p})$.}[.49\linewidth]
 	{\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_jac2.png}}
 	\hspace{0.5cm}
-	\subcaptionbox{Zoomed in view of approximated $J_1(p_{c_p})$.}[.49\linewidth]
+	\subcaptionbox{Zoomed view of approximated $J_1(p_{c_p})$.}[.49\linewidth]
 	{\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_jac_zoom2.png}}
 	\caption{Specific heat capacity, heat flux and optimization Jacobian at the end of the optimization process.}
 	\label{fig:NURBS_results}
@@ -2221,7 +2249,7 @@ Finally the first order optimality value given by $lsqnonlin$ at the end of the 
 		Constant & $1.52 \pm 1.9\%$ & $1.60 \pm 19\%$ & $1.63 \pm 2.1\%$ & $1.65 \pm 1.4\%$ & $1.65 \pm 1.2\%$ & $2.63 \pm 3\%$ & $2.86 \pm 15\%$ \\ \hline \hline
 		[NOC1]$^*$ & $2.6$ & $12.4$ & $8.5$ & $6.7$ & $7.5$ & $4.5$ & $5.3$ \\ \hline
 	\end{tabular}
-	\caption{Estimated parameters for all heat rates $\beta$ and error from statistical analysis using error of probability $\alpha=0.05$. One Gaussian consist of three parameters (c.f. \cref{sec:parametrization_Gausse}): top: amplitude $A_i$, middle: variance $var_i$, bottom: offset in temperature $T_{offset_i}$ \\
+	\caption{Estimated parameters for all heat rates $\beta$ and confidence interval from statistical analysis using an error of probability $\alpha=0.05$. One Gaussian consist of three parameters (c.f. \cref{sec:parametrization_Gausse}): top: amplitude $A_i$, middle: variance $var_i$, bottom: offset in temperature $T_{offset_i}$ \\
 	$^*$ value from $lsqnonlin$ output.}
 	\label{tab:parameter_table_5Gaussians}
 \end{table}
@@ -2237,7 +2265,7 @@ The optimization process took on average about $7$ minutes and 50 iterations per
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/c_p_all.png}
-	\caption{Zoomed in view of the specific heat capacities $c_p(T)$ obtained by optimization for all heat rates.}
+	\caption{Zoomed view of the specific heat capacities $c_p(T)$ obtained by optimization for all heat rates.}
 	\label{fig:5Gaussians_all_c_p}
 \end{figure}
 
@@ -2252,7 +2280,7 @@ The optimization process took on average about $7$ minutes and 50 iterations per
 	\end{tabular}
 	\caption{For all heat rates: Temperature $T_{max}$ where $c_p(T)$ has its maximum and the melting enthalpy $\Delta H$, i.e. the integral of $c_p(T)$ minus the base line over the temperature. Decreases below the baseline after the peak were ignored here. \\
 	$^*$ $T_{max}$ for $\beta=10\frac{K}{min}$ was omitted as there are two maxima. \\
-	$^{**}$ Corrected sample standard deviation used here.}
+	$^{**}$ Bessel corrected sample standard deviation used here.}
 	\label{tab:eval_table_Tmax_deltaH_5Gaussians}
 \end{table}
 
@@ -2329,7 +2357,7 @@ Next again a statistical analysis of the obtained parameters is performed analog
 		$0.6$ & $37.8 \pm 4.2\%$ & $4.08 \pm 4.8\%$ & $0.600 \pm 9.1\%$ & $130.2 \pm 0.11\%$ & $0.010^*$ & $1.73 \pm 13\%$ \\
 		$0.3$ & $40.3 \pm 3.4\%$ & $3.69 \pm 4.4\%$ & $0.51 \pm 8.4\%$ & $130.8 \pm 0.078\%$ & $0.010^*$ & $1.94 \pm 12.6\%$ \\ \hline
 	\end{tabular}
-	\caption{Estimated parameters for all heat rates $\beta$ and error from statistical analysis using error of probability $\alpha=0.05$. $^*$ Parameter fixed to value from previous heat rate.}
+	\caption{Estimated parameters for all heat rates $\beta$ and confidence interval from statistical analysis using an error of probability $\alpha=0.05$. $^*$ Parameter fixed to value from previous heat rate.}
 	\label{tab:parameter_table_FS}
 \end{table}
 
@@ -2348,7 +2376,7 @@ We now compare the obtained specific heat capacity functions $c_p(T)$ from the d
 		$\Delta H^{**} \ [\frac{mJ}{mg}]$ & $162.7$ & $197.0$ & $184.3$ & $176.6$ & $173.1$ & $171.5$ & $172.2$ & $173.4 \pm 7.1 \ (4.1\%)$ \\ \hline
 	\end{tabular}
 	\caption{$T_{max}$ and $\Delta H$ analog to \cref{tab:eval_table_Tmax_deltaH_5Gaussians}. $T_{on}$ and $T_{off}$ are defined as shown in \cref{fig:T_on/off_illustration}.
-	$^{*}$ Corrected sample standard deviation used here.
+	$^{*}$ Bessel corrected sample standard deviation used here.
 	$^{**}$ Value from heat rate $10 \frac{K}{min}$ was omitted for mean computation due to outlying value and mentioned measurement error.}
 	\label{tab:eval_table_Tmax_deltaH_FS}
 \end{table}
@@ -2358,12 +2386,12 @@ We now compare the obtained specific heat capacity functions $c_p(T)$ from the d
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/c_p_all.png}
-	\caption{Zoomed in view of the specific heat capacities $c_p(T)$ obtained by optimization for all heat rates.}
+	\caption{Zoomed view of the specific heat capacities $c_p(T)$ obtained by optimization for all heat rates.}
 	\label{fig:FS_all_c_p}
 \end{figure}
 
 
-Finally the Gauss Newton optimization process has been examined. As remarked we solve an unconstrained linear least squares problem using \cref{alg:Gauss_Newton_unconstrained}. Termination criteria parameters were set to $[NOC1]_{TOL}=10^{-2}$, $\Delta x_{TOL}=10^{-5}$, $t_{TOL}=10^{-6}$ and iterations$_{max}=1000$ where just the first two were triggered and a stepsize decrease rate $d=0.8$ has been used. Results are depicted in \cref{fig:optimization_progress_FS} for all heat rates where the norm of residuum $||F_1^{(k)}||_2$, Gauss Newton step $||\Delta x^{(k)}||_2$, gradient of Lagrange function (here objective function since unconstrained) $|| \nabla \mathcal{L} ||_2 = || \nabla F_1^T F_1 ||_2 = || 2 J_1^T F_1 ||_2$ and step size $t^{(k)}$ were recorded in each iteration $k$. One notice that the residuum decreases perceptibly only in the first iteration step. This is related to the fact that $||\Delta x^{(k)}||_2$ declines monotonically in a few iterations to an order of $10^{-5}$ where is starts to fluctuate as one can see very well for heat rate $5 \frac{K}{min}$.
+Finally the sequence of Gauss-Newton iterates has been examined. As remarked we solve an unconstrained linear least squares problem using \cref{alg:Gauss_Newton_unconstrained}. Termination criteria parameters were set to $[NOC1]_{TOL}=10^{-2}$, $\Delta x_{TOL}=10^{-5}$, $t_{TOL}=10^{-6}$ and iterations$_{max}=1000$ where just the first two were triggered and a stepsize decrease rate $d=0.8$ has been used. Results are depicted in \cref{fig:optimization_progress_FS} for all heat rates where the norm of residuum $||F_1^{(k)}||_2$, Gauss Newton step $||\Delta x^{(k)}||_2$, gradient of Lagrange function (here objective function since unconstrained) $|| \nabla \mathcal{L} ||_2 = || \nabla F_1^T F_1 ||_2 = || 2 J_1^T F_1 ||_2$ and step size $t^{(k)}$ were recorded in each iteration $k$. One notice that the residuum decreases perceptibly only in the first iteration step. This is related to the fact that $||\Delta x^{(k)}||_2$ declines monotonically in a few iterations to an order of $10^{-5}$ where is starts to fluctuate as one can see very well for heat rate $5 \frac{K}{min}$.
 
 
 
@@ -2514,7 +2542,7 @@ This is why we perform now the parameter estimation again with the modified heat
 		$0.6$ & $0.5989 \pm 0.00078 \ (0.13\%)$ & $0.18\%$ \\
 		$0.3$ & $0.2994 \pm 0.00046 \ (0.15\%)$ & $0.20\%$ \\ \hline
 	\end{tabular}
-	\caption{Heat rate measurement value $\beta_{meas}$ obtained as depicted in \cref{fig:heat_rate_measurement} including corresponding corrected sample standard deviation. Relative variation from nominal heat rate $\beta$ in last column.}
+	\caption{Heat rate measurement value $\beta_{meas}$ obtained as depicted in \cref{fig:heat_rate_measurement} including corresponding Bessel corrected sample standard deviation. Relative variation from nominal heat rate $\beta$ in last column.}
 	\label{tab:mod_heat_rate}
 \end{table}
 
@@ -2659,6 +2687,26 @@ This is why we perform now the parameter estimation again with the modified heat
 	für Optimale Versuchsplanungsprobleme
 	bei nichtlinearen DAE-Modellen,
 	Dissertation Stefan Körkel, 2002
+	
+\bibitem{eval_derivatives_walther_griewank}
+	Evaluating Derivatives: Principles and Techniques of Algorithmic Differentiation, Second Edition,
+	Andreas Griewank and Andrea Walther, 2008,
+	ISBN: 978-0-89871-659-7
+	
+\bibitem{Bock1981}
+	\todo{}
+
+
+\bibitem{diff_equations_numerics}
+	Solving Ordinary Differential Equations I --- Nonstiff problems
+	Second Revised Edition
+	E. Hairer, S. P. Nørsett, G. Wanner 
+	2008, ISBN: 978-3-540-56670-0
+	
+\bibitem{disseration_andreas_sommer}
+	Numerical Methods for Parameter Estimation
+	in Dynamical Systems with Noise --- with Applications in Systems Biology
+	Dissertation Andreas Sommer, 2016
   
 \end{thebibliography}
 
