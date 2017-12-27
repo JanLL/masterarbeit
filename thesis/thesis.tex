@@ -147,7 +147,8 @@ In this thesis we examine so called phase change materials (PCM). A popular appl
 
 \begin{wrapfigure}{l}{0.45\textwidth}
 	\includegraphics[width=0.45\textwidth]{/home/argo/masterarbeit/thesis/images/handwaermer[wiki].jpg}
-	\caption{Heating pad \\ left: liquid; right: solid}
+	\caption{Heating pad \\ left: liquid; right: solid \\
+		Source: \cite{heating_pad_image}}
 	\label{fig:heating_pad}
 \end{wrapfigure}
 
@@ -178,7 +179,7 @@ Heat $Q$ is the energy that flows from a warmer to a colder object because of th
 	Specific heat capacity & $c_p$ & $\frac{J}{kg \cdot K}$ \\[0.7ex]
 	Melting enthalpy & $\Delta H$ & $J$ \\ \hline
 \end{tabular}
-\caption{Important physical quantities}
+\caption{Important physical quantities in SI units}
 \label{tab:important_physical_quantities}
 \end{table}
 
@@ -257,7 +258,7 @@ area legend]
 \caption{}
 \label{fig:physics_fraser_suzuki}
 \end{subfigure}
-\caption{Specific heat capacity for (a) ideally pure substance where the phase transition is described by a Dirac delta function at the melting point and (b) mixed substance described by a Fraser-Suzuki Peak.}
+\caption{Specific heat capacity for (a) ideally pure substance where the phase transition is described by a Dirac delta function at the melting point and (b) mixed substance described by a Fraser-Suzuki Peak where melting enthalpy $\Delta H$ is illustrated.}
 \end{figure}
 
 
@@ -267,7 +268,8 @@ Finally we introduce peak characteristics maximal turning point $T_{max}$, $T_{o
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/thesis/images/T_on_T_off_illustration.png}
-	\caption{Illustration of computation peak characteristics $T_{max}$, $T_{on}$ and $T_{off}$.}
+	\caption{Illustration of peak characteristics $T_{max}$, $T_{on}$ and $T_{off}$ where latter two are computed as intersections of the base line with inflection point tangents. \\
+	Used for evaluation in numerical experiment \cref{sec:param_estimation_5Gausse,sec:param_estimation_fs,sec:param_estimation_mod_heat_rate_FS}.}
 	\label{fig:T_on/off_illustration}
 \end{figure}
 
@@ -324,37 +326,6 @@ Due to the definition of the heat capacity $c_v(T) = \frac{\partial u}{\partial 
 
 
 
-% ALT             
-%
-%\begin{equation}
-%	\frac{\partial \rho_h}{\partial t} + \nabla \cdot J_q = 0
-%\end{equation}
-%
-%where $\rho_h$ is the enthalpy density and $J_q$ is the heat flux density. We assume a constant pressure so it holds $dH = dQ$ such that a heat flux will only change the enthalpy.
-%
-%\begin{equation}
-%	J_q = - \lambda \cdot \nabla T
-%	\label{eq:fouriers_law}
-%\end{equation}
-%
-%The enthalpy density $\rho_h = \rho h$ expressed with the mass density $\rho$ and specific enthalpy $h$ and Fourier's law inserted in the continuity equation gives us
-%
-%\begin{align}
-%	\frac{\partial (\rho h)}{\partial t} = \nabla \cdot \left[\lambda \cdot \nabla T\right] \\
-%	\Leftrightarrow \frac{\partial \rho}{\partial T} \frac{\partial T}{\partial t} h + \rho \frac{\partial h}{\partial T} \frac{\partial T}{\partial t} = \nabla \cdot \left[\lambda \cdot \nabla T\right] \\
-%	\Leftrightarrow \left( \frac{\partial \rho}{\partial T} h + \rho \frac{\partial h}{\partial T} \right) \frac{\partial T}{\partial t} = \nabla \cdot \left[\lambda \cdot \nabla T\right]
-%\end{align}
-%
-%Using the definition of the specific heat capacity $c_p := \frac{dh}{dT}$ we get the final heat equation
-%
-%\begin{equation}
-%	\left( \frac{\partial \rho}{\partial T} h + \rho c_p \right) \frac{\partial T}{\partial t} = \nabla \cdot \left[\lambda \cdot \nabla T\right]
-%\end{equation}
-%
-%\todo{Pruefen lassen ob das physikalisch alles so stimmt...}
-
-
-
 \subsection{Differential Scanning Calorimetry}
 \label{sec:physics_DSC}
 The measuring method of a heat flux into a sample over a certain temperature range is called Differential Scanning Calorimetry (DSC). 
@@ -371,16 +342,18 @@ The measuring method of a heat flux into a sample over a certain temperature ran
 		\caption{}
 		\label{fig:DTA_principle}
 	\end{subfigure}
-	\caption{Principal experimental setup of (a) power compensated DSC and \\ (b) DTA \cite{DSC_buch}.}
+	\caption{Principal experimental setup of (a) power compensated DSC with two chambers for reference and sample respectively regulated on the same temperature (\cref{sec:power_compensated_dsc}) and (b) differential thermal analysis (DTA) where reference and sample are heated equally and temperature difference $\Delta T$ is measured, further is the basis of a heat flux DSC (\cref{sec:heat_flux_dsc}). Source: \cite{DSC_buch}}
 \end{figure}
 
 
 \subsubsection{Power compensated DSC}
+\label{sec:power_compensated_dsc}
 In the case of a power compensated DSC (\cref{fig:DSC_power_compensated_principle}) there are 2 seperated chambers for a reference and the sample. Both have individual heaters and temperature sensors such that a feedback control system keep the temperature in both chambers on the same value. Since we know the electrical power for heating we get the heat flux due to energy conservation. \\
 
 
 
 \subsubsection{Heat flux DSC}
+\label{sec:heat_flux_dsc}
 The heat flux DSC is based on differential thermal analysis (DTA, see \cref{fig:DTA_principle}). 
 In DTA there is just one chamber in which both reference and sample are heated equally. 
 Due to differences in the heat capacity of reference and sample a temperature difference dependent on their temperature will appear.
@@ -391,7 +364,8 @@ Note that the physical quantity measured is an electrical potential difference $
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/dsc_funktionsprinzip.png}
-	\caption{Principle experimental scheme of DSC from which the used measurement data comes from. Two crucibles (an empty reference one and the other filled with the sample to examine) are connected to the furnace with a silver plate. The furnace' temperature increases with time and because of thermal differences a temperature difference $\Delta T$ is measured with temperature sensors placed at the crucibles. The final measurement quantity we obtain by calibration is the heat flux into the sample $\varPhi_s^2$.}
+	\caption{Principle experimental scheme of DSC from which the used measurement data comes from. Two crucibles (an empty reference one and the other filled with the sample to examine) are connected to the furnace with a silver plate. The furnace' temperature increases with time and because of thermal differences a temperature difference $\Delta T$ is measured with temperature sensors placed at the crucibles. The final measurement quantity obtained by calibration is the heat flux into the sample $\varPhi_s^2$. \\
+	Basis for mathematical model in \cref{sec:mathematical_model}.}
 	\label{fig:heat_flux_DSC}
 \end{figure}
 
@@ -467,7 +441,8 @@ This is done for a set of calibration materials such that we get a mapping $sens
 		\caption{}
 		\label{fig:dsc-calibration_sens(T)}
 	\end{subfigure}
-	\caption{Sensitivity calibration illustration graphs: (a) Computing for a material with known melting point $T_{\text{Kal}}$ and enthalpy $\Delta Q_{\text{Kal}}$ the area $A_{\Delta U}$ under the measuring signal $\Delta U(t)$ graph which is related to melting enthalpy via factor $sens$. Perform this for several materials such that in (b) we can interpolate $sens=\frac{A_{\Delta U}}{\Delta Q_{\text{Kal}}}$ for a certain temperature range.}
+	\caption{Sensitivity calibration illustration graphs: (a) Computing for a material with known melting point $T_{\text{Kal}}$ and enthalpy $\Delta Q_{\text{Kal}}$ the area $A_{\Delta U}$ under the measuring signal $\Delta U(t)$ graph which is related to melting enthalpy via factor $sens$. Perform this for several materials such that in (b) we can interpolate $sens=\frac{A_{\Delta U}}{\Delta Q_{\text{Kal}}}$ for a certain temperature range. \\
+	C.f. measurement data \todo{auf Messdatenbild verweisen!}}
 \end{figure}
 
 With the mapping $\varPhi(T_{ref}) = \frac{\Delta U(T_{ref})}{sens(T_{ref})}$ the heat flux into the sample then can be computed for a measurement signal $\Delta U$ of unknown materials. 
@@ -500,7 +475,8 @@ In \cref{fig:heat_flux_measurements} the measurement data of the heat flux into 
 		\caption{}
 		\label{fig:c_p_DIN_formula}
 	\end{subfigure}
-	\caption{(a) Heat flux measurement values $\eta^{\varPhi}(T_{ref})$ and (b) computed $c_p(T)$ using eq. \cref{eq:c_p_formula_DIN} with distinctly smearing effect for higher heat rates.}
+	\caption{(a) Heat flux measurement values $\eta^{\varPhi}(T_{ref})$ and (b) computed specific heat capacity $c_p(T)$ using eq. \cref{eq:c_p_formula_DIN} with distinct smearing effect for higher heat rates. \\
+	C.f. $c_p(T)$ obtained by parameter estimation depicted in \cref{fig:5Gaussians_all_c_p,fig:FS_all_c_p,fig:FS_all_c_p_modHeatRate}.}
 \end{figure}
 
 
@@ -1377,7 +1353,9 @@ where $F_{1-\alpha}$ is the $1-\alpha$ quantile of the Fisher-distribution. The 
 
 \newpage
 \section{Simulation of DSC measuring process}
+
 \subsection{Mathematical model}
+\label{sec:mathematical_model}
 
 Our 1D mathematical model uses the differential state variable $T(x,t)$ which is the temperature at spatial coordinate $x$ at time $t$. It is based on the following assumptions. First the heat transport is exclusively done by thermal diffusion (c.f. \cref{sec:heat_equation}), so convection and thermal radiation are neglected. 
 Moreover we assume that the reference and sample crucible (see \cref{fig:heat_flux_DSC}) are independent of each other which allows us to simulate each side on its own. 
@@ -2227,6 +2205,7 @@ Summarized a total number of discretization points $N=300$ is sufficient while t
 
 
 \subsection{Parameter estimation using parametrization of linear combination of Gaussians}
+\label{sec:param_estimation_5Gausse}
 So far finite differences were used to compute the optimization jacobian \cref{eq:optimization_jacobian}. Because of the problems described in \cref{sec:param_estim_NURBS} from now on internal numerical differentiation is used instead which is done with the software package SolvIND. \\
 In this section the parameter estimation is performed using the parametrization of 5 Gaussians, linear and constant part (see \cref{sec:parametrization_Gausse}). Five Gaussians were used since this is the minimum number such that the residuum almost vanishes as one can see in the upcoming figures. The optimization was performed again with the matlab routine $lsqnonlin$. Start values for the first heat rate $\beta = 20 \frac{K}{min}$ were used from previously existing results with already reduced residuum. Afterwards the optimizations were performed in a decreasing order of heat rates where parameters estimated in this process were used as start values in subsequent steps. I.e. estimated parameters at heat rate $\beta=20 \frac{K}{min}$ were used as start values for the parameter estimation at heat rate $\beta=10 \frac{K}{min}$ and so on. \\
 In \cref{fig:optim_c_p_heat_flux_5Gaussians_1,fig:optim_c_p_heat_flux_5Gaussians_2} the results are shown where on the left there is for all heat rates always the obtained function for the specific heat capacity $c_p(T)$. On the right measurement, simulation and resulting residuum of the heat flux is plotted and as one can see residuum is nearly zero for all heat rates. Examining the received specific heat capacities one notice first that for a heat rate of $10 \frac{K}{min}$ there are two peaks. The reason is a bending in the measured heat flux at approximately $130^{\circ} C$ probably from an error in measurement. Next things to observe which makes $c_p(T)$ differ from our expectations can be seen very well in the result for heat rate $5 \frac{K}{min}$. Firstly the decrease of the peak's maximum is not linear but has two different areas. Secondly after the peak $c_p(T)$ has values lower than the base line for a small temperature range. These are likely unphysical optimization artifacts due to overfitting to a naturally simplified, i.e incomplete model. Although positive is that the $c_p(T)$ curves do not differ exorbitantly from each other. A more detailed comparison between them follows at the end of this section.
@@ -2552,7 +2531,8 @@ Finally the sequence of Gauss-Newton iterates has been examined. As remarked we 
 
 
 
-\subsection{Parameter estimation with modified heat rate from measurement data}
+\subsection{Parameter estimation with heat rate retrieved from measurement data}
+\label{sec:param_estimation_mod_heat_rate_FS}
 So far just the nominal heat rate of the appropriate measurement scheme was used. 
 \Cref{fig:heat_rate_measurement} shows the measurement data of the heat rate at the reference crucible $\frac{\partial T_{ref}(t)}{\partial t}(T_{ref})$ exemplary for a nominal heat rate $\beta = 2.5 \frac{K}{min}$. 
 As one can see there are fluctuations due to the regulation which tries to keep the heat rate at the nominal value. 
@@ -2761,6 +2741,9 @@ This is why we perform now the parameter estimation again with the modified heat
 	
 \bibitem{bock2000_RMT}
 	Bock H.G., Kostina E., Schlöder J.P. (2000) On the Role of Natural Level Functions to Achieve Global Convergence for Damped Newton Methods. In: Powell M.J.D., Scholtes S. (eds) System Modelling and Optimization. CSMO 1999. IFIP — The International Federation for Information Processing, vol 46. Springer, Boston, MA
+	
+\bibitem{heating_pad_image}
+	https://de.wikipedia.org/wiki/Latentwärmespeicher, 27.12.2017
 	
   
 \end{thebibliography}
