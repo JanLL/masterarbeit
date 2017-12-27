@@ -262,19 +262,19 @@ area legend]
 \caption{Specific heat capacity for (a) ideally pure substance where the phase transition is described by a Dirac delta function at the melting point and (b) mixed substance described by a Fraser-Suzuki Peak where melting enthalpy $\Delta H$ is illustrated.}
 \end{figure}
 
-
-Finally we introduce peak characteristics maximal turning point $T_{max}$, $T_{on}$ and $T_{off}$ where latter two are computed as the intersection of the inflection points' tangent with the base line of $c_p(T)$, i.e. the sensitive part. In the used parametrizations of the specific heat capacity in this thesis the base line is linear. An illustration is given below in \cref{fig:T_on/off_illustration}.
+\subsection{Phase transition peak characteristics}
+Beside the melting enthalpy $\Delta H$ (\cref{fig:physics_fraser_suzuki}) additional characteristics are introduced in order to quantify a given peak.
 
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/thesis/images/T_on_T_off_illustration.png}
+	\includegraphics[width=0.79\textwidth]{/home/argo/masterarbeit/thesis/images/T_on_T_off_illustration.png}
 	\caption{Illustration of peak characteristics $T_{max}$, $T_{on}$ and $T_{off}$ where latter two are computed as intersections of the base line with inflection point tangents. \\
 	Used for evaluation in numerical experiment \cref{sec:param_estimation_5Gausse,sec:param_estimation_fs,sec:param_estimation_mod_heat_rate_FS}.}
 	\label{fig:T_on/off_illustration}
 \end{figure}
 
-
+These are the maximal turning point $T_{max}$ and further $T_{on}$ and $T_{off}$ computed as the intersection of the inflection points' tangent with the base line of $c_p(T)$, i.e. the sensitive part. In the used parametrizations of the specific heat capacity in this thesis the base line is linear. An illustration is given above in \cref{fig:T_on/off_illustration}.
 
 
 \subsection{Heat equation}
@@ -329,7 +329,7 @@ Due to the definition of the heat capacity $c_v(T) = \frac{\partial u}{\partial 
 
 \subsection{Differential Scanning Calorimetry}
 \label{sec:physics_DSC}
-The measuring method of a heat flux into a sample over a certain temperature range is called Differential Scanning Calorimetry (DSC). 
+The method of measuring the heat flux into a sample over a certain temperature range is called Differential Scanning Calorimetry (DSC). 
 
 \begin{figure}[H]
 	\centering
@@ -347,16 +347,11 @@ The measuring method of a heat flux into a sample over a certain temperature ran
 \end{figure}
 
 
-\subsubsection{Power compensated DSC}
-\label{sec:power_compensated_dsc}
-In the case of a power compensated DSC (\cref{fig:DSC_power_compensated_principle}) there are 2 seperated chambers for a reference and the sample. Both have individual heaters and temperature sensors such that a feedback control system keep the temperature in both chambers on the same value. Since we know the electrical power for heating we get the heat flux due to energy conservation. \\
-
-
 
 \subsubsection{Heat flux DSC}
 \label{sec:heat_flux_dsc}
-The heat flux DSC is based on differential thermal analysis (DTA, see \cref{fig:DTA_principle}). 
-In DTA there is just one chamber in which both reference and sample are heated equally. 
+The heat flux DSC is crucial for us since it has been used for the experimental data we worked with in this thesis. It is based on differential thermal analysis (DTA, see \cref{fig:DTA_principle}). 
+In DTA there is one chamber in which both reference and sample are heated equally. 
 Due to differences in the heat capacity of reference and sample a temperature difference dependent on their temperature will appear.
 This can be used to find typical temperatures of known substances to identify the sample's components. \\
 Unfortunately calorimetric properties like melting enthalpy are not accessible just from the temperature difference measurement. 
@@ -373,7 +368,6 @@ Note that the physical quantity measured is an electrical potential difference $
 The heat flux DSC (see \cref{fig:heat_flux_DSC}) extends now DTA by computing the heat flux into the sample $\varPhi_S^2$ from the temperature difference using an additional so called sensitivity calibration. 
 
 \paragraph{Sensitivity calibration}\mbox{}\\
-
 Pure materials with known melting temperature $T_{\text{Kal}}$ and melting heat $\Delta Q_{\text{Kal}}$ are measured, giving the measuring signal $\Delta U(t)$ with a peak at the phase change. 
 The area of this peak is assumed to be proportional with constant $sens$ called sensitivity to the melting heat due to
 
@@ -474,9 +468,16 @@ These measurement data are applied later in the parameter estimation optimizatio
 \end{figure}
 
 
-\subsubsection{Smearing Problem}
+\subsubsection{Power compensated DSC}
+\label{sec:power_compensated_dsc}
+Another kind of differential scanning calorimetry is the
+power compensated DSC (\cref{fig:DSC_power_compensated_principle}). 
+The main difference to a heat flux DSC is that there are 2 separated chambers for a reference and the sample. Both have individual heaters and temperature sensors such that a feedback control system keep the temperature in both chambers on the same value. Since the electrical power for heating is known the heat flux is gained due to energy conservation. \\
+
+
+\subsection{Smearing Problem}
 \label{sec:smearing_problem}
-The common way to perform the DSC calibration, measurement and compute the specific heat capacity $c_p$ is described in detail in DIN 11357 \cite{DIN_11357}. By assuming a proportionality between the heat flux into the sample and the sample's heat capacity one gets the equation
+The common way to perform the heat flux DSC calibration, measurement and compute the specific heat capacity $c_p$ is described in detail in DIN 11357 \cite{DIN_11357}. By assuming a proportionality between the heat flux into the sample and the sample's heat capacity one gets the equation
 
 \begin{equation}
 	c_p^S(T) = c_p^{R}(T) \cdot \frac{m^R}{m^S} \cdot \frac{\varPhi^S(T) - \varPhi^0(T)}{\varPhi^R(T) - \varPhi^0(T)}
@@ -2369,7 +2370,7 @@ The optimization process took on average about $7$ minutes and 50 iterations per
 \label{sec:param_estimation_fs}
 
 In order to avoid overfitting seen in the previous section we apply now the Fraser-Suzuki parametrization (c.f. \cref{sec:parametrization_FS}) where we fixed $r=2$. As we then just have in total 6 parameters instead of 17 with the Gaussians and therefore the available function space is smaller a kind of regularization is active. \\
-The optimization was performed here with a self written Gauss Newton solver based on \cref{sec:GN_numerical_solution} using a singular value decomposition of $J_1(p_{c_p})$. An active set strategy for lower and upper bounds of the optimization variables has been implemented to ensure $0 \le sr \le 1$ and $wr \ge 0$ for a reasonable peak but it became apparent that the optimizer does not approach these limiting values anyway. Therefore lower and upper bounds were disabled and we solve an unconstrained problem. Start values for heat rate $20 \frac{K}{min}$ were chosen to be $h=14$, $wr=10.7$, $sr=0.705$, $z=129$, $m=0.0079$ and $b=1.69$ and following heat rates use the last result analog to the case of Gaussian parametrization. The linear parameter $m$ was fixed to the previously obtained result for the heat rates $0.6$ and $0.3 \frac{K}{min}$ because of the problems remarked in the last section. \\
+The optimization was performed here with a self written Gauss-Newton solver based on \cref{sec:GN_numerical_solution} using a singular value decomposition of $J_1(p_{c_p})$. An active set strategy for lower and upper bounds of the optimization variables has been implemented to ensure $0 \le sr \le 1$ and $wr \ge 0$ for a reasonable peak but it became apparent that the optimizer does not approach these limiting values anyway. Therefore lower and upper bounds were disabled and we solve an unconstrained problem. Start values for heat rate $20 \frac{K}{min}$ were chosen to be $h=14$, $wr=10.7$, $sr=0.705$, $z=129$, $m=0.0079$ and $b=1.69$ and following heat rates use the last result analog to the case of Gaussian parametrization. The linear parameter $m$ was fixed to the previously obtained result for the heat rates $0.6$ and $0.3 \frac{K}{min}$ because of the problems remarked in the last section. \\
 The resulting specific heat capacity $c_p(T)$ and corresponding heat flux $\varPhi_q^{pcm,in}$ for all heat rates after optimization is shown in \cref{fig:optim_c_p_heat_flux_FS_1,fig:optim_c_p_heat_flux_FS_2}. As one can see the heat flux residuum is bigger than before especially at the increasing side of the peak. Furthermore the heat flux base line after the peak exhibits an increased residuum as well. On the other hand the obtained specific heat capacities are very similar as expected. A detailed comparison follows.
 
 
@@ -2471,7 +2472,7 @@ We now compare the obtained specific heat capacity functions $c_p(T)$ from the d
 \end{figure}
 
 
-Finally the sequence of Gauss-Newton iterates has been examined. As remarked we solve an unconstrained linear least squares problem using \cref{alg:Gauss_Newton_unconstrained}. Termination criteria parameters were set to $[NOC1]_{TOL}=10^{-2}$, $\Delta x_{TOL}=10^{-5}$, $t_{TOL}=10^{-6}$ and iterations$_{max}=1000$ where just the first two were triggered and a stepsize decrease rate $d=0.8$ has been used. Results are depicted in \cref{fig:optimization_progress_FS} for all heat rates where the norm of residuum $||F_1^{(k)}||_2$, Gauss Newton step $||\Delta x^{(k)}||_2$, gradient of Lagrange function (here objective function since unconstrained) $|| \nabla \mathcal{L} ||_2 = || \nabla F_1^T F_1 ||_2 = || 2 J_1^T F_1 ||_2$ and step size $t^{(k)}$ were recorded in each iteration $k$. One notice that the residuum decreases perceptibly only in the first iteration step. This is related to the fact that $||\Delta x^{(k)}||_2$ declines monotonically in a few iterations to an order of $10^{-5}$ where is starts to fluctuate as one can see very well for heat rate $5 \frac{K}{min}$.
+Finally the sequence of Gauss-Newton iterates has been examined. As remarked we solve an unconstrained linear least squares problem using \cref{alg:Gauss_Newton_unconstrained}. Termination criteria parameters were set to $[NOC1]_{TOL}=10^{-2}$, $\Delta x_{TOL}=10^{-5}$, $t_{TOL}=10^{-6}$ and iterations$_{max}=1000$ where just the first two were triggered and a stepsize decrease rate $d=0.8$ has been used. Results are depicted in \cref{fig:optimization_progress_FS} for all heat rates where the norm of residuum $||F_1^{(k)}||_2$, Gauss-Newton step $||\Delta x^{(k)}||_2$, gradient of Lagrange function (here objective function since unconstrained) $|| \nabla \mathcal{L} ||_2 = || \nabla F_1^T F_1 ||_2 = || 2 J_1^T F_1 ||_2$ and step size $t^{(k)}$ were recorded in each iteration $k$. One notice that the residuum decreases perceptibly only in the first iteration step. This is related to the fact that $||\Delta x^{(k)}||_2$ declines monotonically in a few iterations to an order of $10^{-5}$ where is starts to fluctuate as one can see very well for heat rate $5 \frac{K}{min}$.
 
 
 
