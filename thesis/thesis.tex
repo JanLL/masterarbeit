@@ -1068,7 +1068,7 @@ Based on decomposing $J_1$ two solutions are shown (\cite{nonlinear_optimiziatio
 			0
 		\end{pmatrix}
 	\end{equation}
-	where $Q \in \mathcal{R}^{m_1 \times m_1}$ is an orthogonal matrix splitted into $Q_1 \in \mathcal{R}^{m_1 \times n}$ and $Q_2 \in \mathcal{R}^{m_1 \times (n-m_1)}$. Further, $R \in \mathcal{R}^{m_1 \times n}$ with $\bar{R} \in \mathcal{R}^{n \times n}$ upper triangular matrix. Lastly $P \in \mathcal{R}^{n \times n}$ is a permutation matrix and therefore orthogonal. Inserting in the objective function \cref{eq:numerical_solution_LSQ} and omitting factor $\frac{1}{2}$ gives
+	where $Q \in \mathbb{R}^{m_1 \times m_1}$ is an orthogonal matrix split into $Q_1 \in \mathbb{R}^{m_1 \times n}$ and $Q_2 \in \mathbb{R}^{m_1 \times (n-m_1)}$. Further, $R \in \mathbb{R}^{m_1 \times n}$ with $\bar{R} \in \mathbb{R}^{n \times n}$ upper triangular matrix. Lastly $P \in \mathbb{R}^{n \times n}$ is a permutation matrix and therefore orthogonal. Inserting in the objective function \cref{eq:numerical_solution_LSQ} and omitting factor $\frac{1}{2}$ gives
 	
 	\begin{align}
 		|| F_1 + J_1 \Delta x ||_2^2 & = || Q^T (F_1 + J_1 P P^T \Delta x) ||_2^2 = || Q^T F_1 + Q^T Q R P^T \Delta x ||_2^2 \\
@@ -1092,6 +1092,8 @@ Based on decomposing $J_1$ two solutions are shown (\cite{nonlinear_optimiziatio
 	
 	For the rank-deficit case see e.g. \cite{numerical_methods_lsq_Bjorck} chapter 1.3.2.
 		
+		
+		
 	\item \textbf{Singular value decomposition (SVD)} \\
 	Using SVD $J_1$ decomposes to
 	\begin{equation}
@@ -1103,13 +1105,10 @@ Based on decomposing $J_1$ two solutions are shown (\cite{nonlinear_optimiziatio
 			\bar{\Sigma} \\
 			0
 		\end{pmatrix}
-		\begin{pmatrix}
-			V_1 \\
-			V_2
-		\end{pmatrix}
+			V^T
 	\end{equation}
 	
-	with $U, V$ orthogonal and $\bar{\Sigma}$ diagonal. Let $r := rank(J_1) \le n$. Then $\bar{\Sigma}$ has the singular values $\sigma_1 \ge \sigma_2 \ge ... \ge \sigma_r > 0 > ... > 0$ on the diagonal. \\
+	with $U \in \mathbb{R}^{m_1 \times m_1}$ orthogonal split into $U_1 \in \mathbb{R}^{m_1 \times n}$ and $U_2 \in \mathbb{R}^{m_1 \times (m_1 - n)}$, $V \in \mathbb{R}^{n \times n}$ orthogonal and $\Sigma \in \mathbb{R}^{m_1 \times n}$ with $\bar{\Sigma} \in \mathbb{R}^{n \times n}$ diagonal. Let $r := rank(J_1)$. Then $\bar{\Sigma}$ has the singular values $\sigma_1 \ge \sigma_2 \ge ... \ge \sigma_r > 0$ and $\sigma_{r+1}=...=\sigma_{n} = 0$ on the diagonal. \\
 	Inserting modifies \cref{eq:numerical_solution_LSQ} where we omit again factor $\frac{1}{2}$ by
 	
 	\begin{align}
@@ -1136,14 +1135,11 @@ Based on decomposing $J_1$ two solutions are shown (\cite{nonlinear_optimiziatio
 		\end{cases}
 	\end{align}
 	
-	we get the final result $\Delta x^*$ with
+	we get (c.f. \cite{numerical_methods_lsq_Bjorck} theorem 1.2.10) the final unique minimum norm solution  $\Delta x^*$ with
 	
 	\begin{equation}
 		\Delta x^* = V \Delta y^*
 	\end{equation}
-
-
-\todo{Theorem 1.2.10 in Bjoerck -> unique minimum norm solution} \\
 
 
 \end{itemize}
