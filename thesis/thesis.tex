@@ -1193,7 +1193,7 @@ In the equality constrained case we handle the problem
 	s.t. & \ F_2 + J_2 \Delta x = 0 \nonumber
 \end{align}
 
-For the case $rank(J_2)=m_2$ we will use a QR decomposition:
+We consider here the case $rank(J_2)=m_2$. First we factorize $J_2^T$ by a QR decomposition without column pivoting as we assume full rank for simplicity
 
 \begin{equation}
 	J_2^T = Q R = 
@@ -1206,6 +1206,8 @@ For the case $rank(J_2)=m_2$ we will use a QR decomposition:
 	\end{pmatrix}
 \end{equation}
 
+with $Q \in \mathbb{R}^{n \times n}$ orthogonal split into $Q_1 \in \mathbb{R}^{n \times m_2}$ and $Q_2 \in \mathbb{R}^{n \times (n-m_2)}$. Further, $R \in \mathbb{R}^{n \times m_2}$ with $\bar{R} \in \mathbb{R}^{m_2 \times m_2}$.
+
 Inserting into the equality constraint gives
 
 \begin{equation}
@@ -1213,26 +1215,28 @@ Inserting into the equality constraint gives
 	\begin{pmatrix}
 		\bar{R}^T & 0
 	\end{pmatrix} 
+	\overbrace{
 	\begin{pmatrix}
 		\Delta y_1 \\
 		\Delta y_2
-	\end{pmatrix} = F_2 + \bar{R}^T \Delta y_1 = 0
+	\end{pmatrix}}^{:= \Delta y} = F_2 + \bar{R}^T \Delta y_1 = 0
 \end{equation}
 
-Since $rank(J_2)=m$, $\bar{R}^T$ is invertible and we can solve for $\Delta y_1$ because $\bar{R}^T$ is triangular:
+with $\Delta y_1 \in \mathbb{R}^{m_2}$ and $\Delta y_2 \in \mathbb{R}^{n-m_2}$. Since $rank(J_2)=m$, $\bar{R}^T$ is invertible and we can solve for $\Delta y_1$ because $\bar{R}^T$ is triangular:
 
 \begin{equation}
 	\bar{R}^T \Delta y_1 = -F_2
 \end{equation}
 
-With the solution $\Delta y_1^*$, recalling $\Delta x = Q \Delta y$ and the definition $J_1 Q = \begin{pmatrix} A_1 & A_2 \end{pmatrix}$ it remains to solve
+With the solution $\Delta y_1^*$, recalling $\Delta x = Q \Delta y$ and the definition $J_1 Q =: \begin{pmatrix} A_1 & A_2 \end{pmatrix}$ with $A_1 \in \mathbb{R}^{m_1 \times m_2}$ and $A_2 \in \mathbb{R}^{m_1 \times (n-m_2)}$ it remains to solve
 
 \begin{align}
 	\min_{\Delta y_2} \ \frac{1}{2} || (F_1 + A_1 \Delta y_1^*) + A_2 \Delta y_2 ||_2^2
 \end{align}
 
-which is an unconstrained least squares problem we discussed before. At last we need to compute $\Delta x = Q \Delta y$ for the final solution of \cref{eq:numerical_soln_eq_constrained_LSQ}. \\
-This procedure is called null space method. Another possibility is the method of direct elimination, see \cite{numerical_methods_lsq_Bjorck} for a detailed description.
+This is an unconstrained least squares problem we discussed in the previous paragraph and can be solved by QR or SVD decomposition. At last we need to compute $\Delta x = Q \Delta y$ for the final solution of \cref{eq:numerical_soln_eq_constrained_LSQ}. \\
+
+This procedure is called null space method. Another possibility is the method of direct elimination, see \cite{numerical_methods_lsq_Bjorck} chapter 5.1 for further details.
 
 
 \paragraph{Equality and inequality constrained case using active set strategy} \label{par:theory_active_set_strategy} \mbox{}\\
