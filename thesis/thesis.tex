@@ -1447,18 +1447,24 @@ where $F_{1-\alpha}$ is the $1-\alpha$ quantile of the Fisher-distribution. The 
 	
 \end{Theorem}
 
-\todo{param estim in this thesis in \cref{sec:optimization_problem}, numerical experiments in \cref{sec:numerical_experiments}.}
+
+\vspace{0.5cm}
+The nonlinear least squares optimization problem as part of the parameter estimation to determine the specific heat capacity is formulated in \cref{sec:optimization_problem} while the corresponding numerical experiments are elucidated in \cref{sec:numerical_experiments}.
 
 
 \newpage
 \section{Simulation of DSC measuring process}
 
+So far the physical and mathematical foundations were laid by reciting known knowledge. Now in this section our new model of the measuring process of an heat flux DSC will be introduced while in the next section it follows the corresponding parameter estimation in order to obtain the specific heat capacity $c_p(T)$.
+
+
+
 \subsection{Mathematical model}
 \label{sec:mathematical_model}
 
-Our 1D mathematical model uses the differential state variable $T(x,t)$ which is the temperature at spatial coordinate $x$ at time $t$. It is based on the following assumptions. First the heat transport is exclusively done by thermal diffusion (c.f. \cref{sec:heat_equation}), so convection and thermal radiation are neglected. 
-Moreover we assume that the reference and sample crucible (see \cref{fig:heat_flux_DSC}) are independent of each other which allows us to simulate each side on its own. 
-Analog to the experimental setup the silver plate is connected with the furnace whose temperature increases with a constant heat rate $\beta$ which gives the Dirichlet boundary condition \cref{eq:heat_equation_BC_dirichlet}. All material properties of silver are constant so the heat transport there is described by \cref{eq:heat_equation_Ag}. The silver plate then is connected with the PCM whose mass density $\rho_{pcm}$ and heat conductivity $\lambda_{pcm}$ are assumed to be constant. The specific heat capacity $c_p(T)$ is temperature dependent, parametrized (c.f. \cref{sec:parametrizations}) and the quantity we want to obtain by performing a parameter estimation. \Cref{eq:heat_equation_PCM} describes then the heat transport within the PCM at which we assume that no heat can leave the PCM, resulting in Neumann boundary condition \cref{eq:heat_equation_BC_Neumann}. Finally as start condition at time ${t_0 = 0}$ we assume that the temperature is equal everywhere (\cref{eq:heat_equation_start_values}).
+Our 1D mathematical model \cref{eq:heat_equation_model} of the heat flux DSC measurement process (see \cref{fig:heat_flux_DSC}) uses the differential state variable $T(x,t)$ which is the temperature at spatial coordinate $x$ at time $t$. It is based on the following assumptions. First the heat transport is exclusively done by thermal diffusion (c.f. \cref{sec:heat_equation}), so convection and thermal radiation are neglected. 
+Moreover we assume that the reference and sample crucible  are independent of each other which allows us to simulate each side on its own. 
+Analog to the experimental setup the silver plate is connected with the furnace whose temperature increases with a constant heat rate $\beta$ which gives the Dirichlet boundary condition \cref{eq:heat_equation_BC_dirichlet}. All material properties of silver are constant such that the heat transport there is described by \cref{eq:heat_equation_Ag}. The silver plate then is connected with the PCM whose mass density $\rho_{pcm}$ and heat conductivity $\lambda_{pcm}$ are assumed to be constant. The specific heat capacity $c_p(T)$ is temperature dependent, parametrized (c.f. \cref{sec:parametrizations}) and the quantity we want to obtain by performing a parameter estimation. \Cref{eq:heat_equation_PCM} describes then the heat transport within the PCM at which we assume that no heat can leave the PCM, resulting in Neumann boundary condition \cref{eq:heat_equation_BC_Neumann}. Finally as start condition at time ${t_0 = 0}$ we assume that the temperature is equal everywhere (\cref{eq:heat_equation_start_values}).
 
 \begin{subequations}
 	\begin{align}
@@ -1472,7 +1478,7 @@ Analog to the experimental setup the silver plate is connected with the furnace 
 \end{subequations}
 
 
-In order to solve \cref{eq:heat_equation_model} method of lines is applied for spatial discretization (c.f. \cref{sec:pde_discretization}) of the temperature field $T(x,t)$. The silver plate has $N_{Ag}$ and the PCM $N_{pcm}$ discretization points where the total number of discretization points is $N = N_{Ag} + N_{pcm}$.
+In order to solve \cref{eq:heat_equation_model} method of lines (\cref{sec:pde_discretization}) is applied for spatial discretization of the temperature field $T(x,t)$. The silver plate has $N_{Ag}$ and the PCM $N_{pcm}$ discretization points where the total number of discretization points is $N = N_{Ag} + N_{pcm}$.
 An illustration of the discretized model is depicted in \cref{fig:mathematical_model_discretized}. Note that the first discretized temperature within the PCM is $T^{N_{Ag}}$.
 In \cref{sec:spatial_discretization_grid} the construction of the inhomogeneous grid will be explained in detail. The resulting initial value problem reads as
 
@@ -1514,7 +1520,7 @@ where \cref{eq:2_point_formula_inhomogeneous} has been used. The abbreviation fo
 and the factor $\alpha_i$ coming from the inhomogeneous grid is
 
 \begin{align}
-	\alpha_i = \frac{\Delta x_{i+1}}{\Delta x_{i}}
+	\alpha_i := \frac{\Delta x_{i+1}}{\Delta x_{i}}
 \end{align}
 
 Note here that the Dirichlet boundary condition 
@@ -1526,7 +1532,7 @@ Note here that the Dirichlet boundary condition
 is apparent by the heat rate $\beta$ at temperature $T^0$. Zero flux Neumann boundary condition on the other hand
 
 \begin{align}
-	\frac{\partial}{\partial x} T^{N-1} \stackrel{\cdot}{=} & \ \frac{T^N - T^{N-1}}{\Delta x_{N-1}} \stackrel{!}{=} \ 0 \\
+	\frac{\partial}{\partial x} T^{N-1} \approx & \ \frac{T^N - T^{N-1}}{\Delta x_{N-1}} \stackrel{!}{=} \ 0 \\
 	\Leftrightarrow T^{N-1} = & \ T^N
 \end{align}
 
@@ -1536,29 +1542,30 @@ is apparent by the heat rate $\beta$ at temperature $T^0$. Zero flux Neumann bou
 	\centering
 	\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/discretization_grid_heat_flux.png}
 	\caption{Illustration of discretized model with discrete temperatures $T^i$, grid sizes $\Delta x_i$, physical length $L$ and heat flux approximation $\varPhi_q^{pcm,in}$ into the PCM. \\
-	C.f	corresponding IVP \cref{eq:heat_equation_discretized}, grid size construction \cref{sec:spatial_discretization_grid} and heat flux approximation \cref{eq:heat_flux_computation_final} and experimental setup \cref{fig:heat_flux_DSC}.}
+	C.f	corresponding IVP \cref{eq:heat_equation_discretized}, grid size construction \cref{sec:spatial_discretization_grid}, heat flux approximation \cref{eq:heat_flux_computation_final} and experimental setup \cref{fig:heat_flux_DSC}.}
 	\label{fig:mathematical_model_discretized}
 \end{figure}
 
 
-Solving \cref{eq:heat_equation_discretized} yields the temperature but we are primarily interested in the heat flux into the PCM $\varPhi_{q}^{pcm,in}$ since measurement data of this quantity is available. For the conversion from temperature to heat flux we use Fourier's law \cref{eq:fouriers_law} where the gradient is discretized:
+Solving \cref{eq:heat_equation_discretized} yields the temperature but we are primarily interested in the heat flux into the PCM $\varPhi_{q}^{pcm,in}$ since measurement data of this quantity is available. For the conversion from temperature to heat flux we use Fourier's law \cref{eq:fouriers_law}:
 
 \begin{align}
-	\varPhi_{q}^{pcm,in}(T) = & - \bar{\lambda} \frac{T^{N_{Ag}} - T^{N_{Ag}-1}}{\Delta x_{N_{Ag}-1}} \cdot A_{pcm} \\
+	\varPhi_{q}^{pcm,in}(T) = & - \bar{\lambda} \cdot \nabla T (x=L_{Ag}) \cdot A_{pcm} \\ 
+	\approx & - \bar{\lambda} \frac{T^{N_{Ag}} - T^{N_{Ag}-1}}{\Delta x_{N_{Ag}-1}} \cdot A_{pcm} \nonumber \\
 	\approx & - \lambda_{pcm} \frac{T^{N_{Ag}+1} - T^{N_{Ag}}}{\Delta x_{N_{Ag}}} \cdot A_{pcm} \nonumber
 \end{align}
 
-The approximation (marked in \cref{fig:mathematical_model_discretized}) is necessary because we do not know the heat conductivity $\bar{\lambda}$ at the transition between the silver plate and the PCM. \\
+The first approximation comes from the spatial discretization and the second one is necessary because we do not know the heat conductivity $\bar{\lambda}$ at the transition between the silver plate and the PCM and therefore use the following first grid points within the PCM (marked in \cref{fig:mathematical_model_discretized}). \\
 Since Fourier's law gives a heat flux density we need to add a factor of the PCM's cross section $A_{pcm}$. It is computed by
 
 \begin{equation}
 	\frac{m_{pcm}}{N_{pcm}} = m_{pcm,i} = \rho_{pcm} \cdot A_{pcm} \cdot \Delta x_i 
 \end{equation}
 
-assuming beside a homogeneous mass distribution, a constant grid size $\Delta x$ in the PCM which is satisfied in good approximation by construction of the spatial discretization grid, see next section. The final equation for the heat flux computation then reads as
+assuming beside a homogeneous mass distribution, a constant grid size $\Delta x$ in the PCM which is satisfied in good approximation by construction of the spatial discretization grid, see next \cref{sec:spatial_discretization_grid}. The final equation for the heat flux computation then reads as
 
 \begin{equation}
-	\varPhi_{q}^{pcm,in}(T) \approx - \frac{\lambda_{pcm} \ m_{pcm}}{N_{pcm} \ \rho_{pcm} \ (\Delta x_{N_{pcm}})^2} \left( T^{N_{pcm}+1} - T^{N_{pcm}} \right)
+	\varPhi_{q}^{pcm,in}(T) \approx - \frac{\lambda_{pcm} \ m_{pcm}}{N_{pcm} \ \rho_{pcm} \ (\Delta x_{N_{Ag}})^2} \left( T^{N_{Ag}+1} - T^{N_{Ag}} \right)
 	\label{eq:heat_flux_computation_final}
 \end{equation}
 
