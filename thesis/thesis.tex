@@ -778,7 +778,8 @@ where $\alpha_{ij} \in \mathbb{R}$ with $\alpha_{0m},\alpha_{km} \ne 0 \ \forall
 Since \cref{eq:bdf_formula} is a non-linear system of equations it is solved iteratively using Newton's method. In order to obtain a good starting point a so called predictor is used, which is the integration polynomial of the previous integration step. With this initial guess for $x_{m+k}$ the Newton method can be applied to get the so called corrector polynomial, which satisfies the differential equation at $t_{m+k}$. \\
 As we want the numerical integrator both to perform large integration steps to minimize the required time to solve the IVP and limit the inevitable numerical errors on a predefined value we are dependent on a strategy to choose the step width $h_{m+k-1}$ accordingly. This is done by estimating the local error in each integration step. Either the local error is smaller than some tolerance then the step width will be increased, otherwise decreased until the local error tolerance is satisfied. \\
 
-\todo{Collocation?}
+The BDF solver DAESOL-II embedded in SolvIND has been used in this thesis to solve \cref{eq:heat_equation_discretized}.
+
 
 %The stated methods solve the initial value problem in an iterative manner, in contrary to collocation where the problem can be solved in one big system
 
@@ -789,22 +790,22 @@ As we want the numerical integrator both to perform large integration steps to m
 \label{sec:pde_discretization}
 
 
-Given a partial differential equation (PDE) with the differential variable $u(x,t)$ in space coordinate $x$ and time $t$. Since the problem of finding $u(x,t)$ that solve the corresponding PDE is infinite-dimensional, a numerical solution requires a discretization in space and time in order to get a finite-dimensional problem. \\
+Given a partial differential equation (PDE) with the solution $u(x,t)$ dependent on space coordinate $x$ and time $t$. Since the problem of finding $u(x,t)$ that solve the corresponding PDE is infinite-dimensional, a numerical solution requires a discretization in space and time in order to obtain a finite-dimensional problem. \\
 In this section we will treat the boundary value problem
 
 \begin{subequations}
 	\begin{align}
-	\frac{\partial u}{\partial t}(x,t) & - a \cdot \frac{\partial^2 u}{\partial x^2}(x,t) = 0 & \forall x \in [a,b], \ t \in [t_0,t_f] \label{eq:method_of_lines_pde} \\
+	\frac{\partial u}{\partial t}(x,t) & - a(t) \cdot \frac{\partial^2 u}{\partial x^2}(x,t) = 0 & \forall x \in [a,b], \ t \in [t_0,t_f] \label{eq:method_of_lines_pde} \\
 	u(a,t) & = u_a(t)  & \forall t \in [t_0,t_f] \label{eq:method_of_lines_dirichlet} \\
 	\frac{\partial u}{\partial x}(b,t) & = 0  & \forall t \in [t_0,t_f] \label{eq:method_of_lines_neumann}  \\
 	u(x,t_0) & = u_0(x) & \forall x \in [a,b] \label{eq:method_of_lines_start}
 	\end{align}
 \end{subequations}
 
-on the domain $x \in [a,b] = \Omega \subseteq \mathbb{R}$ and $t \in [t_0,t_f] \subseteq \mathbb{R}$. \Cref{eq:method_of_lines_pde} is the 1D parabolic partial differential equation (c.f. heat equation \eqref{eq:heat_eq_derivation_1}), \cref{eq:method_of_lines_dirichlet} are the Dirichlet boundary conditions at $x=a$, \cref{eq:method_of_lines_neumann} respectively the Neumann boundary conditions at $x=b$ and finally \cref{eq:method_of_lines_start} are the initial values at ${t=t_0}$. \\
-Remark: This IVP is a special case and crucial for us in this thesis. For a more general view on the numerical solution of PDEs especially method of lines the see e.g. \cite{pde_buch_solin}. \\
+on the domain $x \in [a,b] = \Omega \subseteq \mathbb{R}$ and $t \in [t_0,t_f] \subseteq \mathbb{R}$. \Cref{eq:method_of_lines_pde} is the 1D parabolic partial differential equation (c.f. heat equation \eqref{eq:heat_eq_derivation_1}), \cref{eq:method_of_lines_dirichlet} is the Dirichlet boundary condition at $x=a$, \cref{eq:method_of_lines_neumann} respectively the Neumann boundary condition at $x=b$ and lastly \cref{eq:method_of_lines_start} are the initial values at ${t=t_0}$. \\
+Remark: This IVP is a special case and crucial for us in this thesis. For a more general view on the numerical solution of PDEs especially method of lines see e.g. \cite{pde_buch_solin}. \\
 
-In order to make this IVP numerically solvable the idea of method of lines is to keep the temporal variable $t$ continuous while space coordinate $x$ is discretized on grid
+In order to make this IVP numerically solvable the idea of method of lines is to keep the temporal variable $t$ continuous while space coordinate $x$ is discretized. Here we use the grid
 \begin{align}
 	x_k = a + k \cdot h & & k=0,...,N
 \end{align}
@@ -814,19 +815,19 @@ with $x_{N} = b$ and for simplicity equidistant gridsize $h$. Evaluated on this 
 	u_k(t) := u(x_k,t) & & k=0,...,N
 \end{align}
 
-only dependent on time $t$. Spatial derivatives in the PDE \ref{eq:method_of_lines_pde} are then discretized using finite differences, see \cref{sec:finite_differences}. Here we apply
+only dependent on time $t$. Spatial derivatives in the PDE \eqref{eq:method_of_lines_pde} are then discretized using finite differences, see \cref{sec:finite_differences}. Here we apply
 \begin{align}
 	\frac{\partial^2 u}{\partial x^2}(x_k,t) \approx \frac{u_{k-1}(t) - 2 u_k(t) + u_{k+1}(t)}{h^2} & & k=1,...,N-1
 	\label{eq:discretized_second_derivative}
 \end{align}
 
-Dirichlet boundary conditions \cref{eq:method_of_lines_dirichlet} are applied by
+Dirichlet boundary condition \cref{eq:method_of_lines_dirichlet} is applied by
 \begin{align}
 	u_0(t) & = u_a(t) \\
 	\Rightarrow \ \dot{u}_0(t) & = \dot{u}_a(t)
 \end{align}
 
-and Neumann boundary conditions \cref{eq:method_of_lines_neumann} by
+and Neumann boundary condition \cref{eq:method_of_lines_neumann} by
 \begin{align}
 	\frac{\partial u}{\partial x}(b,t) & \approx \frac{u_{N} - u_{N-1}}{h} = 0 \nonumber \\
 	\Leftrightarrow & \ u_{N-1} = u_{N} \label{eq:method_of_lines_neumann_applied}
@@ -850,7 +851,7 @@ Putting all these together where due to the equality in \cref{eq:method_of_lines
 		u_{N-2}(t) \\
 		u_{N-1}(t)
 	\end{pmatrix}
-	= &
+	= & \ a(t) 
 	\begin{pmatrix}
 		0 & & ... & & 0 \\
 		1 & -2 & 1 \\
@@ -879,11 +880,11 @@ Putting all these together where due to the equality in \cref{eq:method_of_lines
 		\\
 		0
 	\end{pmatrix} \\
-	u_k(t_0) = & \ u_0(x_k) \qquad \text{for} \ k = 0,...,N \nonumber
+	u_k(t_0) = & \ u_0(x_k) \qquad \text{for} \ k = 0,...,N-1 \nonumber
 \end{align}
  
  which can be solved by an appropriate ODE solver (c.f. \cref{sec:theory_ODE_solver_BDF}) where the temporal discretization occurs. \\
- Note that we discussed here for simplicity the case of an equidistant spatial grid. The numerical experiments were done with a heterogeneous grid which modifies the discretized second derivative equation \eqref{eq:discretized_second_derivative}, see \cref{eq:2_point_formula_inhomogeneous}. \\
+ Note that we discussed here for simplicity the case of an equidistant spatial grid. The numerical experiments were done with a heterogeneous grid (\cref{sec:spatial_discretization_grid}) which modifies the discretized second derivative equation \eqref{eq:discretized_second_derivative}, see \cref{eq:2_point_formula_inhomogeneous}. \\
  The method of lines was applied in this thesis in \cref{sec:mathematical_model}.
 
 
@@ -930,9 +931,10 @@ Putting all these together where due to the equality in \cref{eq:method_of_lines
 
 \subsection{Optimization Task: Parameter Estimation}
 
-\todo{einfuehrungsblabla}
+In this section at first general results of optimization theory are introduced. Afterwards we will focus on nonlinear least square problems which are used in the context of parameter estimation and solved numerically with the method of Gauss-Newton.
 
 \subsubsection{General NLP and optimality criterions}
+\label{sec:optimization_theory_NLP}
 In this section we first treat the general nonlinear optimization problem (NLP) of the form
 
 \begin{align}
@@ -1012,9 +1014,9 @@ Finally we introduce for later usage
 \end{Definition}
 
 
-\subsubsection{Non-linear least squares problem and Gauss-Newton method}
+\subsubsection{Nonlinear least squares problem and Gauss-Newton method}
 \label{sec:Gauss_Newton}
-Since we are performing a parameter estimation we will treat now an equality constrained nonlinear least squares problem
+Since the thesis is about parameter estimation we will treat now the equality constrained nonlinear least squares problem
 
 \begin{align}
 	\min_x \ & \frac{1}{2}|| F_1(x) ||_2^2 \label{eq:least_squares_problem} \\
@@ -1029,9 +1031,9 @@ Instead of applying the KKT-conditions on this problem we first linearize in ord
 s.t. \ & F_2(x) + J_2(x) \Delta x = 0 \nonumber
 \end{align}
 
-with $J_1(x) = \frac{\partial F_1(x)}{\partial x} \in \mathbb{R}^{m_1 \times n}$ and $J_2(x) = \frac{\partial F_2(x)}{\partial x} \in \mathbb{R}^{m_2 \times n}$. In the following we will omit the function argument for better readability, i.e. $F_i(x) \equiv F_i$ and $J_i(x) \equiv J_i$ for $i \in \{1,2\}$. \\
+with $J_1(x) := \frac{\partial F_1(x)}{\partial x} \in \mathbb{R}^{m_1 \times n}$ and $J_2(x) := \frac{\partial F_2(x)}{\partial x} \in \mathbb{R}^{m_2 \times n}$. In the following we will omit the function argument for better readability, i.e. $F_i(x) \equiv F_i$ and $J_i(x) \equiv J_i$ for $i \in \{1,2\}$. \\
 Crucial is the equivalence of the solution of \cref{eq:least_squares_problem,eq:least_squares_problem_linearized} which is shown with inequality constraints in \cite{diss_bock} Lemma 3.1.18.
-Applying KKT conditions on this system gives the system
+Applying KKT conditions on the linearized problem \cref{eq:least_squares_problem_linearized} gives the system
 
 \begin{equation}
 	\begin{bmatrix}
@@ -1092,7 +1094,8 @@ with the generalized inverse $J^+$. An important result \cite{diss_bock} is
 \subsubsection{Numerical solution}
 \label{sec:GN_numerical_solution}
 
-For the numerical solution of \cref{eq:GN_KKT_system} we will successively introduce the unconstrained, the equality constrained and the general equality and inequality constrained case because they are built up on each other, c.f. \cite{numerical_methods_lsq_Bjorck}. Respectively the Gauss-Newton direction $\Delta x^{(k)}$ is computed for iteration $k$. The final solution is then computed iteratively by
+For the numerical solution of \cref{eq:GN_KKT_system} we will successively introduce the unconstrained, the equality constrained and finally the general equality and inequality constrained case because they are built up on each other, c.f. \cite{numerical_methods_lsq_Bjorck}. \\
+Respectively the Gauss-Newton direction $\Delta x^{(k)}$ is computed for iteration $k$. The final solution is then computed iteratively by
 
 \begin{equation}
 	x^{(k+1)} = x^{(k)} + t^{(k)} \Delta x^{(k)}
@@ -1105,7 +1108,7 @@ with stepsize $t^{(k)} \in (0,1]$ for global convergence. In this context a \tex
 \end{equation}
 
 with $\beta_i > |\lambda_i|$ and $\gamma_i > |\mu_i|$, i.e. larger than the absolute value of the corresponding Lagrange multiplier, guarantees global convergence to a local minimum under certain conditions, see \cite{diss_bock} theorem 3.2.6. \\
-Finding an appropriate sequence of stepsizes $\{ t^{(k)} \}_k$ is in general known as \textit{line search} and there are a lot of different strategies to achieve this (see e.g. \cite{nonlinear_optimiziation_wright}), exemplary the Armijo strategy to ensure a sufficient decrease of the level function. Another example is the restrictive monotonicity test (RMT) which is based on an estimate of the functions curvature $\omega$. \\
+Finding an appropriate sequence of stepsizes $\{ t^{(k)} \}_k$ is in general known as \textit{line search} and there are a lot of different strategies to achieve this (see e.g. \cite{nonlinear_optimiziation_wright}), exemplary the Armijo strategy to ensure a sufficient decrease of the level function. Another example is the restrictive monotonicity test (RMT) \cite{bock2000_RMT} which is based on an estimate of the functions curvature $\omega$. \\
 
 The iteration index is omitted in the following paragraphs except for the active set strategy for better legibility.
 
@@ -1117,7 +1120,7 @@ In the unconstrained case we want to solve the problem
 \label{eq:numerical_solution_LSQ}
 \end{equation}
 
-Based on decomposing $J_1$ two solutions are shown (\cite{nonlinear_optimiziation_wright} chapter 10.1) :
+Based on decomposing $J_1$ two solutions are shown (c.f. \cite{nonlinear_optimiziation_wright} chapter 10.1) :
 
 \begin{itemize}
 	\item \textbf{QR decomposition} \\
@@ -1132,7 +1135,7 @@ Based on decomposing $J_1$ two solutions are shown (\cite{nonlinear_optimiziatio
 			0
 		\end{pmatrix}
 	\end{equation}
-	where $Q \in \mathbb{R}^{m_1 \times m_1}$ is an orthogonal matrix split into $Q_1 \in \mathbb{R}^{m_1 \times n}$ and $Q_2 \in \mathbb{R}^{m_1 \times (n-m_1)}$. Further, $R \in \mathbb{R}^{m_1 \times n}$ with $\bar{R} \in \mathbb{R}^{n \times n}$ upper triangular matrix. Lastly $P \in \mathbb{R}^{n \times n}$ is a permutation matrix and therefore orthogonal. Inserting in the objective function \cref{eq:numerical_solution_LSQ} and omitting factor $\frac{1}{2}$ gives
+	where $Q \in \mathbb{R}^{m_1 \times m_1}$ is an orthogonal matrix split into $Q_1 \in \mathbb{R}^{m_1 \times n}$ and $Q_2 \in \mathbb{R}^{m_1 \times (n-m_1)}$. Further, $R \in \mathbb{R}^{m_1 \times n}$ with $\bar{R} \in \mathbb{R}^{n \times n}$ upper triangular matrix. Lastly $P \in \mathbb{R}^{n \times n}$ is a permutation matrix and therefore orthogonal. Inserting into the objective function \cref{eq:numerical_solution_LSQ} and omitting factor $\frac{1}{2}$ gives
 	
 	\begin{align}
 		|| F_1 + J_1 \Delta x ||_2^2 & = || Q^T (F_1 + J_1 P P^T \Delta x) ||_2^2 = || Q^T F_1 + Q^T Q R P^T \Delta x ||_2^2 \\
@@ -1158,8 +1161,8 @@ Based on decomposing $J_1$ two solutions are shown (\cite{nonlinear_optimiziatio
 		
 		
 		
-	\item \textbf{Singular value decomposition (SVD)} \\
-	Using SVD $J_1$ decomposes to
+	\item \textbf{Singular value decomposition} \\
+	Using a singular value decomposition (SVD) $J_1$ decomposes to
 	\begin{equation}
 		J_1 = U \Sigma V^T =
 		\begin{pmatrix}
@@ -1199,7 +1202,7 @@ Based on decomposing $J_1$ two solutions are shown (\cite{nonlinear_optimiziatio
 		\end{cases}
 	\end{align}
 	
-	we get (c.f. \cite{numerical_methods_lsq_Bjorck} theorem 1.2.10) the final unique minimum norm solution  $\Delta x^*$ with
+	we get (c.f. \cite{numerical_methods_lsq_Bjorck} theorem 1.2.10) the unique minimum norm solution  $\Delta x^*$ with
 	
 	\begin{equation}
 		\Delta x^* = V \Delta y^*
@@ -1248,7 +1251,7 @@ This algorithm has been used in \cref{sec:param_estimation_fs} in order to analy
 	\label{alg:Gauss_Newton_unconstrained}
 \end{algorithm}
 
-
+\vspace{0.5cm}
 \paragraph{Equality constrained case}\mbox{}\\
 In the equality constrained case we handle the problem
 
@@ -1272,7 +1275,7 @@ We consider here the case $rank(J_2)=m_2$. First we factorize $J_2^T$ by a QR de
 
 with $Q \in \mathbb{R}^{n \times n}$ orthogonal split into $Q_1 \in \mathbb{R}^{n \times m_2}$ and $Q_2 \in \mathbb{R}^{n \times (n-m_2)}$. Further, $R \in \mathbb{R}^{n \times m_2}$ with $\bar{R} \in \mathbb{R}^{m_2 \times m_2}$.
 
-Inserting into the equality constraint gives
+Inserting into the equality constraints gives
 
 \begin{equation}
 	F_2 + J_2 \Delta x = F_2 + R^T \overbrace{Q^T \Delta x}^{=: \Delta y} = F_2 +
@@ -1444,6 +1447,7 @@ where $F_{1-\alpha}$ is the $1-\alpha$ quantile of the Fisher-distribution. The 
 	
 \end{Theorem}
 
+\todo{param estim in this thesis in \cref{sec:optimization_problem}, numerical experiments in \cref{sec:numerical_experiments}.}
 
 
 \newpage
@@ -1915,7 +1919,7 @@ Finally the solution of the boundary value problem \cref{eq:analytical_soln_pde}
 \end{align}
 
 
-
+\newpage
 \section{Parameter estimation of specific heat capacity $c_p$}
 \label{sec:parameter_estimation_applied}
 
@@ -2122,8 +2126,9 @@ The sensitivities $\frac{\partial T}{\partial p_{c_p}}(t_i) \in \mathbb{R}^{N \t
 
 
 
-
+\newpage
 \section{Numerical experiments and results}
+\label{sec:numerical_experiments}
 All conducted numerical experiments involve the following subproblems: The numerical integration where we solve \cref{eq:heat_equation_discretized} gives us the temperature vector $T = \begin{pmatrix} T^0 & ... & T^{N-1}  \end{pmatrix}^T$ and sensitivities $\frac{\partial T}{\partial p}$. This was accomplished with the numerical integrator DAESOL-II embedded in SolvIND. The integration tolerance was set to $10^{-7}$ and the sensitivities were obtained in forward mode.
 The heat flux $\varPhi_q^{pcm,in}$ is then computed with \cref{eq:heat_flux_computation_final} and the optimization Jacobian $J_1(p_{c_p})$ with \cref{eq:optimization_jacobian}. Usual choice for PCM discretization points was set to $N_{pcm}=50$ as the heat flux approximation error is negligible then. The parameter estimation is then performed by solving the least squares problem \cref{eq:parameter_estimation_least_squares_problem} either with the Matlab routine $lsqnonlin$ which uses a trust-region method and Gauss-Newton directions based on interior-reflective Newton method described in \cite{lsqnonlin_alg1} and \cite{lsqnonlin_alg2}. Later then a self written Gauss-Newton solver has been used.
 At solving the reference side with the analytical solution \cref{eq:analytical_soln_final_formula} we stopped the actually infinite sum after 100 summands since the summand is proportional to $n^{-3}$. \\
@@ -2681,7 +2686,7 @@ This is why we perform now the parameter estimation again with the modified heat
 
 
 
-\section{Discussion}
+\subsection{Summary}
 
 
 \begin{table}[H]
@@ -2717,7 +2722,8 @@ This is why we perform now the parameter estimation again with the modified heat
 	\label{fig:eval_table_discussion}
 \end{table}
 
-
+\newpage
+\section{Discussion}
 
 \begin{itemize}
 	\item A pleasant observation is that the differential equation's solution is not very sensitive with respect to the chosen grid.  Ausser: $t=0.999$ statt $t=0.99$ ist wichtig.
@@ -2725,6 +2731,7 @@ This is why we perform now the parameter estimation again with the modified heat
 \end{itemize}
 
 
+\newpage
 \section{Bibliography}
 
 \begin{thebibliography}{9}
