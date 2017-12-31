@@ -1572,7 +1572,7 @@ assuming beside a homogeneous mass distribution, a constant grid size $\Delta x$
 
 \subsection{Spatial discretization grid}
 \label{sec:spatial_discretization_grid}
-At first the spatial discretization grid was constant in the silver and PCM respectively with grid sizes $\Delta x_{\text{Ag}} > \Delta x_{\text{PCM}}$ because only in PCM the phase transition occurs we are interested in. As for the silver plate we get appropriate results for the lengths $L1=40$ and $L3=0.1$ there is a big discontinuity in the grid size at the transition from silver to PCM. In order to avoid numerical problems the used framework of generating a continuous grid will be explained now. \\
+Preliminary the spatial discretization grid was constant in the silver and PCM respectively with grid sizes $\Delta x_{\text{Ag}} > \Delta x_{\text{PCM}}$ because only in PCM the phase transition occurs we are interested in. As for the silver plate we get appropriate results for the lengths $L_{Ag}=40$ and $L_{pcm}=0.1$ there is a discontinuity in the grid size at the transition from silver to PCM. In order to avoid numerical problems the used framework of generating a continuous grid will be explained now. \\
 In the following $x$ will denote the physical grid, $\tilde{x}$ the computation grid and $\chi(\tilde{x}) = x$ the corresponding mapping which is defined by its derivative
 
 \begin{equation}
@@ -1592,7 +1592,7 @@ with the parameters $\Delta \underline{x}, \Delta \bar{x}$ as lower and upper bo
 First of all, the ratios of grid points $n_i$ can be converted easily into absolute numbers with $N_i = N \cdot n_i$. The central position of the grid transition in the computation grid size is
 
 \begin{equation}
-	b = N - N_{pcm} - N_m - \frac{1}{2} m_{tr}
+	b = N - N_{pcm} - N_m - \frac{1}{2} N_{tr}
 	\label{eq:spatial_grid_b}
 \end{equation}
 
@@ -1600,30 +1600,30 @@ Furthermore we get $\gamma$ by
 
 \begin{subequations}
 \begin{align}
-	\frac{\partial \chi}{\partial \tilde{x}}(\tilde{x}=N-N_{pcm}-N_m) = & \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x}) \cdot (1-t) \\
-	\Leftrightarrow \frac{\Delta \bar{x} - \Delta \underline{x}}{1 + e^{\gamma(N-N_{pcm}-N_m - b)}} + \Delta \underline{x} = & \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x}) \cdot (1-t)  \\
-	\stackrel{\cref{eq:spatial_grid_b}}{\Leftrightarrow}  1 + e^{\gamma \frac{N_{tr}}{2}} = & \frac{1}{1 - t}  \\[2ex]
+	\frac{\partial \chi}{\partial \tilde{x}}(\tilde{x}=N-N_{pcm}-N_m) = \ & \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x}) \cdot (1-t) \\
+	\Leftrightarrow \frac{\Delta \bar{x} - \Delta \underline{x}}{1 + e^{\gamma(N-N_{pcm}-N_m - b)}} + \Delta \underline{x} = \ & \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x}) \cdot (1-t)  \\
+	\stackrel{\cref{eq:spatial_grid_b}}{\Leftrightarrow}  1 + e^{\gamma \frac{N_{tr}}{2}} = \ & \frac{1}{1 - t}  \\[2ex]
 	\Leftrightarrow \gamma = \frac{2}{N \cdot n_{tr}} \ln(\frac{t}{1-t})
 \end{align}
 \end{subequations}
 
-The remaining variables $\underline{x}$ and $\bar{x}$ we get by the condition that $T^{N_1-1}$ is at the physical grid position $L_1$
+The remaining variables $\underline{x}$ and $\bar{x}$ we get by the condition that $T^{N_{Ag}-1}$ is at the physical grid position $L_{Ag}$
 
 \begin{subequations}
 	\begin{align}
-	\sum_{i=0}^{N_1 - 2} \frac{\partial \chi}{\partial \tilde{x}}(i) = & L_1 \\
-	\Leftrightarrow \sum_{i=0}^{N_1 - 2} \left[ \frac{\Delta \bar{x} - \Delta \underline{x}}{1 + e^{\gamma(i - b)}} + \Delta \underline{x} \right] = & L_1 \\
-	\Leftrightarrow \underbrace{ \left[ \sum_{i=0}^{N_1 - 2} \frac{1}{1 + e^{\gamma(i - b)}} \right] }_{=: W_{11}} \cdot \Delta \bar{x} + \underbrace{\left[ N_1 - 1 - \sum_{i=0}^{N_1 - 2} \frac{1}{1 + e^{\gamma(i - b)}} \right]}_{=: W_{12}} \cdot \Delta \underline{x} = & L_1
+	\sum_{i=0}^{N_1 - 2} \frac{\partial \chi}{\partial \tilde{x}}(i) = \ & L_{Ag} \\
+	\Leftrightarrow \sum_{i=0}^{N_{Ag} - 2} \left[ \frac{\Delta \bar{x} - \Delta \underline{x}}{1 + e^{\gamma(i - b)}} + \Delta \underline{x} \right] = \ & L_{Ag} \\
+	\Leftrightarrow \underbrace{ \left[ \sum_{i=0}^{N_{Ag} - 2} \frac{1}{1 + e^{\gamma(i - b)}} \right] }_{=: W_{11}} \cdot \Delta \bar{x} + \underbrace{\left[ N_{Ag} - 1 - \sum_{i=0}^{N_{Ag} - 2} \frac{1}{1 + e^{\gamma(i - b)}} \right]}_{=: W_{12}} \cdot \Delta \underline{x} = \ & L_{Ag}
 	\end{align}
 \end{subequations}
 
-and $T^{N_1+N_3-1}$ is at the physical grid position $L_1+L_3$
+and $T^{N-1}$ is at the physical grid position $L_{Ag}+L_{pcm}$
 
 \begin{subequations}
 	\begin{align}
-	\sum_{i=0}^{N_1 + N_3 - 2} \frac{\partial \chi}{\partial \tilde{x}}(i) = & L_1 + L_3 \\
-	\Leftrightarrow \sum_{i=0}^{N_1 + N_3 - 2} \left[ \frac{\Delta \bar{x} - \Delta \underline{x}}{1 + e^{\gamma(i - b)}} + \Delta \underline{x} \right] = & L_1 + L_3 \\
-	\Leftrightarrow \underbrace{ \left[ \sum_{i=0}^{N_1 + N_3 - 2} \frac{1}{1 + e^{\gamma(i - b)}} \right] }_{=: W_{21}} \cdot \Delta \bar{x} + \underbrace{ \left[ N_1 + N_3 - 1 - \sum_{i=0}^{N_1 + N_3 - 2} \frac{1}{1 + e^{\gamma(i - b)}} \right] }_{=: W_{22}} \cdot \Delta \underline{x} = & L_1 + L_3
+	\sum_{i=0}^{N - 2} \frac{\partial \chi}{\partial \tilde{x}}(i) = \ & L_{Ag}+L_{pcm} \\
+	\Leftrightarrow \sum_{i=0}^{N - 2} \left[ \frac{\Delta \bar{x} - \Delta \underline{x}}{1 + e^{\gamma(i - b)}} + \Delta \underline{x} \right] = & \ L_{Ag}+L_{pcm} \\
+	\Leftrightarrow \underbrace{ \left[ \sum_{i=0}^{N - 2} \frac{1}{1 + e^{\gamma(i - b)}} \right] }_{=: W_{21}} \cdot \Delta \bar{x} + \underbrace{ \left[ N - 1 - \sum_{i=0}^{N - 2} \frac{1}{1 + e^{\gamma(i - b)}} \right] }_{=: W_{22}} \cdot \Delta \underline{x} = & \ L_{Ag}+L_{pcm}
 	\end{align}
 \end{subequations}
 
@@ -1640,8 +1640,8 @@ This gives the linear system
 	\end{bmatrix}
 	= 
 	\begin{bmatrix}
-		L_1 \\
-		L_1 + L_3
+		L_{Ag} \\
+		L_{Ag} + L_{pcm}
 	\end{bmatrix}
 \end{equation}
   
@@ -1660,7 +1660,7 @@ This gives the linear system
 	xtick={15., 25.},
 	xticklabels={$N\text{-}1\text{-}N_{pcm}$, $N \text{-} 1$},
 	ytick={10.1, 10.75},
-	yticklabels={$L_1$, $L_1 + L_3$},
+	yticklabels={$L_{Ag}$, $L_{Ag} + L_{pcm}$},
 	xlabel=$\tilde{x}$, xlabel style={at=(current axis.right of origin), anchor=west},
 	ylabel=\empty
 	]
