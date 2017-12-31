@@ -1579,7 +1579,7 @@ In the following $x$ will denote the physical grid, $\tilde{x}$ the computation 
 	\frac{\partial \chi}{\partial \tilde{x}}(\tilde{x}) := \frac{\Delta \bar{x} - \Delta \underline{x}}{1 + e^{\gamma(\tilde{x} - b)}} + \Delta \underline{x}
 \end{equation}
 
-with the parameters $\Delta \underline{x}, \Delta \bar{x}$ as lower and upper bounds of the grid size. $\gamma$ defines the transition shape and $b$ the transition position on the computation grid. Since these parameters are quite counterintuitive they will be calculated with the following parameters:
+with the parameters $\Delta \underline{x}, \Delta \bar{x}$ as lower and upper bounds of the grid size, $\gamma$ defines the transition shape and $b$ the transition position on the computation grid. Since these parameters are quite counterintuitive they will be calculated with the following parameters:
 
 \begin{itemize}
 	\item $N \in \mathbb{N}$: total number of computation grid points.
@@ -1589,7 +1589,8 @@ with the parameters $\Delta \underline{x}, \Delta \bar{x}$ as lower and upper bo
 	\item $t < 1$: At grid point $N-N_{pcm}-N_m$, $\frac{\partial \chi(\tilde{x})}{\partial \tilde{x}}$ has finished the transition by $(100 \cdot t)\%$.
 \end{itemize}
 
-First of all, the ratios of grid points $n_i$ can be converted easily into absolute numbers with $N_i = N \cdot n_i$. The central position of the grid transition in the computation grid size is
+First of all, the ratios of grid points $n_i$ can be converted easily into absolute numbers with $N_i = N \cdot n_i$. An illustration of the grid generating function $\frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$, the mapping from computation to physical grid $\chi(\tilde{x})$ and introduced parameters is shown in \cref{fig:computation_physical_grid,fig:grid_size}. \\
+We now derive the unknown parameters $b$, $\gamma$, $\Delta \underline{x}$ and $\Delta \bar{x}$. The central position of the grid transition in the computation grid size is
 
 \begin{equation}
 	b = N - N_{pcm} - N_m - \frac{1}{2} N_{tr}
@@ -1655,32 +1656,36 @@ This gives the linear system
 	\begin{axis}[domain=0:25,
 	samples=100,
 	xmin=0, xmax=30,
-	ymin=0., ymax=12.,	 
+	ymin=0., ymax=13.,	 
 	axis lines=left,
 	xtick={15., 25.},
 	xticklabels={$N\text{-}1\text{-}N_{pcm}$, $N \text{-} 1$},
-	ytick={10.1, 10.75},
+	ytick={10.36, 11.5},
 	yticklabels={$L_{Ag}$, $L_{Ag} + L_{pcm}$},
 	xlabel=$\tilde{x}$, xlabel style={at=(current axis.right of origin), anchor=west},
 	ylabel=\empty
 	]
 	
-	\addplot+[color=black, mark=none] {(1 - 0.05)*(x + 1/0.5 * ln((exp(-0.5*10) + 1) / (exp(0.5*(x-10))+1))) + 0.05*x}
+%	\addplot+[color=black, mark=none] {(1 - 0.05)*(x + 1/0.5 * ln((exp(-0.5*10) + 1) / (exp(0.5*(x-10))+1))) + 0.05*x}
+%	node[pos=0.95, above, sloped] {$\chi(\tilde{x})$};
+	
+
+	\addplot+[color=black, mark=none] {(1 - 0.10)*(x + 1/0.5 * ln((exp(-0.5*10) + 1) / (exp(0.5*(x-10))+1))) + 0.10*x}
 	node[pos=0.95, above, sloped] {$\chi(\tilde{x})$};
 	
 	\addplot[only marks, mark=x, color=black] 
-	table {15	10.1
-		   25   10.75
+	table {15	10.36
+		   25   11.50
 	};	
 	
 	% L1
-	\draw [loosely dashed] (0, 101) -- (150, 101);
-	\draw [loosely dashed] (150, 0) -- (150, 101);	
+	\draw [loosely dashed] (0, 103.6) -- (150, 103.6);
+	\draw [loosely dashed] (150, 0) -- (150, 103.6);	
 	
 	
 	% L1 + L3
-	\draw [loosely dashed] (0, 107.5) -- (250, 107.5);
-	\draw [loosely dashed] (250, 0) -- (250, 107.5);	
+	\draw [loosely dashed] (0, 115) -- (250, 115);
+	\draw [loosely dashed] (250, 0) -- (250, 115);	
 	
 	
 	\end{axis}
@@ -1930,18 +1935,16 @@ Finally the solution of the boundary value problem \cref{eq:analytical_soln_pde}
 \section{Parameter estimation of specific heat capacity $c_p$}
 \label{sec:parameter_estimation_applied}
 
-\todo{einfuehrungstext...}
+Until now the mathematical model has been introduced which allows us to simulate the measuring process. Now this simulation is embedded into the parameter estimation of the specific heat capacity $c_p(T)$ where a nonlinear least squares problem has to be solved. As we want to estimate a function an appropriate parametrization is necessary. Those used in this thesis will be introduced in the following section.
 
 
-
-
-\subsection{Parametrization of $c_p$}
+\subsection{Parametrizations of $c_p$}
 \label{sec:parametrizations}
-Since in the end we want to estimate the specific heat capacity $c_p$ we need a parametrization with enough degrees of freedom in order to generate appropriate functions. 
+%Since in the end we want to estimate the specific heat capacity $c_p$ we need a parametrization with enough degrees of freedom in order to generate appropriate functions $c_p(T)$. 
 
 \subsubsection{NURBS}
 \label{sec:nurbs}
-In early stages of work we used Non-Uniform Rational B-Splines (NURBS). The generated curve $C(u) = \{C^x(u), C^y(u) \} \in \mathbb{R}^2$ is defined by
+Preliminary we used Non-Uniform Rational B-Splines (NURBS). The generated curve $C(u) = \{C^x(u), C^y(u) \} \in \mathbb{R}^2$ is defined by
 
 \begin{equation}
 	C(u) = \frac{\sum_{i=0}^{n} N_{i,p}(u) \omega_i P_i }{\sum_{i=0}^{n} N_{i,p}(u) \omega_i} \qquad a \le u \le b
