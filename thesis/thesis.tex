@@ -2179,9 +2179,7 @@ All experiments have been done on my laptop using Linux Ubuntu Mate, 2 Cores Int
 
 \subsection{Smearing effect on simulated heat flux for different heat rates}
 The first basic numerical experiment shows that our mathematical model is capable of reproducing heat fluxes exhibiting the smearing effect similar to those measured (see \cref{sec:smearing_problem}). This was achieved by a forward simulation, i.e. solving \cref{eq:heat_equation_discretized} for several different heat rates using the same specific heat capacity (see \cref{fig:smearing_effect_c_p}) each time. \\
-The resulting heat fluxes for all heat rates from the forward simulation can be seen in \cref{fig:smearing_effect_simulation_heat_flux}. They exhibit obviously a widening of the peak and a shift of the maximum to higher temperatures for increasing heat rates similar to the measured heat fluxes shown in \cref{fig:smearing_effect_measurement_heat_flux}. \\
-This result forms the basis of reproducing the heat flux measurement values by performing a parameter estimation in the following numerical experiments in order to obtain the specific heat capacity.\\
-% in the simulation and in the further numerical experiments perform a parameter estimation to obtain the specific heat capacity. \\
+The resulting heat fluxes for all heat rates from the forward simulation can be seen in \cref{fig:smearing_effect_simulation_heat_flux}. They exhibit obviously a widening of the peak and a shift of the maximum to higher temperatures for increasing heat rates similar to the measured heat fluxes shown in \cref{fig:smearing_effect_measurement_heat_flux}. This forms the basis of reproducing the heat flux measurement values by performing a parameter estimation in the following numerical experiments in order to obtain the specific heat capacity.\\
 
 
 
@@ -2212,7 +2210,7 @@ This result forms the basis of reproducing the heat flux measurement values by p
 \subsection{Preliminary parameter estimation using NURBS parametrization and optimization jacobian computed via finite differences}
 \label{sec:param_estim_NURBS}
 
-For the first attempt of estimating $c_p(T)$  we used the NURBS parametrization (see \cref{sec:nurbs}). In total we used 33 control points where the y-coordinates ($\hat{=} c_p$) are optimization variables and the the x-coordinate ($\hat{=}$ temperature) were fixed to 
+For the first attempt of estimating $c_p(T)$  we used the NURBS parametrization (see \cref{sec:nurbs}). In total we used 33 control points where the y-coordinates ($\hat{=}$ $c_p$) are optimization variables and the the x-coordinate ($\hat{=}$ $T$) were fixed to 
 
 \begin{equation}
 	P^x = [0, 30, 60, 90, 100, 102, 104, ..., 148, 150, 160, 180, 200]
@@ -2221,25 +2219,34 @@ For the first attempt of estimating $c_p(T)$  we used the NURBS parametrization 
 such that the peak has enough degrees of freedom for temperatures $T \in [100, 150]$. \\
 Due to the early working state we used the matlab routines $ode15s$ for integration and $lsqnonlin$ to solve the least squares problem where the Jacobian was computed via external numerical differentiation. The integration tolerance was set here to $10^{-7}$ as well. Besides that material properties of Constantan were used instead of silver for the heat transport plate from furnace to PCM. In particular these are $c_{p,Const}=0.41\frac{mJ}{mg \ K}$, $\rho_{Const}=10.49\frac{mg}{mm^3}$ and $\lambda_{Const}=23\frac{mW}{mm \ K}$. \\
 Minimizing the heat flux residuum worked best in this setting for $L_{Const}=15mm$ (instead of $L_{Ag}$ here) and $L_{pcm}=0.5mm$. \\
-The results after optimizing, using the measurement data of heat rate $\beta = 10 \frac{K}{min}$, are shown in \cref{fig:NURBS_results}. As one can see it was possible to minimize the residuum of heat flux quite well aside from some oscillations which have their origin in $c_p(T)$ due to numerical problems. Beside the oscillations there is one major difference in the peak shape from what we would expect, that is after the peak a temporary decrease followed by a big slope.
-Finally $lsqnonlin$ gives us the approximation of the used Jacobian $J_1(p_{c_p})$ at the end of the optimization process which was computed internally via finite differences, see \cref{fig:NURBS_results}c. Since in our NURBS parametrization the y-coordinates of the control points are free optimization variables and the locality of those the x-axis of these Jacobian plots was set being the x-coordinates of the control points. This way there is a direct connection between $J_1(p_{c_p})$ and which zone of $c_p(T)$ it affects. The y-axis was labeled using the reference crucible temperature since the heat flux measurement values are given as a function of those, analog to the heat flux plot.
-Two things are worth mentioning. First the order of magnitude which is increased by several orders for areas of $c_p(T)$ up to temperatures of $100^\circ C$ and measurement values above $110^\circ C$ reference temperature during phase transition. Interestingly the specific heat capacity's oscillations occur in a zone of low sensitivities which explains why $lsqnonlin$ does not improve here further. 
+The results after optimizing, using the measurement data of heat rate $\beta = 10 \frac{K}{min}$, are shown in \cref{fig:NURBS_results}. As one can see it was possible to minimize the heat flux residuum quite well aside from some oscillations which have their origin in $c_p(T)$. 
+Beside the oscillations there is one major difference in the peak shape of the specific heat capacity from what we would expect. That is after the peak a temporary decrease followed by a big slope.
+Finally $lsqnonlin$ gives us the approximation of the used Jacobian $J_1(p_{c_p})$ at the end of the optimization process which was computed internally via finite differences, see \cref{fig:NURBS_results}c. Since in our NURBS parametrization the y-coordinates of the control points are free optimization variables and the locality property of those the x-axis of these Jacobian plots was set being the x-coordinates ($\hat{=}$ temperature) of the control points. This way there is a direct connection between $J_1(p_{c_p})$ and which zone of $c_p(T)$ it affects. The y-axis was labeled using the reference crucible temperature $T_{ref}$ since the heat flux measurement values are given as a function of those, analog to the heat flux plot.
+Two things are worth mentioning. First there is an increase of several orders of magnitude for areas of $c_p(T)$ up to temperatures of $100^\circ C$ and $T_{ref}$ above $110^\circ C$ during phase transition. Interestingly the specific heat capacity's oscillations occur in a zone of low sensitivities which explains why $lsqnonlin$ does not improve here further. 
 Secondly considering the zone of increased magnitude in detail (see \cref{fig:NURBS_results}d) one recognize sign switching oscillations where continuity is expected. This is a strong indication that the approximation of $J_1(p_{c_p})$ via finite differences is of poor quality and not reliable why we switch to internal numerical differentiation later. \\
 The optimization took in this case about 40 minutes on my laptop and stopped because the norm of step was below the tolerance $10^{-6}$.
 
 
 \begin{figure}[H]
-	\subcaptionbox{Heat flux into PCM $\varPhi_q^{pcm,in}$ measurement values (dashed red), simulation (blue) and corresponding residuum (yellow).}[.49\linewidth]
-	{\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_heat_flux.png}}
-	\subcaptionbox{Specific heat capacity $c_p(T)$ obtained by parameter estimation.}[.49\linewidth]
-	{\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_c_p(T).png}}
-
-	\subcaptionbox{Approximated Jacobian $J_1(p_{c_p})$.}[.49\linewidth]
-	{\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_jac2.png}}
-	\hspace{0.5cm}
-	\subcaptionbox{Zoomed view of approximated $J_1(p_{c_p})$.}[.49\linewidth]
-	{\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_jac_zoom2.png}}
-	\caption{Specific heat capacity, heat flux and optimization Jacobian at the end of the optimization process.}
+	\begin{subfigure}{0.49\textwidth}
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_heat_flux.png}
+		\caption{}
+	\end{subfigure}
+	\begin{subfigure}{0.49\textwidth}
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_c_p(T).png}
+		\caption{}
+	\end{subfigure}
+	\begin{subfigure}{0.49\textwidth}
+		\hspace{0.1cm}
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_jac2.png}
+		\caption{}
+	\end{subfigure}
+	\begin{subfigure}{0.49\textwidth}
+		\hspace{0.4cm}
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_jac_zoom2.png}
+		\caption{}
+	\end{subfigure}
+	\caption{(a) Heat flux into PCM $\varPhi_q^{pcm,in}$ measurement values (dashed red), simulation (blue) and corresponding residuum (yellow). (b) Specific heat capacity $c_p(T)$ obtained by parameter estimation. (c) Approximated Jacobian $J_1(p_{c_p})$, note the big differences in order of magnitude. (d) Zoomed view of oscillations in approximated $J_1(p_{c_p})$.}
 	\label{fig:NURBS_results}
 \end{figure}
 

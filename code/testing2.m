@@ -511,7 +511,8 @@ fig = open([root_dir, 'jac_output.fig']);
 colormap('parula')
 set(gca,'FontSize',12);
 
-
+xlabel('Control points x-coordinate P^x [degC]');
+ylabel('T_{ref} [degC]')
 
 print(fig, '/home/argo/masterarbeit/thesis/images/NURBS_jac2', '-dpng', '-r200');
 
