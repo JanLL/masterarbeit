@@ -738,14 +738,14 @@ In this thesis we are actually interested in the sensitivities $\frac{\partial y
 	\Rightarrow \frac{\partial y}{\partial p} = & \int_{t_0}^{t} \left[ \frac{\partial f}{\partial y} \cdot \frac{\partial y}{\partial p} + \frac{\partial f}{\partial p} \right] d\tau \nonumber
 \end{align}
 
-Taking the derivative with respect to time on both sides gives the variational differential equation
+Taking the derivative with respect to time on both sides gives the corresponding initial value problem
 
 \begin{align}
 	\frac{\partial}{\partial t} \left( \frac{\partial y}{\partial p} \right) = \ & \frac{\partial f}{\partial y} \cdot \frac{\partial y}{\partial p} + \frac{\partial f}{\partial p} \\
-	\frac{\partial y}{\partial p}(t=t_0) = \ & 0 \nonumber
+	\frac{\partial y}{\partial p}(t_0) = \ & 0 \nonumber
 \end{align}
 
-Solving this differential equation is one possibility to get $\frac{\partial y}{\partial p}$. If $y \in \mathbb{R}^n$ and $p \in \mathbb{R}^{n_p}$ the total differential equation system to solve would consist of $n + n \cdot n_p$ equations which is not an adequate approach. \\
+Solving this IVP together with the nominal trajectory is one possibility to get $\frac{\partial y}{\partial p}$. If $y \in \mathbb{R}^n$ and $p \in \mathbb{R}^{n_p}$ the total differential equation system to solve would consist of $n + n \cdot n_p$ equations which is not an adequate approach. \\
 Another method is called Internal Numerical Differentiation (IND). Since the numerical integrator uses a stepsize control in order to limit the relative local error, the idea of IND is to freeze these adaptive components. 
 Applying AD then means treating all mathematical operations of the used integration scheme as elemental operations. So it is basically straight forward to apply the chain rule on all these elemental operations in order to get the derivative $\frac{\partial y}{\partial p}$ just as explained above. 
 The application of AD is advantageous because one obtains exact numerical derivatives while the computed differential equation's nominal trajectory is still error controlled. \\
@@ -1482,8 +1482,9 @@ In order to solve \cref{eq:heat_equation_model} method of lines (\cref{sec:pde_d
 An illustration of the discretized model is depicted in \cref{fig:mathematical_model_discretized}. Note that the first discretized temperature within the PCM is $T^{N_{Ag}}$.
 In \cref{sec:spatial_discretization_grid} the construction of the inhomogeneous grid will be explained in detail. The resulting initial value problem reads as
 
+
 \begin{align}
-\hspace{-2cm}
+%\hspace{-2cm}
 \frac{d}{dt} \begin{bmatrix*}
 T^0 \\[1ex]
 T^1 \\[0.3ex]
@@ -1511,11 +1512,17 @@ T^i(t_0=0) = & \ T_0 \ \ \forall \ \ i \in \{ 0,1,...,N-1 \} \nonumber
 \end{align}
 
 
+
 where \cref{eq:2_point_formula_inhomogeneous} has been used. The abbreviation for the discretized second derivative is defined as
 
 \begin{align}
 	\tilde{\Delta} T^i := \frac{1}{\Delta x_{i-1}^2} \left[ \frac{2}{1+\alpha_{i-1}} T^{i-1} - \frac{2}{\alpha_{i-1}} T^{i} + \frac{2}{\alpha_{i-1} (\alpha_{i-1} + 1)} T^{i+1} \right]
+	\label{eq:test}
 \end{align}
+
+\eqref{eq:test} \\
+
+\todo{Ab hier Verlinkung falsch... \cref{eq:test}} \\
 
 and the factor $\alpha_i$ coming from the inhomogeneous grid is
 
@@ -1523,18 +1530,23 @@ and the factor $\alpha_i$ coming from the inhomogeneous grid is
 	\alpha_i := \frac{\Delta x_{i+1}}{\Delta x_{i}}
 \end{align}
 
+
 Note here that the Dirichlet boundary condition 
 
 \begin{equation}
 	T^0 = T_0 + \beta \cdot t
 \end{equation}
 
+
+
 is apparent by the heat rate $\beta$ at temperature $T^0$. Zero flux Neumann boundary condition on the other hand
 
 \begin{align}
 	\frac{\partial}{\partial x} T^{N-1} \approx & \ \frac{T^N - T^{N-1}}{\Delta x_{N-1}} \stackrel{!}{=} \ 0 \\
-	\Leftrightarrow T^{N-1} = & \ T^N
+	\Leftrightarrow T^{N-1} = & \ T^N \nonumber 
 \end{align}
+
+
 
  at the PCM gives the expression for $\frac{d T^{N-1}}{dt}$ in \cref{eq:heat_equation_discretized} where a virtual grid point $T^N$ has been used.
 
@@ -1550,10 +1562,12 @@ is apparent by the heat rate $\beta$ at temperature $T^0$. Zero flux Neumann bou
 Solving \cref{eq:heat_equation_discretized} yields the temperature but we are primarily interested in the heat flux into the PCM $\varPhi_{q}^{pcm,in}$ since measurement data of this quantity is available. For the conversion from temperature to heat flux we use Fourier's law \cref{eq:fouriers_law}:
 
 \begin{align}
-	\varPhi_{q}^{pcm,in}(T) = & - \bar{\lambda} \cdot \nabla T (x=L_{Ag}) \cdot A_{pcm} \\ 
+	\varPhi_{q}^{pcm,in}(T) = & - \bar{\lambda} \cdot \nabla T (x=L_{Ag}) \cdot A_{pcm} \\
 	\approx & - \bar{\lambda} \frac{T^{N_{Ag}} - T^{N_{Ag}-1}}{\Delta x_{N_{Ag}-1}} \cdot A_{pcm} \nonumber \\
 	\approx & - \lambda_{pcm} \frac{T^{N_{Ag}+1} - T^{N_{Ag}}}{\Delta x_{N_{Ag}}} \cdot A_{pcm} \nonumber
 \end{align}
+
+
 
 The first approximation comes from the spatial discretization and the second one is necessary because we do not know the heat conductivity $\bar{\lambda}$ at the transition between the silver plate and the PCM and therefore use the following first grid points within the PCM (marked in \cref{fig:mathematical_model_discretized}). \\
 Since Fourier's law gives a heat flux density we need to add a factor of the PCM's cross section $A_{pcm}$. It is computed by
@@ -1562,12 +1576,15 @@ Since Fourier's law gives a heat flux density we need to add a factor of the PCM
 	\frac{m_{pcm}}{N_{pcm}} = m_{pcm,i} = \rho_{pcm} \cdot A_{pcm} \cdot \Delta x_i 
 \end{equation}
 
+
+
 assuming beside a homogeneous mass distribution, a constant grid size $\Delta x$ in the PCM which is satisfied in good approximation by construction of the spatial discretization grid, see next \cref{sec:spatial_discretization_grid}. The final equation for the heat flux computation then reads as
 
 \begin{equation}
 	\varPhi_{q}^{pcm,in}(T) \approx - \frac{\lambda_{pcm} \ m_{pcm}}{N_{pcm} \ \rho_{pcm} \ (\Delta x_{N_{Ag}})^2} \left( T^{N_{Ag}+1} - T^{N_{Ag}} \right)
 	\label{eq:heat_flux_computation_final}
 \end{equation}
+
 
 
 \subsection{Spatial discretization grid}
@@ -1754,6 +1771,7 @@ This gives the linear system
 
 
 \subsection{Analytical solution of reference side}
+\label{sec:analytical_solution}
 
 The measurement data for the residuum computation is given as a function dependent on the temperature at the reference crucible $T_{ref}^{\eta_i}$. Since we need to evaluate the solution of the heat equation (PCM side) at the corresponding time points $t_i$ it is necessary to calculate these.
 This is done by applying Newton's method on the heat equation's solution of the reference side which can be solved analytically as follows. \\
@@ -1969,16 +1987,42 @@ where $u_i$ are the elements of the knot vector
 
 With this formulation there are $n+1$ control points, $p$ is the order of the basis functions and the order of the resulting curve is defined by $p+1$. The interval $[a,b]$ is arbitrary in the sense that for $C(u=a)=P_0$,  $C(u=b)=P_n$ and $u \in (a,b)$ are points between depending on the knot vector.\\
 
-In our experimental setup we used a NURBS order of $4$, i.e. $p=3$. $a=0$ and $b=1$ so $u \in [0,1]$ and the knot vector is linearly increasing, i.e. $U = \{ 0,0,0,0,\frac{1}{n p},\frac{2}{n p},...,\frac{n p - 1}{n p},1,1,1,1 \}$. All control points contribute equally such that $\omega_i=1 \ \forall \ i$. With these settings it holds that $C(u) \in \mathcal{C}^2$.
+In our experimental setup we used NURBS of order $4$, i.e. $p=3$. $a=0$ and $b=1$ so $u \in [0,1]$ and the knot vector is linearly increasing, i.e. $U = \{ 0,0,0,0,\frac{1}{n p},\frac{2}{n p},...,\frac{n p - 1}{n p},1,1,1,1 \}$. All control points contribute equally such that $\omega_i=1 \ \forall \ i$. With these settings it holds that $C(u) \in \mathcal{C}^2$.
 
 Since $C(u)$ is a parametrized curve we get a function $c_p(T)$ by using $C^x(u)$ as the domain of definition (temperature) and $C^y(u)$ as the co-domain ($c_p$). Evaluating $C(u)$ on an appropriate fine grid for values of $u$ and subsequently piecewise linear interpolation gives the wanted quantity $c_p(T)$.
 The x-coordinates of the control points were fixed on a predefined grid with $P_i^x < P_{i+1}^x$ to guarantee a well-defined function.
 As optimization variables we used the corresponding y-coordinates $P_i^y$.
 
+
+\subsubsection{Linear combination of Gaussian functions}
+\label{sec:parametrization_Gausse}
+
+As we switched for the derivative computation with respect to the optimization variables from finite differences to IND, implementation problems with NURBS occurred. 
+The case structure of the basis polynomial \cref{eq:NURBS_basis_polynomial} conducts to switch the RHS of the differential equation. This is only supported by the $condassign(a,b,c,d)$ function which assigns $a=c$ if $b>0$ and $a=d$ else. Additionally to $N_{i,0}$ the denominators need this $condassign$ command in order to check for a division by zero. 
+Furthermore the piecewise interpolation of the resulting curve $C(u)$ could be realized as well with the $condassign$ command but in total this leads to a lot of unnecessary numerical operations and makes the program quite complex. \\
+An alternative simple parametrization which is similar flexible than NURBS is a linear combination of Gaussian functions which is stated in \cref{eq:parametrization_linear_comb_Gauss}. Per Gaussian there are three optimization variables: Amplitude $A_i$, a shift in the $T$-axis $T_{\text{offset}_i}$ and the var $var_i$. Additionally there is a linear and constant part with variables $m$ and $b$. So in total there are $3 \cdot n_{\text{Gauss}} + 2$ optimization variables. 
+
+\begin{equation}
+c_p(T) = \sum_{i=1}^{n_{\text{Gauss}}} A_i \exp\left(- \frac{(T - T_{\text{offset}_i})^2}{var_i}\right) + m \cdot T + b
+\label{eq:parametrization_linear_comb_Gauss}
+\end{equation} \\
+
+An example $c_p(T)$ function generated by this parametrization is shown in \cref{fig:parametrization_example_linear_comb_gauss}.
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.75\textwidth]{/home/argo/masterarbeit/thesis/images/c_p_example.png}
+	\caption{Example of 5 Gaussians reconstructing a Fraser-Suzuki peak. Each individual Gaussian and total resulting function is plotted where the linear and constant part is added each time for better illustration.}
+	\label{fig:parametrization_example_linear_comb_gauss}
+\end{figure}
+
+
+
 \subsubsection{Fraser-Suzuki Peak}
 \label{sec:parametrization_FS}
 
-A parametrization with fewer degrees of freedom and used frequently for chromatography and spectroscopy distributions is the Fraser-Suzuki peak \cite{fraser_suzuki_1} \cite{fraser_suzuki_many_fcts}
+A parametrization used frequently for chromatography and spectroscopy distributions with fewer degrees of freedom is the Fraser-Suzuki peak \cite{fraser_suzuki_1} \cite{fraser_suzuki_many_fcts}
 
 \begin{align}
 	c_p(T) =
@@ -1989,8 +2033,7 @@ A parametrization with fewer degrees of freedom and used frequently for chromato
 	\label{eq:fraser_suzuki}
 \end{align}
 
-where $h$, $r$, $sr$, $wr$ and $z$ are the parameters of Fraser-Suzuki. Furthermore the parameters for a linear part $m$ and a constant part $b$ were added. 
-%In order to keep the argument of the logarithm positive it must hold $0 < sr < 1$ and $wr > 0$.
+where $h$, $r$, $sr$, $wr$ and $z$ are the parameters of Fraser-Suzuki. In order to keep the argument of the logarithm positive it must hold $r > 0$, $wr > 0$ and $sr > 0$. Besides at $sr = 1$ the peak is mirrored at the y-axis such that the condition $0 < sr < 1$ is appropriate. Furthermore the parameters for linear part $m$ and constant part $b$ were added as linear base line. An example is given in \cref{fig:parametrization_example_fraser_suzuki}.
 
 \begin{figure}[H]
 	\centering
@@ -2001,29 +2044,6 @@ where $h$, $r$, $sr$, $wr$ and $z$ are the parameters of Fraser-Suzuki. Furtherm
 
 
 
-\subsubsection{Linear combination of Gaussian functions}
-\label{sec:parametrization_Gausse}
-
-As we switched for the derivative computation with respect to the optimization variables from finite differences to IND, implementation problems with NURBS occurred. 
-The case structure of the basis polynomial \cref{eq:NURBS_basis_polynomial} conducts to switch the RHS of the differential equation. This is only supported by the $condassign(a,b,c,d)$ function which assigns $a=c$ if $b>0$ and $a=d$ else. Additionally to $N_{i,0}$ the denominators need this $condassign$ command in order to check for a division by zero. 
-Furthermore the piecewise interpolation of the resulting curve $C(u)$ could be realized as well with the $condassign$ command but in total this leads to a lot of unnecessary numerical operations and makes the program quite complex. \\
-An alternative simple parametrization which is similar flexible than NURBS is a linear combination of Gaussian functions which is stated in \cref{eq:parametrization_linear_comb_Gauss}. Per Gaussian there are three optimization variables: Amplitude $A_i$, a shift in the $T$-axis $T_{\text{offset}_i}$ and the standard deviation $\sigma_i$. Additionally there is a linear and constant part with variables $m$ and $b$. So in total there are $3 \cdot n_{\text{Gauss}} + 2$ optimization variables. \\
-
-
-\begin{equation}
-	c_p(T) = \sum_{i=1}^{n_{\text{Gauss}}} A_i \exp\left(- \frac{(T - T_{\text{offset}_i})^2}{var_i}\right) + m \cdot T + b
-	\label{eq:parametrization_linear_comb_Gauss}
-\end{equation} \\
-
-An example $c_p(T)$ function generated by this parametrization is shown in \cref{fig:parametrization_example_linear_comb_gauss}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/thesis/images/c_p_example.png}
-	\caption{Example of 5 Gaussians reconstructing a Fraser-Suzuki peak. Each individual Gaussian and total resulting function is plotted where the linear and constant part is added each time for better illustration.}
-	\label{fig:parametrization_example_linear_comb_gauss}
-\end{figure}
 
 
 
@@ -2032,29 +2052,28 @@ An example $c_p(T)$ function generated by this parametrization is shown in \cref
 
 
 
-
+\newpage
 \subsection{Optimization problem}
 \label{sec:optimization_problem}
-In order to perform the parameter estimation for $c_p(T)$ we need to solve the least squares optimization problem
+In order to perform the parameter estimation for $c_p(T)$ we need to solve the nonlinear least squares problem
 
 \begin{align}
-	\min_{p_{c_p}} \ & \sum_{i=1}^{n_{mp}} \left(  \varPhi_{q}^{pcm,in}(T(t_i;T_0,p_{c_p})) - \varPhi_q^{\eta_i} \right)^2 \\
+	\min_{p_{c_p}} \ & \sum_{i=1}^{n_{mp}} \left(  \varPhi_{q}^{pcm,in}(T(t_i;T_0,p_{c_p})) - \varPhi_q^{\eta_i} \right)^2 \label{eq:parameter_estimation_least_squares_problem} \\
 	s.t. \ & \quad \  \dot{T} = f(T,t;p_{c_p}) \nonumber \\
 	& T(0) = T_0 \nonumber \\
 	& p_{c_p} \le \bar{p}_{c_p} \nonumber \\
 	& p_{c_p} \ge \underline{p}_{c_p} \nonumber
-	\label{eq:parameter_estimation_least_squares_problem}
 \end{align}
 
-where $p_{c_p} \in \mathbb{R}^{n_p}$ are optimization variables parametrizing the specific heat capacity $c_p(T)$, $n_{{mp}}$ is the number of measurement points, $\varPhi_{q}^{pcm,in}$ is the simulated heat flux into the PCM from the solution of the heat equation $T(t_i;T_0,p_{c_p})$ and $\varPhi_q^{\eta_i}$ is the heat flux measurement value at measurement time $t_i$. The side condition $\dot{T} = f(T,t;p_{c_p})$ with $T(0) = T_0$ is equal to the initial value problem \cref{eq:heat_equation_discretized} of solving the heat equation. $\bar{p}_{c_p}$ and $\underline{p}_{c_p}$ are upper respectively lower bounds of the optimization variables. \\
+where $p_{c_p} \in \mathbb{R}^{n_p}$ are optimization variables parametrizing the specific heat capacity $c_p(T)$, $n_{{mp}}$ is the number of measurement points, $\varPhi_{q}^{pcm,in}$ is the simulated heat flux into the PCM from the solution $T(t_i;T_0,p_{c_p})$ of the discretized heat equation and $\varPhi_q^{\eta_i}$ is the heat flux measurement value at measurement time $t_i$. The side condition $\dot{T} = f(T,t;p_{c_p})$ with $T(0) = T_0$ is equal to the initial value problem \cref{eq:heat_equation_discretized} of solving the heat equation. $\bar{p}_{c_p}$ and $\underline{p}_{c_p}$ are upper respectively lower bounds of the optimization variables. \\
 
-The measurement data is given as $\varPhi_q^{\eta_i}(T_{ref}^{\eta_i})$ where $T_{ref}^{\eta_i}$ is the temperature at the reference crucible at measurement time $t_i$. Since we need to pass these times $t_i$ to the differential equation solver for the evaluation of the temperature and sensitivities we obtain them by solving the non-linear equation 
+The measurement data is given as $\varPhi_q^{\eta_i}(T_{ref}^{\eta_i})$ where $T_{ref}^{\eta_i}$ is the temperature at the reference crucible at measurement time $t_i$. Since we need to pass these times $t_i$ to the differential equation solver for the evaluation of the temperature and sensitivities we obtain them by solving the nonlinear equation 
 
 \begin{align}
 	T_{ref}^{\eta_i} - T_{ref}^{sim}(t_i) = 0 \quad \forall \ i \in \{1,2,...,n_{mp}\}
 \end{align}
 
-using Newton's method where $T_{ref}^{sim}(t)$ is the analytical solution of the heat equation on the reference side \cref{eq:analytical_soln_final_formula}. This is depicted in \cref{fig:obtaining_measurement_times}.
+using Newton's method where $T_{ref}^{sim}(t)$ is the analytical solution of the heat equation on the reference side \cref{eq:analytical_soln_final_formula}. An illustration is given in \cref{fig:obtaining_measurement_times}. The analytical solution (\cref{sec:analytical_solution}) can be applied here since on the reference side the material properties are constant.
 
 
 \begin{figure}[H]
@@ -2088,7 +2107,7 @@ using Newton's method where $T_{ref}^{sim}(t)$ is the analytical solution of the
 	
 	\end{axis}
 	\end{tikzpicture}
-	\caption{}
+	\caption{Illustration how the measurement times $t_i$ were obtained. Given the measured temperatures $T_{ref}^{\eta_i}$ and the simulated temperature $T_{ref}^{sim}(t)$ at the reference crucible. Then $\{ t_i \}_{i=1,...n_{mp}}$ are computed via Newton's method which have been used in \cref{eq:parameter_estimation_least_squares_problem}.}
 	\label{fig:obtaining_measurement_times}
 \end{figure}
 
@@ -2124,15 +2143,17 @@ By applying the chain rule we get the corresponding Jacobian
 with
 
 \begin{align}
-	\frac{\partial \varPhi_{q}^{pcm,in}}{\partial T}(T(t_i)) = - \frac{\lambda_{pcm} \ m_{pcm}}{N_{pcm} \ \rho_{pcm} \ (\Delta x_{N_{pcm}})^2}
+	\frac{\partial \varPhi_{q}^{pcm,in}}{\partial T}(T(t_i)) = - \frac{\lambda_{pcm} \ m_{pcm}}{N_{Ag} \ \rho_{pcm} \ (\Delta x_{N_{pcm}})^2}
 	\begin{pmatrix}
 	0 & ... & 0 & -1 & +1 & 0 & ... & 0
 	\end{pmatrix}\\
 	\forall \ i \in \{1,...,n_{mp} \} \nonumber
 \end{align}
 
-using \cref{eq:heat_flux_computation_final}. The non-zero entries are in column $N_{pcm}$ and $N_{pcm}+1$. \\
+using \cref{eq:heat_flux_computation_final}. The non-zero entries are in column $N_{Ag}$ and $N_{Ag}+1$. \\
 The sensitivities $\frac{\partial T}{\partial p_{c_p}}(t_i) \in \mathbb{R}^{N \times n_p}$ are obtained by internal numerical differentiation while solving the differential equation in forward mode with the software SolvIND \cite{diss_jan}. \\
+
+\todo{warum forward mode erlaeutern.}
 
 
 
