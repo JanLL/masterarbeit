@@ -6,7 +6,7 @@
 %                       '2017-10-18_13:28:22_407_L1=5_L3=0.01_N1=200_N3=50', ...
 %                       '2017-10-18_10:59:34_407_L1=80_L3=0.1_N1=200_N3=50'};
 % 
-%                   
+% 
 % T_domain = 100:0.005:160;
 % figure(); hold on
 % 
@@ -97,6 +97,9 @@ fig1 = figure(1); hold on
 ax1 = gca();
 fig2 = figure(2); hold on
 ax2 = gca();
+fig3 = figure(3); hold on
+ax3 = gca();
+
 
 for i=1:length(dsc_list)
 
@@ -113,24 +116,23 @@ for i=1:length(dsc_list)
         'LineWidth', 1.3);
     
     
+    
 end
 
 save_root_dir = '/home/argo/masterarbeit/thesis/images/'
 
-figure(1);
-set(gcf, 'units', 'normalized', 'outerposition', [0 0 0.66 1]);
-set(gca,'FontSize',24);
-xlabel('T_{ref}[degC]');
-ylabel('\eta^{\Phi}[mW]');
-set(gca, 'xlim', [30 160]);
-legend('show', 'location', 'northwest');
-xlim([80, 160]);
+set(fig1, 'units', 'normalized', 'outerposition', [0 0 0.66 1]);
+set(ax1,'FontSize',24);
+xlabel(ax1, 'T_{ref} [degC]');
+ylabel(ax1, '\eta^{\Phi}[mW]');
+set(ax1, 'xlim', [30 160]);
+legend(ax1, 'show', 'location', 'northwest');
+xlim(ax1, [80, 160]);
 
 print(fig1, [save_root_dir, 'heat_flux_measurement'], '-dpng', '-r200');
-close();
+close(fig1);
 
 
-figure(2);
 set(gcf, 'units', 'normalized', 'outerposition', [0 0 0.66 1]);
 set(gca,'FontSize',24);
 xlabel('T [degC]');
@@ -140,7 +142,7 @@ legend('show', 'location', 'northwest');
 xlim([80, 160]);
 
 print(fig2, [save_root_dir, 'c_p_DIN_formula'], '-dpng', '-r200');
-close();
+close(fig2);
 
 
 return
@@ -505,17 +507,20 @@ fit_data = load([root_dir, 'fit_data.mat']);
 
 % Jacobian
 
-fig = open('jac_output.fig');
+fig = open([root_dir, 'jac_output.fig']);
+colormap('parula')
 set(gca,'FontSize',12);
 
-% print(fig, '/home/argo/masterarbeit/thesis/images/NURBS_jac', '-dpng', '-r200');
+
+
+print(fig, '/home/argo/masterarbeit/thesis/images/NURBS_jac2', '-dpng', '-r200');
 
 % Zoom in interesting part
-% xlim([0, 30])
-% ylim([124, 132])
+xlim([0, 30])
+ylim([124, 132])
 
-% print(fig, '/home/argo/masterarbeit/thesis/images/NURBS_jac_zoom', '-dpng', '-r200');
-% close();
+print(fig, '/home/argo/masterarbeit/thesis/images/NURBS_jac_zoom2', '-dpng', '-r200');
+close();
 
 
 % c_p(T)
@@ -556,19 +561,23 @@ set(gca,'FontSize',12);
 %% Plot smearing effect in simulation in a pretty way
 
 % heat fluxes
-fig = open('heat_flux_smearing_simulation.fig')
+fig = open('/home/argo/masterarbeit/simulationen-data/smearing_effect_simulation/heat_flux_smearing_simulation.fig')
 set(gca,'FontSize',12);
 
 children = get(gca, 'Children');
-children(1).LineWidth = 1.;
-children(2).LineWidth = 1.;
-children(3).LineWidth = 1.;
-children(4).LineWidth = 1.;
-children(5).LineWidth = 1.;
-children(6).LineWidth = 1.;
-children(7).LineWidth = 1.;
 
+for i=1:7
+    children(i).LineWidth = 1.;
+    %children(i).YData = children(i).YData / children(i).YData(1); % scaling on same level
+end
+
+% for general image of measurement values
 print(fig, '/home/argo/masterarbeit/thesis/images/smearing_effect_simulation_heat_fluxes', '-dpng', '-r200');
+
+% zoom for comparison with measured heat flux values
+xlim([80, 160]);
+
+print(fig, '/home/argo/masterarbeit/thesis/images/smearing_effect_simulation_heat_fluxes_zoom', '-dpng', '-r200');
 close();
 
 % c_p(T)
@@ -1262,10 +1271,12 @@ end
 
 
 
-%% Compute Melting enthalpy Delta H, T_on and T_off from fit_data
+%% Compute Melting enthalpy Delta H, T_max, T_on and T_off from fit_data
 
 % fit_dir = '2017-12-10_14:33:40_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS';
-fit_dir = '2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians';
+fit_dir = '2017-12-09_22:35:53_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_modHeatRate';
+
+% fit_dir = '2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians';
 
 fit_path = strcat('/home/argo/masterarbeit/fits_data/', fit_dir, '/');
 
@@ -1488,7 +1499,7 @@ grid on;
 fs_params = ones(7,1);
 fs_params(3) = 1.2;
 
-fs_params = [1.20   1.00   0.89   0.68   1.05   0.80   0.96].';
+% fs_params = [1.20   1.00   0.89   0.68   1.05   0.80   0.96].';
 
 c_p = c_p_fs(T_domain, fs_params);
 
@@ -1535,29 +1546,34 @@ plot(ax1, T_domain2, m2*T_domain2 + b2, '--g', 'Linewidth', 1.5)
 
 % Tangent points
 h_infl = plot(ax1, T_infl_1, c_p_fs(T_infl_1, fs_params), 'x', ...
-    'color', 'red', 'DisplayName', 'Inflection points', 'Linewidth', 1.5);
+    'color', 'red', 'DisplayName', 'Inflection points', 'Linewidth', 2.);
 plot(ax1, T_infl_2, c_p_fs(T_infl_2, fs_params), 'x', 'color', 'red', ...
-    'Linewidth', 1.5);
+    'Linewidth', 2.);
+
+% Max point
+T_max = unscaled_params(end-2);
+h_max = plot(ax1, T_max, c_p_fs(T_max, fs_params), 'x', ...
+    'color', 'black', 'DisplayName', 'Maximal turning point', 'Linewidth', 2.);
+
 
 % Baseline
 h_base = plot(ax1, T_domain, m*T_domain + b, '--', 'color', 'm', ...
-    'DisplayName', 'Base line', 'Linewidth', 1.5);
+    'DisplayName', 'Linear base line', 'Linewidth', 1.5);
 
 
 
-[T_on, T_off] = compute_T_on_off(fs_params, 'fraser_suzuki')
+[T_on, T_off] = compute_T_on_off(fs_params, 'fraser_suzuki');
+
+xticks([T_on, T_infl_1, T_max, T_infl_2, T_off]);
+xticklabels({'T_{on}', 'T_{infl,1}', 'T_{max}', 'T_{infl,2}', 'T_{off}'});
+xlabel('T [degC]')
+ylabel('c_p [mJ/(mg*K)]')
+%legend('show', 'location', 'northwest');
+legend([h_c_p, h_max, h_infl, h_infl_tangent, h_base], 'location', 'northwest');
+set(ax1, 'FontSize',20)
 
 
-% xticks([T_on, T_infl_1, T_infl_2, T_off]);
-% xticklabels({'T_{on}', 'T_{infl,1}', 'T_{infl,2}', 'T_{off}'});
-% xlabel('T [degC]')
-% ylabel('c_p [mJ/(mg*K)]')
-% %legend('show', 'location', 'northwest');
-% legend([h_c_p, h_infl, h_infl_tangent, h_base], 'location', 'northwest');
-% set(ax1, 'FontSize',20)
-% 
-% 
-% save_path = '/home/argo/masterarbeit/thesis/images/T_on_T_off_illustration';
+save_path = '/home/argo/masterarbeit/thesis/images/T_on_T_off_illustration';
 % print(fig, save_path, '-dpng', '-r200');
 
 
@@ -1847,6 +1863,62 @@ end
 
 
 
+%% Compare fits with and without modified heat rate
+
+root_dir = '/home/argo/masterarbeit/fits_data/';
+
+fit_dir = '2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used';
+fit_path = strcat(root_dir, fit_dir, '/');
+file_list = dir(fit_path);
+
+isub = [file_list(:).isdir]; %# returns logical vector
+nameSubDirs = {file_list(isub).name}';
+nameSubDirs(ismember(nameSubDirs,{'.','..'})) = [];
 
 
+fit_dir_mod = '2017-12-09_22:35:53_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_modHeatRate';
+fit_path_mod = strcat(root_dir, fit_dir_mod, '/');
+file_list = dir(fit_path_mod);
 
+isub = [file_list(:).isdir]; %# returns logical vector
+nameSubDirs_mod = {file_list(isub).name}';
+nameSubDirs_mod(ismember(nameSubDirs_mod,{'.','..'})) = [];
+
+T_domain = 30:0.01:160;
+
+fig = figure(1); clf
+ax1 = gca; cla; hold on
+
+% fig2 = figure(2); clf
+% ax2 = gca; hold on
+
+
+for i=1:length(nameSubDirs)
+    
+    filepath = strcat(fit_path, nameSubDirs{i}, '/fit_data.mat');
+    fit_data = load(filepath);
+
+    c_p = c_p_fs(T_domain, fit_data.optimization.p_optim_end);
+    
+    
+    filepath = strcat(fit_path_mod, nameSubDirs_mod{i}, '/fit_data.mat');
+    fit_data_mod = load(filepath);
+    
+    c_p_mod = c_p_fs(T_domain, fit_data_mod.optimization.p_optim_end);
+    
+
+    
+    relDiff = (1 - c_p_mod ./ c_p);
+%     relDiff = (1 - c_p_mod ./ c_p) ./ c_p;
+    
+    
+    plot(ax1, T_domain, relDiff, 'DisplayName', sprintf('%1.2f', fit_data.simulation.heat_rate));
+    
+%     plot(ax2, T_domain, c_p, 'DisplayName', 'nominal');
+%     plot(ax2, T_domain, c_p_mod, 'DisplayName', 'mod');
+    
+    
+    
+end
+
+legend(ax1, 'show', 'location', 'southwest');
