@@ -18,16 +18,18 @@
 \usepackage{verbatim}
 
 
+% Dies muss dringend(!) vor usepackage{varioref,hyperref,cleveref},
+% sonst gibt es einen bug mit den hyperlinks wenn man draufklickt.
+\numberwithin{equation}{section}
+\numberwithin{figure}{section}
+\numberwithin{table}{section}
+%\numberwithin{algorithm}{section}
+
 
 \usepackage{varioref}
 \usepackage[hidelinks]{hyperref}
 \usepackage{cleveref}
 
-
-\numberwithin{equation}{section}
-\numberwithin{figure}{section}
-\numberwithin{table}{section}
-%\numberwithin{algorithm}{section}
 
 %\theoremstyle{break}
 \newtheorem{Definition}{Definition}
@@ -1511,18 +1513,11 @@ T^{N-1}
 T^i(t_0=0) = & \ T_0 \ \ \forall \ \ i \in \{ 0,1,...,N-1 \} \nonumber
 \end{align}
 
-
-
 where \cref{eq:2_point_formula_inhomogeneous} has been used. The abbreviation for the discretized second derivative is defined as
 
 \begin{align}
 	\tilde{\Delta} T^i := \frac{1}{\Delta x_{i-1}^2} \left[ \frac{2}{1+\alpha_{i-1}} T^{i-1} - \frac{2}{\alpha_{i-1}} T^{i} + \frac{2}{\alpha_{i-1} (\alpha_{i-1} + 1)} T^{i+1} \right]
-	\label{eq:test}
 \end{align}
-
-\eqref{eq:test} \\
-
-\todo{Ab hier Verlinkung falsch... \cref{eq:test}} \\
 
 and the factor $\alpha_i$ coming from the inhomogeneous grid is
 
