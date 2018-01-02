@@ -616,7 +616,8 @@ T_test_dirs = {'Temp_n_pcm=0,14286_n_tr=0_n_m=0,01_t=0,999_L1=40_L3=0,1_N1=300_N
 
 fig1 = figure(20); clf; ax1=gca; set(ax1, 'YScale', 'log'); hold on;
 fig2 = figure(21); clf; ax2=gca; set(ax2, 'YScale', 'log'); hold on;
-           
+     
+
 for i=1:length(T_test_dirs)
   
     T_test_data = load([root_dir, T_test_dirs{i}]);
@@ -624,30 +625,39 @@ for i=1:length(T_test_dirs)
     
     relErr = abs(1 - T_test ./ T_ref);
     
-    plot(ax1, T_test_data.T_ref_dsc, relErr, 'Linewidth', 1.3, 'DisplayName', sprintf('n_{tr}=%s', num2str(T_test_data.n_tr)));
+    plot(ax1, T_test_data.T_ref_dsc, relErr, 'Linewidth', 2., 'DisplayName', sprintf('n_{tr}=%s', num2str(T_test_data.n_tr)));
     
     %T_test_data.N1
     
     spatial_grid = build_grid(T_test_data.N1, T_test_data.N3, T_test_data.L1, T_test_data.L3, T_test_data.n_tr, T_test_data.n_m, T_test_data.t);
     
-    plot(ax2, spatial_grid, 'x', 'DisplayName', sprintf('n_{tr}=%s', num2str(T_test_data.n_tr)));
+    plot(ax2, spatial_grid, 'x', 'Linewidth', 1.3, 'DisplayName', sprintf('n_{tr}=%s', num2str(T_test_data.n_tr)));
     
 end
 
-legend(ax1, 'show', 'location', 'northwest', 'Orientation', 'horizontal')
+legend(ax1, 'show', 'location', 'northwest', 'Orientation', 'horizontal');
 xlabel(ax1, 'T_{ref} [degC]')
 ylabel(ax1, '|Relative error|')
-set(ax1,'FontSize',12);
+set(ax1,'FontSize',24);
+xlim(ax1, [T_test_data.T_ref_dsc(1), T_test_data.T_ref_dsc(end)]);
 ylim(ax1, [2e-7 1e-4]);
-set(fig1, 'Units', 'normalized', 'Position', [0.2, 0.1, 0.43, 0.6]); 
+set(fig1, 'Units', 'normalized', 'Position', [0.0, 0.0, 0.65, 1.]); 
 print(fig1, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_n_tr_relErr', '-dpng', '-r200');
 
 
-legend(ax2, 'show', 'location', 'southwest')
 xlabel('$$\tilde{x}$$, Computation grid', 'Interpreter', 'latex')
 ylabel('$$\frac{\partial \chi}{\partial \tilde{x}}(\tilde{x}) = \Delta x$$ [mm]', 'Interpreter', 'latex')
-set(ax2,'FontSize',12);
-set(fig2, 'Units', 'normalized', 'Position', [0.2, 0.1, 0.43, 0.6]); 
+xlim(ax2, [0, length(spatial_grid)]);
+set(ax2,'FontSize',24);
+
+[~,b] = legend(ax2, 'show', 'location', 'north', 'orientation', 'horizontal');
+for i=7:2:15
+    b(i).MarkerSize = 20;
+    b(i).LineWidth = 1.3;
+end
+
+
+set(fig2, 'Units', 'normalized', 'Position', [0.0, 0.0, 0.65, 1.]); 
 print(fig2, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_n_tr_gridsize', '-dpng', '-r200');
 
 
@@ -681,29 +691,37 @@ for i=1:length(T_test_dirs)
     relErr = abs(1 - T_test ./ T_ref);
     
 
-    plot(ax1, T_test_data.T_ref_dsc, relErr, 'Linewidth', 1.3, 'DisplayName', sprintf('N_{Ag}=%s', num2str(T_test_data.N1)));
+    plot(ax1, T_test_data.T_ref_dsc, relErr, 'Linewidth', 2., 'DisplayName', sprintf('N_{Ag}=%s', num2str(T_test_data.N1)));
     
     %T_test_data.N1
     
     spatial_grid = build_grid(T_test_data.N1, T_test_data.N3, T_test_data.L1, T_test_data.L3, T_test_data.n_tr, T_test_data.n_m, T_test_data.t);
     
-    plot(ax2, spatial_grid, 'x', 'DisplayName', sprintf('N_{Ag}=%s', num2str(T_test_data.N1)));
+    plot(ax2, spatial_grid, 'x', 'Linewidth', 1.3, 'DisplayName', sprintf('N_{Ag}=%s', num2str(T_test_data.N1)));
     
 end
 
-legend(ax1, 'show', 'location', 'southwest')
+legend(ax1, 'show', 'location', 'north', 'orientation', 'horizontal');
 xlabel(ax1, 'T_{ref} [degC]')
 ylabel(ax1, '|Relative error|')
-set(ax1,'FontSize',12);
-set(fig1, 'Units', 'normalized', 'Position', [0.2, 0.1, 0.43, 0.6]); 
+xlim(ax1, [T_test_data.T_ref_dsc(1), T_test_data.T_ref_dsc(end)]);
+set(ax1,'FontSize',24);
+set(fig1, 'Units', 'normalized', 'Position', [0.0, 0.0, 0.65, 1.]); 
 print(fig1, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_N1_relErr', '-dpng', '-r200');
 
 
-legend(ax2, 'show', 'location', 'northeast')
 xlabel('$$\tilde{x}$$, Computation grid', 'Interpreter', 'latex')
 ylabel('$$\frac{\partial \chi}{\partial \tilde{x}}(\tilde{x}) = \Delta x$$ [mm]', 'Interpreter', 'latex')
-set(ax2,'FontSize',12);
-set(fig2, 'Units', 'normalized', 'Position', [0.2, 0.1, 0.43, 0.6]); 
+xlim(ax2, [0, length(spatial_grid)]);
+set(ax2,'FontSize',24);
+
+[~,b] = legend(ax2, 'show', 'location', 'north', 'orientation', 'horizontal');
+for i=5:1:12
+    b(i).MarkerSize = 20;
+    b(i).LineWidth = 1.3;
+end
+
+set(fig2, 'Units', 'normalized', 'Position', [0.0, 0.0, 0.65, 1.]); 
 print(fig2, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_N1_gridsize', '-dpng', '-r200');
 
 
@@ -740,28 +758,38 @@ for i=1:length(T_test_dirs)
     relErr = abs(1 - T_test ./ T_ref);
 %     relErr = (1 - T_test ./ T_ref);
     
-    plot(ax1, T_test_data.T_ref_dsc, relErr, 'Linewidth', 1.3, 'DisplayName', sprintf('N=%s', num2str(T_test_data.N1 + T_test_data.N3)));
+    plot(ax1, T_test_data.T_ref_dsc, relErr, 'Linewidth', 2., 'DisplayName', sprintf('N=%s', num2str(T_test_data.N1 + T_test_data.N3)));
     
     spatial_grid = build_grid(T_test_data.N1, T_test_data.N3, T_test_data.L1, T_test_data.L3, T_test_data.n_tr, T_test_data.n_m, T_test_data.t);
     
-    plot(ax2, spatial_grid, 'x', 'DisplayName', sprintf('N=%s', num2str(T_test_data.N1 + T_test_data.N3)));
+    plot(ax2, spatial_grid, 'x', 'Linewidth', 1.3, 'DisplayName', sprintf('N=%s', num2str(T_test_data.N1 + T_test_data.N3)));
     
 end
 
-legend(ax1, 'show', 'location', 'southwest')
+legend(ax1, 'show', 'location', 'north', 'orientation', 'horizontal');
 xlabel(ax1, 'T_{ref} [degC]')
 ylabel(ax1, '|Relative error|')
-set(ax1,'FontSize',12);
-set(fig1, 'Units', 'normalized', 'Position', [0.2, 0.1, 0.43, 0.6]); 
+xlim(ax1, [T_test_data.T_ref_dsc(1), T_test_data.T_ref_dsc(end)]);
+set(ax1,'FontSize',24);
+set(fig1, 'Units', 'normalized', 'Position', [0.0, 0.0, 0.65, 1.]); 
 print(fig1, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_N_relErr', '-dpng', '-r200');
 
 
-legend(ax2, 'show', 'location', 'northeast')
 xlabel('$$\tilde{x}$$, Computation grid', 'Interpreter', 'latex')
 ylabel('$$\frac{\partial \chi}{\partial \tilde{x}}(\tilde{x}) = \Delta x$$ [mm]', 'Interpreter', 'latex')
-set(ax2,'FontSize',12);
-set(fig2, 'Units', 'normalized', 'Position', [0.2, 0.1, 0.43, 0.6]); 
-print(fig2, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_N_gridsize', '-dpng', '-r200');
+xlim(ax2, [0, length(spatial_grid)]);
+set(ax2,'FontSize',24);
+
+[~,b] = legend(ax2, 'show', 'location', 'north', 'orientation', 'horizontal');
+for i=6:1:15
+    b(i).MarkerSize = 20;
+    b(i).LineWidth = 1.3;
+end
+
+set(fig2, 'Units', 'normalized', 'Position', [0.0, 0.0, 0.7, 1.]);
+% hier muss die figure noch manuell groesser gestellt werden damits in
+% latex zu error figure groessenmaessig passt.
+%print(fig2, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_N_gridsize', '-dpng', '-r200');
 
 
 
@@ -793,11 +821,11 @@ fig1 = figure(23); clf; ax1 = gca; set(ax1, 'YScale', 'log'); hold on
 
 plot(ax1, T_ref_dsc, relErr, 'Linewidth', 1.3);
 xlabel(ax1, 'T_{ref} [degC]')
-ylabel(ax1, 'Relative error')
+ylabel(ax1, '|Relative error|')
 set(ax1,'FontSize',12);
 print(fig1, '/home/argo/masterarbeit/thesis/images/integration_tolerance_relErr', '-dpng', '-r200');
 
-
+close;
 
 
 %% Get average value of measured heat rate

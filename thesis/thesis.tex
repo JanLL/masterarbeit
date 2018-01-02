@@ -1588,7 +1588,8 @@ Preliminary the spatial discretization grid was constant in the silver and PCM r
 In the following $x$ will denote the physical grid, $\tilde{x}$ the computation grid and $\chi(\tilde{x}) = x$ the corresponding mapping which is defined by its derivative
 
 \begin{equation}
-	\frac{\partial \chi}{\partial \tilde{x}}(\tilde{x}) := \frac{\Delta \bar{x} - \Delta \underline{x}}{1 + e^{\gamma(\tilde{x} - b)}} + \Delta \underline{x}
+	\Delta x(\tilde{x}) := \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x}) := \frac{\Delta \bar{x} - \Delta \underline{x}}{1 + e^{\gamma(\tilde{x} - b)}} + \Delta \underline{x}
+	\label{eq:gridsize_definition}
 \end{equation}
 
 with the parameters $\Delta \underline{x}, \Delta \bar{x}$ as lower and upper bounds of the grid size, $\gamma$ defines the transition shape and $b$ the transition position on the computation grid. Since these parameters are quite counterintuitive they will be calculated with the following parameters:
@@ -2259,7 +2260,7 @@ From here on the numerical integrator DAESOL-II within the SolvIND Suite and the
 The relative error computed by
 
 \begin{align}
-	Relative \ error = \left|1 - \frac{T^{N_{Ag}-1}_{tol=10^-7}}{T^{N_{Ag}-1}_{tol=10^-8}} \right|
+	|Relative \ error| = \left|1 - \frac{T^{N_{Ag}-1}_{tol=10^-7}}{T^{N_{Ag}-1}_{tol=10^-8}} \right|
 	\label{eq:relErr_integration_tolerance}
 \end{align}
 
@@ -2278,7 +2279,7 @@ From the magnitude we can conclude that an integration tolerance of $10^{-7}$ is
 
 
 \subsection{Error analysis with respect to spatial discretization grid}
-Next we compare several configurations of the spatial discretization grid (c.f. \cref{sec:spatial_discretization_grid}) with an equidistant reference grid with $\Delta x = \frac{L_{pcm}}{N_{pcm}}$ everywhere. The used physical lengths $L_{Ag}=40mm$ and $L_{pcm}=0.1mm$ where the optimization worked best together with a sufficiently large number of discretization points within the PCM such that the heat flux approximation is adequate results in a huge number of total discretization points in an equidistant grid. E.g. with $N_{pcm}=50$ the total number of discretization points would be $N=20,050$ which is not practical in the optimization process. Therefore we compute the relative error
+Next we compare several configurations of the spatial discretization grid (c.f. \cref{sec:spatial_discretization_grid} for grid construction) with an equidistant reference grid with $\Delta x = \frac{L_{pcm}}{N_{pcm}}$ everywhere. The used physical lengths $L_{Ag}=40mm$ and $L_{pcm}=0.1mm$ where the optimization worked best together with a sufficiently large number of discretization points within the PCM such that the heat flux approximation is adequate results in a huge number of total discretization points in an equidistant grid. E.g. with $N_{pcm}=50$ the total number of discretization points would be $N=20,050$ which is not practical in the optimization process. Therefore we compute the relative error
 
 \begin{equation}
 	| \text{Relative error}_i| = \left| 1 - \frac{T_{{grid}_i}^{N_{Ag}-1}(T_{ref})}{T_{eq}^{N_{Ag}-1}(T_{ref})} \right|
@@ -2303,12 +2304,13 @@ In the first set of tests we modified the total number of discretization points 
 		\caption{}
 		\label{fig:grid_relErr_mod_N}
 	\end{subfigure}
-	\caption{Grid size $\Delta x(\tilde{x}$ (a) and relative error (b) for fixed $n_{tr}=0.1$ and $n_{pcm}=0.2$ while varying total number of discretization points $N$.}
+	\caption{(a) Grid size $\Delta x(\tilde{x})$ and (b) relative error computed by \cref{eq:relErr_grid} for fixed $n_{tr}=0.1$ and $n_{pcm}=0.2$ while varying total number of discretization points $N$. \\
+	C.f. grid construction in \cref{sec:spatial_discretization_grid} and $\Delta x(\tilde{x})$ computed by \cref{eq:gridsize_definition}.}
 	\label{fig:grid_mod_N}
 \end{figure}
 
 \subsubsection{Vary number of discretization points within the silver plate $N_{Ag}$}
-Next we varied the number of discretization points in the silver plate while fixing $N_{pcm}=50$ and again $n_{tr}=0.1$. The results are qualitatively and quantitatively similar to the previous case as one can observe in \cref{fig:grid_mod_N1}.
+Next we varied the number of discretization points in the silver plate $N_{Ag}$ while fixing $N_{pcm}=50$ and again $n_{tr}=0.1$. The results are qualitatively and quantitatively similar to the previous case as one can observe in \cref{fig:grid_mod_N1}.
 
 
 \begin{figure}[H]
@@ -2322,13 +2324,14 @@ Next we varied the number of discretization points in the silver plate while fix
 		\caption{}
 		\label{fig:grid_relErr_mod_N1}
 	\end{subfigure}
-	\caption{Grid size $\Delta x(\tilde{x}$ (a) and relative error (b) for fixed $N_{pcm}=50$ and $N_{tr}=0.1$ while varying discretization points in the silver plate $N_{Ag}$.}
+	\caption{(a) Grid size $\Delta x(\tilde{x}$ and (b) relative error computed by \cref{eq:relErr_grid} for fixed $N_{pcm}=50$ and $N_{tr}=0.1$ while varying discretization points in the silver plate $N_{Ag}$. \\
+	C.f. grid construction in \cref{sec:spatial_discretization_grid} and $\Delta x(\tilde{x})$ computed by \cref{eq:gridsize_definition}.}
 	\label{fig:grid_mod_N1}
 \end{figure}
 
 
 \subsubsection{Vary grid transition coefficient $n_{tr}$}
-Finally $N_{Ag}=300$ and $N_{pcm}=50$ were fixed while varying the grid transition parameter $n_{tr}$. The relative error increases with increasing $n_{tr}$, i.e. softer transitions. The minimal error is achieved at the phase transition with $n_{tr}=0$ ($\Delta x$ is step function) and else with $n_{tr}=0.1$ while the order of magnitude is again lower equal $10^{-5}$ in these two cases.
+Finally $N_{Ag}=300$ and $N_{pcm}=50$ were fixed while varying the grid transition parameter $n_{tr}$, see \cref{fig:grid_mod_n_tr}. The relative error increases with increasing $n_{tr}$, i.e. softer transitions. The minimal error is achieved at the phase transition with $n_{tr}=0$ ($\Delta x(\tilde{x})$ is step function) and else with $n_{tr}=0.1$ while the order of magnitude is again lower equal $10^{-5}$ in these two cases.
 
 \begin{figure}[H]
 	\begin{subfigure}{0.49\textwidth}
@@ -2341,7 +2344,8 @@ Finally $N_{Ag}=300$ and $N_{pcm}=50$ were fixed while varying the grid transiti
 		\caption{}
 		\label{fig:grid_relErr_mod_n_tr}
 	\end{subfigure}
-	\caption{Grid size $\Delta x(\tilde{x}$ (a) and relative error (b) for fixed $N_{Ag}=300$ and $N_{pcm}=50$ while varying the grid transition parameter $n_{tr}$.}
+	\caption{(a) Grid size $\Delta x(\tilde{x}$ and (b) relative error computed by \cref{eq:relErr_grid} for fixed $N_{Ag}=300$ and $N_{pcm}=50$ while varying the grid transition parameter $n_{tr}$. \\
+	C.f. grid construction in \cref{sec:spatial_discretization_grid} and $\Delta x(\tilde{x})$ computed by \cref{eq:gridsize_definition}.}
 	\label{fig:grid_mod_n_tr}
 \end{figure}
 
