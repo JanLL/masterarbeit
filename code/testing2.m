@@ -793,7 +793,7 @@ fig1 = figure(23); clf; ax1 = gca; set(ax1, 'YScale', 'log'); hold on
 
 plot(ax1, T_ref_dsc, relErr, 'Linewidth', 1.3);
 xlabel(ax1, 'T_{ref} [degC]')
-ylabel(ax1, 'Absolute relative error')
+ylabel(ax1, 'Relative error')
 set(ax1,'FontSize',12);
 print(fig1, '/home/argo/masterarbeit/thesis/images/integration_tolerance_relErr', '-dpng', '-r200');
 
