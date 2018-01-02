@@ -1951,3 +1951,34 @@ for i=1:length(nameSubDirs)
 end
 
 legend(ax1, 'show', 'location', 'southwest');
+
+
+
+%% Get optimization duration for all heat rates
+
+fit_dir = '2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used';
+
+
+
+fit_path = strcat('/home/argo/masterarbeit/fits_data/', fit_dir, '/');
+
+file_list = dir(fit_path);
+
+isub = [file_list(:).isdir]; %# returns logical vector
+nameSubDirs = {file_list(isub).name}';
+nameSubDirs(ismember(nameSubDirs,{'.','..'})) = [];
+
+l = [];
+
+fprintf('\n');
+for i=1:length(nameSubDirs)
+    
+    filepath = strcat(fit_path, nameSubDirs{i}, '/fit_data.mat');
+    fit_data = load(filepath);
+    
+    fprintf('%1.2f\n', fit_data.optimization.optim_duration/60);
+    
+    l = [l, fit_data.optimization.optim_duration/60];
+end
+
+mean(l)
