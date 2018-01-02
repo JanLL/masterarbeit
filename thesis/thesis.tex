@@ -2357,8 +2357,8 @@ Summarized a total number of discretization points $N=300$ is sufficient while t
 \subsection{Parameter estimation using parametrization of linear combination of Gaussians}
 \label{sec:param_estimation_5Gausse}
 So far finite differences were used to compute the optimization jacobian \cref{eq:optimization_jacobian}. Because of the problems described in \cref{sec:param_estim_NURBS} from now on internal numerical differentiation is used instead which is done with the software package SolvIND. \\
-In this section the parameter estimation is performed using the parametrization of 5 Gaussians, linear and constant part (see \cref{sec:parametrization_Gausse}). Five Gaussians were used since this is the minimum number such that the residuum almost vanishes as one can see in the upcoming figures. The optimization was performed again with the matlab routine $lsqnonlin$. Start values for the first heat rate $\beta = 20 \frac{K}{min}$ were used from previously existing results with already reduced residuum. Afterwards the optimizations were performed in a decreasing order of heat rates where parameters estimated in this process were used as start values in subsequent steps. I.e. estimated parameters at heat rate $\beta=20 \frac{K}{min}$ were used as start values for the parameter estimation at heat rate $\beta=10 \frac{K}{min}$ and so on. \\
-In \cref{fig:optim_c_p_heat_flux_5Gaussians_1,fig:optim_c_p_heat_flux_5Gaussians_2} the results are shown where on the left there is for all heat rates always the obtained function for the specific heat capacity $c_p(T)$. On the right measurement, simulation and resulting residuum of the heat flux is plotted and as one can see residuum is nearly zero for all heat rates. Examining the received specific heat capacities one notice first that for a heat rate of $10 \frac{K}{min}$ there are two peaks. The reason is a bending in the measured heat flux at approximately $130^{\circ} C$ probably from an error in measurement. Next things to observe which makes $c_p(T)$ differ from our expectations can be seen very well in the result for heat rate $5 \frac{K}{min}$. Firstly the decrease of the peak's maximum is not linear but has two different areas. Secondly after the peak $c_p(T)$ has values lower than the base line for a small temperature range. These are likely unphysical optimization artifacts due to overfitting to a naturally simplified, i.e incomplete model. Although positive is that the $c_p(T)$ curves do not differ exorbitantly from each other. A more detailed comparison between them follows at the end of this section.
+In this section the parameter estimation is performed using the parametrization of 5 Gaussians, linear and constant part (see \cref{sec:parametrization_Gausse}). Five Gaussians were used since this is the minimum number such that the residuum almost vanishes as one can see in the upcoming figures. The optimization was performed again with the matlab routine $lsqnonlin$. Start values for the first heat rate $\beta = 20 \frac{K}{min}$ were used from previously existing results with already reduced residuum. Afterwards the optimizations were performed in a decreasing order of heat rates where parameters estimated in this process were used as start values in subsequent steps. I.e. estimated parameters at heat rate $\beta=20 \frac{K}{min}$ were used as start values for the parameter estimation at heat rate $\beta=10 \frac{K}{min}$ etc. \\
+In \cref{fig:optim_c_p_heat_flux_5Gaussians_1,fig:optim_c_p_heat_flux_5Gaussians_2} the results are shown where on the left there is for all heat rates always the obtained function of the specific heat capacity $c_p(T)$. On the right measurement, simulation and resulting residuum of the heat flux is plotted and as one can see residuum is nearly zero for all heat rates. Examining the received specific heat capacities one notice first that for a heat rate of $10 \frac{K}{min}$ there are two peaks. The reason is an anomaly in the measured heat flux at approximately $130^{\circ} C$ probably from an error in measurement. Next things to observe which makes $c_p(T)$ differ from our expectations can be seen very well in the result for heat rate $5 \frac{K}{min}$. Firstly the decrease of the peak's maximum is not linear but has two different areas. Secondly after the peak $c_p(T)$ has values lower than the base line for a small temperature range. These are probably unphysical optimization artifacts due to overfitting to a naturally simplified, i.e incomplete model. However, positive is that the $c_p(T)$ functions do not differ exorbitantly from each other. A more detailed comparison between them follows at the end of this section.
 
 
 
@@ -2384,7 +2384,7 @@ In \cref{fig:optim_c_p_heat_flux_5Gaussians_1,fig:optim_c_p_heat_flux_5Gaussians
 	\end{subfigure} \\[1ex]
 	
 
-	\caption{Parameter estimation results for specific heat capacity $c_p$ and heat flux into PCM $\varPhi_q^{pcm,in}$ for heat rates $\beta=\{ 20, 10, 5, 2.5 \} \frac{K}{min}$.}
+	\caption{Parameter estimation results for (left) specific heat capacity $c_p$ and (right) heat flux into PCM $\varPhi_q^{pcm,in}$ for heat rates $\beta=\{ 20, 10, 5, 2.5 \} \frac{K}{min}$. $c_p(T)$ for heat rate $10 \frac{K}{min}$ has two maxima due to anomaly in heat flux measurement data. }
 	\label{fig:optim_c_p_heat_flux_5Gaussians_1}
 \end{figure}
 
@@ -2409,19 +2409,20 @@ In \cref{fig:optim_c_p_heat_flux_5Gaussians_1,fig:optim_c_p_heat_flux_5Gaussians
 	
 	
 
-	\caption{Parameter estimation results for specific heat capacity $c_p$ and heat flux into PCM $\varPhi_q^{pcm,in}$ for heat rates $\beta=\{ 1.25, 0.6, 0.3 \} \frac{K}{min}$.}
+	\caption{Parameter estimation results for (left) specific heat capacity $c_p$ and (right) heat flux into PCM $\varPhi_q^{pcm,in}$ for heat rates $\beta=\{ 1.25, 0.6, 0.3 \} \frac{K}{min}$.}
 	\label{fig:optim_c_p_heat_flux_5Gaussians_2}
 \end{figure}
 
-In order to quantify the obtained parameters quality a statistical analysis (see \cref{sec:parameter_estimation_theory}) is applied. The results are shown in \cref{tab:parameter_table_5Gaussians} where a probability of error $\alpha=5\%$ has been used. As one can see there are huge differences in the accuracy of the obtained parameters. Heat rate $10 \frac{K}{min}$ is remarkable and will be discussed individually. The Gaussian offset $T_{offset}$ is mostly well determined especially for lower heat rates. Amplitude and variance on the other hand often have deviations of up to hundred percent. The linear parameter has a big error for heat rates $0.6$ and $0.3 \frac{K}{min}$ which makes sense because the heat flux measurement values start at about $100^{\circ}C$ such that the observing temperature domain is too small for linear influences. Constant offset on the other hand was determined reasonably. \\
-Considering now the results for heat rate $10 \frac{K}{min}$ reveals a problem of this parametrization. \Cref{fig:Gaussians_splitted_pathologic} shows how the individual Gaussians build up the specific heat capacity. Since the linear parameter is nearly zero the linear increase in front of the peak is done by Gaussian 1, 3 and 4. These are extraordinary inaccurate just as the actual linear parameter. Therefore identifiability is not guaranteed here. \\
+In order to quantify the obtained parameters quality, a statistical analysis (see \cref{sec:parameter_estimation_theory}) is applied. The results are shown in \cref{tab:parameter_table_5Gaussians} where a probability of error $\alpha=5\%$ has been used. There are huge differences in the accuracy of the obtained parameters. Heat rate $10 \frac{K}{min}$ is remarkable and will be discussed individually. The Gaussian offset $T_{offset}$ is mostly well determined especially for lower heat rates. Amplitude and variance on the other hand often have deviations up to hundred percent. The linear parameter has a big error for heat rates $0.6$ and $0.3 \frac{K}{min}$ which makes sense because the heat flux measurement values start at about $100^{\circ}C$ such that the observed temperature domain is too small for linear influences. Constant offset on the other hand was determined reasonably. \\
+Considering now the results for heat rate $10 \frac{K}{min}$ reveals a problem of this parametrization. \Cref{fig:Gaussians_splitted_pathologic} shows how the individual Gaussians build up the specific heat capacity. Since the linear parameter is nearly zero the linear increase in front of the peak is done by Gaussian 1, 3 and 4. These are extraordinary inaccurate just as the actual linear parameter. Therefore we do not have identifiability here. \\
 Finally the first order optimality value given by $lsqnonlin$ at the end of the optimization process is listed as well. Since for all heat rates this value is not even close to zero we can not state that a local minimum has been found.
 
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/2017-12-19_21:17:51_407_10Kmin_L1=40_L3=0,1/Gaussians_splitted.png}
-	\caption{Construction of obtained specific heat capacity $c_p(T)$ by individual Gaussians for heat rate $\beta = 10 \frac{K}{min}$. Linear and constant part is added for better illustration in each Gaussian.}
+	\caption{Construction of obtained specific heat capacity $c_p(T)$ by individual Gaussians for heat rate $\beta = 10 \frac{K}{min}$. Linear and constant part is added for better illustration in each Gaussian. Gaussians 1, 3 and 4 realize the linear slope before the peak while the actual linear parameter $m \approx 0$. \\
+	Cf. Gaussian parametrization in \cref{sec:parametrization_Gausse} and parameter values in \cref{tab:parameter_table_5Gaussians}.}
 	\label{fig:Gaussians_splitted_pathologic}
 \end{figure}
 
@@ -2454,15 +2455,15 @@ Finally the first order optimality value given by $lsqnonlin$ at the end of the 
 		Constant & $1.52 \pm 1.9\%$ & $1.60 \pm 19\%$ & $1.63 \pm 2.1\%$ & $1.65 \pm 1.4\%$ & $1.65 \pm 1.2\%$ & $2.63 \pm 3\%$ & $2.86 \pm 15\%$ \\ \hline \hline
 		[NOC1]$^*$ & $2.6$ & $12.4$ & $8.5$ & $6.7$ & $7.5$ & $4.5$ & $5.3$ \\ \hline
 	\end{tabular}
-	\caption{Estimated parameters for all heat rates $\beta$ and confidence interval from statistical analysis using an error of probability $\alpha=0.05$. One Gaussian consist of three parameters (c.f. \cref{sec:parametrization_Gausse}): top: amplitude $A_i$, middle: variance $var_i$, bottom: offset in temperature $T_{offset_i}$ \\
-	$^*$ value from $lsqnonlin$ output.}
+	\caption{Estimated parameters for all heat rates $\beta$ and confidence interval from statistical analysis using an error of probability $\alpha=0.05$. One Gaussian consist of three parameters (cf. \cref{sec:parametrization_Gausse}): top: amplitude $A_i$, middle: variance $var_i$, bottom: offset in temperature $T_{offset_i}$. $^*$ First order optimality condition value from $lsqnonlin$ output. \\
+	Cf. Gaussian parametrization in \cref{sec:parametrization_Gausse} and statistical analysis in \cref{sec:parameter_estimation_theory}.}
 	\label{tab:parameter_table_5Gaussians}
 \end{table}
 
 \end{landscape}
 \newpage
 
-As mentioned we now compare all the obtained $c_p(T)$ curves in more detail. \Cref{fig:5Gaussians_all_c_p} shows all of them at once. As one can see the functions especially regarding heat rates $0.3$ to $5 \frac{K}{min}$ are quite similar although shapes differ and there is a shift in the maximum's temperature $T_{max}$. This characteristic property is depicted beside the melting enthalpy $\Delta H$ in \cref{tab:eval_table_Tmax_deltaH_5Gaussians}. The differences in shape cause a big deviation in the melting enthalpy where the position of the maximum is better determined. \\
+As announced we now compare all the obtained $c_p(T)$ curves in more detail. \Cref{fig:5Gaussians_all_c_p} shows all of them at once. The functions especially regarding heat rates $0.3$ to $5 \frac{K}{min}$ are quite similar although shapes differ and there is a shift in the maximum's temperature $T_{max}$. This characteristic property is depicted beside the melting enthalpy $\Delta H$ in \cref{tab:eval_table_Tmax_deltaH_5Gaussians}. The differences in shape cause a big deviation in the melting enthalpy with mean $200 \pm 14 \ (7\%)$. The position of the maximum is better determined with mean $128.4 \pm 1.6 \ (1.3\%)$. \\
 The optimization process took on average about $7$ minutes and 50 iterations per heat rate.
 
 
@@ -2483,7 +2484,7 @@ The optimization process took on average about $7$ minutes and 50 iterations per
 		$T_{max} \ [^{\circ}C]$ & $126.3$ & ---$^*$ & $126.9$ & $127.9$ & $128.9$ & $129.8$ & $130.5$ & $128.4 \pm 1.6 \ (1.3\%)$ \\[0.7ex]
 		$\Delta H \ [\frac{mJ}{mg}]$ & $174.3$ & $198.7$ & $214.0$ & $213.3$ & $209.7$ & $196.0$ & $191.2$ & $200 \pm 14 \ (7\%)$ \\ \hline
 	\end{tabular}
-	\caption{For all heat rates: Temperature $T_{max}$ where $c_p(T)$ has its maximum and the melting enthalpy $\Delta H$, i.e. the integral of $c_p(T)$ minus the base line over the temperature. Decreases below the baseline after the peak were ignored here. \\
+	\caption{For all heat rates: Temperature $T_{max}$ where $c_p(T)$ has its maximum and melting enthalpy $\Delta H$, i.e. the integral of $c_p(T)$ minus the base line over the temperature. Decreases below the baseline after the peak were ignored here. \\
 	$^*$ $T_{max}$ for $\beta=10\frac{K}{min}$ was omitted as there are two maxima. \\
 	$^{**}$ Bessel corrected sample standard deviation used here.}
 	\label{tab:eval_table_Tmax_deltaH_5Gaussians}
@@ -2493,9 +2494,9 @@ The optimization process took on average about $7$ minutes and 50 iterations per
 \subsection{Parameter estimation using Fraser-Suzuki parametrization}
 \label{sec:param_estimation_fs}
 
-In order to avoid overfitting seen in the previous section we apply now the Fraser-Suzuki parametrization (c.f. \cref{sec:parametrization_FS}) where we fixed $r=2$. As we then just have in total 6 parameters instead of 17 with the Gaussians and therefore the available function space is smaller a kind of regularization is active. \\
-The optimization was performed here with a self written Gauss-Newton solver based on \cref{sec:GN_numerical_solution} using a singular value decomposition of $J_1(p_{c_p})$. An active set strategy for lower and upper bounds of the optimization variables has been implemented to ensure $0 \le sr \le 1$ and $wr \ge 0$ for a reasonable peak but it became apparent that the optimizer does not approach these limiting values anyway. Therefore lower and upper bounds were disabled and we solve an unconstrained problem. Start values for heat rate $20 \frac{K}{min}$ were chosen to be $h=14$, $wr=10.7$, $sr=0.705$, $z=129$, $m=0.0079$ and $b=1.69$ and following heat rates use the last result analog to the case of Gaussian parametrization. The linear parameter $m$ was fixed to the previously obtained result for the heat rates $0.6$ and $0.3 \frac{K}{min}$ because of the problems remarked in the last section. \\
-The resulting specific heat capacity $c_p(T)$ and corresponding heat flux $\varPhi_q^{pcm,in}$ for all heat rates after optimization is shown in \cref{fig:optim_c_p_heat_flux_FS_1,fig:optim_c_p_heat_flux_FS_2}. As one can see the heat flux residuum is bigger than before especially at the increasing side of the peak. Furthermore the heat flux base line after the peak exhibits an increased residuum as well. On the other hand the obtained specific heat capacities are very similar as expected. A detailed comparison follows.
+In order to avoid overfitting seen in the previous section we apply now the Fraser-Suzuki parametrization (cf. \cref{sec:parametrization_FS}) where we fixed $r=2$. As we then have in total 6 parameters instead of 17 with the Gaussians the function space is smaller and therefore a kind of regularization is active. \\
+The optimization was performed here with a self written Gauss-Newton solver based on \cref{sec:GN_numerical_solution} using a singular value decomposition of $J_1(p_{c_p})$. An active set strategy for lower and upper bounds of the optimization variables has been implemented to ensure $0 \le sr \le 1$ and $wr \ge 0$ for a reasonable peak but it became apparent that the optimizer does not approach these limiting values. Therefore lower and upper bounds were disabled and we solve an unconstrained problem. Start values for heat rate $20 \frac{K}{min}$ were chosen to be $h=14$, $wr=10.7$, $sr=0.705$, $z=129$, $m=0.0079$ and $b=1.69$ and following heat rates use the previous result analog to Gaussian parametrization \cref{sec:param_estimation_5Gausse}. The linear parameter $m$ was fixed to the previously obtained result for the heat rates $0.6$ and $0.3 \frac{K}{min}$ because of the problems remarked in the last section, namely the lack of measurement data when the heat flux is linear. \\
+The resulting specific heat capacity $c_p(T)$ and corresponding heat flux $\varPhi_q^{pcm,in}$ for all heat rates after optimization is shown in \cref{fig:optim_c_p_heat_flux_FS_1,fig:optim_c_p_heat_flux_FS_2}. The heat flux residuum is bigger than before with Gaussian parametrization especially at the increasing side of the peak. Furthermore the heat flux base line after the peak exhibits an increased residuum as well. On the other hand the obtained specific heat capacities are very similar as expected. A detailed comparison follows after discussing the obtained parameters now.
 
 
 
@@ -2519,7 +2520,8 @@ The resulting specific heat capacity $c_p(T)$ and corresponding heat flux $\varP
 		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:45:47_407_2,5Kmin_L1=40_L3=0,1/c_p.png}
 		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:45:47_407_2,5Kmin_L1=40_L3=0,1/heat_flux.png}
 	\end{subfigure}
-	\caption{Parameter estimation results for specific heat capacity $c_p$ and heat flux into PCM $\varPhi_q^{pcm,in}$ for heat rates $\beta=\{ 20, 10, 5, 2.5 \} \frac{K}{min}$.}
+	\caption{Parameter estimation results for (left) specific heat capacity $c_p$ and (right) heat flux into PCM $\varPhi_q^{pcm,in}$ for heat rates $\beta=\{ 20, 10, 5, 2.5 \} \frac{K}{min}$. Heat flux residuum increased at phase transition peak. \\
+	Cf. optimization with Gaussian parametrization in \cref{fig:optim_c_p_heat_flux_5Gaussians_1,fig:optim_c_p_heat_flux_5Gaussians_2}.}
 	\label{fig:optim_c_p_heat_flux_FS_1}
 \end{figure}
 
@@ -2541,11 +2543,12 @@ The resulting specific heat capacity $c_p(T)$ and corresponding heat flux $\varP
 		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:56:18_407_0,3Kmin_L1=40_L3=0,1/c_p.png}
 		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:56:18_407_0,3Kmin_L1=40_L3=0,1/heat_flux.png}
 	\end{subfigure}
-	\caption{Parameter estimation results for specific heat capacity $c_p$ and heat flux into PCM $\varPhi_q^{pcm,in}$ for heat rates $\beta=\{ 1.25, 0.6, 0.3 \} \frac{K}{min}$.}
+	\caption{Parameter estimation results for (left) specific heat capacity $c_p$ and (right) heat flux into PCM $\varPhi_q^{pcm,in}$ for heat rates $\beta=\{ 1.25, 0.6, 0.3 \} \frac{K}{min}$. \\
+	Cf. optimization with Gaussian parametrization in \cref{fig:optim_c_p_heat_flux_5Gaussians_1,fig:optim_c_p_heat_flux_5Gaussians_2}.}
 	\label{fig:optim_c_p_heat_flux_FS_2}
 \end{figure}
 
-Next again a statistical analysis of the obtained parameters is performed analog to last section, results are shown in \cref{tab:parameter_table_FS}. One notice that the parameters' confidence region are very similar for all heat rates. The best determined parameter is the peak position $z$ and on the other hand the linear parameter $m$ has the highest relative uncertainty. Though at all the obtained parameters are much more accurate than the ones with Gaussian parametrization. 
+Analog to the last section a statistical analysis of the obtained parameters with an error probability $\alpha = 5\%$ is performed, the results are shown in \cref{tab:parameter_table_FS}. The parameters' confidence region are very similar for all heat rates. The best determined parameter is the peak position $z$ with $\frac{\theta_z}{z}$ of maximal $0.35\%$ where $2 \theta$ is the length of the confidence cuboid. On the other hand the linear parameter $m$ has the highest relative uncertainty with $\frac{\theta_m}{m}$ of maximal $35\%$, factor $100$ here is a 	coincidence. Though at all the parameters are much more accurate than the ones obtained by Gaussian parametrization. 
 
 
 \begin{table}[H]
