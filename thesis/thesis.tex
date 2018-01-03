@@ -2678,19 +2678,19 @@ Unlike expectation from theory the step size does not reach and keep value $t^{(
 \label{sec:param_estimation_mod_heat_rate_FS}
 So far just the nominal heat rate of the appropriate measurement scheme was used. 
 \Cref{fig:heat_rate_measurement} shows the measurement data of the heat rate at the reference crucible $\frac{\partial T_{ref}(t)}{\partial t}(T_{ref})$ exemplary for a nominal heat rate $\beta = 2.5 \frac{K}{min}$. 
-As one can see there are fluctuations due to the regulation which tries to keep the heat rate at the nominal value. 
+There are distinct fluctuations increasing in time due to the regulation which tries to keep the heat rate at the nominal value. 
 Computing the mean value gives a lower measured heat rate than the nominal value (red line in \cref{fig:heat_rate_measurement}). 
 This is the case for all used measurements as one can see in \cref{tab:mod_heat_rate}. 
 Since the reference side' material properties are constant the heat rate at the crucible and the furnace are comparable.
 Although the observed difference is quite small, with increasing time the shift in temperature will accumulate.
 Further this could be a reason for the observed shift in the obtained $c_p(T)$ in the previous sections.
-This is why we perform now the parameter estimation again with the modified heat rate $\bar{\beta}_{meas}$ stated in \cref{tab:mod_heat_rate}.
+This is why we perform the parameter estimation with the modified heat rate $\bar{\beta}_{meas}$ stated in \cref{tab:mod_heat_rate}.
 
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.75\textwidth]{/home/argo/masterarbeit/thesis/images/heat_rate_ref_crucible.png}
-	\caption{Measured heat rate at the reference crucible $\frac{\partial T_{ref}(t)}{\partial t}(T_{ref})$ and the corresponding mean value for a nominal heat rate of $2.5 \frac{K}{min}$.}
+	\caption{Measured heat rate at the reference crucible $\frac{\partial T_{ref}(t)}{\partial t}(T_{ref})$ and the corresponding mean value for the nominal heat rate $2.5 \frac{K}{min}$.}
 	\label{fig:heat_rate_measurement}
 \end{figure}
 
@@ -2710,17 +2710,23 @@ This is why we perform now the parameter estimation again with the modified heat
 	\label{tab:mod_heat_rate}
 \end{table}
 
+The resulting specific heat capacities $c_p(T)$ are depicted in \cref{fig:FS_all_c_p_modHeatRate}. There is no qualitative difference compared to the parameter estimation with nominal heat rate in \cref{sec:param_estimation_fs}. Further, the peak characteristics $T_{max}$, $T_{on}$, $T_{off}$ and $\Delta H$ do not differ in the accuracy given in \cref{tab:eval_table_Tmax_deltaH_FS}. \\
+Therefore it follows that the specific heat capacity estimate is not that sensitive to the used heat rate as experimental variations given in \cref{tab:mod_heat_rate} have significant influence.
+
+
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_22:35:53_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_modHeatRate/c_p_all.png}
-	\caption{}
+	\caption{Specific heat capacities $c_p(T)$ from parameter estimation with heat rate retrieved from measurement data (\cref{tab:mod_heat_rate}) for all heat rates. There is no qualitative difference to the case with nominal heat rate (\cref{fig:FS_all_c_p}).}
 	\label{fig:FS_all_c_p_modHeatRate}
 \end{figure}
 
 
 
 \subsection{Summary}
+
+
 
 
 \begin{table}[H]
