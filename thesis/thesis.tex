@@ -1479,16 +1479,16 @@ The nonlinear least squares optimization problem as part of the parameter estima
 \section{Simulation of DSC measuring process}
 \label{sec:simulation_of_DSC}
 
-So far the physical and mathematical foundations were laid by reciting known knowledge. Now in this section our new model of the measuring process of an heat flux DSC will be introduced while in the next section it follows the corresponding parameter estimation in order to obtain the specific heat capacity $c_p(T)$.
+So far the physical and mathematical foundations were laid by refering known knowledge. In this section our new model of the measuring process of a heat flux DSC will be introduced while in the next section it follows the corresponding parameter estimation in order to obtain the specific heat capacity $c_p(T)$.
 
 
 
 \subsection{Mathematical model}
 \label{sec:mathematical_model}
 
-Our 1D mathematical model \cref{eq:heat_equation_model} of the heat flux DSC measurement process (see \cref{fig:heat_flux_DSC}) uses the differential state variable $T(x,t)$ which is the temperature at spatial coordinate $x$ at time $t$. It is based on the following assumptions. First the heat transport is exclusively done by thermal diffusion (cf. \cref{sec:heat_equation}), so convection and thermal radiation are neglected. 
+Our 1D mathematical model \cref{eq:heat_equation_model} of the heat flux DSC measurement process (cf. experimental setup in \cref{fig:heat_flux_DSC}) uses the differential state variable $T(x,t)$ which is the temperature at spatial coordinate $x$ at time $t$. It is based on the following assumptions. First the heat transport is exclusively done by thermal diffusion (cf. \cref{sec:heat_equation}), thus convection and thermal radiation are neglected. 
 Moreover we assume that the reference and sample crucible  are independent of each other which allows us to simulate each side on its own. 
-Analog to the experimental setup the silver plate is connected with the furnace whose temperature increases with a constant heat rate $\beta$ which gives the Dirichlet boundary condition \cref{eq:heat_equation_BC_dirichlet}. All material properties of silver are constant such that the heat transport there is described by \cref{eq:heat_equation_Ag}. The silver plate then is connected with the PCM whose mass density $\rho_{pcm}$ and heat conductivity $\lambda_{pcm}$ are assumed to be constant. The specific heat capacity $c_p(T)$ is temperature dependent, parametrized (cf. \cref{sec:parametrizations}) and the quantity we want to obtain by performing a parameter estimation. \Cref{eq:heat_equation_PCM} describes then the heat transport within the PCM at which we assume that no heat can leave the PCM, resulting in Neumann boundary condition \cref{eq:heat_equation_BC_Neumann}. Finally as start condition at time ${t_0 = 0}$ we assume that the temperature is equal everywhere (\cref{eq:heat_equation_start_values}).
+Analog to the experimental setup the silver plate is connected with the furnace whose temperature increases with a constant heat rate $\beta$ which gives the Dirichlet boundary condition \cref{eq:heat_equation_BC_dirichlet}. All material properties of silver are constant such that the heat transport there is described by \cref{eq:heat_equation_Ag}. The silver plate is connected with the PCM whose mass density $\rho_{pcm}$ and heat conductivity $\lambda_{pcm}$ are assumed to be constant. The specific heat capacity $c_p(T)$ is temperature dependent, parametrized (cf. \cref{sec:parametrizations}) and the quantity we want to obtain by performing a parameter estimation. \Cref{eq:heat_equation_PCM} describes the heat transport within the PCM at which we assume that no heat can leave the PCM, resulting in Neumann boundary condition \cref{eq:heat_equation_BC_Neumann}. Finally as start condition at time ${t_0 = 0}$ we assume that the temperature is equal everywhere (\cref{eq:heat_equation_start_values}).
 
 \begin{subequations}
 	\begin{align}
@@ -1502,7 +1502,7 @@ Analog to the experimental setup the silver plate is connected with the furnace 
 \end{subequations}
 
 
-In order to solve \cref{eq:heat_equation_model} method of lines (\cref{sec:pde_discretization}) is applied for spatial discretization of the temperature field $T(x,t)$. The silver plate has $N_{Ag}$ and the PCM $N_{pcm}$ discretization points where the total number of discretization points is $N = N_{Ag} + N_{pcm}$.
+In order to solve \cref{eq:heat_equation_model} method of lines (\cref{sec:pde_discretization}) is applied for spatial discretization of the temperature field $T(x,t)$. The silver plate has $N_{Ag}$ and the PCM $N_{pcm}$ discretization points and therefore the total number of discretization points is $N = N_{Ag} + N_{pcm}$.
 An illustration of the discretized model is depicted in \cref{fig:mathematical_model_discretized}. Note that the first discretized temperature within the PCM is $T^{N_{Ag}}$.
 In \cref{sec:spatial_discretization_grid} the construction of the inhomogeneous grid will be explained in detail. The resulting initial value problem reads as
 
@@ -1513,8 +1513,8 @@ In \cref{sec:spatial_discretization_grid} the construction of the inhomogeneous 
 T^0 \\[1ex]
 T^1 \\[0.3ex]
 \vdots \\[1ex]
-T^{N_{Ag}-2} \\[1.7ex]
-T^{N_{Ag}-1} \\[1.7ex]
+T^{N_{Ag}-2} \\[1.9ex]
+T^{N_{Ag}-1} \\[1.9ex]
 T^{N_{Ag}} \\[0.5ex]
 \vdots \\[1.5ex]
 T^{N-2} \\[1ex]
@@ -1586,14 +1586,12 @@ Solving \cref{eq:heat_equation_discretized} yields the temperature but we are pr
 
 
 
-The first approximation comes from the spatial discretization and the second one is necessary because we do not know the heat conductivity $\bar{\lambda}$ at the transition between the silver plate and the PCM and therefore use the following first grid points within the PCM (marked in \cref{fig:mathematical_model_discretized}). \\
-Since Fourier's law gives a heat flux density we need to add a factor of the PCM's cross section $A_{pcm}$. It is computed by
+The first approximation comes from the spatial discretization and the second one is necessary because we do not know the heat conductivity $\bar{\lambda}$ at the transition between the silver plate and the PCM and therefore use the subsequent two grid points within the PCM (marked in \cref{fig:mathematical_model_discretized}). \\
+Since Fourier's law gives a heat flux density we needed to add a factor of the PCM's cross section $A_{pcm}$. It is computed by
 
 \begin{equation}
-	\frac{m_{pcm}}{N_{pcm}} = m_{pcm,i} = \rho_{pcm} \cdot A_{pcm} \cdot \Delta x_i 
+	\frac{m_{pcm}}{N_{pcm}} \approx \Delta m_{pcm,N_{Ag}} = \rho_{pcm} \cdot A_{pcm} \cdot \Delta x_{N_{Ag}}
 \end{equation}
-
-
 
 assuming beside a homogeneous mass distribution, a constant grid size $\Delta x$ in the PCM which is satisfied in good approximation by construction of the spatial discretization grid, see next \cref{sec:spatial_discretization_grid}. The final equation for the heat flux computation then reads as
 
@@ -1606,7 +1604,7 @@ assuming beside a homogeneous mass distribution, a constant grid size $\Delta x$
 
 \subsection{Spatial discretization grid}
 \label{sec:spatial_discretization_grid}
-Preliminary the spatial discretization grid was constant in the silver and PCM respectively with grid sizes $\Delta x_{\text{Ag}} > \Delta x_{\text{PCM}}$ because only in PCM the phase transition occurs we are interested in. As for the silver plate we get appropriate results for the lengths $L_{Ag}=40$ and $L_{pcm}=0.1$ there is a discontinuity in the grid size at the transition from silver to PCM. In order to avoid numerical problems the used framework of generating a continuous grid will be explained now. \\
+Preliminary the spatial discretization grid was constant in the silver plate and PCM respectively with grid sizes $\Delta x_{\text{Ag}} > \Delta x_{\text{PCM}}$ because only in PCM the phase transition occurs in which we are interested in. In order to avoid numerical problems due to this discontinuity of the grid size at the transition from silver to PCM the used framework of generating a continuous grid will be explained now. \\
 In the following $x$ will denote the physical grid, $\tilde{x}$ the computation grid and $\chi(\tilde{x}) = x$ the corresponding mapping which is defined by its derivative
 
 \begin{equation}
@@ -1624,30 +1622,30 @@ with the parameters $\Delta \underline{x}, \Delta \bar{x}$ as lower and upper bo
 	\item $t < 1$: At grid point $N-N_{pcm}-N_m$, $\frac{\partial \chi(\tilde{x})}{\partial \tilde{x}}$ has finished the transition by $(100 \cdot t)\%$.
 \end{itemize}
 
-First of all, the ratios of grid points $n_i$ can be converted easily into absolute numbers with $N_i = N \cdot n_i$. An illustration of the grid generating function $\frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$, the mapping from computation to physical grid $\chi(\tilde{x})$ and introduced parameters is shown in \cref{fig:computation_physical_grid,fig:grid_size}. \\
-We now derive the unknown parameters $b$, $\gamma$, $\Delta \underline{x}$ and $\Delta \bar{x}$. The central position of the grid transition in the computation grid size is
+First of all, the ratios of grid points $n_i$ can be converted into absolute numbers with $N_i = N \cdot n_i$. An illustration of the grid generating function $\frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$, the mapping from computation to physical grid $\chi(\tilde{x})$ and introduced parameters is shown in \cref{fig:computation_physical_grid,fig:grid_size}. \\
+We now derive the unknown parameters $b$, $\gamma$, $\Delta \underline{x}$ and $\Delta \bar{x}$. The central position of the grid transition is
 
 \begin{equation}
 	b = N - N_{pcm} - N_m - \frac{1}{2} N_{tr}
 	\label{eq:spatial_grid_b}
 \end{equation}
 
-Furthermore we get $\gamma$ by
+Furthermore we get $\gamma$ by ($\delta \underline{x}(t)$ illustrated in \cref{fig:grid_size})
 
 \begin{subequations}
 \begin{align}
-	\frac{\partial \chi}{\partial \tilde{x}}(\tilde{x}=N-N_{pcm}-N_m) = \ & \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x}) \cdot (1-t) \\
-	\Leftrightarrow \frac{\Delta \bar{x} - \Delta \underline{x}}{1 + e^{\gamma(N-N_{pcm}-N_m - b)}} + \Delta \underline{x} = \ & \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x}) \cdot (1-t)  \\
+	\frac{\partial \chi}{\partial \tilde{x}}(\tilde{x}=N-N_{pcm}-N_m) = \ & \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x}) \cdot (1-t) =: \delta \underline{x}(t) \\
+	\Leftrightarrow \frac{\Delta \bar{x} - \Delta \underline{x}}{1 + e^{\gamma(N-N_{pcm}-N_m - b)}} + \Delta \underline{x} = \ & \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x}) \cdot (1-t) =: \delta \underline{x}(t)  \\
 	\stackrel{\cref{eq:spatial_grid_b}}{\Leftrightarrow}  1 + e^{\gamma \frac{N_{tr}}{2}} = \ & \frac{1}{1 - t}  \\[2ex]
 	\Leftrightarrow \gamma = \frac{2}{N \cdot n_{tr}} \ln(\frac{t}{1-t})
 \end{align}
 \end{subequations}
 
-The remaining variables $\underline{x}$ and $\bar{x}$ we get by the condition that $T^{N_{Ag}-1}$ is at the physical grid position $L_{Ag}$
+The remaining variables $\underline{x}$ and $\bar{x}$ we get by the condition that $T^{N_{Ag}-1}$ is at the physical grid position $L_{Ag}$ (cf. \cref{fig:mathematical_model_discretized}).
 
 \begin{subequations}
 	\begin{align}
-	\sum_{i=0}^{N_1 - 2} \frac{\partial \chi}{\partial \tilde{x}}(i) = \ & L_{Ag} \\
+	\sum_{i=0}^{N_{Ag} - 2} \frac{\partial \chi}{\partial \tilde{x}}(i) = \ & L_{Ag} \\
 	\Leftrightarrow \sum_{i=0}^{N_{Ag} - 2} \left[ \frac{\Delta \bar{x} - \Delta \underline{x}}{1 + e^{\gamma(i - b)}} + \Delta \underline{x} \right] = \ & L_{Ag} \\
 	\Leftrightarrow \underbrace{ \left[ \sum_{i=0}^{N_{Ag} - 2} \frac{1}{1 + e^{\gamma(i - b)}} \right] }_{=: W_{11}} \cdot \Delta \bar{x} + \underbrace{\left[ N_{Ag} - 1 - \sum_{i=0}^{N_{Ag} - 2} \frac{1}{1 + e^{\gamma(i - b)}} \right]}_{=: W_{12}} \cdot \Delta \underline{x} = \ & L_{Ag}
 	\end{align}
@@ -1661,7 +1659,7 @@ and $T^{N-1}$ is at the physical grid position $L_{Ag}+L_{pcm}$
 	\Leftrightarrow \sum_{i=0}^{N - 2} \left[ \frac{\Delta \bar{x} - \Delta \underline{x}}{1 + e^{\gamma(i - b)}} + \Delta \underline{x} \right] = & \ L_{Ag}+L_{pcm} \\
 	\Leftrightarrow \underbrace{ \left[ \sum_{i=0}^{N - 2} \frac{1}{1 + e^{\gamma(i - b)}} \right] }_{=: W_{21}} \cdot \Delta \bar{x} + \underbrace{ \left[ N - 1 - \sum_{i=0}^{N - 2} \frac{1}{1 + e^{\gamma(i - b)}} \right] }_{=: W_{22}} \cdot \Delta \underline{x} = & \ L_{Ag}+L_{pcm}
 	\end{align}
-\end{subequations}
+\end{subequations} \\
 
 This gives the linear system
 
@@ -1679,9 +1677,9 @@ This gives the linear system
 		L_{Ag} \\
 		L_{Ag} + L_{pcm}
 	\end{bmatrix}
-\end{equation}
+\end{equation} \\
   
- we can solve for $\Delta \bar{x}$ and $\Delta \underline{x}$. \Cref{fig:computation_physical_grid,fig:grid_size} show illustrations of the resulting functions for the physical grid $x = \chi(\tilde{x})$ and the gridsize $\Delta x = \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$. Although those are discrete functions they are plotted continuously for better comprehensibility. \\
+ which we can solve for $\Delta \bar{x}$ and $\Delta \underline{x}$ for a reasonable grid. \Cref{fig:computation_physical_grid,fig:grid_size} show illustrations of the resulting functions for the physical grid $x = \chi(\tilde{x})$ and the gridsize $\Delta x = \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$. Although those are discrete functions they are plotted continuously for better comprehensibility. \\
 
 
 
@@ -1783,7 +1781,7 @@ This gives the linear system
 	
 	\end{axis}
 	\end{tikzpicture}
-	\caption{Mapping of the gridsize $\Delta x = \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$ as a function of the computation grid. $N_{pcm}$, $N_m$ and $N_{tr}$ are the total discretization points for the PCM, margin and grid transition part. Start $\delta \bar{x}(t) := \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x})\cdot t$ and end $\delta \underline{x}(t) := \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x})\cdot(1-t)$ of the grid transition are marked.}
+	\caption{Mapping of the gridsize $\Delta x = \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$ as a function of the computation grid $\tilde{x}$. $N_{pcm}$, $N_m$ and $N_{tr}$ are the total discretization points for the PCM, margin and grid transition part. Start $\delta \bar{x}(t) := \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x})\cdot t$ and end $\delta \underline{x}(t) := \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x})\cdot(1-t)$ of the grid transition are marked.}
 	\label{fig:grid_size}
 \end{figure}
 
@@ -2945,16 +2943,16 @@ Unfortunately we do not have the true specific heat capacity of the examined PCM
 
 Mein erster und besonderer Dank gilt Dr. Andreas Sommer, der sehr viel Zeit der Besprechung der Arbeit gewidmet hat, allzeit mit Rat und Tat zur Seite stand und durch den ich sehr viel gelernt habe.\\
 
-Bedanken moechte ich mich bei der gesamten Arbeitsgruppe Simulation und Optimierung fuer die sehr schoene und angenehme Zeit. \\
+Bedanken möchte ich mich bei der gesamten Arbeitsgruppe Simulation und Optimierung für die sehr schöne und angenehme Zeit. \\
 
-Professor Hans Georg Bock danke ich fuer die Vorlesungen ueber Optimierung gewoehnlicher Differentialgleichungen, die mein Interesse an diesem Thema geweckt haben. Ausserdem bedanke ich mich fuer die Moeglichkeit diese Arbeit in seiner Arbeitsgruppe durchzufuehren. \\
+Professor Hans Georg Bock danke ich fuer die Vorlesungen über Optimierung gewöhnlicher Differentialgleichungen, die mein Interesse an diesem Thema geweckt haben. Ausserdem bedanke ich mich für die Möglichkeit diese Arbeit in seiner Arbeitsgruppe durchzuführen. \\
 
-Mein Dank gilt auch Dr. Johannes P. Schlöder, der sich bereit erklaert hat, das Zweitgutachten dieser Arbeit zu uebernehmen \todo{?!}. \\  
+Mein Dank gilt auch Dr. Johannes P. Schlöder, der sich bereit erklärt hat, das Zweitgutachten dieser Arbeit zu übernehmen \todo{?!}. \\  
 
 \todo{AIT danken? wem genau?} \\
 
 
-Tiefster Dank geht indes an meine Eltern, Freunde und meine Freundin Ina fuer die kontinuierliche Unterstuetzung durch alle Phasen hinweg. \\
+Tiefster Dank geht indes an meine Eltern, Freunde und meine Freundin Ina für die kontinuierliche Unterstützung über alle Phasen hinweg. \\
 
 Vielen lieben Dank!
 
