@@ -398,7 +398,7 @@ The area of this peak $A_{\Delta U}$ (see \cref{fig:dsc-calibration_dU(t)}) is a
 	A_{\Delta U} \propto \Delta H_{\text{Kal}} \quad \Rightarrow \quad sens = \frac{A_{\Delta U}}{\Delta H_{\text{Kal}}}
 \end{equation} 
 
-This is done for a set of calibration materials such that we get a mapping $sens(T)$ by interpolating the data points $(T_{\text{Kal,i}}, sens_i)$, see \cref{fig:dsc-calibration_sens(T)}.
+This is done for a set of calibration materials (In, Sn, Zn, Al) such that we get a mapping $sens(T)$ by interpolating the data points $(T_{\text{Kal,i}}, sens_i)$, see \cref{fig:dsc-calibration_sens(T)}.
 
 \begin{figure}[H]
 	\centering
@@ -462,52 +462,52 @@ This is done for a set of calibration materials such that we get a mapping $sens
 		\caption{}
 		\label{fig:dsc-calibration_sens(T)}
 	\end{subfigure}
-	\caption{Sensitivity calibration illustration graphs: (a) Computation of the area $A_{\Delta U}$ under the measuring signal $\Delta U(t)$ graph for a material with known melting point $T_{\text{Kal}}$ and enthalpy $\Delta H_{\text{Kal}}$. $A_{\Delta U}$ is related to melting enthalpy via factor $sens$. This is performed for several materials such that in (b) one can interpolate $sens=\frac{A_{\Delta U}}{\Delta H_{\text{Kal}}}$ for a certain temperature range. \\
-	C.f. measurement data \cref{fig:measurement_csv_data}.}
+	\caption{Sensitivity calibration illustration graphs: (a) Computation of the area $A_{\Delta U}$ under the measuring signal $\Delta U(t)$ graph for a material with known melting point $T_{\text{Kal}}$ and enthalpy $\Delta H_{\text{Kal}}$. $A_{\Delta U}$ is related to melting enthalpy via factor $sens$. This is performed for several materials (In, Sn, Zn, Al) such that in (b) one can interpolate $sens=\frac{A_{\Delta U}}{\Delta H_{\text{Kal}}}$ for a certain temperature range. \\
+	Cf. measurement data \cref{fig:measurement_csv_data}.}
 \end{figure}
 
 With the mapping $\varPhi(T_{ref}) = \frac{\Delta U(T_{ref})}{sens(T_{ref})}$ the heat flux into the sample then can be computed for a measurement signal $\Delta U$ of unknown materials. 
 
 \paragraph{Measurement data}\mbox{}\\
-In this context the measurements were performed as remarked at the AIT in Wien using the heat flux DSC \textit{Netzsch DSC 204 F1 Phoenix\textsuperscript{\textregistered}}. An excerpt of the .csv file which contains the measurement data for heat rate ${\beta=1.25 \frac{K}{min}}$ is shown in \cref{fig:measurement_csv_data}. Beside general information like date and time when the experiment was performed and which sample and crucibles have been used there are four columns. Three of those contain the information recorded during the experiment. Those are the temperature at the reference crucible $T_{ref}$, elapsed time $t$ since start of measurement set and electric potential $\Delta U_m$ caused by the temperature difference between reference and sample crucible. 
-From the sensitivity calibration the fourth column holds the sensitivity values $sens$.
+In this context the measurements were performed as remarked at the AIT in Wien using the heat flux DSC \textit{Netzsch DSC 204 F1 Phoenix\textsuperscript{\textregistered}}. An excerpt of the .csv file which contains the measurement data for heat rate ${\beta=1.25 \frac{K}{min}}$ is shown in \cref{fig:measurement_csv_data}. Beside general information like date and time when the experiment was performed and which sample and crucibles have been used there are four columns. The first three of those contain the information recorded during the experiment, namely the temperature at the reference crucible $T_{ref}$, elapsed time $t$ since start of measurement set and electric potential $\Delta U_m$ caused by the temperature difference between reference and sample crucible. 
+From the sensitivity calibration, the fourth column holds the sensitivity values $sens$.
 Note here that $\Delta U_m$ is normalized on the sample mass such that is has unit $[\Delta U_m]=\frac{\mu V}{mg}$. We need to consider this for the following computation of the heat flux into the PCM
 
 \begin{equation}
 	\varPhi_q^{\eta_i}(T_{ref}^{\eta_i}) = m_{pcm} \cdot \frac{\Delta U_m(T_{ref}^{\eta_i})}{sens(T_{ref}^{\eta_i})}
 \end{equation}
 
-where $m_{pcm}$ is the sample mass, $\Delta U_m(T_{ref}^{\eta_i})$ is the voltage and $sens(T_{ref}^{\eta_i})$ the sensitivity at reference temperature $T_{ref}^{\eta_i}$. \\
+where $m_{pcm}$ is the sample mass, $\Delta U_m(T_{ref}^{\eta_i})$ is the voltage and $sens(T_{ref}^{\eta_i})$ the sensitivity at reference temperature $T_{ref}^{\eta_i}$ for measurement number $i$. \\
 These measurement data are used later in the parameter estimation optimization problem in \cref{sec:optimization_problem}.
 
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=.8\textwidth]{/home/argo/masterarbeit/thesis/images/messdaten.png}
-	\caption{Exemplary excerpt of measurement data .csv file for heat rate $\beta=1.25 \frac{K}{min}$. In the upper part measurement properties like measuring device or sample mass are listed. Below then there are four columns with the first rows of measurement values: Temperature at reference crucible $T_{ref}$, elapsed time $t$ since start of measurement set, electric potential $\Delta U_m$ because of temperature difference between reference and sample crucible (normalized on sample mass) and sensitivity values $sens$ from sensitivity calibration. \\
-	C.f. \cref{sec:heat_flux_dsc} paragraph sensitivity calibration.}
+	\caption{Exemplary excerpt of measurement data .csv file for heat rate $\beta=1.25 \frac{K}{min}$. In the upper part measurement properties like measuring device or sample mass are listed. Below there are four columns with the measurement values: Temperature at reference crucible $T_{ref}$, elapsed time $t$ since start of measurement set, electric potential $\Delta U_m$ because of temperature difference between reference and sample crucible (normalized on sample mass) and sensitivity values $sens$ from sensitivity calibration. \\
+	Cf. \cref{sec:heat_flux_dsc} paragraph sensitivity calibration.}
 	\label{fig:measurement_csv_data}
 \end{figure}
 
 
 \subsubsection{Power compensated DSC}
 \label{sec:power_compensated_dsc}
-Exemplary another kind of differential scanning calorimetry is the
+Another kind of differential scanning calorimetry is the
 power compensated DSC (\cref{fig:DSC_power_compensated_principle}). 
-The main difference to a heat flux DSC is that there are 2 separated chambers for a reference and the sample. Both have individual heaters and temperature sensors such that a feedback control system keep the temperature in both chambers on the same value. Since the electrical power for heating is known the heat flux is gained due to energy conservation. \\
+The main difference to a heat flux DSC is that there are 2 separated chambers for a reference and the sample. Both have individual heaters and temperature sensors such that a feedback control system keeps the temperature in both chambers on the same value. Since the electrical power for heating is known the heat flux is gained due to energy conservation. \\
 
 
 \subsection{Smearing Problem}
 \label{sec:smearing_problem}
-The common way to perform the heat flux DSC calibration, measurement and specific heat capacity $c_p$ computation is described in detail in DIN 11357 \cite{DIN_11357}. By assuming a proportionality between the heat flux into the sample and the sample's heat capacity one gets the equation
+A common way to perform the heat flux DSC calibration, measurement and specific heat capacity $c_p$ computation is described in detail in DIN 11357 \cite{DIN_11357}. By assuming a proportionality between the heat flux into the sample and the sample's heat capacity one gets the equation
 
 \begin{equation}
 	c_p^S(T) = c_p^{R}(T) \cdot \frac{m^R}{m^S} \cdot \frac{\varPhi^S(T) - \varPhi^0(T)}{\varPhi^R(T) - \varPhi^0(T)}
 	\label{eq:c_p_formula_DIN}
 \end{equation}
 
-where $S$ and $R$ denote the sample respectively reference. Reference means here a material with known specific heat capacity $c_p^R(T)$, not to be mistaken with the reference side of the experimental setup. In our case this reference material is sapphire. Furthermore $m$ is the mass and $\Phi^0$ is the heat flux if both crucibles are empty to compensate asymmetries in the experimental setup. \\
-In \cref{fig:heat_flux_measurements} the measurement data of the heat flux into the PCM $\varPhi_q^{\eta}(T_{ref})$ is shown for all heat rates dependent on the temperature at the reference crucible. Using \cref{eq:c_p_formula_DIN} the computed specific heat capacities for the PCM are shown in \cref{fig:c_p_DIN_formula}. As one can see for higher heat rates the peak position shifts to higher temperatures and furthermore the peak is smeared out. This is known as the smearing problem since $c_p$ is a material property and must be equal for all heat rates.
+where the indices $S$ and $R$ denote the sample respectively reference. Reference means here a material with known specific heat capacity $c_p^R(T)$, not to be mistaken with the reference side of the experimental setup which is usually empty. In our case this reference material is sapphire. Furthermore $m$ is the mass and $\varPhi^0$ is the heat flux if both crucibles are empty. $\varPhi^0$ is subtracted to compensate asymmetries in the experimental setup. \\
+In \cref{fig:heat_flux_measurements} the measurement data of the heat flux into the PCM $\varPhi_q^{\eta}(T_{ref})$ is shown for all heat rates dependent on the temperature at the reference crucible. Using \cref{eq:c_p_formula_DIN} the computed specific heat capacities for the PCM are shown in \cref{fig:c_p_DIN_formula}. For higher heat rates the peak position shifts to higher temperatures and furthermore the peak is smeared out. This is known as the smearing problem since $c_p(T)$ is a material property and therefore independent of the heat rate.
 
 
 \begin{figure}[H]
@@ -523,7 +523,7 @@ In \cref{fig:heat_flux_measurements} the measurement data of the heat flux into 
 		\label{fig:c_p_DIN_formula}
 	\end{subfigure}
 	\caption{(a) Heat flux measurement values $\varPhi_q^{\eta}(T_{ref})$ and (b) computed specific heat capacity $c_p(T)$ using \cref{eq:c_p_formula_DIN} with distinct smearing effect for higher heat rates. \\
-	C.f. Simulated heat flux (\cref{fig:smearing_effect_simulation_heat_flux}) and $c_p(T)$ obtained by parameter estimation depicted in \cref{fig:5Gaussians_all_c_p,fig:FS_all_c_p,fig:FS_all_c_p_modHeatRate}.}
+	Cf. Simulated heat flux (\cref{fig:smearing_effect_simulation_heat_flux}) and $c_p(T)$ obtained by parameter estimation depicted in \cref{fig:5Gaussians_all_c_p,fig:FS_all_c_p,fig:FS_all_c_p_modHeatRate}.}
 \end{figure}
 
 
@@ -1488,7 +1488,7 @@ So far the physical and mathematical foundations were laid by reciting known kno
 
 Our 1D mathematical model \cref{eq:heat_equation_model} of the heat flux DSC measurement process (see \cref{fig:heat_flux_DSC}) uses the differential state variable $T(x,t)$ which is the temperature at spatial coordinate $x$ at time $t$. It is based on the following assumptions. First the heat transport is exclusively done by thermal diffusion (cf. \cref{sec:heat_equation}), so convection and thermal radiation are neglected. 
 Moreover we assume that the reference and sample crucible  are independent of each other which allows us to simulate each side on its own. 
-Analog to the experimental setup the silver plate is connected with the furnace whose temperature increases with a constant heat rate $\beta$ which gives the Dirichlet boundary condition \cref{eq:heat_equation_BC_dirichlet}. All material properties of silver are constant such that the heat transport there is described by \cref{eq:heat_equation_Ag}. The silver plate then is connected with the PCM whose mass density $\rho_{pcm}$ and heat conductivity $\lambda_{pcm}$ are assumed to be constant. The specific heat capacity $c_p(T)$ is temperature dependent, parametrized (c.f. \cref{sec:parametrizations}) and the quantity we want to obtain by performing a parameter estimation. \Cref{eq:heat_equation_PCM} describes then the heat transport within the PCM at which we assume that no heat can leave the PCM, resulting in Neumann boundary condition \cref{eq:heat_equation_BC_Neumann}. Finally as start condition at time ${t_0 = 0}$ we assume that the temperature is equal everywhere (\cref{eq:heat_equation_start_values}).
+Analog to the experimental setup the silver plate is connected with the furnace whose temperature increases with a constant heat rate $\beta$ which gives the Dirichlet boundary condition \cref{eq:heat_equation_BC_dirichlet}. All material properties of silver are constant such that the heat transport there is described by \cref{eq:heat_equation_Ag}. The silver plate then is connected with the PCM whose mass density $\rho_{pcm}$ and heat conductivity $\lambda_{pcm}$ are assumed to be constant. The specific heat capacity $c_p(T)$ is temperature dependent, parametrized (cf. \cref{sec:parametrizations}) and the quantity we want to obtain by performing a parameter estimation. \Cref{eq:heat_equation_PCM} describes then the heat transport within the PCM at which we assume that no heat can leave the PCM, resulting in Neumann boundary condition \cref{eq:heat_equation_BC_Neumann}. Finally as start condition at time ${t_0 = 0}$ we assume that the temperature is equal everywhere (\cref{eq:heat_equation_start_values}).
 
 \begin{subequations}
 	\begin{align}
@@ -1571,7 +1571,7 @@ is apparent by the heat rate $\beta$ at temperature $T^0$. Zero flux Neumann bou
 	\centering
 	\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/discretization_grid_heat_flux.png}
 	\caption{Illustration of discretized model with discrete temperatures $T^i$, grid sizes $\Delta x_i$, physical length $L$ and heat flux approximation $\varPhi_q^{pcm,in}$ into the PCM. \\
-	C.f	corresponding IVP \cref{eq:heat_equation_discretized}, grid size construction \cref{sec:spatial_discretization_grid}, heat flux approximation \cref{eq:heat_flux_computation_final} and experimental setup \cref{fig:heat_flux_DSC}.}
+	Cf.	corresponding IVP \cref{eq:heat_equation_discretized}, grid size construction \cref{sec:spatial_discretization_grid}, heat flux approximation \cref{eq:heat_flux_computation_final} and experimental setup \cref{fig:heat_flux_DSC}.}
 	\label{fig:mathematical_model_discretized}
 \end{figure}
 
@@ -2189,11 +2189,11 @@ The constant material properties used throughout are shown in \cref{tab:const_ma
 		Silver (Ag) & $0.235$ & $10.49$ & $430$ \\
 		PCM & ---$^*$ & $0.85$ & $0.96$ \\ \hline
 	\end{tabular}
-	\caption{Material properties for specific heat capacity $c_p$, mass density $\rho$ and heat conductivity $\lambda$ used in numerical experiments. $^*$ Specific heat capacity of PCM temperature dependent and parametrized, c.f. \cref{sec:parametrizations}.}
+	\caption{Material properties for specific heat capacity $c_p$, mass density $\rho$ and heat conductivity $\lambda$ used in numerical experiments. $^*$ Specific heat capacity of PCM temperature dependent and parametrized, cf. \cref{sec:parametrizations}.}
 	\label{tab:const_material_properties}
 \end{table}
 
-The initial temperature (c.f. \cref{eq:heat_equation_discretized}) was set to $T_0=10^\circ C$ and the simulation stopped for the furnace temperature $T^0(t_f)=200^\circ C$ such that the phase transition is finished entirely. \\
+The initial temperature (cf. \cref{eq:heat_equation_discretized}) was set to $T_0=10^\circ C$ and the simulation stopped for the furnace temperature $T^0(t_f)=200^\circ C$ such that the phase transition is finished entirely. \\
 
 %Except for the forward simulation with an equidistant grid as reference for the error analysis of different spatial grids, all experiments have been done on my laptop using Linux Ubuntu Mate, 2 Cores Intel(R) Core(TM) i3-4100M CPU @ 2.50GHz and 8GB RAM. Former was computed on the IWR-Compute Server Quadxeon2 (4 x Dual Core E7220 2.93 GHz, 256 GB RAM).
 
@@ -2225,7 +2225,7 @@ The resulting heat fluxes for all heat rates from the forward simulation can be 
 		\label{fig:smearing_effect_simulation_heat_flux}
 	\end{subfigure}
 	\caption{(a) Used specific heat capacity for all heat rates. Parametrization is Fraser-Suzuki with $h=10$, $r=2$, $wr=5$, $sr=0.3$, $z=130$, $m=0.003$ and $b=2$. (b) Heat flux measurement values for specified heat rates. (c) Heat flux from simulation for specified heat rates. Widening of the peak and shift of maximum position visible analog to measurement values. \\
-	C.f. smearing problem in \cref{sec:smearing_problem}.}
+	Cf. smearing problem in \cref{sec:smearing_problem}.}
 \end{figure}
 
 
@@ -2244,7 +2244,7 @@ Due to the early working state we used the matlab routines $ode15s$ for integrat
 Minimizing the heat flux residuum worked best in this setting for $L_{Const}=15mm$ (instead of $L_{Ag}$ here) and $L_{pcm}=0.5mm$. \\
 The results after optimizing, using the measurement data of heat rate $\beta = 10 \frac{K}{min}$, are shown in \cref{fig:NURBS_results}. As one can see it was possible to minimize the heat flux residuum quite well aside from some oscillations which have their origin in $c_p(T)$. 
 Beside the oscillations there is one major difference in the peak shape of the specific heat capacity from what we would expect. That is after the peak a temporary decrease followed by a big slope.
-Finally $lsqnonlin$ gives us the approximation of the used Jacobian $J_1(p_{c_p})$ at the end of the optimization process which was computed internally via finite differences, see \cref{fig:NURBS_results}c. Since in our NURBS parametrization the y-coordinates of the control points are free optimization variables and the locality property of those the x-axis of these Jacobian plots was set being the x-coordinates ($\hat{=}$ temperature) of the control points. This way there is a direct connection between $J_1(p_{c_p})$ and which zone of $c_p(T)$ it affects. The y-axis was labeled using the reference crucible temperature $T_{ref}$ since the heat flux measurement values are given as a function of those, analog to the heat flux plot.
+Finally $lsqnonlin$ gives us the approximation of the used Jacobian $J_1(p_{c_p})$ at the end of the optimization process which was computed internally via finite differences, see \cref{fig:NURBS_results}. Since in our NURBS parametrization the y-coordinates of the control points are free optimization variables and the locality property of those the x-axis of these Jacobian plots was set being the x-coordinates ($\hat{=}$ temperature) of the control points. This way there is a direct connection between $J_1(p_{c_p})$ and which zone of $c_p(T)$ it affects. The y-axis was labeled using the reference crucible temperature $T_{ref}$ since the heat flux measurement values are given as a function of those, analog to the heat flux plot.
 Two things are worth mentioning. First there is an increase of several orders of magnitude for areas of $c_p(T)$ up to temperatures of $100^\circ C$ and $T_{ref}$ above $110^\circ C$ during phase transition. Interestingly the specific heat capacity's oscillations occur in a zone of low sensitivities which explains why $lsqnonlin$ does not improve here further. 
 Secondly considering the zone of increased magnitude in detail (see \cref{fig:NURBS_results}d) one recognize sign switching oscillations where continuity is expected. This is a strong indication that the approximation of $J_1(p_{c_p})$ via finite differences is of poor quality and not reliable why we switch to internal numerical differentiation later. \\
 The optimization took in this case about 40 minutes on my laptop and stopped because the norm of step was below the tolerance $10^{-6}$.
@@ -2301,7 +2301,7 @@ From the magnitude we can conclude that an integration tolerance of $10^{-7}$ is
 
 
 \subsection{Error analysis with respect to spatial discretization grid}
-Next we compare several configurations of the spatial discretization grid (c.f. \cref{sec:spatial_discretization_grid} for grid construction) with an equidistant reference grid with $\Delta x = \frac{L_{pcm}}{N_{pcm}}$ everywhere. The used physical lengths $L_{Ag}=40mm$ and $L_{pcm}=0.1mm$ where the optimization worked best together with a sufficiently large number of discretization points within the PCM such that the heat flux approximation is adequate results in a huge number of total discretization points in an equidistant grid. E.g. with $N_{pcm}=50$ the total number of discretization points would be $N=20,050$ which is not practical in the optimization process. Therefore we compute the relative error
+Next we compare several configurations of the spatial discretization grid (cf. \cref{sec:spatial_discretization_grid} for grid construction) with an equidistant reference grid with $\Delta x = \frac{L_{pcm}}{N_{pcm}}$ everywhere. The used physical lengths $L_{Ag}=40mm$ and $L_{pcm}=0.1mm$ where the optimization worked best together with a sufficiently large number of discretization points within the PCM such that the heat flux approximation is adequate results in a huge number of total discretization points in an equidistant grid. E.g. with $N_{pcm}=50$ the total number of discretization points would be $N=20,050$ which is not practical in the optimization process. Therefore we compute the relative error
 
 \begin{equation}
 	| \text{Relative error}_i| = \left| 1 - \frac{T_{{grid}_i}^{N_{Ag}-1}(T_{ref})}{T_{eq}^{N_{Ag}-1}(T_{ref})} \right|
@@ -2327,7 +2327,7 @@ In the first set of tests we modified the total number of discretization points 
 		\label{fig:grid_relErr_mod_N}
 	\end{subfigure}
 	\caption{(a) Grid size $\Delta x(\tilde{x})$ and (b) relative error computed by \cref{eq:relErr_grid} for fixed $n_{tr}=0.1$ and $n_{pcm}=0.2$ while varying total number of discretization points $N$. \\
-	C.f. grid construction in \cref{sec:spatial_discretization_grid} and $\Delta x(\tilde{x})$ computed by \cref{eq:gridsize_definition}.}
+	Cf. grid construction in \cref{sec:spatial_discretization_grid} and $\Delta x(\tilde{x})$ computed by \cref{eq:gridsize_definition}.}
 	\label{fig:grid_mod_N}
 \end{figure}
 
@@ -2347,7 +2347,7 @@ Next we varied the number of discretization points in the silver plate $N_{Ag}$ 
 		\label{fig:grid_relErr_mod_N1}
 	\end{subfigure}
 	\caption{(a) Grid size $\Delta x(\tilde{x}$ and (b) relative error computed by \cref{eq:relErr_grid} for fixed $N_{pcm}=50$ and $N_{tr}=0.1$ while varying discretization points in the silver plate $N_{Ag}$. \\
-	C.f. grid construction in \cref{sec:spatial_discretization_grid} and $\Delta x(\tilde{x})$ computed by \cref{eq:gridsize_definition}.}
+	Cf. grid construction in \cref{sec:spatial_discretization_grid} and $\Delta x(\tilde{x})$ computed by \cref{eq:gridsize_definition}.}
 	\label{fig:grid_mod_N1}
 \end{figure}
 
@@ -2367,7 +2367,7 @@ Finally $N_{Ag}=300$ and $N_{pcm}=50$ were fixed while varying the grid transiti
 		\label{fig:grid_relErr_mod_n_tr}
 	\end{subfigure}
 	\caption{(a) Grid size $\Delta x(\tilde{x}$ and (b) relative error computed by \cref{eq:relErr_grid} for fixed $N_{Ag}=300$ and $N_{pcm}=50$ while varying the grid transition parameter $n_{tr}$. \\
-	C.f. grid construction in \cref{sec:spatial_discretization_grid} and $\Delta x(\tilde{x})$ computed by \cref{eq:gridsize_definition}.}
+	Cf. grid construction in \cref{sec:spatial_discretization_grid} and $\Delta x(\tilde{x})$ computed by \cref{eq:gridsize_definition}.}
 	\label{fig:grid_mod_n_tr}
 \end{figure}
 
