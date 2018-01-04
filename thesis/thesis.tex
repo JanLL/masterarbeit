@@ -110,10 +110,10 @@
 	
 	\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
 	\HRule \\[0.4cm]
-	\huge \bfseries Ueberschrift
+	\huge \bfseries Simulation of differential scanning calorimetry measuring process of phase change materials and parameter estimation of the specific heat capacity 
 	\HRule 
 	
-	\vspace{11cm}
+	\vspace{9cm}
 	
 	\Large \textit{Jan Lammel }\\
 	\Large \textit{Heidelberg, \today }\\ \vspace{0.5cm}
@@ -153,26 +153,37 @@
 \pagenumbering{arabic}
 
 \section{Introduction}
-In this thesis we examine so called phase change materials (PCM). A popular application are heating pads (see \cref{fig:heating_pad}) which are liquid in fully charged state. Folding induces a phase change to a solid state where energy is released and therefore the temperature increases. They can be easily recharged by applying a temperature above the melting point (e.g. with boiling water). 
+This thesis is part of project modELTES, a cooperation of the Austrian Institute of Technology GmbH (AIT), VOIGT+WIPP Engineers GmbH and Interdisziplinäres Zentrum für Wissenschaftliches Rechnen (IWR) here at Ruprecht-Karls-Universität Heidelberg in order to examine so called phase change materials (PCM). The physical experiments have been performed in Wien at the AIT while in Heidelberg the aim is on the development of simulation software. \\
+A popular application of PCMs are heating pads (see \cref{fig:heating_pad}) which are liquid in fully charged state. Folding induces a phase change to a solid state where energy is released and therefore the temperature increases. They can be recharged by applying a temperature for a sufficiently long time above the melting point (e.g. with boiling water). 
 
-\begin{wrapfigure}{l}{0.45\textwidth}
-	\includegraphics[width=0.45\textwidth]{/home/argo/masterarbeit/thesis/images/handwaermer[wiki].jpg}
+\begin{wrapfigure}{l}{0.4\textwidth}
+	\includegraphics[width=0.4\textwidth]{/home/argo/masterarbeit/thesis/images/handwaermer[wiki].jpg}
 	\caption{Heating pad \\ left: liquid; right: solid \\
 		Source: \cite{heating_pad_image}}
 	\label{fig:heating_pad}
 \end{wrapfigure}
 
-In general PCMs work as an energy buffer. Another application are industry processes to store the process heat for later usage \cite{pcm_process_heat}. Furthermore they can be used to optimize photovoltaic cells because their efficiency is temperature dependent with a maximum at a certain point. PCMs are able to stabilize the temperature where the efficiency is maximal \cite{pcm_solar_cells}. 
-A last example are insulations of houses. During the day when it is hot, the PCM becomes liquid and absorb heat from outside, so they work as a cooling system. On the contrary at night when it is cold outside the PCM becomes solid, releases heat and work as a heating \cite{pcm_house_insulation}. 
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[width=0.6\textwidth]{/home/argo/masterarbeit/thesis/images/handwaermer[wiki].jpg}
+%	\caption{Heating pad, left: liquid; right: solid, Source: \cite{heating_pad_image}}
+%	\label{fig:heating_pad}
+%\end{figure}
+
+In general, PCMs work as an energy buffer. Another application are industry processes to store the process heat for later usage \cite{pcm_process_heat}. Furthermore they can be used to optimize  photovoltaic cells as the efficiency of those cells is temperature dependent with a maximum at a certain point. PCMs are able to stabilize the temperature where the efficiency is maximal \cite{pcm_solar_cells}. 
+A last example are insulations of houses. During the day when it is hot, the PCM becomes liquid and absorbs heat from outside, so they work as a cooling system. On the contrary at night when it is cold outside the PCM becomes solid, releases heat and works as a heating \cite{pcm_house_insulation}. \\
+An important material property is the specific heat capacity $c_p(T)$ where a phase transition peak tells us at which temperature the phase change occurs and how much energy can be stored. The common way of computing $c_p(T)$ from differential scanning calorimetry (DSC) measurement data yields different results depending on the heat rate, a measurement parameter. Since $c_p(T)$ is a material property this is unphysical and this issue is known as the smearing problem. By applying a parameter estimation we aim to avoid this problem.
+Therefore the two major goals of this thesis is both simulate the measuring process of a DSC where a PCM undergoes a phase transition and perform a parameter estimation in order to get the PCM's true specific heat capacity. 
+Furthermore the heat rate is proportional to the time duration of the experiment. If we get the same $c_p(T)$ for all heat rates we are able to accelerate the measuring process and therefore the research on this materials. \\
+This thesis is structured as follows. In \cref{sec:physical_background} the physics of a phase transition and the measuring process of a DSC are elucidated. 
+The mathematical methods for simulation and parameter estimation are introduced in \cref{sec:mathematical_background}. These methods then have been applied in \cref{sec:simulation_of_DSC} to simulate the DSC measuring process and in \cref{sec:parameter_estimation_applied} for the parameter estimation of the specific heat capacity. Performed numerical experiments and corresponding results are shown in \cref{sec:numerical_experiments}. Finally \cref{sec:discussion} concludes this thesis with a discussion of results, problems and potential next working steps on this subject.
 
 
-An important physical quantity is the specific heat capacity $c_p(T)$ which tells us at which temperature the phase transition occurs and how much energy can be stored. The major goal of this thesis is to simulate the measuring process of a differential scanning calorimetry (DSC) where a PCM undergoes a phase transition and perform a parameter estimation in order to get the PCM's specific heat capacity. \\
-As we will see in more detail in \cref{sec:physics_DSC} the common way of computing $c_p(T)$ from DSC measurement data yields different results depending on the heat rate, a measurement parameter. Since $c_p(T)$ is a material property this is unphysical and this issue is known as the smearing problem (\cref{sec:smearing_problem}). \\
-By applying the parameter estimation (\cref{sec:parameter_estimation_applied}) we aim to avoid this problem. Furthermore the heat rate is proportional to the time duration of the experiment. If we get the same $c_p(T)$ for all heat rates we are able to accelerate the measuring process and therefore the research on this materials.
- 
+\section{Physical background}
+\label{sec:physical_background}
 
+\todo{Einfuehrungstext...}
 
-\section{Physical Background}
 \subsection{Physical quantities and phase transition}
 
 First of all some important physical quantities will be introduced because they are crucial for further comprehension. A summary is shown in \cref{tab:important_physical_quantities} with the consistently used symbol in this thesis and the physical unit. \\
@@ -337,7 +348,7 @@ Due to the definition of the heat capacity at constant volume $c_v(T) := \frac{\
 
 
 
-\subsection{Differential Scanning Calorimetry}
+\subsection{Differential Scanning Calorimetry (DSC)}
 \label{sec:physics_DSC}
 The method of measuring the heat flux into a sample over a certain temperature range is called Differential Scanning Calorimetry (DSC). 
 
@@ -456,8 +467,7 @@ This is done for a set of calibration materials such that we get a mapping $sens
 With the mapping $\varPhi(T_{ref}) = \frac{\Delta U(T_{ref})}{sens(T_{ref})}$ the heat flux into the sample then can be computed for a measurement signal $\Delta U$ of unknown materials. 
 
 \paragraph{Measurement data}\mbox{}\\
-This master thesis is part of project modELTES, a cooperation of the Austrian Institute of Technology GmbH (AIT), VOIGT+WIPP Engineers GmbH and Interdisziplinäres Zentrum für Wissenschaftliches Rechnen (IWR) here at Ruprecht-Karls-Universität Heidelberg. A major goal of modELTES is the development of simulation software of phase change materials. \\
-In this context the measurements were performed at the AIT in Wien using the heat flux DSC \textit{Netzsch DSC 204 F1 Phoenix\textsuperscript{\textregistered}}. An excerpt of the .csv file which contains the measurement data for heat rate ${\beta=1.25 \frac{K}{min}}$ is shown in \cref{fig:measurement_csv_data}. Beside general information like date and time when the experiment was performed and which sample and crucibles have been used there are four columns. Three of those contain the information recorded during the experiment. Those are the temperature at the reference crucible $T_{ref}$, elapsed time $t$ since start of measurement set and electric potential $\Delta U_m$ caused by the temperature difference between reference and sample crucible. 
+In this context the measurements were performed as remarked at the AIT in Wien using the heat flux DSC \textit{Netzsch DSC 204 F1 Phoenix\textsuperscript{\textregistered}}. An excerpt of the .csv file which contains the measurement data for heat rate ${\beta=1.25 \frac{K}{min}}$ is shown in \cref{fig:measurement_csv_data}. Beside general information like date and time when the experiment was performed and which sample and crucibles have been used there are four columns. Three of those contain the information recorded during the experiment. Those are the temperature at the reference crucible $T_{ref}$, elapsed time $t$ since start of measurement set and electric potential $\Delta U_m$ caused by the temperature difference between reference and sample crucible. 
 From the sensitivity calibration the fourth column holds the sensitivity values $sens$.
 Note here that $\Delta U_m$ is normalized on the sample mass such that is has unit $[\Delta U_m]=\frac{\mu V}{mg}$. We need to consider this for the following computation of the heat flux into the PCM
 
@@ -517,6 +527,7 @@ In \cref{fig:heat_flux_measurements} the measurement data of the heat flux into 
 
 \newpage
 \section{Mathematical background}
+\label{sec:mathematical_background}
 
 \subsection{Derivative generation}
 In the context of continuous optimization we are dependent on derivative information in order to minimize some function. 
@@ -1464,6 +1475,7 @@ The nonlinear least squares optimization problem as part of the parameter estima
 
 \newpage
 \section{Simulation of DSC measuring process}
+\label{sec:simulation_of_DSC}
 
 \todo{Ab hier aendert sich wahrscheinlich noch mal etwas.} \\
 
@@ -2025,7 +2037,7 @@ An example $c_p(T)$ function generated by this parametrization is shown in \cref
 
 
 
-\subsubsection{Fraser-Suzuki Peak}
+\subsubsection{Fraser-Suzuki peak}
 \label{sec:parametrization_FS}
 
 A parametrization used frequently for chromatography and spectroscopy distributions with fewer degrees of freedom is the Fraser-Suzuki peak \cite{fraser_suzuki_1} \cite{fraser_suzuki_many_fcts}
@@ -2784,6 +2796,7 @@ Unfortunately we do not have the true specific heat capacity of the examined PCM
 
 \newpage
 \section{Discussion}
+\label{sec:discussion}
 
 \begin{itemize}
 	\item A pleasant observation is that the differential equation's solution is not very sensitive with respect to the chosen grid.  Ausser: $t=0.999$ statt $t=0.99$ ist wichtig.
