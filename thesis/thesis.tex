@@ -182,11 +182,12 @@ The mathematical methods for simulation and parameter estimation are introduced 
 \section{Physical background}
 \label{sec:physical_background}
 
-\todo{Einfuehrungstext...}
+Since the work in this thesis is based on the experiments of a differential scanning calorimetry, the physical basics regarding important quantities, phase transition and the experimental setup will be introduced. Further, the heat equation will be derived, which is relevant for the simulation model later. Finally as motivation the smearing problem occurring in the hitherto usual method of computing the specific heat capacity is shown.
+
 
 \subsection{Physical quantities and phase transition}
 
-First of all some important physical quantities will be introduced because they are crucial for further comprehension. A summary is shown in \cref{tab:important_physical_quantities} with the consistently used symbol in this thesis and the physical unit. \\
+First of all some important physical quantities will be introduced because they are crucial for further comprehension. A summary is shown in \cref{tab:important_physical_quantities} with the consistently used symbols in this thesis and the physical unit. \\
 Heat $Q$ is the energy that flows from a warmer to a colder object because of the temperature difference. The heat flux density $\phi$ tells us how much heat flows through an unit area in one second. By considering a particular area this quantity becomes the heat flux $\varPhi$. Heat conductivity $\lambda$ is a material property how much energy is transported on a distance of $1m$, unit area and temperature difference of $1K$ in one second.
 
 \begin{table}[H]
@@ -206,11 +207,11 @@ Heat $Q$ is the energy that flows from a warmer to a colder object because of th
 
 
 
-Probably the most important physical quantity for us is the specific heat capacity $c_p$ which is a temperature dependent material property that tells us how much energy is needed to increase the temperature of $1kg$ of this material by $1K$. 
+Probably the most important physical quantity for us is the specific heat capacity $c_p$, a temperature dependent material property that tells us how much energy is needed to increase the temperature of $1kg$ of this material by $1K$. 
 Since we are primarily interested in the phase change we handle with specific heat capacities with latent part, i.e. a peak at the melting point. Moreover the specific heat capacity not belonging to the phase transition is called sensitive part and is described by the base line. 
-For a pure substance this phase transition peak would be ideally a Dirac delta function (see  \cref{fig:physics_c_p_dirac_delta}). A constant heat flux entering such a pure substance increases the temperature until phase change. Then the heat is absorbed in order to perform the phase transition while the temperature stays constant. Finally after the phase change has finished the temperature increases again. 
-In mixed substances like PE in our case with different lengths of the individual polymer chains or due to lattice defects the peak extends over a temperature range. In the case of lattice defects the atom's binding energies are decreased which lowers the phase transition's temperature partially. The corresponding shape of the specific heat capacity is shown in \cref{fig:physics_fraser_suzuki} and is called Fraser-Suzuki peak. It is not known what shape of $c_p(T)$ we should expect exactly for a polymer and therefore task in this thesis to find out. \\
-The last physical quantity to introduce is the melting enthalpy $\Delta H$ which is in the case of constant pressure the heat needed to perform the phase transition. Considering the graph $c_p(T)$, the area of the phase change peak is equal to the melting enthalpy. This is illustrated in \cref{fig:physics_fraser_suzuki}.
+For a pure substance this phase transition peak would be ideally a Dirac delta function (see  \cref{fig:physics_c_p_dirac_delta}). A constant heat flux entering such a pure substance increases the temperature until phase change. Then the heat is absorbed in order to perform the phase transition while the temperature stays constant. Finally, after the phase change has finished, the temperature increases again. 
+In mixed substances like polyethylene in our case with different lengths of the individual polymer chains or due to lattice defects, the peak extends over a temperature range. In the case of lattice defects the atom's binding energies are decreased which lowers the phase transition's temperature partially. The corresponding shape of the specific heat capacity is shown in \cref{fig:physics_fraser_suzuki}. It is not known what shape of $c_p(T)$ we should expect exactly for a polymer. \\
+The last physical quantity to introduce is the melting enthalpy $\Delta H$ which is in the case of constant pressure the heat needed to perform the phase transition. Considering the graph $c_p(T)$, the area below the phase change peak less the baseline is equal to the melting enthalpy. This is illustrated in \cref{fig:physics_fraser_suzuki}.
 
 
 
@@ -279,7 +280,7 @@ area legend]
 \caption{}
 \label{fig:physics_fraser_suzuki}
 \end{subfigure}
-\caption{Specific heat capacity for (a) ideally pure substance where the phase transition is described by a Dirac delta function at the melting point and (b) mixed substance described by a Fraser-Suzuki Peak where melting enthalpy $\Delta H$ is illustrated.}
+\caption{Specific heat capacity for (a) ideally pure substance where the phase transition is described by a Dirac delta function at the melting point and (b) mixed substance where melting enthalpy $\Delta H$ is illustrated.}
 \end{figure}
 
 \subsection{Phase transition peak characteristics}
@@ -295,14 +296,14 @@ Beside the melting enthalpy $\Delta H$ (\cref{fig:physics_fraser_suzuki}) additi
 	\label{fig:T_on/off_illustration}
 \end{figure}
 
-These are the maximal turning point $T_{max}$ and further $T_{on}$ and $T_{off}$ computed as the intersection of the inflection points' tangent with the base line of $c_p(T)$, i.e. the sensitive part. In the used parametrizations (\cref{sec:parametrizations} except NURBS) of the specific heat capacity in this thesis the base line is linear. An illustration is given above in \cref{fig:T_on/off_illustration}.
+These are the maximum point $T_{max}$ and further the extrapolated on- and offset of melting $T_{on}$ and $T_{off}$ computed as the intersection of the inflection points' tangents with the base line of $c_p(T)$, i.e. the sensitive part \cite{DIN_11357}. In the parametrizations (\cref{sec:parametrizations} except NURBS) of the specific heat capacity in this thesis the base line is modeled linear. An illustration is given above in \cref{fig:T_on/off_illustration}.
 
 
-\subsection{Heat equation}
+\subsection{Derivation of the heat equation}
 \label{sec:heat_equation}
 
-Since we are dealing with heat transport in the measuring process the central equation in this thesis is the heat equation. \\
-For the derivation \cite{lit:waerme_und_stoffuebertragung}
+Since we are dealing with heat transport in the measuring process, the central physical equation in this thesis is the heat equation. \\
+For its derivation \cite{lit:waerme_und_stoffuebertragung}
 we start with the total inner energy $U$ in a volume $V$ which can be computed by
 
 \begin{equation}
@@ -310,19 +311,19 @@ we start with the total inner energy $U$ in a volume $V$ which can be computed b
 \end{equation}
 
 where $\rho$ is the mass density and $u$ is the specific inner energy. \\
-Next the total heat flux $\varPhi$ into the volume $V$ is
+The total heat flux $\varPhi$ into the volume $V$ is
 
 \begin{equation}
 	\varPhi = - \int_{\partial V} \phi \cdot n \ dA = - \int_{V} \nabla \cdot \phi \ dV
 \end{equation}
 
 where $\phi$ is the heat flux density, $n$ is the normal vector pointing outside infinitesimal surface element $dA$ (therefore the minus in front) and $\partial V$ is the surface of $V$. We have used Gauss theorem to transform the surface integral into a volume integral. \\
-Now we assume that there are no further sources and sinks of inner energy for volume $V$ such that it holds
+We assume that there are no further sources and sinks of inner energy for volume $V$ such that it holds $\frac{\partial U}{\partial t} = \varPhi$
 
-\begin{equation}
-	\frac{\partial U}{\partial t} = \frac{\partial}{\partial t} \int_V (\rho u) \ dV = \int_V \frac{\partial}{\partial t}(\rho u) \ dV = - \int_{V} \nabla \cdot \phi \ dV = \varPhi
+\begin{align}
+	\Leftrightarrow \ \frac{\partial U}{\partial t} = \frac{\partial}{\partial t} \int_V (\rho u) \ dV = & \int_V \frac{\partial}{\partial t}(\rho u) \ dV = - \int_{V} \nabla \cdot \phi \ dV = \varPhi
 	\label{eq:heat_eq_derivation_1}
-\end{equation}
+\end{align}
 
 for $\rho u$ continuously differentiable. The heat flux density is now computed with Fourier's law
 
@@ -350,7 +351,7 @@ Due to the definition of the heat capacity at constant volume $c_v(T) := \frac{\
 
 \subsection{Differential Scanning Calorimetry (DSC)}
 \label{sec:physics_DSC}
-The method of measuring the heat flux into a sample over a certain temperature range is called Differential Scanning Calorimetry (DSC). 
+A method of measuring the heat flux into a sample over a certain temperature range is called Differential Scanning Calorimetry (DSC). 
 
 \begin{figure}[H]
 	\centering
@@ -372,21 +373,22 @@ The method of measuring the heat flux into a sample over a certain temperature r
 \subsubsection{Heat flux DSC}
 \label{sec:heat_flux_dsc}
 The heat flux DSC is crucial for us since it has been used for the experimental data we worked with in this thesis. It is based on differential thermal analysis (DTA, see \cref{fig:DTA_principle}). 
-In DTA there is one chamber in which both reference and sample are heated equally. 
-Due to differences in the heat capacity of reference and sample a temperature difference dependent on their absolute temperature will appear.
-This can be used to find typical temperatures of known substances to identify the sample's components. \\
+In DTA there is one chamber in which both reference and sample are exposed to the same heating program.
+Due to differences in the heat capacities of reference and sample, a temperature difference that varies with absolute temperature appears \footnote{This can be used to find typical temperatures of known substances to identify the sample's components, though not part of this thesis.}. \\
 Unfortunately calorimetric properties like melting enthalpy are not accessible just from the temperature difference measurement. 
 Note that the physical quantity measured is an electrical potential difference $\Delta U$ which is assumed to be proportional to the temperature difference due to the Seebeck effect. \\
+The heat flux DSC (see \cref{fig:heat_flux_DSC}) extends now DTA. Its experimental setup from which the used measurement data comes is as follows. Two crucibles (an empty reference one and the other filled with the sample to examine) are connected to the furnace with a silver plate. The furnace' temperature increases in time with a specific heat rate $\beta$ and because of thermal differences a temperature difference $\Delta T$ between sample and reference is measured with temperature sensors placed below the crucibles. As we are actually interested in the temperature of the reference and sample within the crucible a so called temperature calibration is performed. \\
+Finally the calorimetric quantity, i.e. the heat flux into the sample is obtained by the sensitivity calibration which is elucidated next.
+
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/dsc_funktionsprinzip.png}
-	\caption{Principle experimental scheme of DSC from which the used measurement data comes from. Two crucibles (an empty reference one and the other filled with the sample to examine) are connected to the furnace with a silver plate. The furnace' temperature increases in time with a specific heat rate $\beta$ and because of thermal differences a temperature difference $\Delta T$ is measured with temperature sensors placed at the crucibles. The final measurement quantity obtained by sensitivity calibration is the heat flux into the sample $\varPhi_s^2$. \\
+	\caption{Principle experimental scheme of heat flux DSC from which the used measurement data comes from. Two crucibles (an empty reference one and the other filled with the sample to examine) are connected to the furnace with a silver plate. The furnace' temperature increases in time with a specific heat rate $\beta$ and because of thermal differences a temperature difference $\Delta T$ between sample and reference is measured with temperature sensors placed below the crucibles. The final measurement quantity obtained by sensitivity calibration is the heat flux into the sample $\varPhi_s^2$. \\
 	This is the basis for our mathematical model in \cref{sec:mathematical_model}.}
 	\label{fig:heat_flux_DSC}
 \end{figure}
 
-The heat flux DSC (see \cref{fig:heat_flux_DSC}) extends now DTA by computing the heat flux into the sample $\varPhi_S^2$ from the temperature difference using an additional so called sensitivity calibration. 
 
 \paragraph{Sensitivity calibration}\mbox{}\\
 Pure materials with known melting temperature $T_{\text{Kal}}$ and melting enthalpy $\Delta H_{\text{Kal}}$ are measured, giving the measuring signal $\Delta U(t)$ with a peak at the phase change. 
@@ -1476,8 +1478,6 @@ The nonlinear least squares optimization problem as part of the parameter estima
 \newpage
 \section{Simulation of DSC measuring process}
 \label{sec:simulation_of_DSC}
-
-\todo{Ab hier aendert sich wahrscheinlich noch mal etwas.} \\
 
 So far the physical and mathematical foundations were laid by reciting known knowledge. Now in this section our new model of the measuring process of an heat flux DSC will be introduced while in the next section it follows the corresponding parameter estimation in order to obtain the specific heat capacity $c_p(T)$.
 
