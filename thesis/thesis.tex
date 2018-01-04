@@ -120,7 +120,7 @@
 	\Large \textit{Supervisor:}
 	
 	\Large \textit{Prof. Dr. Dr. h. c. mult. Hans Georg Bock}\\
-	\Large \textit{Dr. Andreas Sommer}
+	\Large \textit{\todo{...}}
 	
 	\end{center}
 \end{titlepage}
@@ -130,8 +130,10 @@
 \tableofcontents 
 \newpage
 
- \pagenumbering{Roman} 
- 
+
+
+
+ \pagenumbering{Roman}  
 
  \addsec{Abstract}
  \todo{!}
@@ -143,6 +145,11 @@
 \todo{!}
 
 \newpage
+
+
+
+
+
 \pagenumbering{arabic}
 
 \section{Introduction}
@@ -265,6 +272,7 @@ area legend]
 \end{figure}
 
 \subsection{Phase transition peak characteristics}
+\label{sec:peak_characteristics}
 Beside the melting enthalpy $\Delta H$ (\cref{fig:physics_fraser_suzuki}) additional characteristics are introduced in order to quantify a given peak.
 
 
@@ -2497,6 +2505,7 @@ $T_{on}$ and $T_{off}$ have not been computed since there are more than two infl
 	\end{tabular}
 	\caption{For all heat rates: Temperature $T_{max}$ where $c_p(T)$ has its maximum and melting enthalpy $\Delta H$, i.e. the integral of $c_p(T)$ minus the base line over the temperature. Decreases below the baseline after the peak were ignored here. \\
 	$^{(1)}$ Bessel corrected sample standard deviation used here. $^{(2)}$ $T_{max}$ for $\beta=10\frac{K}{min}$ was omitted as there are two maxima. Those are responsible for deformations influencing the peak area. Therefore $\Delta H$ was not considered in mean computation. \\
+	Cf. peak characteristics \cref{sec:peak_characteristics}.
 	}
 	\label{tab:eval_table_Tmax_deltaH_5Gaussians}
 \end{table}
@@ -2609,7 +2618,8 @@ Regarding $T_{max}$ and $\Delta H$ the deviations among different heat rates hav
 	\end{tabular}
 	\caption{$T_{max}$ and $\Delta H$ analog to \cref{tab:eval_table_Tmax_deltaH_5Gaussians}. $T_{on}$ and $T_{off}$ are defined as shown in \cref{fig:T_on/off_illustration}. \\
 	$^{(1)}$ Bessel corrected sample standard deviation used here. \\
-	$^{(2)}$ Value was omitted for mean computation due to mentioned measurement error and comparability to results of Gaussian parametrization.}
+	$^{(2)}$ Value was omitted for mean computation due to mentioned measurement error and comparability to results of Gaussian parametrization. \\
+	Cf. peak characteristics \cref{sec:peak_characteristics}.}
 	\label{tab:eval_table_Tmax_deltaH_FS}
 \end{table}
 
@@ -2763,8 +2773,9 @@ Unfortunately we do not have the true specific heat capacity of the examined PCM
 		$T_{off} [^{\circ} C]$ & $136.1$ & $135.7$ & $133.6$ & $132.6$ & $132.4$ & $132.5$ & $132.7$ & $133.7 \pm 1.6 \ (1.2\%)$ \\[0.7ex]
 		$\Delta H \ [\frac{mJ}{mg}]$ & $162.7$ & $197.0^{(3)}$ & $184.3$ & $176.6$ & $173.1$ & $171.5$ & $172.2$ & $173.4 \pm 7.1 \ (4.1\%)$ \\ \hline
 	\end{tabular}
-	\caption{Peak characteristics \todo{...} \\
-	$^{(1)}$ Bessel corrected sample standard deviation used here. $^{(2)}$ Value omitted as there are two maxima. $^{(3)}$ Values not considered for mean computation since the two maxima in Gaussian parametrization deforming the peak shape and therefore $\Delta H$. The other three values are omitted for comparability. }
+	\caption{Peak characteristics from $c_p(T)$ by DIN 11357 formula both raw measurement data \cref{fig:c_p_DIN_formula} and those data fitted on a Fraser-Suzuki peak \cref{eq:fraser_suzuki}. Furthermore the peak characteristics from parameter estimation with Gaussian and Fraser-Suzuki parametrization from \cref{tab:eval_table_Tmax_deltaH_5Gaussians,tab:eval_table_Tmax_deltaH_FS}. \\
+	$^{(1)}$ Bessel corrected sample standard deviation used here. $^{(2)}$ Value omitted as there are two maxima. $^{(3)}$ Values not considered for mean computation since the two maxima in Gaussian parametrization deforming the peak shape and therefore $\Delta H$. The other three values are omitted for comparability. \\
+	Cf. peak characteristics \cref{sec:peak_characteristics}.}
 	\label{tab:eval_table_summary}
 \end{table}
 
@@ -2915,5 +2926,18 @@ Unfortunately we do not have the true specific heat capacity of the examined PCM
 	R.E. Moore. Interval analysis . Prentice-Hall, Englewood Cliffs, NJ, 1966.
   
 \end{thebibliography}
+
+\newpage
+\addsec{Danksagung}
+\todo{!}
+
+
+\newpage
+\addsec{Erklärung}
+Ich versichere, dass ich diese Arbeit selbständig verfasst und keine anderen als die angegebenen Quellen und Hilfsmittel verwendet habe.\\[2ex]
+
+Heidelberg, den 15. Januar 2018 \\[6ex]
+
+$\overline{\qquad \quad \text{Jan Lammel} \quad \qquad}$
 
 \end{document}
