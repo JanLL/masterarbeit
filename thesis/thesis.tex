@@ -1789,10 +1789,10 @@ This gives the linear system
 \subsection{Analytical solution of reference side}
 \label{sec:analytical_solution}
 
-The measurement data for the residuum computation is given as a function dependent on the temperature at the reference crucible $T_{ref}^{\eta_i}$. Since we need to evaluate the solution of the heat equation (PCM side) at the corresponding time points $t_i$ it is necessary to calculate these.
-This is done by applying Newton's method on the heat equation's solution of the reference side which can be solved analytically as follows. \\
+%The measurement data for the residuum computation is given as a function dependent on the temperature at the reference crucible $T_{ref}^{\eta_i}$. Since we need to evaluate the solution of the heat equation (PCM side) at the corresponding time points $t_i$ it is necessary to calculate these.
+%This is done by applying Newton's method on the heat equation's solution of the reference side which can be solved analytically as follows. \\
 
-As the crucible of the reference side is empty there is just the silver plate with a constant temperature coefficient $a$. The start and boundary conditions are equal to the ones of the PCM side. So the boundary value problem reads 
+As the crucible of the reference side is empty there is just the silver plate with a constant temperature coefficient $a$. The start and boundary conditions are equal to the ones of the PCM side. Therefore the boundary value problem reads 
 
 \begin{subequations}
 	\begin{empheq}[box=\widefbox]{align}
@@ -1803,26 +1803,24 @@ As the crucible of the reference side is empty there is just the silver plate wi
 	\end{empheq}
 \end{subequations}
 
-The first step is a separate ansatz of the solution function $T(x,t)$ with $\bar{T}(x,t)$ satisfying the boundary conditions:
+which can be solved analytically. The first step is a separation ansatz of the solution function $T(x,t)$ with $\Gamma(x,t)$ and $\bar{T}(x,t)$ satisfying the boundary conditions:
 
 \begin{align}
-	{T}(x,t) = \bar{T}(x,t) + \Gamma(x,t) \\
-	\bar{T}(x,t) = A(t) + B(t) \cdot x
+	{T}(x,t) =: & \ \bar{T}(x,t) + \Gamma(x,t) \\
+	\bar{T}(x,t) =: & \ A(t) + B(t) \cdot x
 \end{align}
 
 Inserting the boundary conditions and a coefficient comparison in $x$ gives
 
 \begin{align}
 	\bar{T}(0,t) = T_0 + \beta \cdot t = A(t) \\
-	\frac{\partial \bar{T}}{\partial x}(L_1,t) = 0 \cdot x = B(t)
+	\frac{\partial \bar{T}}{\partial x}(L_1,t) = 0 \cdot x = B(t) \\[2ex]
+	\Rightarrow \bar{T}(x,t) = T_0 + \beta \cdot t
 \end{align}
 
-\begin{equation}
-	\Rightarrow \bar{T}(x,t) = T_0 + \beta \cdot t
-\end{equation}
 
 
-By construction this leads to homogenous boundary conditions of $\Gamma(x,t)$:
+By construction this leads to homogeneous boundary conditions of $\Gamma(x,t)$:
 
 \begin{align}
 	T(0,t) & = \bar{T}(0,t) + \Gamma(0,t) = T_0 + \beta \cdot t + \Gamma(0,t) \stackrel{\cref{eq:analytical_soln_bc_dirichlet}}{=} T_0 + \beta \cdot t \\
@@ -1861,14 +1859,14 @@ this leads to the boundary value problem in $\Gamma(x,t)$
 \end{subequations}
 
 
-The homogeneous solution (i.e. $\bar{q}=0$) can be obtained by an ansatz of seperation of variables $\Gamma(x,t) = \mathcal{T}(t) \cdot X(x)$, \cref{eq:analytical_soln_pde_gamma} is then equivalent to
+The homogeneous solution (i.e. $\bar{q}=0$) can be obtained by an separation ansatz of $\Gamma(x,t) =: \mathcal{T}(t) \cdot X(x)$. \Cref{eq:analytical_soln_pde_gamma} is then equivalent to
 
 \begin{equation}
 	\dot{\mathcal{T}} X = a \mathcal{T} X'' \quad \Leftrightarrow \quad \frac{1}{a} \frac{\dot{\mathcal{T}}}{\mathcal{T}} = \frac{X''}{X} = const =: - \lambda
 \end{equation}
 
 
-since the LHS $\sfrac{\dot{\mathcal{T}}}{{\mathcal{T}}}$ just depends in $t$ and the RHS $\sfrac{X''}{X}$ just depends on $x$. 
+since the LHS $\sfrac{\dot{\mathcal{T}}}{{\mathcal{T}}}$ just depends on $t$ and the RHS $\sfrac{X''}{X}$ just depends on $x$. 
 
 The solution of the ordinary differential equation $X'' = - \lambda \cdot X$ is
 
@@ -1880,17 +1878,18 @@ where $c_1$ and $c_2$ are determined by the boundary conditions $X(0) = 0$ and $
 
 \begin{align}
 	X(0) = c_2 \stackrel{!}{=} 0 \\
-	X'(L_1) = \left. c_1 \sqrt{\lambda} cos(\sqrt{\lambda} x) \right|_{x=L_1} = c_1 \sqrt{\lambda} cos(\sqrt{\lambda} L_1) \stackrel{!}{=} 0 \\
+	X'(L_1) = \left. c_1 \sqrt{\lambda} \cos(\sqrt{\lambda} x) \right|_{x=L_1} = c_1 \sqrt{\lambda} \cos(\sqrt{\lambda} L_1) \stackrel{!}{=} 0 \\
 	\Rightarrow \sqrt{\lambda_n} = \frac{(2n -1)\pi}{2 L_1} \qquad n=1,2,...
 \end{align}
 
+Note: The trivial solution $\sqrt{\lambda}=0$ leads to $X(x) = 0$ and is therefore omitted. \\
 The general solution of $X_n(x)$ is then given by
 
 \begin{equation}
 	\tilde{X}_n(x) = c_1 \cdot \sin\left(\frac{(2n -1)\pi}{2 L_1} \cdot x\right) =: c_1 \cdot X_n(x)
 \end{equation}
 
-In order to solve the non-homogeneous boundary value problem \cref{eq:analytical_soln_gamma} $\Gamma$, $\bar{q}$ and $\bar{f}$ are expanded in a Fourier series with $X_n(x)$ as basis where $c_1$ is incorporated in the corresponding Fourier coefficient:
+In order to solve the non-homogeneous boundary value problem \cref{eq:analytical_soln_gamma}, $\Gamma$, $\bar{q}$ and $\bar{f}$ are expanded in a Fourier series with $X_n(x)$ as basis where $c_1$ is incorporated in the corresponding Fourier coefficients $\mathcal{T}_n(t)$, $\bar{q}_n(t)$ and $\bar{f}_n$:
 
 \begin{subequations}
 	\centering
@@ -1917,7 +1916,7 @@ Inserting this into \cref{eq:analytical_soln_pde_gamma} gives us
 	\stackrel{X'' = - \lambda X}{\Leftrightarrow} \ \ \sum_{n=1}^{\infty} \dot{\mathcal{T}}_n(t) X_n(x) + a \sum_{n=1}^{\infty} \lambda_n \mathcal{T}_n(t) X_n(x) = \sum_{n=1}^{\infty} \bar{q}_n(t) X_n(x)
 \end{align*}
 
-With a coefficient comparison in $X_n$ we get the inhomogeneous ODE
+With a coefficient comparison in $X_n$ we get the inhomogeneous ordinary differential equation (ODE)
 
 \begin{equation}
 	\dot{\mathcal{T}_n}(t) + a \lambda_n \mathcal{T}_n(t) = \bar{q}_n(t)
@@ -1930,10 +1929,10 @@ where the solution of the homogeneous part (i.e. $\bar{q}_n(t) = 0$) is
 	\mathcal{T}_n^h(t) = A_n \cdot e^{-a \lambda_n t}
 \end{equation}
 
-Applying the method of variation of constants by setting $A_n = A_n(t)$ and inserting in \cref{eq:analytical_soln_inhomo_ode} gives
+Applying the method of variation of constants by setting $A_n = A_n(t)$ and inserting in \cref{eq:analytical_soln_inhomo_ode} gives after cancellation and reordering
 
 \begin{align}
-	\dot{A_n}(t) & = \bar{q}_n(t) \cdot e^{a \lambda_n t} = -\frac{4 \beta}{\pi (2n - 1)} e^{a \lambda_n \tau} \\
+	\dot{A_n}(t) & = \bar{q}_n(t) \cdot e^{a \lambda_n t} = -\frac{4 \beta}{\pi (2n - 1)} e^{a \lambda_n t} \\
 	\Rightarrow A_n(t) & = \int_{0}^{t} -\frac{4 \beta}{\pi (2n - 1)} e^{a \lambda_n \tau} d \tau + A_{n,c} \\
 	& = -\frac{4 \beta}{\pi (2n - 1)} \frac{1}{a \lambda_n} \left[ e^{a \lambda_n t} - 1 \right] + A_{n,c}
 \end{align}
@@ -1947,7 +1946,7 @@ The solution of the inhomogeneous ODE \cref{eq:analytical_soln_inhomo_ode} then 
 The remaining unknown $A_{n,c}$ is determined by considering the Fourier series of the starting condition
 
 \begin{equation}
-	\Gamma(x,t) = \sum_{n=1}^{\infty} \mathcal{T}_n(0) X_n(x) = \sum_{n=1}^{\infty} \bar{f}_n X_n(x) = \bar{f}(x)
+	\Gamma(x,0) = \sum_{n=1}^{\infty} \mathcal{T}_n(0) X_n(x) = \sum_{n=1}^{\infty} \bar{f}_n X_n(x) = \bar{f}(x)
 \end{equation}
 
 From $\mathcal{T}_n(0) = A_{n,c}$, $\bar{f}_n=0$ and again a coefficient comparison it follows that
