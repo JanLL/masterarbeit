@@ -531,6 +531,18 @@ In \cref{fig:heat_flux_measurements} the measurement data of the heat flux into 
 \section{Mathematical background}
 \label{sec:mathematical_background}
 
+In this section the mathematical problems we treat in this thesis will be introduced, that is essentially the solution of (partial) differential equations and the nonlinear least squares problem. Further, methods for the numerical solution of these problems are shown. \\
+Since crucial and occurring several times in this section, we will introduce the initial value problem (IVP)
+
+\begin{align}
+	\dot{y} = f(y(t), t; p) \label{eq:initial_value_problem_definition} \\
+	y(t_0) = y_0 \nonumber
+\end{align}
+
+with differential state vector $y \in \mathbb{R}^n$, time $t \in \mathbb{R}$ and parameters $p \in \mathbb{R}^{n_p}$. Function $f: \mathbb{R}^n \times \mathbb{R} \rightarrow \mathbb{R}^n$ with $f \in \mathcal{C}^2$ is called the differential equation's right hand side. The semicolon separates between function arguments and  parameters\footnote{e.g. also controls $u$ in the context of optimal control.}.
+Initial time and state are $t_0$ and $y_0$, respectively.
+
+
 \subsection{Derivative generation}
 In the context of continuous optimization we are dependent on derivative information in order to minimize some function. 
 There are several possibilities to obtain these derivatives. We will introduce here the concept of finite differences and automatic differentiation which were used in this thesis. 
@@ -1479,16 +1491,18 @@ The nonlinear least squares optimization problem as part of the parameter estima
 \section{Simulation of DSC measuring process}
 \label{sec:simulation_of_DSC}
 
-So far the physical and mathematical foundations were laid by refering known knowledge. In this section our new model of the measuring process of a heat flux DSC will be introduced while in the next section it follows the corresponding parameter estimation in order to obtain the specific heat capacity $c_p(T)$.
+So far the physical and mathematical foundations were laid by refering known knowledge. In this section our new model of the simulation of a heat flux DSC measuring process will be introduced, resulting finally in an initial value problem for the sample side. The reference side on the other hand is solved analytically at the end of this section.
+
+%in next \cref{sec:parameter_estimation_applied} it follows the corresponding parameter estimation in order to obtain the specific heat capacity $c_p(T)$.
 
 
 
 \subsection{Mathematical model}
 \label{sec:mathematical_model}
 
-Our 1D mathematical model \cref{eq:heat_equation_model} of the heat flux DSC measurement process (cf. experimental setup in \cref{fig:heat_flux_DSC}) uses the differential state variable $T(x,t)$ which is the temperature at spatial coordinate $x$ at time $t$. It is based on the following assumptions. First the heat transport is exclusively done by thermal diffusion (cf. \cref{sec:heat_equation}), thus convection and thermal radiation are neglected. 
+Our 1D mathematical model \cref{eq:heat_equation_model} of the heat flux DSC measurement process (see physical experiment in \cref{fig:heat_flux_DSC}) uses the differential state variable $T(x,t)$ which is the temperature at spatial coordinate $x$ at time $t$. It is based on the following assumptions. First the heat transport is exclusively done by thermal diffusion (see \cref{sec:heat_equation}), thus convection and thermal radiation are neglected. 
 Moreover we assume that the reference and sample crucible  are independent of each other which allows us to simulate each side on its own. 
-Analog to the experimental setup the silver plate is connected with the furnace whose temperature increases with a constant heat rate $\beta$ which gives the Dirichlet boundary condition \cref{eq:heat_equation_BC_dirichlet}. All material properties of silver are constant such that the heat transport there is described by \cref{eq:heat_equation_Ag}. The silver plate is connected with the PCM whose mass density $\rho_{pcm}$ and heat conductivity $\lambda_{pcm}$ are assumed to be constant. The specific heat capacity $c_p(T)$ is temperature dependent, parametrized (cf. \cref{sec:parametrizations}) and the quantity we want to obtain by performing a parameter estimation. \Cref{eq:heat_equation_PCM} describes the heat transport within the PCM at which we assume that no heat can leave the PCM, resulting in Neumann boundary condition \cref{eq:heat_equation_BC_Neumann}. Finally as start condition at time ${t_0 = 0}$ we assume that the temperature is equal everywhere (\cref{eq:heat_equation_start_values}).
+Analog to the experimental setup the silver plate is connected with the furnace whose temperature increases with a constant heat rate $\beta$ which gives the Dirichlet boundary condition \cref{eq:heat_equation_BC_dirichlet}. All material properties of silver are constant such that the heat transport there is described by \cref{eq:heat_equation_Ag}. The silver plate is connected with the PCM whose mass density $\rho_{pcm}$ and heat conductivity $\lambda_{pcm}$ are assumed to be constant. The specific heat capacity $c_p(T)$ is temperature dependent, parametrized (see \cref{sec:parametrizations}) and the quantity we want to obtain by performing a parameter estimation. \Cref{eq:heat_equation_PCM} describes the heat transport within the PCM at which we assume that no heat can leave the PCM, resulting in Neumann boundary condition \cref{eq:heat_equation_BC_Neumann}. Finally as start condition at time ${t_0 = 0}$ we assume that the temperature is equal everywhere (\cref{eq:heat_equation_start_values}).
 
 \begin{subequations}
 	\begin{align}
@@ -1570,13 +1584,13 @@ is apparent by the heat rate $\beta$ at temperature $T^0$. Zero flux Neumann bou
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/discretization_grid_heat_flux.png}
-	\caption{Illustration of discretized model with discrete temperatures $T^i$, grid sizes $\Delta x_i$, physical length $L$ and heat flux approximation $\varPhi_q^{pcm,in}$ into the PCM. \\
+	\caption{Illustration of discretized model with discrete temperatures $T^i$, grid sizes $\Delta x_i$, physical lengths $L_{Ag}, L_{pcm}$ and heat flux approximation $\varPhi_q^{pcm,in}$ into the PCM. \\
 	Cf.	corresponding IVP \cref{eq:heat_equation_discretized}, grid size construction \cref{sec:spatial_discretization_grid}, heat flux approximation \cref{eq:heat_flux_computation_final} and experimental setup \cref{fig:heat_flux_DSC}.}
 	\label{fig:mathematical_model_discretized}
 \end{figure}
 
 
-Solving \cref{eq:heat_equation_discretized} yields the temperature but we are primarily interested in the heat flux into the PCM $\varPhi_{q}^{pcm,in}$ since measurement data of this quantity is available. For the conversion from temperature to heat flux we use Fourier's law \cref{eq:fouriers_law}:
+Solving \cref{eq:heat_equation_discretized} yields the temperature but we are primarily interested in the heat flux into the PCM $\varPhi_{q}^{pcm,in}$ since measurement data of this quantity is available. For the conversion from temperature to heat flux we use Fourier's law (\cref{eq:fouriers_law}):
 
 \begin{align}
 	\varPhi_{q}^{pcm,in}(T) = & - \bar{\lambda} \cdot \nabla T (x=L_{Ag}) \cdot A_{pcm} \\
@@ -1641,7 +1655,7 @@ Furthermore we get $\gamma$ by ($\delta \underline{x}(t)$ illustrated in \cref{f
 \end{align}
 \end{subequations}
 
-The remaining variables $\underline{x}$ and $\bar{x}$ we get by the condition that $T^{N_{Ag}-1}$ is at the physical grid position $L_{Ag}$ (cf. \cref{fig:mathematical_model_discretized}).
+The remaining variables $\underline{x}$ and $\bar{x}$ we get by the condition that $T^{N_{Ag}-1}$ is at the physical grid position $L_{Ag}$ (see \cref{fig:mathematical_model_discretized}).
 
 \begin{subequations}
 	\begin{align}
@@ -1723,7 +1737,7 @@ This gives the linear system
 	
 	\end{axis}
 	\end{tikzpicture}
-	\caption{Mapping of the physical grid $x=\chi(\tilde{x})$ as a function of the computation grid $\tilde{x}$.}
+	\caption{Mapping of the physical grid $x=\chi(\tilde{x})$ as a function of the computation grid $\tilde{x}$. $L_{Ag}$ and $L_{pcm}$ are the physical lengths of the silver plate and PCM, respectively. $N$ and $N_{pcm}$ are the numbers of discretization points in total and within the PCM, respectively.}
 	\label{fig:computation_physical_grid}
 \end{figure}
 
@@ -1781,7 +1795,7 @@ This gives the linear system
 	
 	\end{axis}
 	\end{tikzpicture}
-	\caption{Mapping of the gridsize $\Delta x = \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$ as a function of the computation grid $\tilde{x}$. $N_{pcm}$, $N_m$ and $N_{tr}$ are the total discretization points for the PCM, margin and grid transition part. Start $\delta \bar{x}(t) := \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x})\cdot t$ and end $\delta \underline{x}(t) := \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x})\cdot(1-t)$ of the grid transition are marked.}
+	\caption{Mapping of the gridsize $\Delta x = \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$ as a function of the computation grid $\tilde{x}$. $N$, $N_{pcm}$, $N_m$ and $N_{tr}$ are the number of discretization points in total, within the PCM, margin and grid transition part. Start $\delta \bar{x}(t) := \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x})\cdot t$  \ and end $\delta \underline{x}(t) := \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x})\cdot(1-t)$ of the grid transition are marked. Grid size lower and upper bound $\Delta \underline{x}$ and $\Delta \bar{x}$ used in \cref{eq:gridsize_definition}.}
 	\label{fig:grid_size}
 \end{figure}
 
@@ -1968,6 +1982,8 @@ Finally the solution of the boundary value problem \cref{eq:analytical_soln_pde}
 \newpage
 \section{Parameter estimation of specific heat capacity $c_p$}
 \label{sec:parameter_estimation_applied}
+
+\todo{Ab hier aendert sich wahrscheinlich nochmal etwas.} \\
 
 Until now the mathematical model has been introduced which allows us to simulate the measuring process. Now this simulation is embedded into the parameter estimation of the specific heat capacity $c_p(T)$ where a nonlinear least squares problem has to be solved. As we want to estimate a function an appropriate parametrization is necessary. Those used in this thesis will be introduced in the following section.
 
