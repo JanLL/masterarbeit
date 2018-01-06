@@ -539,8 +539,12 @@ Since crucial and occurring several times in this section, we will introduce the
 	y(t_0) = y_0 \nonumber
 \end{align}
 
-with differential state vector $y \in \mathbb{R}^n$, time $t \in \mathbb{R}$ and parameters $p \in \mathbb{R}^{n_p}$. Function $f: \mathbb{R}^n \times \mathbb{R} \rightarrow \mathbb{R}^n$ with $f \in \mathcal{C}^2$ is called the differential equation's right hand side. The semicolon separates between function arguments and  parameters\footnote{e.g. also controls $u$ in the context of optimal control.}.
-Initial time and state are $t_0$ and $y_0$, respectively.
+with differential state vector $y \in \mathbb{R}^n$, time $t \in \mathbb{R}$ and parameters $p \in \mathbb{R}^{n_p}$. Function $f: \mathbb{R}^n \times \mathbb{R} \rightarrow \mathbb{R}^n$ with $f \in \mathcal{C}^2$ is called the differential equation's right hand side. The semicolon separates between function arguments and  parameters\footnote{e.g. also controls $u$ in the context of optimal control.}. Initial time and state are $t_0$ and $y_0$, respectively. \\
+Local existence of the solution is shown in theorem of Peano\footnote{Giuseppe Peano (1858–1932).} basically requires continuity of $f$ (see e.g. \cite{ODE_analytic} Theorem 2.2.8).
+For global existence and uniqueness the theorem of Picard\footnote{Charles Emile Picard (1856–1941).}-Lindelöf\footnote{Ernst Leonard Lindelöf (1870 - 1946).} holds requiring essentially $f$ Lipschitz continuous (see e.g \cite{ODE_analytic} Theorem 2.4.5). \\
+
+
+
 
 
 \subsection{Derivative generation}
@@ -763,27 +767,28 @@ Again we apply this algorithm on the exemplary function \cref{eq:AD_example}:
 \end{table} 
 
 
-Until now, the fundamental principles of AD have been explained, in particular just the first order derivative in forward and adjoint mode. Higher derivatives of arbitrary order can be obtained by using the method of Taylor coefficient propagation which is based on the propagation of a Taylor polynomial through a function evaluation (fundamentals in \cite{TC-prop_basis} and applied in \cite{diss_jan}). \\
+Until now, the fundamental principles of AD have been explained, in particular just the first order derivative in forward and adjoint mode. Higher derivatives of arbitrary order can be obtained for example by the method of Taylor Coefficient Propagation (fundamentals in \cite{TC-prop_basis} and applied in \cite{diss_jan}). \\
 
-In this thesis we are actually interested in the sensitivities $\frac{\partial y}{\partial p}$ of an differential equation $\dot{y}=f(t,y;p)$ with respect to parameters $p$. This can be done by solving the variational differential equation (see e.g. \cite{diff_equations_numerics}) which can be derived as follows using the integral form of a general differential equation with parameters $p$ and assuming $f$ smooth and $y_0$ independent of $p$.
+In this thesis we are actually interested in the sensitivities of the solution of an IVP \cref{eq:initial_value_problem_definition} with respect to parameters $p$, namely $\frac{\partial y}{\partial p}$. 
+This can be done by solving the variational differential equation (see e.g. \cite{diff_equations_numerics}) which can be derived as follows using the integral form of the IVP and assuming $f$ continuously differentiable and $y_0$ independent of $p$. 
 
 \begin{align}
-	y(t;p) = \ & y_0 + \int_{t_0}^{t} f(\tau,y(\tau;p);p) d\tau \\
+	y(t;p) = \ & y_0 + \int_{t_0}^{t} f(y(\tau;p),\tau;p) \ d\tau \\
 	\Rightarrow \frac{\partial y}{\partial p} = & \int_{t_0}^{t} \left[ \frac{\partial f}{\partial y} \cdot \frac{\partial y}{\partial p} + \frac{\partial f}{\partial p} \right] d\tau \nonumber
 \end{align}
 
-Taking the derivative with respect to time on both sides gives the corresponding initial value problem
+Function arguments of the partial derivatives are omitted here for better readability. Taking the derivative with respect to time on both sides gives the corresponding initial value problem
 
 \begin{align}
 	\frac{\partial}{\partial t} \left( \frac{\partial y}{\partial p} \right) = \ & \frac{\partial f}{\partial y} \cdot \frac{\partial y}{\partial p} + \frac{\partial f}{\partial p} \\
 	\frac{\partial y}{\partial p}(t_0) = \ & 0 \nonumber
 \end{align}
 
-Solving this IVP together with the nominal trajectory is one possibility to get $\frac{\partial y}{\partial p}$. If $y \in \mathbb{R}^n$ and $p \in \mathbb{R}^{n_p}$ the total differential equation system to solve would consist of $n + n \cdot n_p$ equations which is not an adequate approach. \\
-Another method is called Internal Numerical Differentiation (IND). Since the numerical integrator uses a stepsize control in order to limit the relative local error, the idea of IND is to freeze these adaptive components. 
+Solving this IVP together with the nominal trajectory is one possibility to get $\frac{\partial y}{\partial p}$. If $y \in \mathbb{R}^n$ and $p \in \mathbb{R}^{n_p}$ the total differential equation system to solve would consist of $n + n \cdot n_p$ equations which is a computationally costly approach. \\
+Another method uses Internal Numerical Differentiation (IND). Since the numerical integrator uses a stepsize control in order to limit the relative local error, the idea of IND is to freeze these adaptive components such that the integrator is differentiable. 
 Applying AD then means treating all mathematical operations of the used integration scheme as elemental operations. So it is basically straight forward to apply the chain rule on all these elemental operations in order to get the derivative $\frac{\partial y}{\partial p}$ just as explained above. 
 The application of AD is advantageous because one obtains exact numerical derivatives while the computed differential equation's nominal trajectory is still error controlled. \\
-The details on IND including the generation of higher derivatives via taylor coefficient propagation are elucidated in \cite{diss_jan} which is also the basis of the used software package SolvIND.
+The details on IND including the generation of higher derivatives via taylor coefficient propagation are elucidated in \cite{diss_jan} which is also the basis of the software package SolvIND used in \cref{sec:numerical_experiments} for the numerical experiments.
 
 
 \subsection{Numerical solution of initial value problems}
@@ -2956,6 +2961,10 @@ Unfortunately we do not have the true specific heat capacity of the examined PCM
 	Partial Differential Equations, 3/21/11 Version 0.15 alpha,
 	\url{http://www.eng.famu.fsu.edu/~dommelen/pdes/style_a/index.html}
 	
+\bibitem{ODE_analytic}
+	A Textbook on Ordinary Differential Equations, Second Edition
+	Shair Ahmad, Antonio Ambrosetti,
+	ISBN 978-3-319-16407-6
   
 \end{thebibliography}
 
