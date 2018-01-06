@@ -1083,7 +1083,7 @@ s.t. \ & F_2(x^{(k)}) + J_2(x^{(k)}) \Delta x^{(k)} = 0 \nonumber \\
 & F_3(x^{(k)}) + J_3(x^{(k)}) \Delta x^{(k)} = 0 \nonumber
 \end{align}
 
-with $J_1(x^{(k)}) := \frac{\partial F_1}{\partial x}(x^{(k)}) \in \mathbb{R}^{m_1 \times n}$, $J_2(x^{(k)}) := \frac{\partial F_2}{\partial x}(x^{(k)}) \in \mathbb{R}^{m_2 \times n}$ and $J_3(x^{(k)}) := \frac{\partial F_3}{\partial x}(x^{(k)}) \in \mathbb{R}^{m_3 \times n}$. Advantageous here is that we can avoid the computationally costly Hessian of the objective function. The iteration using the Gauss-Newton direction $\Delta x^{(k)}$ in iteration $k$ then reads as
+with $J_1(x^{(k)}) := \frac{\partial F_1}{\partial x}(x^{(k)}) \in \mathbb{R}^{m_1 \times n}$, $J_2(x^{(k)}) := \frac{\partial F_2}{\partial x}(x^{(k)}) \in \mathbb{R}^{m_2 \times n}$ and $J_3(x^{(k)}) := \frac{\partial F_3}{\partial x}(x^{(k)}) \in \mathbb{R}^{m_3 \times n}$. Advantageous here is that we can avoid the computationally costly Hessian of the objective function. The iteration using the Gauss-Newton step $\Delta x^{(k)}$ in iteration $k$ then reads as
 
 \begin{equation}
 x^{(k+1)} = x^{(k)} + t^{(k)} \Delta x^{(k)}
@@ -1283,7 +1283,7 @@ This algorithm has been used in \cref{sec:param_estimation_fs} in order to analy
 	\textbf{Initialize} $k=0$, $x^{(0)} = x_{start}$ \\\mbox{}\\
 	
 	Compute residuum $F_1(x^{(k)})$ and Jacobian $J_1(x^{(k)})$ \\
-	Compute Gauss-Newton direction $\Delta x^{(k)}$ with introduced methods \\
+	Compute Gauss-Newton step $\Delta x^{(k)}$ with introduced methods \\
 	\quad using pivoting QR or SVD decomposition \\
 	Set $t^{(k)} = 1$ \\
 	Compute next potential state $x^{(k+1)} = x^{(k)} + t^{(k)} \cdot \Delta x^{(k)}$ and \\ \quad corresponding residuum $F_1(x^{(k+1)})$ \\
@@ -1317,7 +1317,7 @@ In the equality constrained case we handle the problem
 	s.t. & \ F_2 + J_2 \Delta x = 0 \nonumber
 \end{align}
 
-We consider here the case $rank(J_2)=m_2$. First we factorize $J_2^T$ by a QR decomposition without column pivoting as we assume full rank for simplicity
+We consider here the case $rank(J_1) = n$ and $rank(J_2)=m_2$. First we factorize $J_2^T$ by a QR decomposition without column pivoting as we assume full rank for simplicity
 
 \begin{equation}
 	J_2^T = Q R = 
@@ -1330,7 +1330,7 @@ We consider here the case $rank(J_2)=m_2$. First we factorize $J_2^T$ by a QR de
 	\end{pmatrix}
 \end{equation}
 
-with $Q \in \mathbb{R}^{n \times n}$ orthogonal split into $Q_1 \in \mathbb{R}^{n \times m_2}$ and $Q_2 \in \mathbb{R}^{n \times (n-m_2)}$. Further, $R \in \mathbb{R}^{n \times m_2}$ with $\bar{R} \in \mathbb{R}^{m_2 \times m_2}$.
+with $Q \in \mathbb{R}^{n \times n}$ orthogonal split into $Q_1 \in \mathbb{R}^{n \times m_2}$ and $Q_2 \in \mathbb{R}^{n \times (n-m_2)}$. Further, $R \in \mathbb{R}^{n \times m_2}$ with $\bar{R} \in \mathbb{R}^{m_2 \times m_2}$ invertible.
 
 Inserting into the equality constraints gives
 \begin{equation}
@@ -1345,7 +1345,7 @@ Inserting into the equality constraints gives
 	\end{pmatrix}}^{:= \Delta y} = F_2 + \bar{R}^T \Delta y_1 = 0
 \end{equation}
 
-with $\Delta y_1 \in \mathbb{R}^{m_2}$ and $\Delta y_2 \in \mathbb{R}^{n-m_2}$. Since $rank(J_2)=m$, $\bar{R}^T$ is invertible and we can solve for $\Delta y_1$ because $\bar{R}^T$ is triangular:
+with $\Delta y_1 \in \mathbb{R}^{m_2}$ and $\Delta y_2 \in \mathbb{R}^{n-m_2}$. Since $rank(J_2)=m$, $\bar{R}^T$ is invertible and we can solve for $\Delta y_1$ (backsolve since $\bar{R}^T$ is triangular)
 
 \begin{equation}
 	\bar{R}^T \Delta y_1 = -F_2
@@ -1371,22 +1371,22 @@ s.t. & \ F_2 + J_2 \Delta x = 0 \nonumber \\
 &  \ F_3 + J_3 \Delta x \ge 0 \nonumber
 \end{align}
 
-We treat this problem with an active set strategy illustrated below, cf. \cite{diss_bock} page $119$. It is based on the fact that inactive inequality constraints do not contribute to the computation of $\Delta x$ since their Lagrange multiplier is zero.
+We treat this problem with an active set strategy illustrated below, see \cite{diss_bock} page $119$. It is based on the fact that inactive inequality constraints do not contribute to the computation of $\Delta x$ since their Lagrange multiplier is zero.
 
 \begin{enumerate}
-	\item Set $k := 0$, Let $x^{(0)}$ be a feasible point and $I^{(0)}$ corresponding active set.
+	\item Set $k := 0$, let $x^{(0)}$ be a feasible point and $I^{(0)}$ corresponding active set, choose norm of step tolerance $TOL$
 	\item Compute solution $\Delta x^{(k)}$ of equality constrained subproblem
 	\begin{align}
-	\min_{\Delta x^{(k)}} & \ \frac{1}{2} || F_1(x^{(k)}) + J_1(x^{(k)}) \Delta x^{(k)} ||_2^2 \nonumber \\
-	s.t. & \ \tilde{F}_2(x^{(k)}) + \tilde{J}_2(x^{(k)}) \Delta x^{(k)} = 0
-	\label{active_set_strategy_substep}
+	\min_{\Delta x^{(k)}} & \ \frac{1}{2} || F_1(x^{(k)}) + J_1(x^{(k)}) \Delta x^{(k)} ||_2^2 \label{active_set_strategy_substep} \\
+	s.t. & \ \tilde{F}_2(x^{(k)}) + \tilde{J}_2(x^{(k)}) \Delta x^{(k)} = 0 \nonumber
 	\end{align}
 	
 	with combined equality and active inequality constraints $\tilde{F}_2(x^{(k)}) = 
 	\begin{pmatrix} 
 	F_2(x^{(k)}) \\  
-	F_3^i(x^{(k)}), \ i \in I^k
-	\end{pmatrix}$
+	F_{3,i}(x^{(k)}), \ i \in I^k
+	\end{pmatrix}$ \\
+	\textcolor{white}{\quad} and corresponding Jacobian $\tilde{J}_2(x^{(k)}) = \frac{\partial \tilde{F}_2}{\partial x}(x^{(k)})$
 	
 	If $||\Delta x^{(k)}|| < TOL$: goto 3. \\
 	\textcolor{white}{\quad}else set $x^{(k+1)} := y(\alpha)$ and $k := k+1$ with \\
@@ -1404,28 +1404,7 @@ We treat this problem with an active set strategy illustrated below, cf. \cite{d
 
 
 
-%Active Set Strategy algorithm (\textcolor{red}{OLD!!}):
-%\begin{enumerate}
-%	\item Choose start point $x^0$, set iteration number $k=0$ and check for feasibility of $x^0$ and compute  initial active set $I^0 = \{ i \ | \ F_3^i(x^0) = 0 \}$
-%	\item Compute extended equality constraints $\tilde{F}_2(x) = 
-%	\begin{pmatrix} 
-%	F_2(x) \\  
-%	F_3^i(x), \ i \in I^k
-%	\end{pmatrix}$
-%	\item Solve the extended equality constrained subproblem
-%	\begin{align}
-%		\min_{\Delta x} & \ \frac{1}{2} || F_1 + J_1 \Delta x ||_2^2 \nonumber \\
-%		s.t. & \ \tilde{F}_2 + \tilde{J}_2 \Delta x = 0 \nonumber
-%	\end{align}
-%	\item Check for constraint violations $F_3(x^k + \Delta x^k) < 0$, modify $\Delta x^k$ such that $x^{k+1}$ is feasible and add corresponding constraints to active set.
-%	\item Compute $x^{k+1} = x^k + t^k \Delta x^k$ with stepsize $t^k \in (0, 1]$ from linesearch algorithm.
-%	\item Compute Lagrange multiplier $\mu$ from active inequality constraints and remove from active set if $\mu_i < 0$.
-%	\item Set $x^k = x^{k+1}$, $k += 1$ and goto step 2.
-%\end{enumerate}
 
-
-%\subsubsection{Statistical analysis of estimated parameters}
-%\label{sec:statistical_analysis_estim_params}
 \subsubsection{Parameter estimation}
 \label{sec:parameter_estimation_theory}
 
