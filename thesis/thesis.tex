@@ -984,7 +984,7 @@ In this section we first treat the general nonlinear optimization problem (NLP) 
 	& \ F_3(x) \ge 0 \nonumber
 \end{align}
 
-where $x \in \mathbb{R}^n$ is the optimization variable, $f\text{: } \mathbb{R}^n \rightarrow \mathbb{R}$ is the objective function, $F_2\text{: } \mathbb{R}^n \rightarrow \mathbb{R}^{m_2}$ and $F_3\text{: } \mathbb{R}^n \rightarrow \mathbb{R}^{m_3}$ are the equality and respectively inequality constraints. Index $m_1$ is missing because we will need this later in the context of a least squares problem. The results shown in this chapter can be found for example in \cite{nonlinear_optimiziation_wright}. \\
+where $x \in \mathbb{R}^n$ is the optimization variable, $f\text{: } \mathbb{R}^n \rightarrow \mathbb{R}$ is the objective function, $F_2\text{: } \mathbb{R}^n \rightarrow \mathbb{R}^{m_2}$ and $F_3\text{: } \mathbb{R}^n \rightarrow \mathbb{R}^{m_3}$ are the equality and inequality constraints, respectively. Index $m_1$ is missing because we will need this later in the context of a least squares problem. The results shown in this chapter can be found for example in \cite{nonlinear_optimiziation_wright}. \\
 
 The Lagrange function of \cref{eq:NLP_formulation} is defined as
 
@@ -994,10 +994,16 @@ The Lagrange function of \cref{eq:NLP_formulation} is defined as
 
 with Lagrange multipliers $\lambda \in \mathbb{R}^{m_2}$ and $\mu \in \mathbb{R}^{m_3}$. \\
 
-Before stating the major results from optimization theory we need to introduce the following definitions:
+Before stating the major results from optimization theory we introduce the following definitions:
 
 \begin{Definition}
 	$S := \{ x \ | \ F_2(x) = 0 \ \text{and} \ F_3(x) \ge 0 \}$ is called \underline{feasible set}.
+\end{Definition}
+
+\begin{Definition}
+	A feasible point $x^* \in S$ is called \underline{local minimum}, if there exists an $\epsilon > 0$ such that $f(x^*) \le f(x) \ \forall \ x \in S \cap \mathcal{B}(x^*, \epsilon)$. \\
+	$\mathcal{B}(x^*, \epsilon)$ is a ball with center $x^*$ and radius $\epsilon$. \\
+	If the inequality holds strictly, $x^*$ is called a \underline{strict local minimum}.
 \end{Definition}
 
 \begin{Definition}
@@ -1010,11 +1016,11 @@ Before stating the major results from optimization theory we need to introduce t
 		F_2(x) \\
 		F_{3,i}(x), \ i \in I(x) 
 	\end{pmatrix}$
-	are the \underline{active equality constraints}.
+	are the \underline{active constraints}.
 \end{Definition}
 
 \begin{Definition}
-	$x$ is called \underline{regular} if [LICQ] is satisfied, i.e. $rank \left( \frac{\partial \tilde F_2(x)}{\partial x} \right) = m_2 + s$
+	$x$ is called \underline{regular} if linear independence constraint qualification [LICQ] is satisfied, i.e. $rank \left( \frac{\partial \tilde F_2(x)}{\partial x} \right) = m_2 + s$
 \end{Definition}
 
 \begin{Definition}
@@ -1024,16 +1030,16 @@ Before stating the major results from optimization theory we need to introduce t
 	are called \underline{tangent space}. It holds $T(x) \subseteq T^+(x)$.
 \end{Definition}
 
-Major results from optimization theory are the necessary optimality condition [NOC]
+Major results from optimization theory are the necessary optimality conditions [NOC]
 
 \begin{Theorem}
 	$[\text{\textbf{NOC}}]$ \\
-	Let $x^*$ be a local minimum and regular, then it holds
+	Let $x^* \in S$ be a local minimum and regular, then it holds
 	\begin{enumerate}
 		\item \textbf{First order necessary optimality conditions [NOC1]} \\
 		$\exists \lambda^* \in \mathbb{R}^{m_2}, \mu^* \in \mathbb{R}^{m_3}, \mu^* \ge 0$ s.t. \\
 		$\nabla_x \mathcal{L}(x^*, \lambda^*, \mu^*) = 0$ and \\
-		$(\mu^*)^T \cdot h(x^*) = 0$ (complementary condition [CC])
+		$(\mu^*)^T \cdot F_3(x^*) = 0$ (complementary condition [CC])
 		\item \textbf{Second order necessary optimality condition [NOC2]} \\
 		$p^T \nabla_x^2 \mathcal{L}(x^*, \lambda^*, \mu^*) p \ge 0 \ \forall \ p \in T(x^*)$
 	\end{enumerate}
@@ -1043,8 +1049,8 @@ and the sufficient optimality condition [SOC]
 
 \begin{Theorem}
 	$[\text{\textbf{SOC}}]$ \\
-	Let $x^* \in S$ and let there exist $\lambda^*, \mu^* \ge 0$ such that $\nabla_x \mathcal{L}(x^*, \lambda^*, \mu^*) = 0$ and \\ $(\mu^*)^T \cdot h(x^*) = 0$. 
-	Let $p^T \mathcal{L}(x^*, \lambda^*, \mu^*) p > 0$ for $p \in T^+(x^*) \backslash \{0\}$. \\
+	Let $x^* \in S$ and let there exist $\lambda^*, \mu^* \ge 0$ such that $\nabla_x \mathcal{L}(x^*, \lambda^*, \mu^*) = 0$ and \\ $(\mu^*)^T \cdot F_3(x^*) = 0$. 
+	Let $p^T \nabla_x^2 \mathcal{L}(x^*, \lambda^*, \mu^*) p > 0$ for $p \in T^+(x^*) \backslash \{0\}$. \\
 	Then: $x^*$ is a strict local minimum.
 \end{Theorem}
 
@@ -1052,49 +1058,61 @@ Finally we introduce for later usage
 
 \begin{Definition} \textbf{KKT-conditions} \\
 	Feasibility and [NOC1] are called \underline{Karush-Kuhn-Tucker (KKT)-conditions}. \\
-	A point $(x^*, \lambda^*, \mu^*)$ satisfying the KKT-conditions is called \underline{KKT-point}.
+	A tuple $(x^*, \lambda^*, \mu^*)$ satisfying the KKT-conditions is called \underline{KKT-point}.
 \end{Definition}
 
 
 \subsubsection{Nonlinear least squares problem and Gauss-Newton method}
 \label{sec:Gauss_Newton}
-Since the thesis is about parameter estimation we will treat now the equality constrained nonlinear least squares problem
+Since the thesis contains parameter estimation problems we will treat now the equality and inequality constrained nonlinear least squares problem
 
 \begin{align}
 	\min_x \ & \frac{1}{2}|| F_1(x) ||_2^2 \label{eq:least_squares_problem} \\
-	s.t. \ & F_2(x) = 0 \nonumber
+	s.t. \ & F_2(x) = 0 \nonumber \\
+	& F_3(x) \ge 0 \nonumber
 \end{align}
 
-with $x \in \mathbb{R}^n$, $F_1: \mathbb{R}^n \rightarrow \mathbb{R}^{m_1}$ and $F_2: \mathbb{R}^n \rightarrow \mathbb{R}^{m_2}$. Inequality constraints will be introduced in the context of the active set strategy later in \cref{sec:GN_numerical_solution} paragraph equality and inequality constrained case. \\
-Instead of applying the KKT-conditions on this problem we first linearize in order to compute then the solution iteratively using Newton's method. Advantageous here is that we do not need to compute the computationally costly Hessian of the objective function. This method is called Gauss-Newton (GN) and the resulting problem reads as
+with $x \in \mathbb{R}^n$, residuum vector $F_1: \mathbb{R}^n \rightarrow \mathbb{R}^{m_1}$, equality constraints $F_2: \mathbb{R}^n \rightarrow \mathbb{R}^{m_2}$ and inequality constraints $F_3: \mathbb{R}^n \rightarrow \mathbb{R}^{m_3}$.
+%Inequality constraints will be introduced in the context of the active set strategy later in \cref{sec:GN_numerical_solution} paragraph equality and inequality constrained case. \\
+Instead of applying the KKT-conditions on \cref{eq:least_squares_problem} we apply the method of Gauss-Newton (GN). \\
+I.e., we solve this problem iteratively by updating an initial point $x^{(0)}$ with a sequence of solutions $\Delta x^{(k)}$ in iteration $k$ from linearized subproblems of the form
 
 \begin{align}
-\min_{\Delta x} \ & \frac{1}{2}|| F_1(x) + J_1(x) \Delta x ||_2^2 \label{eq:least_squares_problem_linearized} \\
-s.t. \ & F_2(x) + J_2(x) \Delta x = 0 \nonumber
+\min_{\Delta x^{(k)}} \ & \frac{1}{2}|| F_1(x^{(k)}) + J_1(x^{(k)}) \Delta x^{(k)} ||_2^2 \label{eq:least_squares_problem_linearized} \\
+s.t. \ & F_2(x^{(k)}) + J_2(x^{(k)}) \Delta x^{(k)} = 0 \nonumber \\
+& F_3(x^{(k)}) + J_3(x^{(k)}) \Delta x^{(k)} = 0 \nonumber
 \end{align}
 
-with $J_1(x) := \frac{\partial F_1(x)}{\partial x} \in \mathbb{R}^{m_1 \times n}$ and $J_2(x) := \frac{\partial F_2(x)}{\partial x} \in \mathbb{R}^{m_2 \times n}$. In the following we will omit the function argument for better readability, i.e. $F_i(x) \equiv F_i$ and $J_i(x) \equiv J_i$ for $i \in \{1,2\}$. \\
-Crucial is the equivalence of the solution of \cref{eq:least_squares_problem,eq:least_squares_problem_linearized} which is shown with inequality constraints in \cite{diss_bock} Lemma 3.1.18.
+with $J_1(x^{(k)}) := \frac{\partial F_1}{\partial x}(x^{(k)}) \in \mathbb{R}^{m_1 \times n}$, $J_2(x^{(k)}) := \frac{\partial F_2}{\partial x}(x^{(k)}) \in \mathbb{R}^{m_2 \times n}$ and $J_3(x^{(k)}) := \frac{\partial F_3}{\partial x}(x^{(k)}) \in \mathbb{R}^{m_3 \times n}$. Advantageous here is that we can avoid the computationally costly Hessian of the objective function. The iteration using the Gauss-Newton direction $\Delta x^{(k)}$ in iteration $k$ then reads as
+
+\begin{equation}
+x^{(k+1)} = x^{(k)} + t^{(k)} \Delta x^{(k)}
+\label{eq:Gauss_Newton_iteration}
+\end{equation}
+
+with stepsize $t^{(k)} \in (0,1]$ for global convergence, i.e. convergence to a local minimum from an arbitrary initial point $x^{(0)}$ (see \cref{sec:GN_numerical_solution}). Crucial is the equivalence of the solution $x^*$ of \cref{eq:least_squares_problem,eq:least_squares_problem_linearized} which is shown in \cite{diss_bock} Lemma 3.1.18.
+In the following we will omit the function argument and iteration index for better readability, i.e. $F_i(x^{(k)}) \equiv F_i$ and $J_i(x^{(k)}) \equiv J_i$ for $i \in \{1,2,3\}$. \\
+
 Applying KKT conditions on the linearized problem \cref{eq:least_squares_problem_linearized} gives the system
 
 \begin{equation}
 	\begin{bmatrix}
-		J_1^T J_1 & -J_2^T \\
-		J_2 & 0
+		J_1^T J_1 & -\tilde{J}_2^T \\
+		\tilde{J}_2 & 0
 	\end{bmatrix}
 	\begin{bmatrix}
 		\Delta x \\
-		\lambda
+		\tilde{\lambda}
 	\end{bmatrix}
 	= -
 	\begin{bmatrix}
 	J_1^T F_1 \\
-	F_2
+	\tilde{F}_2
 	\end{bmatrix}
 	\label{eq:GN_KKT_system}
 \end{equation}
 
-The solution $\Delta x$ therefore reads as
+with active constraints $\tilde{F_2}$ and corresponding Jacobian $\tilde{J}_2$ since inactive inequality constraints do not contribute to the computation of $\Delta x$ as their Lagrange multiplier is zero. The solution $\Delta x$ therefore reads as
 
 \begin{align}
 	\Delta x & =
@@ -1102,8 +1120,8 @@ The solution $\Delta x$ therefore reads as
 		\mathbbm{1} & 0
 	\end{pmatrix}
 	\begin{pmatrix}
-		J_1^T J_1 & J_2^T \\
-		J_2 & 0
+		J_1^T J_1 & \tilde{J}_2^T \\
+		\tilde{J}_2 & 0
 	\end{pmatrix}^{-1}
 	\begin{pmatrix}
 		J_1^T & 0 \\
@@ -1111,7 +1129,7 @@ The solution $\Delta x$ therefore reads as
 	\end{pmatrix}}_{=: J^+}
 	\begin{pmatrix}
 		F_1 \\
-		F_2
+		\tilde{F}_2
 	\end{pmatrix}
 	\label{eq:GN_solution_formal}
 \end{align}
@@ -1119,16 +1137,16 @@ The solution $\Delta x$ therefore reads as
 with the generalized inverse $J^+$. An important result \cite{diss_bock} is
 
 \begin{Lemma} \textcolor{white}{.}\\
-	If $rank(J_2) = m_2$ and $rank 
+	If $rank(\tilde{J}_2) = m_2+s$ and $rank 
 	\begin{pmatrix}
 	J_1 \\
-	J_2
+	\tilde{J}_2
 	\end{pmatrix}
 	= n$,
 	then 	
 	$\begin{pmatrix}
-		J_1^T J_1 & -J_2^T \\
-		J_2 & 0
+		J_1^T J_1 & -\tilde{J}_2^T \\
+		\tilde{J}_2 & 0
 	\end{pmatrix}$
 	is non-singular.
 \end{Lemma}
@@ -1136,23 +1154,17 @@ with the generalized inverse $J^+$. An important result \cite{diss_bock} is
 \subsubsection{Numerical solution}
 \label{sec:GN_numerical_solution}
 
-For the numerical solution of \cref{eq:GN_KKT_system} we will successively introduce the unconstrained, the equality constrained and finally the general equality and inequality constrained case because they are built up on each other, cf. \cite{numerical_methods_lsq_Bjorck}. \\
-Respectively the Gauss-Newton direction $\Delta x^{(k)}$ is computed for iteration $k$. The final solution is then computed iteratively by
+For the numerical solution of the linear least squares subproblem \cref{eq:least_squares_problem_linearized} we will successively introduce the unconstrained, the equality constrained and finally the general equality and inequality constrained case because they are built up on each other, cf. \cite{numerical_methods_lsq_Bjorck}. Before that, we discuss methods for global convergence in order to be independent of a good initial point $x^{(0)}$. \\
+In this context a \textit{level function} $T(x^{(k)})$ is introduced which must be decreased in each iteration. For the general equality and inequality constrained case, the choice
 
 \begin{equation}
-	x^{(k+1)} = x^{(k)} + t^{(k)} \Delta x^{(k)}
-\end{equation}
-
-with stepsize $t^{(k)} \in (0,1]$ for global convergence. In this context a \textit{level function} $T(x)$ is introduced which must be decreased in each iteration. For the general equality and inequality constrained case the choice
-
-\begin{equation}
-	T_1(x) = \frac{1}{2} || F_1(x) ||_2^2 + \sum_{i=1}^{m_2} \beta_i | F_{2,i}(x) | + \sum_{i=1}^{m_3} \gamma_i | \min\{0,F_{3,i}(x)\} |
+	T_1(x^{(k)}) = \frac{1}{2} || F_1(x^{(k)}) ||_2^2 + \sum_{i=1}^{m_2} \beta_i | F_{2,i}(x^{(k)}) | + \sum_{i=1}^{m_3} \gamma_i | \min\{0,F_{3,i}(x^{(k)})\} |
 \end{equation}
 
 with $\beta_i > |\lambda_i|$ and $\gamma_i > |\mu_i|$, i.e. larger than the absolute value of the corresponding Lagrange multiplier, guarantees global convergence to a local minimum under certain conditions, see \cite{diss_bock} theorem 3.2.6. \\
-Finding an appropriate sequence of stepsizes $\{ t^{(k)} \}_k$ is in general known as \textit{line search} and there are a lot of different strategies to achieve this (see e.g. \cite{nonlinear_optimiziation_wright}), exemplary the Armijo strategy to ensure a sufficient decrease of the level function. Another example is the restrictive monotonicity test (RMT) \cite{bock2000_RMT} which is based on an estimate of the function curvature $\omega$. \\
+Finding an appropriate sequence of stepsizes $\{ t^{(k)} \}$ is in general known as \textit{line search} and there are a lot of different strategies to achieve this (see e.g. \cite{nonlinear_optimiziation_wright}). Examples are the Armijo strategy to ensure a sufficient decrease of the level function or the restrictive monotonicity test (RMT) \cite{bock2000_RMT} which is based on an estimate of the function curvature $\omega$. \\
 
-The iteration index is omitted in the following paragraphs except for the active set strategy for better legibility.
+The function argument and iteration index is omitted again in the following paragraphs except for the active set strategy for better legibility.
 
 \paragraph{Unconstrained case}\mbox{}\\
 In the unconstrained case we want to solve the problem
@@ -1162,7 +1174,7 @@ In the unconstrained case we want to solve the problem
 \label{eq:numerical_solution_LSQ}
 \end{equation}
 
-Based on decomposing $J_1$ two solutions are shown (cf. \cite{nonlinear_optimiziation_wright} chapter 10.1) :
+Based on decomposing $J_1$ two solution strategies are shown (cf. \cite{nonlinear_optimiziation_wright} chapter 10.1) :
 
 \begin{itemize}
 	\item \textbf{QR decomposition} \\
@@ -1177,7 +1189,7 @@ Based on decomposing $J_1$ two solutions are shown (cf. \cite{nonlinear_optimizi
 			0
 		\end{pmatrix}
 	\end{equation}
-	where $Q \in \mathbb{R}^{m_1 \times m_1}$ is an orthogonal matrix split into $Q_1 \in \mathbb{R}^{m_1 \times n}$ and $Q_2 \in \mathbb{R}^{m_1 \times (n-m_1)}$. Further, $R \in \mathbb{R}^{m_1 \times n}$ with $\bar{R} \in \mathbb{R}^{n \times n}$ upper triangular matrix. Lastly $P \in \mathbb{R}^{n \times n}$ is a permutation matrix and therefore orthogonal. Inserting into the objective function \cref{eq:numerical_solution_LSQ} and omitting factor $\frac{1}{2}$ gives
+	where $Q \in \mathbb{R}^{m_1 \times m_1}$ is an orthogonal matrix split into $Q_1 \in \mathbb{R}^{m_1 \times n}$ and $Q_2 \in \mathbb{R}^{m_1 \times (m_1-n)}$. Further, $R \in \mathbb{R}^{m_1 \times n}$ with $\bar{R} \in \mathbb{R}^{n \times n}$ upper triangular matrix. Lastly $P \in \mathbb{R}^{n \times n}$ is a permutation matrix and therefore orthogonal. Inserting into the objective function \cref{eq:numerical_solution_LSQ} and omitting factor $\frac{1}{2}$ gives
 	
 	\begin{align}
 		|| F_1 + J_1 \Delta x ||_2^2 & = || Q^T (F_1 + J_1 P P^T \Delta x) ||_2^2 = || Q^T F_1 + Q^T Q R P^T \Delta x ||_2^2 \\
@@ -1199,7 +1211,7 @@ Based on decomposing $J_1$ two solutions are shown (cf. \cite{nonlinear_optimizi
 		\bar{R} P^T \Delta x = -Q_1^T F_1
 	\end{equation}
 	
-	For the rank-deficit case see e.g. \cite{numerical_methods_lsq_Bjorck} chapter 1.3.2.
+	For the rank-deficient case see e.g. \cite{numerical_methods_lsq_Bjorck} chapter 1.3.2.
 		
 		
 		
@@ -1218,7 +1230,7 @@ Based on decomposing $J_1$ two solutions are shown (cf. \cite{nonlinear_optimizi
 	\end{equation}
 	
 	with $U \in \mathbb{R}^{m_1 \times m_1}$ orthogonal split into $U_1 \in \mathbb{R}^{m_1 \times n}$ and $U_2 \in \mathbb{R}^{m_1 \times (m_1 - n)}$, $V \in \mathbb{R}^{n \times n}$ orthogonal and $\Sigma \in \mathbb{R}^{m_1 \times n}$ with $\bar{\Sigma} \in \mathbb{R}^{n \times n}$ diagonal. Let $r := rank(J_1)$. Then $\bar{\Sigma}$ has the singular values $\sigma_1 \ge \sigma_2 \ge ... \ge \sigma_r > 0$ and $\sigma_{r+1}=...=\sigma_{n} = 0$ on the diagonal. \\
-	Inserting modifies \cref{eq:numerical_solution_LSQ} where we omit again factor $\frac{1}{2}$ by
+	Inserting modifies the objective function of \cref{eq:numerical_solution_LSQ} where we omit again factor $\frac{1}{2}$ by
 	
 	\begin{align}
 		|| F_1 + J_1 \Delta x ||_2^2 & = || F_1 + U \Sigma \overbrace{V^T \Delta x}^{=: \Delta y} ||_2^2 = || U ( U^T F_1 + \Sigma \Delta y ||_2^2 \label{eq:numerical_solution_LSQ_SVD} \\
@@ -1250,11 +1262,11 @@ Based on decomposing $J_1$ two solutions are shown (cf. \cite{nonlinear_optimizi
 		\Delta x^* = V \Delta y^*
 	\end{equation}
 
-
 \end{itemize}
 
-\vspace{0.5cm}
-\Cref{alg:Gauss_Newton_unconstrained} depicts exemplary the procedure of finding a local minimum of an unconstrained least squares problem using Gauss-Newton iterates. The algorithm is terminated successfully if the necessary optimality condition [NOC1] is satisfied numerically, i.e. below a tolerance. Further it stops if the computed Gauss-Newton direction $\Delta x^{(k)}$ or the stepsize $t^{(k)}$ becomes too small or if a maximum number of iterations is reached. Stepsize control is achieved via the trivial level function $T(x) = ||F_1(x)||_2$ and a step is accepted for a decrease in the level function. Otherwise the step $t^{(k)}$ is reduced by an factor $d$. \\
+The singular value decomposition is computationally more costly than pivoting QR, though has the advantage that we get get the matrix' singular values we may require (e.g. to compute the matrix' condition number). \\
+
+\Cref{alg:Gauss_Newton_unconstrained} depicts the procedure of finding a local minimum of an unconstrained least squares problem using Gauss-Newton iterates. The algorithm is terminated successfully if the necessary optimality condition [NOC1] is satisfied numerically, i.e. below a tolerance. Further, it stops if the computed Gauss-Newton direction $\Delta x^{(k)}$ or the stepsize $t^{(k)}$ becomes too small or if a maximum number of iterations is reached. Stepsize control is achieved via the trivial level function $T(x) = ||F_1(x)||_2$ and a step is accepted for any decrease in the level function. Otherwise the step $t^{(k)}$ is reduced by an factor $d$. \\
 This algorithm has been used in \cref{sec:param_estimation_fs} in order to analyse the sequence of Gauss-Newton iterates at the parameter estimation.  \\
 
 
@@ -1264,32 +1276,35 @@ This algorithm has been used in \cref{sec:param_estimation_fs} in order to analy
 	\SetKwInOut{Input}{Input}
 	\SetKwInOut{Output}{Output}
 	
-	\Input{Start value $x_{start}$, stepsize decrease rate $d$ \\ 
+	\Input{Start value $x_{start}$, stepsize decrease rate $d \in (0,1)$ \\ 
 		termination criteria $[NOC1]_{TOL}$, $\Delta x_{TOL}$, $t_{TOL}$ and iterations$_{max}$}
 	\Output{End value $x_{end}$ \\ \mbox{}\\}
 	
-	Initialize $k=0$, $x^{(0)} = x_{start}$
+	\textbf{Initialize} $k=0$, $x^{(0)} = x_{start}$ \\\mbox{}\\
 	
-	\While{
-		$|| \nabla f ||_2 = || 2 J_1^T F1 ||_2 > [NOC1]_{TOL} \ \text{and}$ \\
-		\qquad \qquad $|| \Delta x^{(k)} ||_2 > \Delta x_{TOL} \ \text{and}$ \\
-		\qquad \qquad $t^{(k)} > t_{TOL} \ \text{and}$ \\
-		\qquad \qquad $k < \text{iterations}_{max}$}
-	{
-		Compute residuum $F_1(x^{(k)})$ and jacobian $J_1(x^{(k)})$ \\
-		Solve $J_1(x^{(k)})^T J_1(x^{(k)}) \Delta x^{(k)} = - J_1(x^{(k)})^T F_1(x^{(k)})$ \\
-		Set $t^{(k)} = 1$ \\
-		Compute next potential state $x^{(k+1)} = x^{(k)} + t^{(k)} \cdot \Delta x^{(k)}$ and \\ \quad corresponding residuum $F_1(x^{(k+1)})$ \\
-		
-		\If{$t^{(k)} > t_{TOL} \text{ and } || F_1(x^{(k+1)}) ||_2 \ge || F_1(x^{(k)}) ||_2$}
-		{Set $t^{(k)} = t^{(k)} \cdot d$ \\
-			goto (9)}
+	Compute residuum $F_1(x^{(k)})$ and Jacobian $J_1(x^{(k)})$ \\
+	Compute Gauss-Newton direction $\Delta x^{(k)}$ with introduced methods \\
+	\quad using pivoting QR or SVD decomposition \\
+	Set $t^{(k)} = 1$ \\
+	Compute next potential state $x^{(k+1)} = x^{(k)} + t^{(k)} \cdot \Delta x^{(k)}$ and \\ \quad corresponding residuum $F_1(x^{(k+1)})$ \\
+	
+	\uIf{$t^{(k)} > t_{TOL} \text{ and } || F_1(x^{(k+1)}) ||_2 \ge || F_1(x^{(k)}) ||_2$}
+	{Set $t^{(k)} = t^{(k)} \cdot d$ \\
+		goto (7)}
+	\Else{
+		\uIf{$|| \nabla f ||_2 = || 2 J_1^T(x^{(k+1)}) F_1(x^{(k+1)}) ||_2 < [NOC1]_{TOL}$}
+		{$x_{end} = x^{(k+1)}$ \\
+		Terminate: Stationary point found!}
+		\uElseIf{$|| \Delta x^{(k)} ||_2 < \Delta x_{TOL}$ or $t^{(k)} < t_{TOL}$ or $k > \text{iterations}_{max}$}
+		{$x_{end} = x^{(k+1)}$ \\
+		Terminate with warning: No stationary point found!}
 		\Else{
-			Set $k := k + 1$ \\
+		Set $k := k + 1$ \\
+		goto (3)
 		}
 	}
-	Set $x_{end} = x^{(k)}$
-	\caption{Unconstrained Gauss-Newton}
+
+	\caption{Gauss-Newton for unconstrained least squares problem}
 	\label{alg:Gauss_Newton_unconstrained}
 \end{algorithm}
 
@@ -1459,7 +1474,7 @@ for the case that the measurement variances $\sigma^2$ are known except a common
 	\beta^2 \approx b^2 = \frac{|| F_1(p^*) ||_2^2}{n_{mp} - (n_p - n_c)}
 \end{equation}
 
-with $n_c$ number of active equality constraints. We define a confidence region in which the true parameter values are with a probability $1-\alpha$. Its linearization reads as
+with $n_c$ number of active constraints. We define a confidence region in which the true parameter values are with a probability $1-\alpha$. Its linearization reads as
 \begin{align}
 	G_L(\alpha, p^*) = \left\{ p \in \mathbb{R}^n \ | \ \right. & F_2(p^*) + J_2(p^*)(p - p^*) = 0, \label{eq:stat_ana_lin_confidence_region} \\ 
 	& \left. || F_1(p^*) + J_1(p^*)(p - p^*) ||_2^2 - || F_1(p^*)||_2^2 \le \gamma(\alpha) \right\} \nonumber	
