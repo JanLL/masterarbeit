@@ -532,14 +532,14 @@ In \cref{fig:heat_flux_measurements} the measurement data of the heat flux into 
 \label{sec:mathematical_background}
 
 In this section the mathematical problems we treat in this thesis will be introduced, that is essentially the solution of (partial) differential equations and the nonlinear least squares problem. Further, methods for the numerical solution of these problems are shown. \\
-Since crucial and occurring several times in this section, we will introduce the initial value problem (IVP)
+Since crucial and occurring several times in this section, we introduce the initial value problem (IVP)
 
 \begin{align}
 	\dot{y} = f(y(t), t; p) \label{eq:initial_value_problem_definition} \\
 	y(t_0) = y_0 \nonumber
 \end{align}
 
-with differential state vector $y \in \mathbb{R}^n$, time $t \in \mathbb{R}$ and parameters $p \in \mathbb{R}^{n_p}$. Function $f: \mathbb{R}^n \times \mathbb{R} \rightarrow \mathbb{R}^n$ with $f \in \mathcal{C}^2$ is called the differential equation's right hand side. The semicolon separates between function arguments and  parameters\footnote{e.g. also controls $u$ in the context of optimal control.}. Initial time and state are $t_0$ and $y_0$, respectively. \\
+with differential state vector $y \in \mathbb{R}^n$, time $t \in \mathbb{R}$ and parameters $p \in \mathbb{R}^{n_p}$. Function $f: \mathbb{R}^n \times \mathbb{R} \rightarrow \mathbb{R}^n$ with $f \in \mathcal{C}^2$ is called the differential equation's right hand side within the ordinary differential equation (ODE) $\dot{y} = f(y(t), t; p)$. The semicolon separates between function arguments and  parameters\footnote{e.g. also controls $u$ in the context of optimal control.}. Initial time and state are $t_0$ and $y_0$, respectively. \\
 Local existence of the solution is shown in theorem of Peano\footnote{Giuseppe Peano (1858–1932).} basically requires continuity of $f$ (see e.g. \cite{ODE_analytic} Theorem 2.2.8).
 For global existence and uniqueness the theorem of Picard\footnote{Charles Emile Picard (1856–1941).}-Lindelöf\footnote{Ernst Leonard Lindelöf (1870 - 1946).} holds requiring essentially $f$ Lipschitz continuous (see e.g \cite{ODE_analytic} Theorem 2.4.5). \\
 
@@ -794,28 +794,19 @@ The details on IND including the generation of higher derivatives via taylor coe
 \subsection{Numerical solution of initial value problems}
 \label{sec:theory_ODE_solver_BDF}
 
-In this section numerical methods will be introduced to solve initial value problems (IVP) of the form
-
-\begin{align}
-	\dot{x} & = f(x(t),t) \\
-	x(t_0) & = x_0 \nonumber
-\end{align}
-
-with differential state vector $x \in \mathbb{R}^n$ and time $t \in \mathbb{R}$. Function $f: \mathbb{R}^n \times \mathbb{R} \rightarrow \mathbb{R}^n$ is called the differential equation's right hand side. Initial time and state are $t_0$ respectively $x_0$. \\
-
-There are a lot of different methods for the numerical solution of an IVP (see e.g. \cite{diff_equations_numerics}) like Runge-Kutta (RK) or linear multistep methods (LMM). The solver we used in this thesis applies the method of Backward Differentiation Formulas (BDF) which will be explained further now.
-
-Basic idea of the BDF method of order $k$ is to interpolate the last $(k+1)$ solution points $x_m,...,x_{m+k}$ with an polynomial such that the unknown point $x_{m+k}$ satisfies the ODE at $t_{m+k}$. 
+In this section numerical methods will be introduced to solve initial value problems of the form given in \cref{eq:initial_value_problem_definition} without parameters $p$. \\ 
+There are a lot of different methods for the numerical solution of an IVP (see e.g. \cite{diff_equations_numerics}) like Runge-Kutta (RK) or linear multistep methods (LMM). The solver we used in this thesis applies the method of Backward Differentiation Formulas (BDF) which will be explained further now assuming $f \in \mathcal{C}^1$. \\
+Basic idea of the BDF method of order $k$ is to interpolate the last $(k+1)$ solution points $y_m,...,y_{m+k}$ with a polynomial such that the unknown point $y_{m+k}$ satisfies the ODE at $t_{m+k}$. 
 It is defined as
 
 \begin{equation}
-	\sum_{i=0}^{k} \alpha_{im} x_{m+i} = h_{m+k-1} f(x_{m+k},t_{m+k})
+	\sum_{i=0}^{k} \alpha_{im} y_{m+i} = h_{m+k-1} f(y_{m+k},t_{m+k})
 	\label{eq:bdf_formula}
 \end{equation}
 
 where $\alpha_{ij} \in \mathbb{R}$ with $\alpha_{0m},\alpha_{km} \ne 0 \ \forall \ m$ are the method's coefficients. BDF methods up to order 6 are used in practice because these are zero-stable. \\
-Since \cref{eq:bdf_formula} is a nonlinear system of equations it is solved iteratively using Newton's method. In order to obtain a good starting point a so called predictor is used, which is the integration polynomial of the previous integration step. With this initial guess for $x_{m+k}$ the Newton method can be applied to get the so called corrector polynomial, which satisfies the differential equation at $t_{m+k}$. \\
-As we want the numerical integrator both to perform large integration steps to minimize the required time to solve the IVP and limit the inevitable numerical errors on a predefined value we are dependent on a strategy to choose the step width $h_{m+k-1}$ accordingly. This is done by estimating the local error in each integration step. Either the local error is smaller than some tolerance then the step width will be increased, otherwise decreased until the local error tolerance is satisfied. \\
+Since \cref{eq:bdf_formula} is a nonlinear system of equations it is solved iteratively using Newton's method (therefore we need $f \in \mathcal{C}^1$). In order to obtain a good starting point a so called predictor is used, which is the integration polynomial of the previous integration step. With this initial guess for $y_{m+k}$ the Newton method can be applied to get the so called corrector polynomial, which satisfies the differential equation at $t_{m+k}$. \\
+As we want the numerical integrator both to perform large integration steps to minimize the required time to solve the IVP and limit the inevitable numerical errors to a predefined value we are dependent on a strategy to choose the step width $h_{m+k-1}$ accordingly. This is done by estimating the local error (see e.g. \cite{diss_jan} page 128) in each integration step. Either the local error is smaller than some tolerance then the step width might be increased in the next integration step, otherwise decreased until the local error tolerance is satisfied. \\
 
 The BDF solver DAESOL-II embedded in SolvIND has been used in this thesis to solve \cref{eq:heat_equation_discretized}.
 
@@ -829,27 +820,27 @@ The BDF solver DAESOL-II embedded in SolvIND has been used in this thesis to sol
 \label{sec:pde_discretization}
 
 
-Given a partial differential equation (PDE) with the solution $u(x,t)$ dependent on space coordinate $x$ and time $t$. Since the problem of finding $u(x,t)$ that solve the corresponding PDE is infinite-dimensional, a numerical solution requires a discretization in space and time in order to obtain a finite-dimensional problem. \\
-In this section we will treat the boundary value problem
+Given a partial differential equation (PDE) with the sought solution $u(x,t)$ dependent on space coordinate $x$ and time $t$. Since the problem of finding $u(x,t)$ that solves the corresponding PDE is infinite-dimensional, a method of discretizing space and time is introduced in the following in order to obtain a finite-dimensional problem. \\
+Since later in \cref{sec:simulation_of_DSC} the heat conduction problem shall be solved, in this section we treat a boundary value problem (BVP) of the following analog form:
 
 \begin{subequations}
 	\begin{align}
-	\frac{\partial u}{\partial t}(x,t) & - a(t) \cdot \frac{\partial^2 u}{\partial x^2}(x,t) = 0 & \forall x \in [a,b], \ t \in [t_0,t_f] \label{eq:method_of_lines_pde} \\
+	\frac{\partial u}{\partial t}(x,t) & - \alpha(u(x,t)) \cdot \frac{\partial^2 u}{\partial x^2}(x,t) = 0 & \forall x \in [a,b], \ t \in [t_0,t_f] \label{eq:method_of_lines_pde} \\
 	u(a,t) & = u_a(t)  & \forall t \in [t_0,t_f] \label{eq:method_of_lines_dirichlet} \\
 	\frac{\partial u}{\partial x}(b,t) & = 0  & \forall t \in [t_0,t_f] \label{eq:method_of_lines_neumann}  \\
-	u(x,t_0) & = u_0(x) & \forall x \in [a,b] \label{eq:method_of_lines_start}
+	u(x,t_0) & = u_{init}(x) & \forall x \in [a,b] \label{eq:method_of_lines_start}
 	\end{align}
 \end{subequations}
 
-on the domain $x \in [a,b] = \Omega \subseteq \mathbb{R}$ and $t \in [t_0,t_f] \subseteq \mathbb{R}$. \Cref{eq:method_of_lines_pde} is the 1D parabolic partial differential equation (cf. heat equation \eqref{eq:heat_eq_derivation_1}), \cref{eq:method_of_lines_dirichlet} is the Dirichlet boundary condition at $x=a$, \cref{eq:method_of_lines_neumann} respectively the Neumann boundary condition at $x=b$ and lastly \cref{eq:method_of_lines_start} are the initial values at ${t=t_0}$. \\
-Remark: This IVP is a special case and crucial for us in this thesis. For a more general view on the numerical solution of PDEs especially method of lines see e.g. \cite{pde_buch_solin}. \\
+on the domain $x \in [a,b] = \Omega \subseteq \mathbb{R}$ and $t \in [t_0,t_f] \subseteq \mathbb{R}$. \Cref{eq:method_of_lines_pde} is the 1D parabolic partial differential equation with $\alpha(u(x,t)) > 0$ (cf. heat equation \eqref{eq:heat_eq_derivation_1}), \cref{eq:method_of_lines_dirichlet} is the Dirichlet boundary condition at $x=a$, \cref{eq:method_of_lines_neumann} respectively the Neumann boundary condition at $x=b$ and lastly \cref{eq:method_of_lines_start} are the initial values at ${t=t_0}$. \\
+Remark: This BVP is a special case and crucial for us in this thesis. For a more general view on the numerical solution of PDEs especially method of lines see e.g. \cite{pde_buch_solin}. \\
 
-In order to make this IVP numerically solvable the idea of method of lines is to keep the temporal variable $t$ continuous while space coordinate $x$ is discretized. Here we use the spatial grid
+In order to make this boundary value problem numerically solvable the idea of method of lines is to keep the temporal variable $t$ continuous while space coordinate $x$ is discretized. Thus the PDE is transformed into an ODE. Here we use the spatial grid
 \begin{align}
 	x_k = a + k \cdot h & & k=0,...,N
 \end{align}
 
-with $x_{N} = b$ and for simplicity equidistant gridsize $h$. Evaluated on this grid the sought functions are
+with $x_{N} = b$ and for simplicity equidistant gridsize $h = \frac{b - a}{N}$. Evaluated on this grid the sought functions are
 \begin{align}
 	u_k(t) := u(x_k,t) & & k=0,...,N
 \end{align}
@@ -874,10 +865,10 @@ and Neumann boundary condition \cref{eq:method_of_lines_neumann} by
 
 The initial values in \cref{eq:method_of_lines_start} are discretized given as
 \begin{align}
-	u_k(t=t_0) = u_0(x_k) & & k = 0,...,N
+	u_k(t=t_0) = u_{init}(x_k) & & k = 0,...,N
 \end{align}
 
-Putting all these together where due to the equality in \cref{eq:method_of_lines_neumann_applied} $u_{N}$ is omitted we obtain the initial value problem 
+Putting all these together, where due to the equality in \cref{eq:method_of_lines_neumann_applied} $u_{N}$ is omitted, we obtain the initial value problem 
 
 \begin{align}
 	\frac{d}{dt}
@@ -890,7 +881,18 @@ Putting all these together where due to the equality in \cref{eq:method_of_lines
 		u_{N-2}(t) \\
 		u_{N-1}(t)
 	\end{pmatrix}
-	= & \ a(t) 
+	= & \
+	\begin{pmatrix}
+	0 \\
+	\alpha(u_1(t)) \\
+	\\
+	\vdots
+	\\
+	\\
+	\alpha(u_{N-2}(t)) \\
+	\alpha(u_{N-1}(t))
+	\end{pmatrix}
+	.* \left[
 	\begin{pmatrix}
 		0 & & ... & & 0 \\
 		1 & -2 & 1 \\
@@ -908,7 +910,7 @@ Putting all these together where due to the equality in \cref{eq:method_of_lines
 	\\
 	u_{N-2}(t) \\
 	u_{N-1}(t)
-	\end{pmatrix}
+	\end{pmatrix} \right]
 	+
 	\begin{pmatrix}
 		\dot{u}_a(t) \\
@@ -919,12 +921,12 @@ Putting all these together where due to the equality in \cref{eq:method_of_lines
 		\\
 		0
 	\end{pmatrix} \\
-	u_k(t_0) = & \ u_0(x_k) \qquad \text{for} \ k = 0,...,N-1 \nonumber
+	u_k(t_0) = & \ u_{init}(x_k) \qquad \text{for} \ k = 0,...,N-1 \nonumber
 \end{align}
  
- which can be solved by an appropriate ODE solver (cf. \cref{sec:theory_ODE_solver_BDF}) where the temporal discretization occurs. \\
- Note that we discussed here for simplicity the case of an equidistant spatial grid. The numerical experiments were done with a heterogeneous grid (\cref{sec:spatial_discretization_grid}) which modifies the discretized second derivative equation \eqref{eq:discretized_second_derivative}, see \cref{eq:2_point_formula_inhomogeneous}. \\
- The method of lines was applied in this thesis in \cref{sec:mathematical_model}.
+where operator $.*$ is a row-wise multiplication, i.e. for vectors $v, w \in \mathbb{R}^n$ it holds $(v \ .* \ w)_i = v_i \cdot w_i$ for component $i$. This system can be solved by an appropriate ODE solver (see \cref{sec:theory_ODE_solver_BDF}) where the temporal discretization occurs. \\
+Note that we discussed here for simplicity the case of an equidistant spatial grid. The numerical experiments were done with a heterogeneous grid (\cref{sec:spatial_discretization_grid}) which modifies the discretized second derivative equation \eqref{eq:discretized_second_derivative}, see \cref{eq:2_point_formula_inhomogeneous}. \\
+The method of lines was applied in this thesis in \cref{sec:mathematical_model}.
 
 
 %Given a partial differential equation (PDE) in the differential variable $u(t,x)$ (e.g. temperature dependent on time $t \in \mathbb{R}$ and space coordinate $x \in \Omega \subseteq \mathbb{R}^D$ with $D=\{1,2,3\}$). The method of lines is used to discretize the PDE in space such that with $N$ discretization points we get $N$ differential variables only dependent in time:
