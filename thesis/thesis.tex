@@ -102,28 +102,34 @@
 
 \begin{document}
 
+ \pagenumbering{Roman}  
+
 \begin{titlepage}
 	\begin{center}
 	
 	\textsc{\large Ruprecht-Karls-Universit\"{a}t Heidelberg} \\[0.5cm]
-	\textsc{\large Master Thesis}\\[1cm]
+	\textsc{\large Master Thesis}\\[0.5ex]
+	\textsc{\large in the field of study}\\[0.5ex]
+	\textsc{\large Scientific Computing}\\[1cm]
 	
 	\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
 	\HRule \\[0.4cm]
 	\huge \bfseries Simulation of heat flux differential scanning calorimetry with phase change materials and parameter estimation of the specific heat capacity 
 	\HRule 
 	
-	\vspace{9cm}
+	\vspace{6.5cm}
 	
-	\Large \textit{Jan Lammel }\\
-	\Large \textit{Heidelberg, \today }\\ \vspace{0.5cm}
-	\Large \textit{Supervisor:}
-	
+	\Large \textit{Jan Lammel} \\
+	\Large \textit{born in Heidelberg} \\[4ex]
+	\Large \textit{Heidelberg, \today }\\[3ex]
+	\Large \textit{Supervisor:}\\
 	\Large \textit{Prof. Dr. Dr. h. c. mult. Hans Georg Bock}\\
 	\Large \textit{\todo{...}}
 	
 	\end{center}
 \end{titlepage}
+
+\newpage \mbox{}\\
 
 \newpage
 
@@ -133,7 +139,7 @@
 
 
 
- \pagenumbering{Roman}  
+
 
  \addsec{Abstract}
  \todo{!}
@@ -532,6 +538,7 @@ In \cref{fig:heat_flux_measurements} the measurement data of the heat flux into 
 \label{sec:mathematical_background}
 
 In this section the mathematical problems we treat in this thesis will be introduced, that is essentially the solution of (partial) differential equations and the nonlinear least squares problem. Further, methods for the numerical solution of these problems are shown. \\
+
 Since crucial and occurring several times in this section, we introduce the initial value problem (IVP)
 
 \begin{align}
@@ -539,9 +546,9 @@ Since crucial and occurring several times in this section, we introduce the init
 	y(t_0) = y_0 \nonumber
 \end{align}
 
-with differential state vector $y \in \mathbb{R}^n$, time $t \in \mathbb{R}$ and parameters $p \in \mathbb{R}^{n_p}$. Function $f: \mathbb{R}^n \times \mathbb{R} \rightarrow \mathbb{R}^n$ assumed sufficiently smooth is called the differential equation's right hand side within the ordinary differential equation (ODE) $\dot{y} = f(y(t), t; p)$. The semicolon separates function arguments and  parameters\footnote{e.g. also controls $u$ in the context of optimal control.}. Initial time and state are $t_0$ and $y_0$, respectively. \\
-Local existence of the solution is shown in theorem of Peano\footnote{Giuseppe Peano (1858–1932).} basically requires continuity of $f$ (see e.g. \cite{ODE_analytic} Theorem 2.2.8).
-For global existence and uniqueness the theorem of Picard\footnote{Charles Emile Picard (1856–1941).}-Lindelöf\footnote{Ernst Leonard Lindelöf (1870 - 1946).} holds requiring essentially $f$ Lipschitz continuous (see e.g. \cite{ODE_analytic} Theorem 2.4.5). \\
+with differential state vector $y \in \mathbb{R}^n$, time $t \in \mathbb{R}$ and parameters $p \in \mathbb{R}^{n_p}$. Function $f: \mathbb{R}^n \times \mathbb{R} \rightarrow \mathbb{R}^n$ assumed sufficiently smooth is called the differential equation's right hand side within the ordinary differential equation (ODE) $\dot{y} = f(y(t), t; p)$. The semicolon separates function arguments and  parameters\footnote{E.g., also controls $u$ in the context of optimal control.}. Initial time and state are $t_0$ and $y_0$, respectively. \\
+Local existence of the solution is shown in theorem of Peano, basically requires continuity of $f$ (see e.g. \cite{ODE_analytic} Theorem 2.2.8).
+For global existence and uniqueness the theorem of Picard-Lindelöf holds, requiring essentially $f$ Lipschitz continuous (see e.g. \cite{ODE_analytic} Theorem 2.4.5). \\
 
 
 
@@ -555,7 +562,7 @@ Beside them the methods of symbolic- and complex step-differentiation exist and 
 \subsubsection{Finite differences}
 \label{sec:finite_differences}
 Derivatives approximated by finite differences are deployed beside the optimization task also in the spatial discretization of a partial differential equation which will be explained in more detail in \cref{sec:pde_discretization}.
-They can be derived easily from Taylor-series expansion where we restrict ourselves to the scalar function argument case $x \in \mathbb{R}$ since derivatives in higher dimensions $x \in \mathbb{R}^n$ are obtained straight forward by applying directional derivatives, assuming total differentiability.  \\
+They can be derived easily from Taylor-series expansion where we restrict ourselves to the scalar function argument case $x \in \mathbb{R}$ since derivatives in higher dimensions $x \in \mathbb{R}^n$ are obtained straight forward by applying directional derivatives under the assumption of total differentiability.  \\
 Considering the function $f: \mathbb{R} \rightarrow \mathbb{R}$ with $f \in \mathcal{C}^2$ the Taylor series looks as follows:
 
 
@@ -972,7 +979,7 @@ The method of lines was applied in this thesis in \cref{sec:mathematical_model}.
 
 \subsection{Optimization task: Parameter estimation}
 
-In this section at first general results of optimization theory are introduced. Afterwards we will focus on nonlinear least square problems which are used in the context of parameter estimation and solved numerically with the method of Gauss-Newton.
+In this section at first general results of optimization theory are introduced. Afterwards we will focus on nonlinear least squares problems which are used in the context of parameter estimation and solved numerically with the method of Gauss-Newton.
 
 \subsubsection{General nonlinear program and optimality criteria}
 \label{sec:optimization_theory_NLP}
@@ -1079,7 +1086,7 @@ I.e., we solve this problem iteratively by updating an initial point $x^{(0)}$ w
 \begin{align}
 \min_{\Delta x^{(k)}} \ & \frac{1}{2}|| F_1(x^{(k)}) + J_1(x^{(k)}) \Delta x^{(k)} ||_2^2 \label{eq:least_squares_problem_linearized} \\
 s.t. \ & F_2(x^{(k)}) + J_2(x^{(k)}) \Delta x^{(k)} = 0 \nonumber \\
-& F_3(x^{(k)}) + J_3(x^{(k)}) \Delta x^{(k)} = 0 \nonumber
+& F_3(x^{(k)}) + J_3(x^{(k)}) \Delta x^{(k)} \ge 0 \nonumber
 \end{align}
 
 with $J_1(x^{(k)}) := \frac{\partial F_1}{\partial x}(x^{(k)}) \in \mathbb{R}^{m_1 \times n}$, $J_2(x^{(k)}) := \frac{\partial F_2}{\partial x}(x^{(k)}) \in \mathbb{R}^{m_2 \times n}$ and $J_3(x^{(k)}) := \frac{\partial F_3}{\partial x}(x^{(k)}) \in \mathbb{R}^{m_3 \times n}$. Advantageous here is that we can avoid the computationally costly Hessian of the objective function. The iteration using the Gauss-Newton step $\Delta x^{(k)}$ in iteration $k$ then reads as
@@ -1454,7 +1461,7 @@ Since the measurement data $\eta$ is a random variable the estimated parameters 
 	\label{eq:stat_ana_covariance_matrix}
 \end{align}
 
-for the case that the measurement variances $\sigma^2$ are known except a common factor $\beta^2$, that is $\sigma^2 = \beta^2 \bar{\sigma}^2$ with $\bar{\sigma}^2$ the used measurement variances in the parameter estimation. An approximation $b^2$ of this factor can be computed a-posteriori by
+for the case that the measurement variances $\sigma^2$ are known except a common factor $\beta^2$, that is $\sigma^2 = \beta^2 \bar{\sigma}^2$ with $\bar{\sigma}^2$ the used measurement variances in the parameter estimation. An approximation $b^2$ of this factor can be computed a posteriori by
 
 \begin{equation}
 	\beta^2 \approx b^2 = \frac{|| F_1(p^*) ||_2^2}{n_{mp} - (n_p - n_c)}
@@ -1463,13 +1470,14 @@ for the case that the measurement variances $\sigma^2$ are known except a common
 with $n_c$ number of active constraints. We define the confidence region
 
 \begin{align}
-	G_N&(\alpha)  := \left\{ p \ | \ \tilde{F}_2(p) = 0, \ || F_1(p) ||_2^2 - || F_1(p^*) ||_2^2 \le \gamma(\alpha) \right\} \\
+	G_N&(\alpha)  := \left\{ p \in \mathbb{R}^{n_p} \ | \ \tilde{F}_2(p) = 0, \ || F_1(p) ||_2^2 - || F_1(p^*) ||_2^2 \le \gamma(\alpha) \right\} \\
 	& \text{with} \ \gamma(\alpha) := b^2 (n_p - n_c) \cdot F_{1-\alpha}(n_p - n_c, n_{mp} - (n_p - n_c)) \label{eq:stat_ana_fisher_dist}
-\end{align}
+\end{align} 
 
 where $F_{1-\alpha}$ is the $1-\alpha$ quantile of the Fisher-distribution. In $G_N(\alpha)$ the true parameter values lie with probability $1-\alpha$. Its linearization reads as
+
 \begin{align}
-	G_L(\alpha, p^*) = \left\{ p \in \mathbb{R}^n \ | \ \right. & F_2(p^*) + J_2(p^*)(p - p^*) = 0, \label{eq:stat_ana_lin_confidence_region} \\ 
+	G_L(\alpha, p^*) = \left\{ p \in \mathbb{R}^{n_p} \ | \ \right. & F_2(p^*) + J_2(p^*)(p - p^*) = 0, \label{eq:stat_ana_lin_confidence_region} \\ 
 	& \left. || F_1(p^*) + J_1(p^*)(p - p^*) ||_2^2 - || F_1(p^*)||_2^2 \le \gamma(\alpha) \right\} \nonumber	
 \end{align}
 
@@ -1480,12 +1488,12 @@ The final important result for us is
 \begin{Theorem} \mbox{}\\
 	Let 
 	\begin{equation}
-		\theta_i := \sqrt{\gamma(\alpha)} \cdot \sqrt{C_{ii}(p^*)} \qquad \text{for } i=1,...,n
+		\theta_i := \sqrt{\gamma(\alpha)} \cdot \sqrt{C_{ii}(p^*)} \qquad \text{for } i=1,...,n_p
 	\end{equation}
 	
 with $\gamma(\alpha)$ defined in \cref{eq:stat_ana_fisher_dist} and $C_{ii}(p^*)$ are the diagonal elements of the covariance matrix obtained by \cref{eq:stat_ana_covariance_matrix}. Then the linearized confidence region \cref{eq:stat_ana_lin_confidence_region} is a subset of a cuboid with edge lengths $2 \theta_i$:
 	\begin{equation}
-		G_L(\alpha, p^*) \subseteq [p_1^* - \theta_1, p_1^* + \theta_1] \times ... \times [p_n^* - \theta_n, p_n^* + \theta_n]
+		G_L(\alpha, p^*) \subseteq [p_1^* - \theta_1, p_1^* + \theta_1] \times ... \times [p_{n_p}^* - \theta_{n_p}, p_{n_p}^* + \theta_{n_p}]
 	\end{equation}
 	
 \end{Theorem}
@@ -1554,7 +1562,7 @@ T^{N-1}
 %\frac{\lambda_{\text{pcm}}}{\rho_{\text{pcm}} \ c_{p,\text{pcm}}(T^{N-1})} \cdot \tilde{\Delta} T^{N-1}
 \frac{\lambda_{\text{pcm}}}{\rho_{\text{pcm}} \ c_{p,\text{pcm}}(T^{N-1})} \cdot \frac{1}{\Delta x_{N-2}^2} \frac{2}{1 + \alpha_{N-2}} [T^{N-2} - T^{N-1}]
 \end{bmatrix} \label{eq:heat_equation_discretized} \\[2ex]
-T^i(t_0=0) = & \ T_0 \ \ \forall \ \ i \in \{ 0,1,...,N-1 \} \nonumber
+T^i(t_0=0) = & \ T_0 \quad \text{for} \ i = 0,1,...,N-1 \nonumber
 \end{align}
 
 where \cref{eq:2_point_formula_inhomogeneous} has been used. The abbreviation for the discretized second derivative is defined as
@@ -1566,7 +1574,7 @@ where \cref{eq:2_point_formula_inhomogeneous} has been used. The abbreviation fo
 and the factor $\alpha_i$ coming from the inhomogeneous grid is
 
 \begin{align}
-	\alpha_i := \frac{\Delta x_{i+1}}{\Delta x_{i}}
+	\alpha_i := \frac{\Delta x_{i+1}}{\Delta x_{i}} \quad \text{for} \ i=0,...,N-3
 \end{align}
 
 
@@ -1576,9 +1584,7 @@ Note here that the Dirichlet boundary condition
 	T^0 = T_0 + \beta \cdot t
 \end{equation}
 
-
-
-is apparent by the heat rate $\beta$ at temperature $T^0$. Zero flux Neumann boundary condition on the other hand
+is apparent in the ODE system of \cref{eq:heat_equation_discretized} at $\frac{dT^0}{dt}$ by the heat rate $\beta$. Zero flux Neumann boundary condition on the other hand
 
 \begin{align}
 	\frac{\partial}{\partial x} T^{N-1} \approx & \ \frac{T^N - T^{N-1}}{\Delta x_{N-1}} \stackrel{!}{=} \ 0 \\
@@ -1592,7 +1598,7 @@ is apparent by the heat rate $\beta$ at temperature $T^0$. Zero flux Neumann bou
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/discretization_grid_heat_flux.png}
-	\caption{Illustration of discretized model with discrete temperatures $T^i$, grid sizes $\Delta x_i$, physical lengths $L_{Ag}, L_{pcm}$ and heat flux approximation $\varPhi_q^{pcm,in}$ into the PCM. \\
+	\caption{Illustration of discretized model with discrete temperatures $T^i$, grid sizes $\Delta x_i$, physical lengths $L_{Ag}, L_{pcm}$ and heat flux approximation $\varPhi_q^{pcm,in}$ into the PCM (approximation elucidated in text below). \\
 	Cf.	corresponding IVP \cref{eq:heat_equation_discretized}, grid size construction \cref{sec:spatial_discretization_grid}, heat flux approximation \cref{eq:heat_flux_computation_final} and experimental setup \cref{fig:heat_flux_DSC}.}
 	\label{fig:mathematical_model_discretized}
 \end{figure}
@@ -1615,7 +1621,7 @@ Since Fourier's law gives a heat flux density we needed to add a factor of the P
 	\frac{m_{pcm}}{N_{pcm}} \approx \Delta m_{pcm,N_{Ag}} = \rho_{pcm} \cdot A_{pcm} \cdot \Delta x_{N_{Ag}}
 \end{equation}
 
-assuming beside a homogeneous mass distribution, a constant grid size $\Delta x$ in the PCM which is satisfied in good approximation by construction of the spatial discretization grid, see next \cref{sec:spatial_discretization_grid}. The final equation for the heat flux computation then reads as
+assuming a homogeneous mass distribution and a constant grid size $\Delta x$ in the PCM which is satisfied in good approximation by construction of the spatial discretization grid, see next \cref{sec:spatial_discretization_grid}. The final equation for the heat flux approximation then reads as
 
 \begin{equation}
 	\varPhi_{q}^{pcm,in}(T) \approx - \frac{\lambda_{pcm} \ m_{pcm}}{N_{pcm} \ \rho_{pcm} \ (\Delta x_{N_{Ag}})^2} \left( T^{N_{Ag}+1} - T^{N_{Ag}} \right)
@@ -1626,44 +1632,49 @@ assuming beside a homogeneous mass distribution, a constant grid size $\Delta x$
 
 \subsection{Spatial discretization grid}
 \label{sec:spatial_discretization_grid}
-Preliminary the spatial discretization grid was constant in the silver plate and PCM respectively with grid sizes $\Delta x_{\text{Ag}} > \Delta x_{\text{PCM}}$ because only in PCM the phase transition occurs in which we are interested in. In order to avoid numerical problems due to this discontinuity of the grid size at the transition from silver to PCM the used framework of generating a continuous grid will be explained now. \\
-In the following $x$ will denote the physical grid, $\tilde{x}$ the computation grid and $\chi(\tilde{x}) = x$ the corresponding mapping which is defined by its derivative
+Since only in the PCM the phase transition occurs in which we are interested in and for the physical lengths it holds $L_{Ag} >> L_{pcm}$, the grid size $\Delta x$ within the PCM is much smaller than in the silver plate. In preliminary computations the spatial discretization grid was constant both in the silver plate and PCM. In order to avoid numerical problems due to this discontinuity of the grid size at the transition from silver to PCM the used framework of generating a continuous grid will be explained now. \\
+In the following, $x$ will denote the physical grid, $\tilde{x}$ the computation grid and $\chi(\tilde{x}) = x$ the corresponding monotonically increasing mapping (see \cref{fig:computation_physical_grid}) which is defined by its derivative
+
+%In preliminary computations the spatial discretization grid was constant both in the silver plate and PCM, with grid sizes $\Delta x_{\text{Ag}} > \Delta x_{\text{PCM}}$, respectively since only in the PCM the phase transition occurs in which we are interested in. In order to avoid numerical problems due to this discontinuity of the grid size at the transition from silver to PCM the used framework of generating a continuous grid will be explained now. \\
+%In the following, $x$ will denote the physical grid, $\tilde{x}$ the computation grid and $\chi(\tilde{x}) = x$ the corresponding mapping which is defined by its derivative
 
 \begin{equation}
 	\Delta x(\tilde{x}) := \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x}) := \frac{\Delta \bar{x} - \Delta \underline{x}}{1 + e^{\gamma(\tilde{x} - b)}} + \Delta \underline{x}
 	\label{eq:gridsize_definition}
 \end{equation}
 
-with the parameters $\Delta \underline{x}, \Delta \bar{x}$ as lower and upper bounds of the grid size, $\gamma$ defines the transition shape and $b$ the transition position on the computation grid. Since these parameters are quite counterintuitive they will be calculated with the following parameters:
+with the parameters $\Delta \underline{x}, \Delta \bar{x} \in \mathbb{R}^+$ as lower and upper bounds of the grid size, $\gamma \in \mathbb{R}$ defines the transition shape and $b \in \mathbb{R}^+$ the transition position on the computation grid. These parameters are not intuitive with respect to their numerical value and the resulting grid. Therefore these parameters $\Delta \underline{x}, \Delta \bar{x}, \gamma, b$ will be calculated with the following more intuitive parameters, which are set by the user to define the grid:
+
+%Since these parameters are quite counterintuitive they will be calculated with the following parameters, which are set by the user to define the grid:
 
 \begin{itemize}
 	\item $N \in \mathbb{N}$: total number of computation grid points.
-	\item $n_{pcm} \in (0,1)$: Ratio of grid points for the PCM.
-	\item $n_{tr} \in (0,1)$: Ratio of grid points for the transition.
-	\item $n_{m} \in (0,1)$: Ratio of grid points: Margin to the PCM, where the transition is finished up to a threshold.
-	\item $t < 1$: At grid point $N-N_{pcm}-N_m$, $\frac{\partial \chi(\tilde{x})}{\partial \tilde{x}}$ has finished the transition by $(100 \cdot t)\%$.
+	\item $n_{pcm} \in (0,1)$: Ratio of grid points for the \underline{PCM}.
+	\item $n_{tr} \in (0,1)$: Ratio of grid points for the \underline{transition}.
+	\item $n_{m} \in (0,1)$: Ratio of grid points: \underline{Margin} to the PCM, where the transition is finished up to a threshold.
+	\item $\tau < 1$: At grid point $N-N_{pcm}-N_m$, $\frac{\partial \chi(\tilde{x})}{\partial \tilde{x}}$ has finished the transition by \underline{threshold} $(100 \cdot \tau)\%$.
 \end{itemize}
 
-First of all, the ratios of grid points $n_i$ can be converted into absolute numbers with $N_i = N \cdot n_i$. An illustration of the grid generating function $\frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$, the mapping from computation to physical grid $\chi(\tilde{x})$ and introduced parameters is shown in \cref{fig:computation_physical_grid,fig:grid_size}. \\
-We now derive the unknown parameters $b$, $\gamma$, $\Delta \underline{x}$ and $\Delta \bar{x}$. The central position of the grid transition is
+First of all, the ratios of grid points $n_i$ can be converted into absolute numbers with $N_i = N \cdot n_i$ for $i \in \{ pcm, tr, m \}$. An illustration of the grid generating function $\frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$, the mapping from computation to physical grid $\chi(\tilde{x})$ and introduced parameters is shown in \cref{fig:computation_physical_grid,fig:grid_size}. \\
+We now derive the unknown parameters $b$, $\gamma$, $\Delta \underline{x}$ and $\Delta \bar{x}$. On the computation grid the central position of the grid transition is
 
 \begin{equation}
 	b = N - N_{pcm} - N_m - \frac{1}{2} N_{tr}
 	\label{eq:spatial_grid_b}
 \end{equation}
 
-Furthermore we get $\gamma$ by ($\delta \underline{x}(t)$ illustrated in \cref{fig:grid_size})
+Furthermore we get $\gamma$ by ($\delta \underline{x}(\tau)$ illustrated in \cref{fig:grid_size})
 
 \begin{subequations}
 \begin{align}
-	\frac{\partial \chi}{\partial \tilde{x}}(\tilde{x}=N-N_{pcm}-N_m) = \ & \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x}) \cdot (1-t) =: \delta \underline{x}(t) \\
-	\Leftrightarrow \frac{\Delta \bar{x} - \Delta \underline{x}}{1 + e^{\gamma(N-N_{pcm}-N_m - b)}} + \Delta \underline{x} = \ & \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x}) \cdot (1-t) =: \delta \underline{x}(t)  \\
-	\stackrel{\cref{eq:spatial_grid_b}}{\Leftrightarrow}  1 + e^{\gamma \frac{N_{tr}}{2}} = \ & \frac{1}{1 - t}  \\[2ex]
-	\Leftrightarrow \gamma = \frac{2}{N \cdot n_{tr}} \ln(\frac{t}{1-t})
+	\frac{\partial \chi}{\partial \tilde{x}}(\tilde{x}=N-N_{pcm}-N_m) = \ & \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x}) \cdot (1-\tau) =: \delta \underline{x}(\tau) \\
+	\Leftrightarrow \frac{\Delta \bar{x} - \Delta \underline{x}}{1 + e^{\gamma(N-N_{pcm}-N_m - b)}} + \Delta \underline{x} = \ & \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x}) \cdot (1-\tau) =: \delta \underline{x}(\tau)  \\
+	\stackrel{\cref{eq:spatial_grid_b}}{\Leftrightarrow}  1 + e^{\gamma \frac{N_{tr}}{2}} = \ & \frac{1}{1 - \tau}  \\[2ex]
+	\Leftrightarrow \gamma = \frac{2}{N \cdot n_{tr}} \ln\left(\frac{\tau}{1-\tau}\right)
 \end{align}
 \end{subequations}
 
-The remaining variables $\underline{x}$ and $\bar{x}$ we get by the condition that $T^{N_{Ag}-1}$ is at the physical grid position $L_{Ag}$ (see \cref{fig:mathematical_model_discretized}).
+The remaining variables $\underline{x}$ and $\bar{x}$ we get by the condition that the last discretization point of the silver plate $T^{N_{Ag}-1}$ has the physical coordinate at the end of the silver plate $L_{Ag}$ (see \cref{fig:mathematical_model_discretized})
 
 \begin{subequations}
 	\begin{align}
@@ -1673,7 +1684,7 @@ The remaining variables $\underline{x}$ and $\bar{x}$ we get by the condition th
 	\end{align}
 \end{subequations}
 
-and $T^{N-1}$ is at the physical grid position $L_{Ag}+L_{pcm}$
+and analog the last discretization point of the PCM $T^{N-1}$ has the physical coordinate at the end of the PCM $L_{Ag}+L_{pcm}$
 
 \begin{subequations}
 	\begin{align}
@@ -1745,7 +1756,7 @@ This gives the linear system
 	
 	\end{axis}
 	\end{tikzpicture}
-	\caption{Mapping of the physical grid $x=\chi(\tilde{x})$ as a function of the computation grid $\tilde{x}$. $L_{Ag}$ and $L_{pcm}$ are the physical lengths of the silver plate and PCM, respectively. $N$ and $N_{pcm}$ are the numbers of discretization points in total and within the PCM, respectively.}
+	\caption{Illustrative mapping of the physical grid $x=\chi(\tilde{x})$ as a function of the computation grid $\tilde{x}$. $L_{Ag}$ and $L_{pcm}$ are the physical lengths of the silver plate and PCM, respectively. $N$ and $N_{pcm}$ are the numbers of discretization points in total and within the PCM, respectively.}
 	\label{fig:computation_physical_grid}
 \end{figure}
 
@@ -1763,7 +1774,7 @@ This gives the linear system
 	xtick={7,13,16,25},
 	ytick={0.05, 1., 0.155, 0.895},
 	xticklabels={, , , $N\text{-}1$},
-	yticklabels={$\Delta \underline{x}$, $\Delta \bar{x}$, $\delta \underline{x}(t)$, $\delta {\bar{x}}(t)$},
+	yticklabels={$\Delta \underline{x}$, $\Delta \bar{x}$, $\delta \underline{x}(\tau)$, $\delta {\bar{x}}(\tau)$},
 	xmin=0, xmax=27,
 	ymin=-0.2, ymax=1.1,
 	xlabel=$\tilde{x}$, xlabel style={at=(current axis.right of origin), anchor=west},
@@ -1803,7 +1814,8 @@ This gives the linear system
 	
 	\end{axis}
 	\end{tikzpicture}
-	\caption{Mapping of the gridsize $\Delta x = \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$ as a function of the computation grid $\tilde{x}$. $N$, $N_{pcm}$, $N_m$ and $N_{tr}$ are the number of discretization points in total, within the PCM, margin and grid transition part. Start $\delta \bar{x}(t) := \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x})\cdot t$  \ and end $\delta \underline{x}(t) := \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x})\cdot(1-t)$ of the grid transition are marked. Grid size lower and upper bound $\Delta \underline{x}$ and $\Delta \bar{x}$ used in \cref{eq:gridsize_definition}.}
+	\caption{Illustrative mapping of the gridsize $\Delta x = \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$ as a function of the computation grid $\tilde{x}$. $N$, $N_{pcm}$, $N_m$ and $N_{tr}$ are the number of discretization points in total, within the PCM, margin and grid transition part. Start $\delta \bar{x}(\tau) := \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x})\cdot \tau$  \ and end $\delta \underline{x}(\tau) := \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x})\cdot(1-\tau)$ of the grid transition w.r.t. threshold $\tau$ are marked. Grid size lower and upper bound $\Delta \underline{x}$ and $\Delta \bar{x}$ used in \cref{eq:gridsize_definition}. \\
+	Remark: Gridsize still changes noticeable outside transition zone here since threshold is set here to a very low value ${\tau=0.85}$ in order to illustrate how the gridsize construction works. In the numerical experiments ${\tau=0.999}$ was used.}
 	\label{fig:grid_size}
 \end{figure}
 
@@ -1814,14 +1826,14 @@ This gives the linear system
 %The measurement data for the residuum computation is given as a function dependent on the temperature at the reference crucible $T_{ref}^{\eta_i}$. Since we need to evaluate the solution of the heat equation (PCM side) at the corresponding time points $t_i$ it is necessary to calculate these.
 %This is done by applying Newton's method on the heat equation's solution of the reference side which can be solved analytically as follows. \\
 
-As the crucible of the reference side is empty there is just the silver plate with a constant temperature coefficient $a$. The start and boundary conditions are equal to the ones of the PCM side. Therefore the boundary value problem reads 
+As the crucible of the reference side is empty there is just the silver plate with a constant temperature conductivity $\alpha_{Ag}=\frac{\lambda_{Ag}}{\rho_{Ag} \cdot c_{p,Ag}}$. The start and boundary conditions are equal to the ones of the PCM side. Therefore the boundary value problem reads 
 
 \begin{subequations}
 	\begin{empheq}[box=\widefbox]{align}
-		\frac{\partial T}{\partial t}(x,t) & - a \cdot \frac{\partial^2 T}{\partial x^2}(x,t) = 0 \label{eq:analytical_soln_pde} \\
-		T(0,t) & = T_0 + \beta \cdot t \label{eq:analytical_soln_bc_dirichlet} \\
-		\frac{\partial T}{\partial x}(L_1,t) & = 0 \label{eq:analytical_soln_bc_neumann}  \\
-		T(x,0) & = T_0 
+		\frac{\partial T}{\partial t}(x,t) & - \alpha_{Ag} \cdot \frac{\partial^2 T}{\partial x^2}(x,t) = 0 & \ \forall \ x \in [0,L_{Ag}], \ \forall \ t \in [0,t_f]  \label{eq:analytical_soln_pde} \\
+		T(0,t) & = T_0 + \beta \cdot t & \ \forall \ t \in [0,t_f] \label{eq:analytical_soln_bc_dirichlet} \\
+		\frac{\partial T}{\partial x}(L_{Ag},t) & = 0 & \ \forall \ t \in [0,t_f] \label{eq:analytical_soln_bc_neumann}  \\
+		T(x,0) & = T_0 &  \ \forall \ x \in [0,L_{Ag}]
 	\end{empheq}
 \end{subequations}
 
@@ -1837,7 +1849,7 @@ Inserting the boundary conditions and a coefficient comparison in $x$ gives
 
 \begin{align}
 	\bar{T}(0,t) = T_0 + \beta \cdot t = A(t) \\
-	\frac{\partial \bar{T}}{\partial x}(L_1,t) = 0 \cdot x = B(t) \\[2ex]
+	\frac{\partial \bar{T}}{\partial x}(L_{Ag},t) = 0 \cdot x = B(t) \\[2ex]
 	\Rightarrow \bar{T}(x,t) = T_0 + \beta \cdot t
 \end{align}
 
@@ -1848,15 +1860,15 @@ By construction this leads to homogeneous boundary conditions of $\Gamma(x,t)$:
 \begin{align}
 	T(0,t) & = \bar{T}(0,t) + \Gamma(0,t) = T_0 + \beta \cdot t + \Gamma(0,t) \stackrel{\cref{eq:analytical_soln_bc_dirichlet}}{=} T_0 + \beta \cdot t \\
 	 &\Rightarrow \Gamma(0,t) = 0 \\[2ex]
-	\frac{\partial T}{\partial x}(L_1,t) & = \underbrace{\frac{\partial \bar{T}}{\partial x}(L_1,t)}_{= 0} + \frac{\partial \Gamma}{\partial x}(L_1,t) \stackrel{\cref{eq:analytical_soln_bc_neumann}}{=} 0 \\
-	 &\Rightarrow \frac{\partial \Gamma}{\partial x}(L_1,t) = 0
+	\frac{\partial T}{\partial x}(L_{Ag},t) & = \underbrace{\frac{\partial \bar{T}}{\partial x}(L_{Ag},t)}_{= 0} + \frac{\partial \Gamma}{\partial x}(L_{Ag},t) \stackrel{\cref{eq:analytical_soln_bc_neumann}}{=} 0 \\
+	 &\Rightarrow \frac{\partial \Gamma}{\partial x}(L_{Ag},t) = 0
 \end{align}
 
 
 Inserting $\bar{T}$ and $\Gamma$ into \cref{eq:analytical_soln_pde} gives
 
 \begin{align}
-	\frac{\partial \bar{T}}{\partial t} + \frac{\partial \Gamma}{\partial t} - a \left[ \frac{\partial^2 \bar{T}}{\partial x^2} + \frac{\partial^2 \Gamma}{\partial x^2} \right] = 0
+	\frac{\partial \bar{T}}{\partial t} + \frac{\partial \Gamma}{\partial t} - \alpha_{Ag} \left[ \frac{\partial^2 \bar{T}}{\partial x^2} + \frac{\partial^2 \Gamma}{\partial x^2} \right] = 0
 \end{align}
 	
 
@@ -1873,9 +1885,9 @@ this leads to the boundary value problem in $\Gamma(x,t)$
 
 \begin{subequations}
 	\begin{empheq}[box=\widefbox]{align}
-		\frac{\partial \Gamma}{\partial t}(x,t) - a \cdot \frac{\partial^2 \Gamma}{\partial x^2}(x,t) & = - \beta =: \bar{q} \label{eq:analytical_soln_pde_gamma} \\
+		\frac{\partial \Gamma}{\partial t}(x,t) - \alpha_{Ag} \cdot \frac{\partial^2 \Gamma}{\partial x^2}(x,t) & = - \beta =: \bar{q} \label{eq:analytical_soln_pde_gamma} \\
 		\Gamma(0,t) & = 0 \label{eq:analytical_soln_bc_neumann_gamma} \\
-		\frac{\partial \Gamma}{\partial x}(L1,t) & = 0 \label{eq:analytical_soln_bc_dirichlet_gamma}  \\
+		\frac{\partial \Gamma}{\partial x}(L_{Ag},t) & = 0 \label{eq:analytical_soln_bc_dirichlet_gamma}  \\
 		\Gamma(x,0) & = 0 =: \bar{f}
 	\end{empheq}
 	\label{eq:analytical_soln_gamma}
@@ -1885,7 +1897,7 @@ this leads to the boundary value problem in $\Gamma(x,t)$
 The homogeneous solution (i.e. $\bar{q}=0$) can be obtained by an separation ansatz of $\Gamma(x,t) =: \mathcal{T}(t) \cdot X(x)$. \Cref{eq:analytical_soln_pde_gamma} is then equivalent to
 
 \begin{equation}
-	\dot{\mathcal{T}} X = a \mathcal{T} X'' \quad \Leftrightarrow \quad \frac{1}{a} \frac{\dot{\mathcal{T}}}{\mathcal{T}} = \frac{X''}{X} = const =: - \lambda
+	\dot{\mathcal{T}} X = \alpha_{Ag} \mathcal{T} X'' \quad \Leftrightarrow \quad \frac{1}{\alpha_{Ag}} \frac{\dot{\mathcal{T}}}{\mathcal{T}} = \frac{X''}{X} = const =: - \lambda
 \end{equation}
 
 
@@ -1897,19 +1909,19 @@ The solution of the ordinary differential equation $X'' = - \lambda \cdot X$ is
 	X(x) = c_1 \cdot \sin(\sqrt{\lambda} x) + c_2 \cdot \cos(\sqrt{\lambda} x)
 \end{equation}
 
-where $c_1$ and $c_2$ are determined by the boundary conditions $X(0) = 0$ and $X'(L_1) = 0$:
+where $c_1$ and $c_2$ are determined by the boundary conditions $X(0) = 0$ and $X'(L_{Ag}) = 0$:
 
 \begin{align}
 	X(0) = c_2 \stackrel{!}{=} 0 \\
-	X'(L_1) = \left. c_1 \sqrt{\lambda} \cos(\sqrt{\lambda} x) \right|_{x=L_1} = c_1 \sqrt{\lambda} \cos(\sqrt{\lambda} L_1) \stackrel{!}{=} 0 \\
-	\Rightarrow \sqrt{\lambda_n} = \frac{(2n -1)\pi}{2 L_1} \qquad n=1,2,...
+	X'(L_{Ag}) = \left. c_1 \sqrt{\lambda} \cos(\sqrt{\lambda} x) \right|_{x=L_{Ag}} = c_1 \sqrt{\lambda} \cos(\sqrt{\lambda} L_{Ag}) \stackrel{!}{=} 0 \\
+	\Rightarrow \sqrt{\lambda_n} = \frac{(2n -1)\pi}{2 L_{Ag}} \qquad n=1,2,...
 \end{align}
 
 Note: The trivial solution $\sqrt{\lambda}=0$ leads to $X(x) = 0$ and is therefore omitted. \\
 The general solution of $X_n(x)$ is then given by
 
 \begin{equation}
-	\tilde{X}_n(x) = c_1 \cdot \sin\left(\frac{(2n -1)\pi}{2 L_1} \cdot x\right) =: c_1 \cdot X_n(x)
+	\tilde{X}_n(x) = c_1 \cdot \sin\left(\frac{(2n -1)\pi}{2 L_{Ag}} \cdot x\right) =: c_1 \cdot X_n(x)
 \end{equation}
 
 In order to solve the non-homogeneous boundary value problem \cref{eq:analytical_soln_gamma}, $\Gamma$, $\bar{q}$ and $\bar{f}$ are expanded in a Fourier series with $X_n(x)$ as basis where $c_1$ is incorporated in the corresponding Fourier coefficients $\mathcal{T}_n(t)$, $\bar{q}_n(t)$ and $\bar{f}_n$:
@@ -1927,43 +1939,43 @@ The Fourier coefficients $\bar{q}_n(t)$ and $\bar{f}_n$ are then computed by
 
 \begin{subequations}
 	\begin{align}
-		\bar{q}_n(t) & = \frac{\int_{0}^{L_1} \bar{q}(x,t) X_n(x) dx}{\int_{0}^{L_1} X_n^2(x) dx} \ \overbrace{=}^{\bar{q}=-\beta} \ - \frac{4 \beta}{\pi (2n - 1)} \\
-		\bar{f}_n & = \frac{\int_{0}^{L_1} \bar{f}(x) X_n(x) dx}{\int_{0}^{L_1} X_n^2(x) dx} \ \underbrace{=}_{\bar{f}=0} 0
+		\bar{q}_n(t) & = \frac{\int_{0}^{L_{Ag}} \bar{q}(x,t) X_n(x) dx}{\int_{0}^{L_{Ag}} X_n^2(x) dx} \ \overbrace{=}^{\bar{q}=-\beta} \ - \frac{4 \beta}{\pi (2n - 1)} \\
+		\bar{f}_n & = \frac{\int_{0}^{L_{Ag}} \bar{f}(x) X_n(x) dx}{\int_{0}^{L_{Ag}} X_n^2(x) dx} \ \underbrace{=}_{\bar{f}=0} 0
 	\end{align}
 \end{subequations}
 
 Inserting this into \cref{eq:analytical_soln_pde_gamma} gives us
 
 \begin{align*}
-	\sum_{n=1}^{\infty} \dot{\mathcal{T}}_n(t) X_n(x) - a \sum_{n=1}^{\infty} \mathcal{T}_n(t) X_n''(x) = \sum_{n=1}^{\infty} \bar{q}_n(t) X_n(x) \nonumber \\
-	\stackrel{X'' = - \lambda X}{\Leftrightarrow} \ \ \sum_{n=1}^{\infty} \dot{\mathcal{T}}_n(t) X_n(x) + a \sum_{n=1}^{\infty} \lambda_n \mathcal{T}_n(t) X_n(x) = \sum_{n=1}^{\infty} \bar{q}_n(t) X_n(x)
+	\sum_{n=1}^{\infty} \dot{\mathcal{T}}_n(t) X_n(x) - \alpha_{Ag} \sum_{n=1}^{\infty} \mathcal{T}_n(t) X_n''(x) = \sum_{n=1}^{\infty} \bar{q}_n(t) X_n(x) \nonumber \\
+	\stackrel{X'' = - \lambda X}{\Leftrightarrow} \ \ \sum_{n=1}^{\infty} \dot{\mathcal{T}}_n(t) X_n(x) + \alpha_{Ag} \sum_{n=1}^{\infty} \lambda_n \mathcal{T}_n(t) X_n(x) = \sum_{n=1}^{\infty} \bar{q}_n(t) X_n(x)
 \end{align*}
 
 With a coefficient comparison in $X_n$ we get the inhomogeneous ordinary differential equation (ODE)
 
 \begin{equation}
-	\dot{\mathcal{T}_n}(t) + a \lambda_n \mathcal{T}_n(t) = \bar{q}_n(t)
+	\dot{\mathcal{T}_n}(t) + \alpha_{Ag} \lambda_n \mathcal{T}_n(t) = \bar{q}_n(t)
 	\label{eq:analytical_soln_inhomo_ode}
 \end{equation}
 
 where the solution of the homogeneous part (i.e. $\bar{q}_n(t) = 0$) is
 
 \begin{equation}
-	\mathcal{T}_n^h(t) = A_n \cdot e^{-a \lambda_n t}
+	\mathcal{T}_n^h(t) = A_n \cdot e^{-\alpha_{Ag} \lambda_n t}
 \end{equation}
 
 Applying the method of variation of constants by setting $A_n = A_n(t)$ and inserting in \cref{eq:analytical_soln_inhomo_ode} gives after cancellation and reordering
 
 \begin{align}
-	\dot{A_n}(t) & = \bar{q}_n(t) \cdot e^{a \lambda_n t} = -\frac{4 \beta}{\pi (2n - 1)} e^{a \lambda_n t} \\
-	\Rightarrow A_n(t) & = \int_{0}^{t} -\frac{4 \beta}{\pi (2n - 1)} e^{a \lambda_n \tau} d \tau + A_{n,c} \\
-	& = -\frac{4 \beta}{\pi (2n - 1)} \frac{1}{a \lambda_n} \left[ e^{a \lambda_n t} - 1 \right] + A_{n,c}
+	\dot{A_n}(t) & = \bar{q}_n(t) \cdot e^{\alpha_{Ag} \lambda_n t} = -\frac{4 \beta}{\pi (2n - 1)} e^{\alpha_{Ag} \lambda_n t} \\
+	\Rightarrow A_n(t) & = \int_{0}^{t} -\frac{4 \beta}{\pi (2n - 1)} e^{\alpha_{Ag} \lambda_n \tau} d \tau + A_{n,c} \\
+	& = -\frac{4 \beta}{\pi (2n - 1)} \frac{1}{\alpha_{Ag} \lambda_n} \left[ e^{\alpha_{Ag} \lambda_n t} - 1 \right] + A_{n,c}
 \end{align}
 
 The solution of the inhomogeneous ODE \cref{eq:analytical_soln_inhomo_ode} then is
 \begin{align}
-	\mathcal{T}_n(t) & = A_n(t) \cdot e^{-a \lambda_n t}  \\
-	& = -\frac{4 \beta}{\pi (2n - 1)} \frac{1}{a \lambda_n} \left[1 - e^{-a \lambda_n t} \right] + A_{n,c} e^{- a \lambda_n t} \nonumber
+	\mathcal{T}_n(t) & = A_n(t) \cdot e^{-\alpha_{Ag} \lambda_n t}  \\
+	& = -\frac{4 \beta}{\pi (2n - 1)} \frac{1}{\alpha_{Ag} \lambda_n} \left[1 - e^{-\alpha_{Ag} \lambda_n t} \right] + A_{n,c} e^{- \alpha_{Ag} \lambda_n t} \nonumber
 \end{align}
 
 The remaining unknown $A_{n,c}$ is determined by considering the Fourier series of the starting condition
@@ -1983,7 +1995,7 @@ Finally the solution of the boundary value problem \cref{eq:analytical_soln_pde}
 \begin{align}
 	& \ \ T(x,t) = \bar{T}(x,t) + \Gamma(x,t) \nonumber \\
 	\Leftrightarrow \ \ & T(x,t) = T_0 + \beta \cdot t + \sum_{n=1}^{\infty} \mathcal{T}_n(t) X_n(x) \nonumber \\[1ex]
-	\Leftrightarrow \ \ & \raalign{}{T(x,t) = T_0 + \beta \cdot t - \sum_{n=1}^{\infty} \left\{ \frac{4 \beta}{\pi (2n - 1)} \frac{1}{a \cdot \lambda_n} \left[ 1 - e^{- a \lambda_n t} \right] \cdot \sin(\sqrt{\lambda_n} \cdot x) \right\}} \label{eq:analytical_soln_final_formula}
+	\Leftrightarrow \ \ & \raalign{}{T(x,t) = T_0 + \beta \cdot t - \sum_{n=1}^{\infty} \left\{ \frac{4 \beta}{\pi (2n - 1)} \frac{1}{\alpha_{Ag} \cdot \lambda_n} \left[ 1 - e^{- \alpha_{Ag} \lambda_n t} \right] \cdot \sin(\sqrt{\lambda_n} \cdot x) \right\}} \label{eq:analytical_soln_final_formula}
 \end{align}
 
 
