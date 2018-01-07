@@ -1837,20 +1837,21 @@ As the crucible of the reference side is empty there is just the silver plate wi
 	\end{empheq}
 \end{subequations}
 
-which can be solved analytically. The derivation is based on \cite{analytical_soln} chapter 5.6. \\
-The first step is a separation ansatz of the solution function $T(x,t)$ with $\Gamma(x,t)$ and $\bar{T}(x,t)$ satisfying the boundary conditions:
+which can be solved analytically. The derivation is based on \cite{analytical_soln} chapter 5.6. If omitted in the following for legibility, it holds $x \in [0,L_{Ag}]$ and $t \in [0,t_f]$. \\
+The first step is a separation ansatz of the solution function $T(x,t)$
 
 \begin{align}
 	{T}(x,t) =: & \ \bar{T}(x,t) + \Gamma(x,t) \\
-	\bar{T}(x,t) =: & \ A(t) + B(t) \cdot x
+	\bar{T}(x,t) =: & \ A(t) + B(t) \cdot x \label{eq:analytical_soln_bc_def}
 \end{align}
 
-Inserting the boundary conditions and a coefficient comparison in $x$ gives
+The idea is that $\bar{T}(x,t)$ satisfies the boundary conditions and therefore the boundary value subproblem (see later \cref{eq:analytical_soln_gamma}) in $\Gamma(x,t)$ has homogeneous boundary conditions. \\
+Inserting the boundary conditions and equating coefficients in $x$ gives
 
 \begin{align}
-	\bar{T}(0,t) = T_0 + \beta \cdot t = A(t) \\
-	\frac{\partial \bar{T}}{\partial x}(L_{Ag},t) = 0 \cdot x = B(t) \\[2ex]
-	\Rightarrow \bar{T}(x,t) = T_0 + \beta \cdot t
+	A(t) \stackrel{\eqref{eq:analytical_soln_bc_def}}{=} & \ \bar{T}(0,t)  \stackrel{\eqref{eq:analytical_soln_bc_dirichlet}}{=} T_0 + \beta \cdot t \\
+	B(t) \stackrel{\eqref{eq:analytical_soln_bc_def}}{=} & \ \frac{\partial \bar{T}}{\partial x}(L_{Ag},t) \stackrel{\eqref{eq:analytical_soln_bc_neumann}}{=} 0 \\[2ex]
+	\Rightarrow & \ \bar{T}(x,t) = T_0 + \beta \cdot t
 \end{align}
 
 
@@ -1885,10 +1886,10 @@ this leads to the boundary value problem in $\Gamma(x,t)$
 
 \begin{subequations}
 	\begin{empheq}[box=\widefbox]{align}
-		\frac{\partial \Gamma}{\partial t}(x,t) - \alpha_{Ag} \cdot \frac{\partial^2 \Gamma}{\partial x^2}(x,t) & = - \beta =: \bar{q} \label{eq:analytical_soln_pde_gamma} \\
-		\Gamma(0,t) & = 0 \label{eq:analytical_soln_bc_neumann_gamma} \\
-		\frac{\partial \Gamma}{\partial x}(L_{Ag},t) & = 0 \label{eq:analytical_soln_bc_dirichlet_gamma}  \\
-		\Gamma(x,0) & = 0 =: \bar{f}
+		\frac{\partial \Gamma}{\partial t}(x,t) - \alpha_{Ag} \cdot \frac{\partial^2 \Gamma}{\partial x^2}(x,t) & =  \overbrace{-\beta}^{=: \bar{q}}   & \ \forall \ x \in [0,L_{Ag}], \ \forall \ t \in [0,t_f]  \label{eq:analytical_soln_pde_gamma} \\
+		\Gamma(0,t) & = 0 & \ \forall \ t \in [0,t_f] \label{eq:analytical_soln_bc_neumann_gamma} \\
+		\frac{\partial \Gamma}{\partial x}(L_{Ag},t) & = 0 &  \ \forall \ t \in [0,t_f] \label{eq:analytical_soln_bc_dirichlet_gamma}  \\
+		\Gamma(x,0) & = 0 =: \bar{f} &  \ \forall \ x \in [0,L_{Ag}]
 	\end{empheq}
 	\label{eq:analytical_soln_gamma}
 \end{subequations}
@@ -1901,7 +1902,7 @@ The homogeneous solution (i.e. $\bar{q}=0$) can be obtained by an separation ans
 \end{equation}
 
 
-since the LHS $\sfrac{\dot{\mathcal{T}}}{{\mathcal{T}}}$ just depends on $t$ and the RHS $\sfrac{X''}{X}$ just depends on $x$. 
+since the LHS $\sfrac{\dot{\mathcal{T}}}{{\mathcal{T}}}$ just depends on $t$ and the RHS $\sfrac{X''}{X}$ just depends on $x$. The constant defined ${-\lambda}$ is not to be mistaken with the physical quantity of the heat conductivity outside this section. 
 
 The solution of the ordinary differential equation $X'' = - \lambda \cdot X$ is
 
@@ -1951,7 +1952,7 @@ Inserting this into \cref{eq:analytical_soln_pde_gamma} gives us
 	\stackrel{X'' = - \lambda X}{\Leftrightarrow} \ \ \sum_{n=1}^{\infty} \dot{\mathcal{T}}_n(t) X_n(x) + \alpha_{Ag} \sum_{n=1}^{\infty} \lambda_n \mathcal{T}_n(t) X_n(x) = \sum_{n=1}^{\infty} \bar{q}_n(t) X_n(x)
 \end{align*}
 
-With a coefficient comparison in $X_n$ we get the inhomogeneous ordinary differential equation (ODE)
+With equating the coefficients in $X_n$ we get the inhomogeneous ordinary differential equation (ODE)
 
 \begin{equation}
 	\dot{\mathcal{T}_n}(t) + \alpha_{Ag} \lambda_n \mathcal{T}_n(t) = \bar{q}_n(t)
@@ -1972,6 +1973,8 @@ Applying the method of variation of constants by setting $A_n = A_n(t)$ and inse
 	& = -\frac{4 \beta}{\pi (2n - 1)} \frac{1}{\alpha_{Ag} \lambda_n} \left[ e^{\alpha_{Ag} \lambda_n t} - 1 \right] + A_{n,c}
 \end{align}
 
+where $A_{n,c}$ is the constant part from integration since no initial value has been applied yet, it will be determined in the following.
+
 The solution of the inhomogeneous ODE \cref{eq:analytical_soln_inhomo_ode} then is
 \begin{align}
 	\mathcal{T}_n(t) & = A_n(t) \cdot e^{-\alpha_{Ag} \lambda_n t}  \\
@@ -1984,7 +1987,7 @@ The remaining unknown $A_{n,c}$ is determined by considering the Fourier series 
 	\Gamma(x,0) = \sum_{n=1}^{\infty} \mathcal{T}_n(0) X_n(x) = \sum_{n=1}^{\infty} \bar{f}_n X_n(x) = \bar{f}(x)
 \end{equation}
 
-From $\mathcal{T}_n(0) = A_{n,c}$, $\bar{f}_n=0$ and again a coefficient comparison it follows that
+From $\mathcal{T}_n(0) = A_{n,c}$, $\bar{f}_n=0$ and again equating the coefficients it follows that
 
 \begin{equation}
 	A_{n,c} = 0
