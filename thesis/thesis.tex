@@ -539,9 +539,9 @@ Since crucial and occurring several times in this section, we introduce the init
 	y(t_0) = y_0 \nonumber
 \end{align}
 
-with differential state vector $y \in \mathbb{R}^n$, time $t \in \mathbb{R}$ and parameters $p \in \mathbb{R}^{n_p}$. Function $f: \mathbb{R}^n \times \mathbb{R} \rightarrow \mathbb{R}^n$ with $f \in \mathcal{C}^2$ is called the differential equation's right hand side within the ordinary differential equation (ODE) $\dot{y} = f(y(t), t; p)$. The semicolon separates between function arguments and  parameters\footnote{e.g. also controls $u$ in the context of optimal control.}. Initial time and state are $t_0$ and $y_0$, respectively. \\
+with differential state vector $y \in \mathbb{R}^n$, time $t \in \mathbb{R}$ and parameters $p \in \mathbb{R}^{n_p}$. Function $f: \mathbb{R}^n \times \mathbb{R} \rightarrow \mathbb{R}^n$ assumed sufficiently smooth is called the differential equation's right hand side within the ordinary differential equation (ODE) $\dot{y} = f(y(t), t; p)$. The semicolon separates function arguments and  parameters\footnote{e.g. also controls $u$ in the context of optimal control.}. Initial time and state are $t_0$ and $y_0$, respectively. \\
 Local existence of the solution is shown in theorem of Peano\footnote{Giuseppe Peano (1858–1932).} basically requires continuity of $f$ (see e.g. \cite{ODE_analytic} Theorem 2.2.8).
-For global existence and uniqueness the theorem of Picard\footnote{Charles Emile Picard (1856–1941).}-Lindelöf\footnote{Ernst Leonard Lindelöf (1870 - 1946).} holds requiring essentially $f$ Lipschitz continuous (see e.g \cite{ODE_analytic} Theorem 2.4.5). \\
+For global existence and uniqueness the theorem of Picard\footnote{Charles Emile Picard (1856–1941).}-Lindelöf\footnote{Ernst Leonard Lindelöf (1870 - 1946).} holds requiring essentially $f$ Lipschitz continuous (see e.g. \cite{ODE_analytic} Theorem 2.4.5). \\
 
 
 
@@ -555,8 +555,8 @@ Beside them the methods of symbolic- and complex step-differentiation exist and 
 \subsubsection{Finite differences}
 \label{sec:finite_differences}
 Derivatives approximated by finite differences are deployed beside the optimization task also in the spatial discretization of a partial differential equation which will be explained in more detail in \cref{sec:pde_discretization}.
-They can be derived easily from Taylor-series expansion where we restrict ourselves to the scalar function argument case $x \in \mathbb{R}$ since derivatives in higher dimensions $x \in \mathbb{R}^n$ are obtained straight forward by applying directional derivatives assuming total differentiability.  \\
-Considering the function $f: \mathbb{R} \rightarrow \mathbb{R}$ with $f \in \mathcal{C}^1$ the Taylor series looks as follows:
+They can be derived easily from Taylor-series expansion where we restrict ourselves to the scalar function argument case $x \in \mathbb{R}$ since derivatives in higher dimensions $x \in \mathbb{R}^n$ are obtained straight forward by applying directional derivatives, assuming total differentiability.  \\
+Considering the function $f: \mathbb{R} \rightarrow \mathbb{R}$ with $f \in \mathcal{C}^2$ the Taylor series looks as follows:
 
 
 \begin{equation}
@@ -638,7 +638,7 @@ This simplicity is at the expense of accuracy. If we choose $h$ too small, cance
 
 
 \subsubsection{Automatic Differentiation and Internal Numerical Differentiation}
-The basic idea of Automatic Differentiation (AD) is to subdivide a function ${f: \mathbb{R}^n \rightarrow \mathbb{R}^m}$ into so called elementary functions $\varphi_i$ of which the derivative is known. 
+The basic idea of Automatic Differentiation (AD) is to subdivide a sufficiently smooth function ${f: \mathbb{R}^n \rightarrow \mathbb{R}^m}$ into so called elementary functions $\varphi_i$ of which the derivative is known. 
 
 The evaluation of these elementary functions give intermediate values $v_i = \varphi_i(v_j)_{j \prec i}$ where the dependency relation $\prec$ is defined as
 
@@ -770,7 +770,7 @@ Again we apply this algorithm on the exemplary function \cref{eq:AD_example}:
 Until now, the fundamental principles of AD have been explained, in particular just the first order derivative in forward and adjoint mode. Higher derivatives of arbitrary order can be obtained for example by the method of Taylor Coefficient Propagation (fundamentals in \cite{TC-prop_basis} and applied in \cite{diss_jan}). \\
 
 In this thesis we are actually interested in the sensitivities of the solution of an IVP \cref{eq:initial_value_problem_definition} with respect to parameters $p$, namely $\frac{\partial y}{\partial p}$. 
-This can be done by solving the variational differential equation (see e.g. \cite{diff_equations_numerics}) which can be derived as follows using the integral form of the IVP and assuming $f$ continuously differentiable and $y_0$ independent of $p$. 
+This can be done by solving the variational differential equation (see e.g. \cite{diff_equations_numerics}) which can be derived as follows using the integral form of the IVP and assuming $f$ continuously differentiable. Initial values $y_0$ are assumed to be independent of $p$ here.
 
 \begin{align}
 	y(t;p) = \ & y_0 + \int_{t_0}^{t} f(y(\tau;p),\tau;p) \ d\tau \\
@@ -795,7 +795,7 @@ The details on IND including the generation of higher derivatives via taylor coe
 \label{sec:theory_ODE_solver_BDF}
 
 In this section numerical methods will be introduced to solve initial value problems of the form given in \cref{eq:initial_value_problem_definition} without parameters $p$. \\ 
-There are a lot of different methods for the numerical solution of an IVP (see e.g. \cite{diff_equations_numerics}) like Runge-Kutta (RK) or linear multistep methods (LMM). The solver we used in this thesis applies the method of Backward Differentiation Formulas (BDF) which will be explained further now assuming $f \in \mathcal{C}^1$. \\
+There are a lot of different methods for the numerical solution of an IVP (see e.g. \cite{diff_equations_numerics}) like Runge-Kutta (RK) or linear multistep methods (LMM). The solver we used in this thesis applies the method of Backward Differentiation Formulas (BDF) which will be explained further now, assuming the differential equation's right hand side $f \in \mathcal{C}^1$. \\
 Basic idea of the BDF method of order $k$ is to interpolate the last $(k+1)$ solution points $y_m,...,y_{m+k}$ with a polynomial such that the unknown point $y_{m+k}$ satisfies the ODE at $t_{m+k}$. 
 It is defined as
 
@@ -984,7 +984,7 @@ In this section we first treat the general nonlinear optimization problem (NLP) 
 	& \ F_3(x) \ge 0 \nonumber
 \end{align}
 
-where $x \in \mathbb{R}^n$ is the optimization variable, $f\text{: } \mathbb{R}^n \rightarrow \mathbb{R}$ is the objective function, $F_2\text{: } \mathbb{R}^n \rightarrow \mathbb{R}^{m_2}$ and $F_3\text{: } \mathbb{R}^n \rightarrow \mathbb{R}^{m_3}$ are the equality and inequality constraints, respectively. Index $m_1$ is missing because we will need this later in the context of a least squares problem. The results shown in this chapter can be found for example in \cite{nonlinear_optimiziation_wright}. \\
+where $x \in \mathbb{R}^n$ is the optimization variable, $f\text{: } \mathbb{R}^n \rightarrow \mathbb{R}$ is the objective function, $F_2\text{: } \mathbb{R}^n \rightarrow \mathbb{R}^{m_2}$ and $F_3\text{: } \mathbb{R}^n \rightarrow \mathbb{R}^{m_3}$ are the equality and inequality constraints, respectively. $f$, $F_2$ and $F_3$ are assumed sufficiently smooth. Index $m_1$ is missing because we will need this later in the context of a least squares problem. The results shown in this chapter can be found for example in \cite{nonlinear_optimiziation_wright}. \\
 
 The Lagrange function of \cref{eq:NLP_formulation} is defined as
 
@@ -1072,8 +1072,7 @@ Since the thesis contains parameter estimation problems we will treat now the eq
 	& F_3(x) \ge 0 \nonumber
 \end{align}
 
-with $x \in \mathbb{R}^n$, residuum vector $F_1: \mathbb{R}^n \rightarrow \mathbb{R}^{m_1}$, equality constraints $F_2: \mathbb{R}^n \rightarrow \mathbb{R}^{m_2}$ and inequality constraints $F_3: \mathbb{R}^n \rightarrow \mathbb{R}^{m_3}$.
-%Inequality constraints will be introduced in the context of the active set strategy later in \cref{sec:GN_numerical_solution} paragraph equality and inequality constrained case. \\
+with $x \in \mathbb{R}^n$, residuum vector $F_1: \mathbb{R}^n \rightarrow \mathbb{R}^{m_1}$, equality constraints $F_2: \mathbb{R}^n \rightarrow \mathbb{R}^{m_2}$ and inequality constraints $F_3: \mathbb{R}^n \rightarrow \mathbb{R}^{m_3}$ and let $F_i \in \mathcal{C}^3$ for $i=\{1,2,3\}$.
 Instead of applying the KKT-conditions on \cref{eq:least_squares_problem} we apply the method of Gauss-Newton (GN). \\
 I.e., we solve this problem iteratively by updating an initial point $x^{(0)}$ with a sequence of solutions $\Delta x^{(k)}$ in iteration $k$ from linearized subproblems of the form
 
@@ -1134,7 +1133,7 @@ with active constraints $\tilde{F_2}$ and corresponding Jacobian $\tilde{J}_2$ s
 	\label{eq:GN_solution_formal}
 \end{align}
 
-with the generalized inverse $J^+$. An important result \cite{diss_bock} is
+with the generalized inverse $J^+ \equiv J^+(x^{(k)})$. An important result \cite{diss_bock} is
 
 \begin{Lemma} \textcolor{white}{.}\\
 	If $rank(\tilde{J}_2) = m_2+s$ and $rank 
@@ -1408,32 +1407,40 @@ We treat this problem with an active set strategy illustrated below, see \cite{d
 \subsubsection{Parameter estimation}
 \label{sec:parameter_estimation_theory}
 
-The task of parameter estimation or parameter identification is an inverse problem. An usual formulation is the least squares problem
+The task of parameter estimation or parameter identification is an inverse problem. Important for us in this thesis is the least squares parameter estimation problem of the form
 
+\begin{subequations}
 \begin{align}
-	\min_p \sum_{i=1}^{n_{mp}}  \frac{(h_i(x(t_i;p),p) - \eta_i)^2}{\sigma^2}
+	\min_p \ & \sum_{i=1}^{n_{mp}}  \frac{(h_i(y(t_i;p),p) - \eta_i)^2}{\sigma^2} \label{eq:param_estimation_definition_obj_fct} \\
+%	\min_p \ & \sum_{i=1}^{n_{mp}} \left( \frac{h_i(y(t_i;p),p) - \eta_i}{\sigma} \right)^2 \label{eq:param_estimation_definition_obj_fct} \\
+	s.t. \ & \quad \ \ \dot{y} = f(y(t),t;p) \label{eq:param_estimation_definition_IVP_diff_eq} \\
+	& y(t_0) = y_0 \label{eq:param_estimation_definition_IVP_init} \\
+	&  \quad \ \ p \ge \underline{p} \label{eq:param_estimation_definition_lb} \\
+	&  \quad \ \ p \le \bar{p} \label{eq:param_estimation_definition_ub}
+\end{align}
+\label{eq:param_estimation_definition}
+\end{subequations}
+
+where $p \in \mathbb{R}^{n_p}$ are the parameters to be estimated, $h_i: \mathbb{R}^{n_y} \times \mathbb{R}^{n_p} \rightarrow \mathbb{R}$ are the model equations for the measurement quantity $\eta_i \in \mathbb{R}$ for measurement value number $i$ and $n_{mp} \in \mathbb{N}$ is the total number of measurement values. Common variance for all measurement values is $\sigma^2 > 0$. The least squares objective function \cref{eq:param_estimation_definition_obj_fct} has to be minimized with the constraint of solving the IVP in \cref{eq:param_estimation_definition_IVP_diff_eq,eq:param_estimation_definition_IVP_init} whose solution $y(t;p) \in \mathbb{R}^{n_y}$ is used in the model equations. Finally there are lower and upper bounds $\underline{p} \in \mathbb{R}^{n_p}$ and $\bar{p} \in \mathbb{R}^{n_p}$, respectively in \cref{eq:param_estimation_definition_lb,eq:param_estimation_definition_ub} for the parameters. \\
+The measurement errors $\epsilon_i$ are assumed to be independently normal distributed with zero mean and common variance $\sigma^2$ such that for a correct model and true parameters $\hat{p}$ it holds
+\begin{align}
+\eta_i = h_i(x(t_i;\hat{p}),\hat{p}) + \epsilon_i, \quad \epsilon_i \in \mathcal{N}(0,\sigma^2) \quad \text{for} \ i=1,...,n_{mp}
 \end{align}
 
-since it is an maximum likelihood estimator \cite{disseration_andreas_sommer}, its differentiability and Gauss-Newton (cf. \cref{sec:GN_numerical_solution}) can be applied with
+and the least squares objective function is a maximum likelihood estimator \cite{disseration_andreas_sommer}. Additional advantages of least squares is its differentiability (e.g. compared to sum over absolute residuum values) and Gauss-Newton (see \cref{sec:GN_numerical_solution}) can be applied as with
 
 \begin{align}
-F_1(p) := 
+F_1(p) := \frac{1}{\sigma}
 \begin{pmatrix}
 h_1(x(t_1;p),p) - \eta_1 \\
 \vdots \\
 h_{n_{mp}}(x(t_{n_{mp}};p),p) - \eta_{n_{mp}}
-\end{pmatrix}
+\end{pmatrix},
 \end{align}
 
-where $p$ are the parameters to be estimated, $h_i$ are the model equations for the measurement quantity $\eta_i$ and $n_{mp}$ are the number of measurement values. Here the model is an initial value problem with solution $x(t;p)$. \\
-The measurement error is assumed to be independently normal distributed with zero mean and common variance $\sigma^2$ such that for a correct model and true parameters $p^*$ it holds
-\begin{align}
-	\eta_i = h_i(x(t_i;p^*),p^*) + \epsilon_i, \quad \epsilon_i \in \mathcal{N}(0,\sigma^2) \quad \text{for} \ i=1,...,n_{mp}
-\end{align}
+equality constraints \cref{eq:param_estimation_definition_IVP_diff_eq,eq:param_estimation_definition_IVP_init} and inequality constraints \cref{eq:param_estimation_definition_lb,eq:param_estimation_definition_ub}, the parameter estimation problem \cref{eq:param_estimation_definition} is analog to the stated nonlinear least squares problem \cref{eq:least_squares_problem}. \\
 
-
-In order to quantify how trustworthy the obtained estimated parameters are, a statistical analysis is applied. The results shown in the following part can be found in \cite{diss_bock}. \\
-
+In order to quantify how trustworthy the obtained estimated parameters are, a statistical a posteriori analysis is applied. The results shown in the following part can be found in \cite{diss_bock}. \\
 Since the measurement data $\eta$ is a random variable the estimated parameters $p$ are random variables as well. The corresponding covariance matrix of the estimate $p^*$ is defined as
 
 \begin{align}
@@ -1447,35 +1454,36 @@ Since the measurement data $\eta$ is a random variable the estimated parameters 
 	\label{eq:stat_ana_covariance_matrix}
 \end{align}
 
-for the case that the measurement variances $\sigma^2$ are known except a common factor $\beta^2$, that is $\sigma^2 = \beta^2 \hat{\sigma}^2$ with $\hat{\sigma}^2$ the used measurement variances in the parameter estimation. An approximation $b^2$ of this factor can be computed a-posteriori by
+for the case that the measurement variances $\sigma^2$ are known except a common factor $\beta^2$, that is $\sigma^2 = \beta^2 \bar{\sigma}^2$ with $\bar{\sigma}^2$ the used measurement variances in the parameter estimation. An approximation $b^2$ of this factor can be computed a-posteriori by
 
 \begin{equation}
 	\beta^2 \approx b^2 = \frac{|| F_1(p^*) ||_2^2}{n_{mp} - (n_p - n_c)}
 \end{equation}
 
-with $n_c$ number of active constraints. We define a confidence region in which the true parameter values are with a probability $1-\alpha$. Its linearization reads as
+with $n_c$ number of active constraints. We define the confidence region
+
+\begin{align}
+	G_N&(\alpha)  := \left\{ p \ | \ \tilde{F}_2(p) = 0, \ || F_1(p) ||_2^2 - || F_1(p^*) ||_2^2 \le \gamma(\alpha) \right\} \\
+	& \text{with} \ \gamma(\alpha) := b^2 (n_p - n_c) \cdot F_{1-\alpha}(n_p - n_c, n_{mp} - (n_p - n_c)) \label{eq:stat_ana_fisher_dist}
+\end{align}
+
+where $F_{1-\alpha}$ is the $1-\alpha$ quantile of the Fisher-distribution. In $G_N(\alpha)$ the true parameter values lie with probability $1-\alpha$. Its linearization reads as
 \begin{align}
 	G_L(\alpha, p^*) = \left\{ p \in \mathbb{R}^n \ | \ \right. & F_2(p^*) + J_2(p^*)(p - p^*) = 0, \label{eq:stat_ana_lin_confidence_region} \\ 
 	& \left. || F_1(p^*) + J_1(p^*)(p - p^*) ||_2^2 - || F_1(p^*)||_2^2 \le \gamma(\alpha) \right\} \nonumber	
 \end{align}
 
-with 
 
-\begin{equation}
-	%\gamma(\alpha) := \chi_{n-m_2}^2(1-\alpha)
-	\gamma(\alpha) := b^2 (n_p - n_c) \cdot F_{1-\alpha}(n_p - n_c, n_{mp} - (n_p - n_c))
-	\label{eq:stat_ana_fisher_dist}
-\end{equation}
 
-where $F_{1-\alpha}$ is the $1-\alpha$ quantile of the Fisher-distribution. The final important result for us is
+The final important result for us is
 
-\begin{Theorem} .\\
+\begin{Theorem} \mbox{}\\
 	Let 
 	\begin{equation}
 		\theta_i := \sqrt{\gamma(\alpha)} \cdot \sqrt{C_{ii}(p^*)} \qquad \text{for } i=1,...,n
 	\end{equation}
 	
-	with $\gamma(\alpha)$ defined in \cref{eq:stat_ana_fisher_dist} and $C_{ii}(p^*)$ are the diagonal elements of the covariance matrix obtained by \cref{eq:stat_ana_covariance_matrix}. Then the linearized confidence region \cref{eq:stat_ana_lin_confidence_region} is a subset of a cuboid with length $2 \theta_i$:
+with $\gamma(\alpha)$ defined in \cref{eq:stat_ana_fisher_dist} and $C_{ii}(p^*)$ are the diagonal elements of the covariance matrix obtained by \cref{eq:stat_ana_covariance_matrix}. Then the linearized confidence region \cref{eq:stat_ana_lin_confidence_region} is a subset of a cuboid with edge lengths $2 \theta_i$:
 	\begin{equation}
 		G_L(\alpha, p^*) \subseteq [p_1^* - \theta_1, p_1^* + \theta_1] \times ... \times [p_n^* - \theta_n, p_n^* + \theta_n]
 	\end{equation}
@@ -2890,7 +2898,9 @@ Unfortunately we do not have the true specific heat capacity of the examined PCM
 	
 \bibitem{diss_bock}
 	Randwertproblemmethoden zur Parameteridentifizierung in Systemen nichtlinearer Differentialgleichungen,
-	Dissertation Hans Georg Bock, 1985
+	Hans Georg Bock,
+	Bonner Mathematische Schriften, Volume 183, Universität Bonn, 1987,
+	\url{http://www.iwr.uni-heidelberg.de/groups/agbock/FILES/Bock1987.pdf}
 	
 \bibitem{nonlinear_optimiziation_wright}
 	Numerical Optimization,
