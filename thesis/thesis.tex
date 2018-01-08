@@ -1445,7 +1445,7 @@ h_{n_{mp}}(x(t_{n_{mp}};p),p) - \eta_{n_{mp}}
 \end{pmatrix},
 \end{align}
 
-equality constraints \cref{eq:param_estimation_definition_IVP_diff_eq,eq:param_estimation_definition_IVP_init} and inequality constraints \cref{eq:param_estimation_definition_lb,eq:param_estimation_definition_ub}, the parameter estimation problem \cref{eq:param_estimation_definition} is analog to the stated nonlinear least squares problem \cref{eq:least_squares_problem}. \\
+equality constraints \cref{eq:param_estimation_definition_IVP_diff_eq,eq:param_estimation_definition_IVP_init} and inequality constraints \cref{eq:param_estimation_definition_lbub}, the parameter estimation problem \cref{eq:param_estimation_definition} is analog to the stated nonlinear least squares problem \cref{eq:least_squares_problem}. \\
 
 In order to quantify how trustworthy the obtained estimated parameters are, a statistical a posteriori analysis is applied. The results shown in the following part can be found in \cite{diss_bock}. \\
 Since the measurement data $\eta$ is a random variable the estimated parameters $p$ are random variables as well. The corresponding covariance matrix of the estimate $p^*$ is defined as
@@ -1518,7 +1518,7 @@ So far the physical and mathematical foundations were laid by refering known kno
 
 Our 1D mathematical model \cref{eq:heat_equation_model} of the heat flux DSC measurement process (see physical experiment in \cref{fig:heat_flux_DSC}) uses the differential state variable $T(x,t)$ which is the temperature at spatial coordinate $x$ at time $t$. It is based on the following assumptions. First, the heat transport is exclusively accomplished by thermal diffusion (see \cref{sec:heat_equation}), convection and thermal radiation are neglected. 
 Moreover, we assume that the temperature at the reference and sample crucibles are independent of each other which allows us to simulate each side on its own. 
-Analog to the experimental setup, the silver plate is connected with the furnace whose temperature increases with a constant heat rate $\beta$ which gives (with initial temperature $T_0$) the Dirichlet boundary condition \cref{eq:heat_equation_BC_dirichlet}. All material properties of silver (heat conductivity $\lambda_{Ag}$, mass density $\rho_{Ag}$ and specific heat capacity $c_{p,Ag}$) are constant such that the heat transport there is described by \cref{eq:heat_equation_Ag} with the physical length of the silver plate $L_{Ag}$. The silver plate is connected with the PCM whose mass density $\rho_{pcm}$ and heat conductivity $\lambda_{pcm}$ are assumed to be constant. The specific heat capacity $c_p(T)$ is temperature dependent, parametrized (see \cref{sec:parametrizations}) and the quantity we want to obtain by performing a parameter estimation. \Cref{eq:heat_equation_PCM} describes the heat transport within the PCM at which we assume that no heat can leave the PCM, resulting in Neumann boundary condition \cref{eq:heat_equation_BC_Neumann}. The physical length of the PCM here is $L_{pcm}$. Finally as start condition at time ${t_0 = 0}$ we assume that the temperature is equal everywhere (\cref{eq:heat_equation_start_values}). 
+Analogously to the experimental setup, the silver plate is connected with the furnace whose temperature increases with a constant heat rate $\beta$ which gives (with initial temperature $T_0$) the Dirichlet boundary condition \cref{eq:heat_equation_BC_dirichlet}. All material properties of silver (heat conductivity $\lambda_{Ag}$, mass density $\rho_{Ag}$ and specific heat capacity $c_{p,Ag}$) are constant such that the heat transport there is described by \cref{eq:heat_equation_Ag} with the physical length of the silver plate $L_{Ag}$. The silver plate is connected with the PCM whose mass density $\rho_{pcm}$ and heat conductivity $\lambda_{pcm}$ are known and assumed to be constant. The specific heat capacity $c_p(T)$ is temperature dependent, parametrized (see \cref{sec:parametrizations}) and the quantity we want to obtain by performing a parameter estimation. \Cref{eq:heat_equation_PCM} describes the heat transport within the PCM at which we assume that no heat can leave the PCM, resulting in Neumann boundary condition \cref{eq:heat_equation_BC_Neumann}. The physical length of the PCM here is $L_{pcm}$. Finally as start condition at time ${t_0 = 0}$ we assume that the temperature is equal everywhere (\cref{eq:heat_equation_start_values}). 
 
 \begin{subequations}
 	\begin{align}
@@ -1532,8 +1532,8 @@ Analog to the experimental setup, the silver plate is connected with the furnace
 \end{subequations}
 
 
-In order to solve \cref{eq:heat_equation_model}, the method of lines is applied for spatial discretization of the temperature field $T(x,t)$. Note that in this context the BVP  \cref{eq:method_of_lines}, which has the same form as \cref{eq:heat_equation_model} with constant heat conductivity $\lambda$, has been treated in \cref{sec:pde_discretization}.  
-The silver plate has $N_{Ag}$ and the PCM $N_{pcm}$ discretization points and therefore the total number of discretization points is $N = N_{Ag} + N_{pcm}$.
+In order to solve \cref{eq:heat_equation_model}, the method of lines is applied for spatial discretization of the temperature field $T(x,t)$. In this context, on the BVP \cref{eq:method_of_lines} (which has the same form as \cref{eq:heat_equation_model} with constant heat conductivity $\lambda$) has been applied the method of lines already in \cref{sec:pde_discretization}. Therefore the analogous procedure is performed here. \\
+The silver plate has $N_{Ag}$ and the PCM $N_{pcm}$ discretization points and therefore the total number of discretization points is $N = N_{Ag} + N_{pcm}$. $T^i(t)$ is the discretized temperature at physical grid position $x_i$ for $i=0,...,N-1$. Since an inhomogeneous grid has been used, the gridsizes are computed by $\Delta x_i = {x^{i+1} - x^i}$ for $i=0,...,N-2$. \\
 An illustration of the discretized model is depicted in \cref{fig:mathematical_model_discretized}. Note that the first discretized temperature within the PCM is $T^{N_{Ag}}$.
 In \cref{sec:spatial_discretization_grid} the construction of the inhomogeneous grid will be explained in detail. The resulting initial value problem reads as
 
@@ -1569,7 +1569,7 @@ T^i(t_0=0) = & \ T_0 \quad \text{for} \ i = 0,1,...,N-1 \nonumber
 where \cref{eq:2_point_formula_inhomogeneous} has been used. The abbreviation for the discretized second derivative is defined as
 
 \begin{align}
-	\tilde{\Delta} T^i := \frac{1}{\Delta x_{i-1}^2} \left[ \frac{2}{1+\alpha_{i-1}} T^{i-1} - \frac{2}{\alpha_{i-1}} T^{i} + \frac{2}{\alpha_{i-1} (\alpha_{i-1} + 1)} T^{i+1} \right]
+	\tilde{\Delta} T^i := \frac{1}{\Delta x_{i-1}^2} \left[ \frac{2}{1+\alpha_{i-1}} T^{i-1} - \frac{2}{\alpha_{i-1}} T^{i} + \frac{2}{\alpha_{i-1} (\alpha_{i-1} + 1)} T^{i+1} \right]  \quad \text{for} \ i=1,...,N-2
 \end{align}
 
 and the factor $\alpha_i$ coming from the inhomogeneous grid is
@@ -1633,11 +1633,15 @@ assuming a homogeneous mass distribution and a constant grid size $\Delta x$ in 
 
 \subsection{Spatial discretization grid}
 \label{sec:spatial_discretization_grid}
-Since only in the PCM the phase transition occurs in which we are interested in and for the physical lengths it holds $L_{Ag} >> L_{pcm}$, the grid size $\Delta x$ within the PCM is much smaller than in the silver plate. In preliminary computations the spatial discretization grid was constant both in the silver plate and PCM. In order to avoid numerical problems due to this discontinuity of the grid size at the transition from silver to PCM the used framework of generating a continuous grid will be explained now. \\
+
+We are primarily interested in the phase transition within the PCM, that is why we need there a fine spatial discretization. Though, the physical length of the silver plate is much larger, i.e. $L_{Ag} \gg L_{pcm}$. Therefore, an equidistant grid would need a tremendous amount of grid points $N$ and it is appropriate to use different gridsizes $\Delta x$ for the silver plate and the PCM, respectively. In preliminary computations just two different gridsizes $\Delta x_{Ag} \gg \Delta x_{pcm}$ has been used. In order to avoid numerical problems due to this discontinuity of the grid size at the transition from silver to PCM the used framework of generating a smooth grid will be explained now. \\
 In the following, $x$ will denote the physical grid, $\tilde{x}$ the computation grid and $\chi(\tilde{x}) = x$ the corresponding monotonically increasing mapping (see \cref{fig:computation_physical_grid}) which is defined by its derivative
 
-%In preliminary computations the spatial discretization grid was constant both in the silver plate and PCM, with grid sizes $\Delta x_{\text{Ag}} > \Delta x_{\text{PCM}}$, respectively since only in the PCM the phase transition occurs in which we are interested in. In order to avoid numerical problems due to this discontinuity of the grid size at the transition from silver to PCM the used framework of generating a continuous grid will be explained now. \\
-%In the following, $x$ will denote the physical grid, $\tilde{x}$ the computation grid and $\chi(\tilde{x}) = x$ the corresponding mapping which is defined by its derivative
+
+
+%Since only in the PCM the phase transition occurs in which we are interested in and for the physical lengths it holds $L_{Ag} \gg L_{pcm}$, the grid size $\Delta x$ within the PCM is much smaller than in the silver plate. In preliminary computations the spatial discretization grid was constant both in the silver plate and PCM. In order to avoid numerical problems due to this discontinuity of the grid size at the transition from silver to PCM the used framework of generating a continuous grid will be explained now. \\
+%In the following, $x$ will denote the physical grid, $\tilde{x}$ the computation grid and $\chi(\tilde{x}) = x$ the corresponding monotonically increasing mapping (see \cref{fig:computation_physical_grid}) which is defined by its derivative
+
 
 \begin{equation}
 	\Delta x(\tilde{x}) := \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x}) := \frac{\Delta \bar{x} - \Delta \underline{x}}{1 + e^{\gamma(\tilde{x} - b)}} + \Delta \underline{x}
@@ -2804,7 +2808,7 @@ Therefore it follows that the specific heat capacity estimate is not that sensit
 
 \subsection{Summary of parameter estimation results}
 
-In this section, the parameter estimation results of the specific heat capacity $c_p(T)$ are summarized. Additionally, these results will be compared with $c_p^{\text{DIN}}(T)$ obtained by \cref{eq:c_p_formula_DIN} (derived in DIN 11357), using explicitly the noisy heat flux measurement data. In \cref{tab:eval_table_summary} all peak characteristics are listed. The evaluation using the DIN formula is performed in two different ways. First, the raw noisy $c_p^{\text{DIN}}(T)$ has been utilized. $T_{on}$ and $T_{off}$ have been computed here by an estimate of the tangent at the inflection points and $\Delta H$ by an estimate of the base line and numerical integration. Secondly, a least squares fit of $c_p^{\text{DIN}}(T)$ on a Fraser-Suzuki peak has been performed with linear and constant part \cref{eq:fraser_suzuki} which allows a simple objective extraction of all peak characteristics. \todo{Bilder der Fits in Appendix} \\
+In this section, the parameter estimation results of the specific heat capacity $c_p(T)$ are summarized. Additionally, these results will be compared with $c_p^{\text{DIN}}(T)$ obtained by \cref{eq:c_p_formula_DIN} (derived in DIN 11357), using explicitly the noisy heat flux measurement data. In \cref{tab:eval_table_summary} all peak characteristics are listed. The evaluation using the DIN formula is performed in two different ways. First, the raw noisy $c_p^{\text{DIN}}(T)$ has been utilized. $T_{on}$ and $T_{off}$ have been computed here by an estimate of the tangent at the inflection points and $\Delta H$ by an estimate of the base line and numerical integration. Secondly, a least squares fit of $c_p^{\text{DIN}}(T)$ on a Fraser-Suzuki peak with linear and constant part \cref{eq:fraser_suzuki} has been performed (see \cref{sec:FS_DIN_fits}), which allows a simple objective extraction of all peak characteristics.  \\
 Both evaluations of $c_p^{\text{DIN}}(T)$ lead to very similar peak characteristics for all heat rates. $T_{on}$ is best determined here with a scattering of $\pm 1.1\%$. With Gaussian parametrization in the  parameter estimation, the values for $T_{max}$ deviate less with $\pm 1.3\%$ while the melting enthalpy has a higher mean value but similar scattering with $\pm 8\%$. Further, in the parameter estimation with Fraser-Suzuki parametrization, $T_{max}$, $T_{off}$ and $\Delta H$ deviate less compared to $c_p^{\text{DIN}}(T)$. Especially $T_{max}$ with $\pm 0.6\%$ against $\pm 3.7\%$ and $T_{off}$ with $\pm 1.2\%$ against $\pm 5.3 \%$ are better determined. Interestingly $T_{on}$ deviates more in our parameter estimation with $\pm 2.6\%$ against $\pm 1.1\%$. Potentially a complementary evaluation deploying DIN \cref{eq:c_p_formula_DIN} and our parameter estimation could be reasonable. \\
 Note that the melting enthalpy $\Delta H$ value for heat rate $20 \frac{K}{min}$ differs significantly compared to the other heat rates. This outlier has been used nevertheless for the mean computation since this is the case for all four different evaluations and therefore comparable. \\
 Unfortunately we do not have the true specific heat capacity of the examined PCM. Therefore, "better determined" here means less deviation for different heat rates since $c_p(T)$ is a material property and therefore independent of the heat rate.
@@ -2866,6 +2870,8 @@ Unfortunately we do not have the true specific heat capacity of the examined PCM
 \section{Parameter estimation start values}
 
 \section{Fraser-Suzuki least squares fit on $c_p^{\text{DIN}}(T)$}
+\label{sec:FS_DIN_fits}
+
 \begin{figure}[H]
 	\begin{subfigure}{0.49\textwidth}
 		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/simulationen-data/c_p_DIN_FS_fit/20Kmin.png}
