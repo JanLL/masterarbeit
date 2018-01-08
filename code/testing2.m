@@ -119,7 +119,7 @@ for i=1:length(dsc_list)
     
 end
 
-save_root_dir = '/home/argo/masterarbeit/thesis/images/'
+save_root_dir = '/home/argo/masterarbeit/thesis/images/';
 
 set(fig1, 'units', 'normalized', 'outerposition', [0 0 0.66 1]);
 set(ax1,'FontSize',24);
@@ -133,13 +133,13 @@ print(fig1, [save_root_dir, 'heat_flux_measurement'], '-dpng', '-r200');
 close(fig1);
 
 
-set(gcf, 'units', 'normalized', 'outerposition', [0 0 0.66 1]);
-set(gca,'FontSize',24);
-xlabel('T [degC]');
-ylabel('c_p [mJ/(mg*K)]');
-set(gca, 'xlim', [30 160]);
-legend('show', 'location', 'northwest');
-xlim([80, 160]);
+set(fig2, 'units', 'normalized', 'outerposition', [0 0 0.66 1]);
+set(ax2,'FontSize',24);
+xlabel(ax2, 'T [degC]');
+ylabel(ax2, 'c_p [mJ/(mg*K)]');
+set(ax2, 'xlim', [30 160]);
+legend(ax2, 'show', 'location', 'northwest');
+xlim(ax2, [80, 160]);
 
 print(fig2, [save_root_dir, 'c_p_DIN_formula'], '-dpng', '-r200');
 close(fig2);
@@ -1582,7 +1582,7 @@ plot(ax1, T_infl_2, c_p_fs(T_infl_2, fs_params), 'x', 'color', 'red', ...
 % Max point
 T_max = unscaled_params(end-2);
 h_max = plot(ax1, T_max, c_p_fs(T_max, fs_params), 'x', ...
-    'color', 'black', 'DisplayName', 'Maximal turning point', 'Linewidth', 2.);
+    'color', 'black', 'DisplayName', 'Maximum point', 'Linewidth', 2.);
 
 
 % Baseline
@@ -1603,7 +1603,7 @@ set(ax1, 'FontSize',20)
 
 
 save_path = '/home/argo/masterarbeit/thesis/images/T_on_T_off_illustration';
-% print(fig, save_path, '-dpng', '-r200');
+print(fig, save_path, '-dpng', '-r200');
 
 
 
@@ -1809,6 +1809,8 @@ dsc_list = {'ExpDat_16-407-3_mitKorr_20Kmin_H.csv', ...
 save_path_root = '/home/argo/masterarbeit/simulationen-data/c_p_DIN_FS_fit/';
         
 fig1 = figure(1);
+set(fig1, 'Units', 'normalized', 'Position', [0., 0., 0.8, 0.9]); 
+
 ax1 = gca(); hold on
 
 
@@ -1862,13 +1864,22 @@ for i=1:length(dsc_list)
     
     c_p_fit = c_p_fs(T_data, p);
     
-    plot(ax1, T_data, c_p_data, 'x', 'DisplayName', 'Measurement data');
-    plot(ax1, T_data, c_p_fit, 'DisplayName', 'Fraser-Suzuki Fit');
+    plot(ax1, T_data, c_p_data, 'x', 'DisplayName', 'c_p^{DIN}(T)', ...
+        'Linewidth', 2.);
+    plot(ax1, T_data, c_p_fit, 'DisplayName', 'Fraser-Suzuki Fit', ...
+        'Linewidth', 2.5);
+    
+    title(ax1, ['Heat rate: ', num2str(dsc.Tinfo.Tstep), ' K/min']);
+    xlabel(ax1, 'T [degC]')
+    ylabel(ax1, 'c_p [mJ/(mg*K)]');
+    set(ax1, 'FontSize',24)
+    
     legend(ax1, 'show', 'location', 'northwest')
     
     p_unscaled = reverse_scale_params(p.', 'fraser_suzuki').';
     
-    save_path = [save_path_root, num2str(dsc.Tinfo.Tstep), 'Kmin'];
+    heat_rate_str = strrep(num2str(dsc.Tinfo.Tstep), '.', ',');
+    save_path = [save_path_root, heat_rate_str, 'Kmin'];
     print(fig1, save_path, '-dpng', '-r200');
 
     [T_on, T_off] = compute_T_on_off(p.', 'fraser_suzuki');
