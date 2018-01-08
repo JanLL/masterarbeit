@@ -2431,7 +2431,7 @@ Summarized, a total number of discretization points $N=300$ is sufficient while 
 \subsection{Parameter estimation using parametrization of linear combination of Gaussians}
 \label{sec:param_estimation_5Gausse}
 So far, finite differences were used to compute the optimization Jacobian \cref{eq:optimization_jacobian}. Because of the problems described in \cref{sec:param_estim_NURBS}, from now on internal numerical differentiation is used instead with the software package SolvIND. The parameter estimation is performed in two different ways in this and the following section, deploying different parametrizations. In this section, we aim to minimize the heat flux residuum as far as possible, while in the next section a regularization in form of a predefined peak shape (Fraser-Suzuki) is active, in order to compare both results in the end. \\
-Now, the parameter estimation is performed using the parametrization of 5 Gaussians, linear and constant part (see \cref{sec:parametrization_Gausse}), i.e. in total $n_p=17$ optimization parameters. Five Gaussians were used since this is the minimum number such that the residuum almost vanishes as one can see in the upcoming \cref{fig:optim_c_p_heat_flux_5Gaussians_1,fig:optim_c_p_heat_flux_5Gaussians_2}. The optimization was performed again with the matlab routine $lsqnonlin$. Start values for the first heat rate $\beta = 20 \frac{K}{min}$ were used from previously existing results with already reduced residuum. Afterwards the optimizations were performed in a decreasing order of heat rates where parameters estimated in this process were used as start values in subsequent steps. I.e. estimated parameters at heat rate $\beta=20 \frac{K}{min}$ were used as start values for the parameter estimation at heat rate $\beta=10 \frac{K}{min}$ etc. \\
+Now, the parameter estimation is performed using the parametrization of 5 Gaussians, linear and constant part (see \cref{sec:parametrization_Gausse}), i.e. in total $n_p=17$ optimization parameters. Five Gaussians were used since this is the minimum number such that the residuum almost vanishes as one can see in the upcoming \cref{fig:optim_c_p_heat_flux_5Gaussians_1,fig:optim_c_p_heat_flux_5Gaussians_2}. The optimization was performed again with the matlab routine $lsqnonlin$. Start values (see \cref{sec:initial_values_5Gaussians}) for the first heat rate $\beta = 20 \frac{K}{min}$ were used from previously existing results with already reduced residuum. Afterwards the optimizations were performed in a decreasing order of heat rates where parameters estimated in this process were used as start values in subsequent steps. I.e. estimated parameters at heat rate $\beta=20 \frac{K}{min}$ were used as start values for the parameter estimation at heat rate $\beta=10 \frac{K}{min}$ etc. \\
 The optimization process took on average about $7$ minutes and 50 iterations per heat rate.
 
 \subsubsection{Specific heat capacity and heat flux separately for all heat rates}
@@ -2559,7 +2559,7 @@ $T_{on}$ and $T_{off}$ have not been computed since there are more than two infl
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/c_p_all.png}
+	\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/c_p_all.png}
 	\caption{Zoomed view of the specific heat capacities $c_p(T)$ obtained by optimization for all heat rates. The maxima position ranges from $126.3$ to $130.5^{\circ}C$. \\
 	Cf. peak characteristics in \cref{tab:eval_table_Tmax_deltaH_5Gaussians}.}
 	\label{fig:5Gaussians_all_c_p}
@@ -2587,7 +2587,7 @@ $T_{on}$ and $T_{off}$ have not been computed since there are more than two infl
 
 
 In order to avoid overfitting seen in the previous section we apply the Fraser-Suzuki parametrization (see \cref{sec:parametrization_FS}) where we fixed $r=2$. We have in total 6 parameters instead of 17 with Gaussian parametrization in the previous section. As there are fewer degrees of freedom and Fraser-Suzuki limits the possible peak shapes, a form of regularization is active. \\
-The optimization was performed here with a self written Gauss-Newton solver based on \cref{sec:GN_numerical_solution} using a singular value decomposition of $J_1(p_{c_p})$. An active set strategy for lower and upper bounds of the optimization variables has been implemented to ensure $0 \le sr \le 1$ and $wr \ge 0$ for a reasonable peak but it became apparent that the optimizer does not approach these limiting values. Therefore lower and upper bounds were disabled and we solve an unconstrained problem. Start values for heat rate $20 \frac{K}{min}$ were chosen to be $h=14$, $wr=10.7$, $sr=0.705$, $z=129$, $m=0.0079$ and $b=1.69$ and following heat rates use the previous result analog to Gaussian parametrization \cref{sec:param_estimation_5Gausse}. The linear parameter $m$ was fixed to the previously obtained result for the heat rates $0.6$ and $0.3 \frac{K}{min}$ because of the problems remarked in the last section, namely the lack of measurement data when the heat flux is linear. \\
+The optimization was performed here with a self written Gauss-Newton solver based on \cref{sec:GN_numerical_solution} using a singular value decomposition of $J_1(p_{c_p})$. An active set strategy for lower and upper bounds of the optimization variables has been implemented to ensure $0 \le sr \le 1$ and $wr \ge 0$ for a reasonable peak but it became apparent that the optimizer does not approach these limiting values. Therefore lower and upper bounds were disabled and we solve an unconstrained problem. Start values (see \cref{sec:initial_values_FS}) for heat rate $20 \frac{K}{min}$ were chosen to be $h=14$, $wr=10.7$, $sr=0.705$, $z=129$, $m=0.0079$ and $b=1.69$ and following heat rates use the previous result analog to Gaussian parametrization \cref{sec:param_estimation_5Gausse}. The linear parameter $m$ was fixed to the previously obtained result for the heat rates $0.6$ and $0.3 \frac{K}{min}$ because of the problems remarked in the last section, namely the lack of measurement data when the heat flux is linear. \\
 The integration tolerance was set to $10^{-9}$ and local error control of the forward sensitivities has been enabled and set to a relative tolerance $5\cdot 10^{-6}$ which is the minimum possible. For lower values, integration problems occurred in a way that the minimum stepsize has been reached. By using this modified tolerances the first order necessary optimality condition could be satisfied better, i.e. decreased further. \\
 The optimization process took on average about $3$ minutes.
 
@@ -2600,23 +2600,23 @@ The resulting specific heat capacity $c_p(T)$ and corresponding heat flux $\varP
 
 \begin{figure}[H]
 	\begin{subfigure}{1.\textwidth}
-		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:37:41_407_20Kmin_L1=40_L3=0,1/c_p.png}
-		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:37:41_407_20Kmin_L1=40_L3=0,1/heat_flux.png}
+		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:27:58_407_20Kmin_L1=40_L3=0,1/c_p.png}
+		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:27:58_407_20Kmin_L1=40_L3=0,1/heat_flux.png}
 	\end{subfigure} \\[1ex]
 	
 	\begin{subfigure}{1.\textwidth}
-		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:40:03_407_10Kmin_L1=40_L3=0,1/c_p.png}
-		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:40:03_407_10Kmin_L1=40_L3=0,1/heat_flux.png}
+		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:30:23_407_10Kmin_L1=40_L3=0,1/c_p.png}
+		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:30:23_407_10Kmin_L1=40_L3=0,1/heat_flux.png}
 	\end{subfigure} \\[1ex]
 	
 	\begin{subfigure}{1.\textwidth}
-		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:43:30_407_5Kmin_L1=40_L3=0,1/c_p.png}
-		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:43:30_407_5Kmin_L1=40_L3=0,1/heat_flux.png}
+		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:36:33_407_5Kmin_L1=40_L3=0,1/c_p.png}
+		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:36:33_407_5Kmin_L1=40_L3=0,1/heat_flux.png}
 	\end{subfigure} \\[1ex]
 	
 	\begin{subfigure}{1.\textwidth}
-		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:45:47_407_2,5Kmin_L1=40_L3=0,1/c_p.png}
-		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:45:47_407_2,5Kmin_L1=40_L3=0,1/heat_flux.png}
+		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:39:25_407_2,5Kmin_L1=40_L3=0,1/c_p.png}
+		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:39:25_407_2,5Kmin_L1=40_L3=0,1/heat_flux.png}
 	\end{subfigure}
 	\caption{Parameter estimation results for (left) specific heat capacity $c_p$ and (right) heat flux into PCM $\varPhi_q^{pcm,in}$ for heat rates $\beta=\{ 20, 10, 5, 2.5 \} \frac{K}{min}$. Heat flux residuum increased at phase transition peak. \\
 	Cf. optimization with Gaussian parametrization in \cref{fig:optim_c_p_heat_flux_5Gaussians_1,fig:optim_c_p_heat_flux_5Gaussians_2}.}
@@ -2628,18 +2628,18 @@ The resulting specific heat capacity $c_p(T)$ and corresponding heat flux $\varP
 
 \begin{figure}[H]
 	\begin{subfigure}{1.\textwidth}
-		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:48:35_407_1,25Kmin_L1=40_L3=0,1/c_p.png}
-		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:48:35_407_1,25Kmin_L1=40_L3=0,1/heat_flux.png}
+		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:43:21_407_1,25Kmin_L1=40_L3=0,1/c_p.png}
+		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:43:21_407_1,25Kmin_L1=40_L3=0,1/heat_flux.png}
 	\end{subfigure} \\[1ex]
 	
 	\begin{subfigure}{1.\textwidth}
-		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:52:16_407_0,6Kmin_L1=40_L3=0,1/c_p.png}
-		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:52:16_407_0,6Kmin_L1=40_L3=0,1/heat_flux.png}
+		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:44:53_407_0,6Kmin_L1=40_L3=0,1/c_p.png}
+		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:44:53_407_0,6Kmin_L1=40_L3=0,1/heat_flux.png}
 	\end{subfigure} \\[1ex]
 	
 	\begin{subfigure}{1.\textwidth}
-		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:56:18_407_0,3Kmin_L1=40_L3=0,1/c_p.png}
-		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/2017-12-09_18:56:18_407_0,3Kmin_L1=40_L3=0,1/heat_flux.png}
+		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:46:27_407_0,3Kmin_L1=40_L3=0,1/c_p.png}
+		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:46:27_407_0,3Kmin_L1=40_L3=0,1/heat_flux.png}
 	\end{subfigure}
 	\caption{Parameter estimation results for (left) specific heat capacity $c_p$ and (right) heat flux into PCM $\varPhi_q^{pcm,in}$ for heat rates $\beta=\{ 1.25, 0.6, 0.3 \} \frac{K}{min}$. \\
 	Cf. optimization with Gaussian parametrization in \cref{fig:optim_c_p_heat_flux_5Gaussians_1,fig:optim_c_p_heat_flux_5Gaussians_2}.}
@@ -2699,7 +2699,7 @@ Regarding $T_{max}$ and $\Delta H$, the deviations among different heat rates ha
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/c_p_all.png}
+	\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/c_p_all.png}
 	\caption{Zoomed view of the specific heat capacities $c_p(T)$ obtained by optimization for all heat rates. The maxima position ranges from $128.6$ to $130.7^{\circ}C$.}
 	\label{fig:FS_all_c_p}
 \end{figure}
@@ -2807,6 +2807,7 @@ Therefore it follows that the specific heat capacity estimate is not that sensit
 
 
 \subsection{Summary of parameter estimation results}
+\label{sec:param_estimation_summary}
 
 In this section, the parameter estimation results of the specific heat capacity $c_p(T)$ are summarized. Additionally, these results will be compared with $c_p^{\text{DIN}}(T)$ obtained by \cref{eq:c_p_formula_DIN} (derived in DIN 11357), using explicitly the noisy heat flux measurement data. In \cref{tab:eval_table_summary} all peak characteristics are listed. The evaluation using the DIN formula is performed in two different ways. First, the raw noisy $c_p^{\text{DIN}}(T)$ has been utilized. $T_{on}$ and $T_{off}$ have been computed here by an estimate of the tangent at the inflection points and $\Delta H$ by an estimate of the base line and numerical integration. Secondly, a least squares fit of $c_p^{\text{DIN}}(T)$ on a Fraser-Suzuki peak with linear and constant part \cref{eq:fraser_suzuki} has been performed (see \cref{sec:FS_DIN_fits}), which allows a simple objective extraction of all peak characteristics.  \\
 Both evaluations of $c_p^{\text{DIN}}(T)$ lead to very similar peak characteristics for all heat rates. $T_{on}$ is best determined here with a scattering of $\pm 1.1\%$. With Gaussian parametrization in the  parameter estimation, the values for $T_{max}$ deviate less with $\pm 1.3\%$ while the melting enthalpy has a higher mean value but similar scattering with $\pm 8\%$. Further, in the parameter estimation with Fraser-Suzuki parametrization, $T_{max}$, $T_{off}$ and $\Delta H$ deviate less compared to $c_p^{\text{DIN}}(T)$. Especially $T_{max}$ with $\pm 0.6\%$ against $\pm 3.7\%$ and $T_{off}$ with $\pm 1.2\%$ against $\pm 5.3 \%$ are better determined. Interestingly $T_{on}$ deviates more in our parameter estimation with $\pm 2.6\%$ against $\pm 1.1\%$. Potentially a complementary evaluation deploying DIN \cref{eq:c_p_formula_DIN} and our parameter estimation could be reasonable. \\
@@ -2868,9 +2869,51 @@ Unfortunately we do not have the true specific heat capacity of the examined PCM
 \newpage
 \appendix
 \section{Parameter estimation start values}
+In this section the initial values for the iterative optimization process for parameter estimation in \cref{sec:param_estimation_5Gausse,sec:param_estimation_fs} are listed. The depicted values were used for heat rate $\beta = 20 \frac{K}{min}$. The following heat rates used successively the obtained parameters from the last heat rate as initial values, i.e. heat rate $\beta = 10 \frac{K}{min}$ used the obtained parameters from $\beta = 20 \frac{K}{min}$, heat rate $\beta = 5 \frac{K}{min}$ used the obtained parameters from $\beta = 10 \frac{K}{min}$ etc.
+
+\subsection{5 Gaussians}
+\label{sec:initial_values_5Gaussians}
+
+The initial values for the least squares solver $lsqnonlin$ in the parameter estimation using the parametrization of five Gaussians in \cref{sec:param_estimation_5Gausse} are depicted in \cref{tab:initial_values_5Gausse}. 
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{| c | c | c | c | c | c || c | c |} \hline
+		& Gauss1 & Gauss2 & Gauss3 & Gauss4 & Gauss5 & Linear $m$ & Constant $b$ \\ \hline
+		$A_i$ & $2.3$ & $13.39$ & $-2.66$ & $1.0$ & $1.0$ & $0.01$ & $1.5$ \\
+		$var_i$ & $473.9$ & $24.51$ & $121.8$ & $30.0$ & $30.0$ & & \\
+		$T_{offset_i}$ & $134.8$ & $127.9$ & $145.7$ & $123.5$ & $136.5$ & & \\ \hline
+	\end{tabular}
+	\caption{Initial values (heat rate $\beta=20 \frac{K}{min}$) for least squares solver $lsqnonlin$ in parameter estimation in \cref{sec:param_estimation_5Gausse}. \\
+	Remark: These initial values are obtained from previous parameter estimations (with much smaller variance values) and used then in order to accelerate the optimization process by starting already from a decreased residuum.}
+	\label{tab:initial_values_5Gausse}
+\end{table}
+
+
+\subsection{Fraser-Suzuki}
+\label{sec:initial_values_FS}
+
+The initial values for the self written Gauss-Newton \cref{alg:Gauss_Newton_unconstrained} in the parameter estimation using the Fraser-Suzuki parametrization in \cref{sec:param_estimation_fs} are depicted in \cref{tab:initial_values_FS}. 
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{| c | c | c | c | c | c |} \hline
+		$h$ & $wr$ & $sr$ & $z$ & Linear $m$ & Constant $b$ \\ \hline
+		$14.0$ & $10.7$ & $0.705$ & $129.0$ & $0.0079$ & $1.69$ \\ \hline
+	\end{tabular}
+	\caption{Initial values (heat rate $\beta=20 \frac{K}{min}$) for self written Gauss-Newton \cref{alg:Gauss_Newton_unconstrained} in parameter estimation in \cref{sec:param_estimation_fs}. \\
+	Remark: These initial values are obtained from previous parameter estimations and used then in order to accelerate the optimization process by starting already from a decreased residuum.}
+	\label{tab:initial_values_FS}
+\end{table}
+
+
+
+
 
 \section{Fraser-Suzuki least squares fit on $c_p^{\text{DIN}}(T)$}
 \label{sec:FS_DIN_fits}
+
+In \cref{sec:param_estimation_summary} the specific heat capacity $c_p(T)$ obtained by parameter estimation is compared with $c_p^{DIN}(T)$ computed by \cref{eq:c_p_formula_DIN} from DIN 11357. A least squares fit on $c_p^{DIN}(T)$ using the Fraser-Suzuki peak \cref{eq:fraser_suzuki} has been performed such that the peak characteristics (see \cref{sec:peak_characteristics}) can be computed in an unambiguous way. These fits are depicted in \cref{fig:FS_DIN_fits}.
 
 \begin{figure}[H]
 	\begin{subfigure}{0.49\textwidth}
@@ -2895,6 +2938,8 @@ Unfortunately we do not have the true specific heat capacity of the examined PCM
 	\begin{subfigure}{0.49\textwidth}
 		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/simulationen-data/c_p_DIN_FS_fit/0,3Kmin.png}
 	\end{subfigure}
+	\caption{Least squares fit performed on $c_p^{DIN}(T)$ (\cref{eq:c_p_formula_DIN}, derivation in DIN 11357) with Fraser-Suzuki Peak \cref{eq:fraser_suzuki} to compute peak characteristics in an unambiguous way. Used in \cref{sec:param_estimation_summary} to compare differently obtained specific heat capacities.}
+	\label{fig:FS_DIN_fits}
 \end{figure}
 
 \newpage
