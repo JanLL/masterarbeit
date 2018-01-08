@@ -837,6 +837,7 @@ Since later in \cref{sec:simulation_of_DSC} the heat conduction problem shall be
 	\frac{\partial u}{\partial x}(b,t) & = 0  & \forall t \in [t_0,t_f] \label{eq:method_of_lines_neumann}  \\
 	u(x,t_0) & = u_{init}(x) & \forall x \in [a,b] \label{eq:method_of_lines_start}
 	\end{align}
+	\label{eq:method_of_lines}
 \end{subequations}
 
 on the domain $x \in [a,b] = \Omega \subseteq \mathbb{R}$ and $t \in [t_0,t_f] \subseteq \mathbb{R}$. \Cref{eq:method_of_lines_pde} is the 1D parabolic partial differential equation with $\alpha(u(x,t)) > 0$ (cf. heat equation \eqref{eq:heat_eq_derivation_1}), \cref{eq:method_of_lines_dirichlet} is the Dirichlet boundary condition at $x=a$, \cref{eq:method_of_lines_neumann} respectively the Neumann boundary condition at $x=b$ and lastly \cref{eq:method_of_lines_start} are the initial values at ${t=t_0}$. \\
@@ -1516,14 +1517,14 @@ So far the physical and mathematical foundations were laid by refering known kno
 \subsection{Mathematical model}
 \label{sec:mathematical_model}
 
-Our 1D mathematical model \cref{eq:heat_equation_model} of the heat flux DSC measurement process (see physical experiment in \cref{fig:heat_flux_DSC}) uses the differential state variable $T(x,t)$ which is the temperature at spatial coordinate $x$ at time $t$. It is based on the following assumptions. First the heat transport is exclusively done by thermal diffusion (see \cref{sec:heat_equation}), thus convection and thermal radiation are neglected. 
-Moreover we assume that the reference and sample crucible  are independent of each other which allows us to simulate each side on its own. 
-Analog to the experimental setup the silver plate is connected with the furnace whose temperature increases with a constant heat rate $\beta$ which gives the Dirichlet boundary condition \cref{eq:heat_equation_BC_dirichlet}. All material properties of silver are constant such that the heat transport there is described by \cref{eq:heat_equation_Ag}. The silver plate is connected with the PCM whose mass density $\rho_{pcm}$ and heat conductivity $\lambda_{pcm}$ are assumed to be constant. The specific heat capacity $c_p(T)$ is temperature dependent, parametrized (see \cref{sec:parametrizations}) and the quantity we want to obtain by performing a parameter estimation. \Cref{eq:heat_equation_PCM} describes the heat transport within the PCM at which we assume that no heat can leave the PCM, resulting in Neumann boundary condition \cref{eq:heat_equation_BC_Neumann}. Finally as start condition at time ${t_0 = 0}$ we assume that the temperature is equal everywhere (\cref{eq:heat_equation_start_values}).
+Our 1D mathematical model \cref{eq:heat_equation_model} of the heat flux DSC measurement process (see physical experiment in \cref{fig:heat_flux_DSC}) uses the differential state variable $T(x,t)$ which is the temperature at spatial coordinate $x$ at time $t$. It is based on the following assumptions. First, the heat transport is exclusively accomplished by thermal diffusion (see \cref{sec:heat_equation}), convection and thermal radiation are neglected. 
+Moreover, we assume that the temperature at the reference and sample crucibles are independent of each other which allows us to simulate each side on its own. 
+Analog to the experimental setup, the silver plate is connected with the furnace whose temperature increases with a constant heat rate $\beta$ which gives (with initial temperature $T_0$) the Dirichlet boundary condition \cref{eq:heat_equation_BC_dirichlet}. All material properties of silver (heat conductivity $\lambda_{Ag}$, mass density $\rho_{Ag}$ and specific heat capacity $c_{p,Ag}$) are constant such that the heat transport there is described by \cref{eq:heat_equation_Ag} with the physical length of the silver plate $L_{Ag}$. The silver plate is connected with the PCM whose mass density $\rho_{pcm}$ and heat conductivity $\lambda_{pcm}$ are assumed to be constant. The specific heat capacity $c_p(T)$ is temperature dependent, parametrized (see \cref{sec:parametrizations}) and the quantity we want to obtain by performing a parameter estimation. \Cref{eq:heat_equation_PCM} describes the heat transport within the PCM at which we assume that no heat can leave the PCM, resulting in Neumann boundary condition \cref{eq:heat_equation_BC_Neumann}. The physical length of the PCM here is $L_{pcm}$. Finally as start condition at time ${t_0 = 0}$ we assume that the temperature is equal everywhere (\cref{eq:heat_equation_start_values}). 
 
 \begin{subequations}
 	\begin{align}
 	\rho_{Ag} c_{p,Ag} \frac{\partial T}{\partial t}(x,t) = \ & \nabla \cdot \left[\lambda_{Ag} \cdot \nabla T(x,t)  \right] & \forall \ t \in [0,t_f], \ \forall \ x \in [0,L_{Ag}] \label{eq:heat_equation_Ag} \\
-	\rho_{pcm} c_p(T(x,t)) \frac{\partial T}{\partial t}(x,t) = \ & \nabla \cdot \left[\lambda \cdot \nabla T(x,t)  \right]  & \forall \ t \in [0,t_f], \ \forall \ x \in (L_{Ag},L_{pcm}] \label{eq:heat_equation_PCM}  \\
+	\rho_{pcm} c_p(T(x,t)) \frac{\partial T}{\partial t}(x,t) = \ & \nabla \cdot \left[\lambda_{pcm} \cdot \nabla T(x,t)  \right]  & \forall \ t \in [0,t_f], \ \forall \ x \in (L_{Ag},L_{pcm}] \label{eq:heat_equation_PCM}  \\
 	T(0,t) = \ & T_0 + \beta \cdot t & \forall \ t \in [0,t_f] \label{eq:heat_equation_BC_dirichlet} \\
 	\frac{\partial T}{\partial x} (L_{Ag} + L_{pcm},t) = \ & 0 & \forall \ t \in [0,t_f] \label{eq:heat_equation_BC_Neumann}  \\
 	T(x,0) = \ & T_0 & \forall \ x \in [0,L_{Ag} + L_{pcm}] \label{eq:heat_equation_start_values} 
@@ -1532,7 +1533,8 @@ Analog to the experimental setup the silver plate is connected with the furnace 
 \end{subequations}
 
 
-In order to solve \cref{eq:heat_equation_model} method of lines (\cref{sec:pde_discretization}) is applied for spatial discretization of the temperature field $T(x,t)$. The silver plate has $N_{Ag}$ and the PCM $N_{pcm}$ discretization points and therefore the total number of discretization points is $N = N_{Ag} + N_{pcm}$.
+In order to solve \cref{eq:heat_equation_model}, the method of lines is applied for spatial discretization of the temperature field $T(x,t)$. Note that in this context the BVP  \cref{eq:method_of_lines}, which has the same form as \cref{eq:heat_equation_model} with constant heat conductivity $\lambda$, has been treated in \cref{sec:pde_discretization}.  
+The silver plate has $N_{Ag}$ and the PCM $N_{pcm}$ discretization points and therefore the total number of discretization points is $N = N_{Ag} + N_{pcm}$.
 An illustration of the discretized model is depicted in \cref{fig:mathematical_model_discretized}. Note that the first discretized temperature within the PCM is $T^{N_{Ag}}$.
 In \cref{sec:spatial_discretization_grid} the construction of the inhomogeneous grid will be explained in detail. The resulting initial value problem reads as
 
