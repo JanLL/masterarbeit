@@ -2072,16 +2072,19 @@ Finally the solution of the boundary value problem \cref{eq:analytical_soln_pde}
 \section{Parameter estimation of specific heat capacity $c_p$}
 \label{sec:parameter_estimation_applied}
 
-Until now the mathematical model has been introduced which allows us to simulate the measuring process. Now this simulation is embedded into the parameter estimation of the specific heat capacity $c_p(T)$ where a nonlinear least squares problem has to be solved. As we want to estimate a function, an appropriate parametrization is necessary. Those used in this thesis will be introduced in the following.
+The measuring process simulation, described in \cref{sec:simulation_of_DSC} is embedded in this section into the parameter estimation of the specific heat capacity $c_p(T)$ where a nonlinear least squares problem has to be solved. The corresponding numerical experiments are elucidated in \cref{sec:numerical_experiments}.
+As we want to estimate a function, $c_p(T)$ has been parametrized.
+Those parametrization used in this thesis will be introduced in the following.
 
 
 \subsection{Parametrizations of $c_p$}
 \label{sec:parametrizations}
-%Since in the end we want to estimate the specific heat capacity $c_p$ we need a parametrization with enough degrees of freedom in order to generate appropriate functions $c_p(T)$. 
+
+In this thesis the following three parametrizations for the specific heat capacity $c_p(T)$ has been used.
 
 \subsubsection{NURBS}
 \label{sec:nurbs}
-In preliminary computations we used Non-Uniform Rational B-Splines (NURBS). The generated curve $C(u) = \begin{pmatrix}
+In preliminary computations, we used Non-Uniform Rational B-Splines (NURBS), see e.g. \cite{the_NURBS_book}. The generated curve $C(u) = \begin{pmatrix}
 C^x(u), C^y(u) \end{pmatrix}^T \in \mathbb{R}^2$ is defined by
 
 \begin{equation}
@@ -2089,7 +2092,8 @@ C^x(u), C^y(u) \end{pmatrix}^T \in \mathbb{R}^2$ is defined by
 \end{equation}
 
 where $P_i = \begin{pmatrix}
-P_i^x, P_i^y \end{pmatrix}^T \in \mathbb{R}^2$ are called control points, $\omega_i \in [0,1]$ are weights for each control point and $N_{i,p}(u)$ are the B-Spline basis functions. These are defined recursively by
+P_i^x, P_i^y \end{pmatrix}^T \in \mathbb{R}^2$ are called control points, $\omega_i$ are weights for each control point. Here we restrict ourselves to $\omega_i \ge 0$ where at least one weight has to be larger than zero.
+B-Spline basis functions $N_{i,p}(u)$ are defined recursively by
 
 \begin{align}
 	N_{i,p}(u) = & \frac{u - u_i}{u_{i+p} - u_i} N_{i,p-1}(u) + \frac{u_{i+p+1} - u}{u_{i+p+1} - u_{i+1}} N_{i+1,p-1}(u) \label{eq:NURBS_basis_polynomial} \\[1ex]
@@ -2103,24 +2107,24 @@ P_i^x, P_i^y \end{pmatrix}^T \in \mathbb{R}^2$ are called control points, $\omeg
 where $u_i$ are the elements of the knot vector
 
 \begin{equation}
-	U = \begin{pmatrix}
-	u_0,...,u_m
-	\end{pmatrix}^T=
-	\begin{pmatrix}
-	a,...,a,u_{p+1},...,u_{m-p-1},b,...,b
-	\end{pmatrix}^T
+	U = (u_0,...,u_m)^T =
+	(\underbrace{a,...,a}_{p+1},u_{p+1},...,u_{m-p-1},\underbrace{b,...,b}_{p+1})^T
+	\label{eq:NURBS_knot_vector}
 \end{equation}
 
-With this formulation there are $n+1$ control points, $p$ is the order of the basis functions and the order of the resulting curve is defined by $p+1$. The interval $[a,b]$ is arbitrary in the sense that for $C(u=a)=P_0$,  $C(u=b)=P_n$ and $u \in (a,b)$ are points between, depending on the knot vector.\\
+With this formulation there are $n+1$ control points, $p$ is the order of the basis functions and the order of the resulting curve is defined by $p+1$. It holds ${m=n+p+1}$. The interval $[a,b]$ is arbitrary in the sense that with the knot vector \cref{eq:NURBS_knot_vector} it holds that $C(u=a)=P_0$, $C(u=b)=P_n$ and $u \in (a,b)$ are points between. \\
 
-In our experimental setup we used NURBS of order $4$, i.e. $p=3$. $a=0$ and $b=1$ so $u \in [0,1]$ and the knot vector is linearly increasing, i.e. $U = \begin{pmatrix}
-0,0,0,0,\frac{1}{n p},\frac{2}{n p},...,\frac{n p - 1}{n p},1,1,1,1 \end{pmatrix}^T$. All control points contribute equally such that $\omega_i=1 \ \forall \ i$. With these settings it holds that $C(u) \in \mathcal{C}^2$.
+In our experimental setup we used NURBS of order $4$, i.e. $p=3$. It was set $a=0$ and $b=1$ such that $u \in [0,1]$ and the knot vector reads
+\begin{equation}
+	U = (0,0,0,0,\frac{1}{n-p+1},\frac{2}{n-p+1},...,\frac{n-p}{n-p+1},1,1,1,1)^T 
+\end{equation}
+All control points contribute equally such that $\omega_i=1 \ \forall \ i$. 
+%With these settings it holds that $C(u) \in \mathcal{C}^2$.
 
-Since $C(u)$ is a parametrized curve we get a function $c_p(T)$ by using $C^x(u)$ as the domain of definition (temperature) and $C^y(u)$ as the co-domain ($c_p$). Evaluating $C(u)$ on an appropriate fine grid for values of $u$ and subsequently piecewise linear interpolation gives the wanted quantity $c_p(T)$.
-The x-coordinates of the control points were fixed on a predefined grid with $P_i^x < P_{i+1}^x$ to guarantee a well-defined function.
+Since $C(u)$ is a parametrized curve we get a function $c_p(T)$ by using $C^x(u)$ as the domain of definition (temperature) and $C^y(u)$ as the co-domain ($c_p$). Evaluating $C(u)$ on an appropriate fine grid for values of $u$ and subsequently piecewise linear interpolation gives the wanted quantity $c_p(T)$, although not differentiable then.
+The x-coordinates of the control points were fixed on a predefined grid with $P_i^x < P_{i+1}^x$ to get a well-defined function.
 As optimization variables we used the corresponding y-coordinates $P_i^y$. \\
-The corresponding numerical experiments with this parametrization is in \cref{sec:param_estim_NURBS}.
-
+The corresponding numerical experiments with this parametrization are found in \cref{sec:param_estim_NURBS}.
 
 
 \subsubsection{Linear combination of Gaussian functions}
@@ -3157,6 +3161,11 @@ In \cref{sec:param_estimation_summary} the specific heat capacity $c_p(T)$ obtai
 	A Textbook on Ordinary Differential Equations, Second Edition
 	Shair Ahmad, Antonio Ambrosetti,
 	ISBN 978-3-319-16407-6
+	
+\bibitem{the_NURBS_book}
+	The NURBS book,
+	Les A. Piegl, Wayne Tiller,
+	ISBN: 3-540-61545-8 
   
 \end{thebibliography}
 
