@@ -796,7 +796,7 @@ set(fig2, 'Units', 'normalized', 'Position', [0.0, 0.0, 0.7, 1.]);
 %% Relative Error for integration tolerance 1e-7 <-> 1e-8
 
 % Used c_p parametrization with Fraser-Suzuki-Peak, analog in grid error plots
-%h  =  10.0; r = 2.0; wr = 5.0; sr = 0.3; z = 130.0; m = 0.3; b = 2.0;
+%h  =  10.0; r = 2.0; wr = 5.0; sr = 0.3; z = 130.0; m = 0.003; b = 2.0;
 
 dsc_filename = 'ExpDat_16-407-3_mitKorr_5Kmin_H.csv';
 dsc = DSC204_readFile(dsc_filename);
@@ -1809,7 +1809,7 @@ dsc_list = {'ExpDat_16-407-3_mitKorr_20Kmin_H.csv', ...
 save_path_root = '/home/argo/masterarbeit/simulationen-data/c_p_DIN_FS_fit/';
         
 fig1 = figure(1);
-set(fig1, 'Units', 'normalized', 'Position', [0., 0., 0.8, 0.9]); 
+set(fig1, 'Units', 'normalized', 'Position', [0., 0., 0.8, 0.8]); 
 
 ax1 = gca(); hold on
 
@@ -1993,3 +1993,29 @@ for i=1:length(nameSubDirs)
 end
 
 mean(l)
+
+
+%% Plot Jacobian dqdp from 5 Gaussians in a pretty way
+
+path_root = '/home/argo/masterarbeit/';
+path_src = [path_root, 'fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/2017-12-19_20:41:36_407_20Kmin_L1=40_L3=0,1/'];
+fit_data = load([path_src, 'fit_data.mat']);
+
+fig1 = open([path_src, 'dqdp.fig']);
+ax1 = gca;
+
+colormap('parula')
+set(gca,'FontSize',12);
+
+ylabel('T_{ref} [degC]')
+title('')
+
+
+save_path = [path_root, 'thesis/images/dqdp_5Gausse'];
+print(fig1, save_path, '-dpng', '-r200');
+
+
+
+
+
+

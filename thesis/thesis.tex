@@ -104,32 +104,82 @@
 
  \pagenumbering{Roman}  
 
+%\begin{titlepage}
+%	\begin{center}
+%	
+%	\textsc{\large Ruprecht-Karls-Universit\"{a}t Heidelberg} \\[0.5cm]
+%	\textsc{\large Master Thesis}\\[0.5ex]
+%	\textsc{\large in the field of study}\\[0.5ex]
+%	\textsc{\large Scientific Computing}\\[1cm]
+%	
+%	\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+%	\HRule \\[0.4cm]
+%	\huge \bfseries Simulation of heat flux differential scanning calorimetry with phase change materials and parameter estimation of the specific heat capacity 
+%	\HRule 
+%	
+%	\vspace{6.5cm}
+%	
+%	\Large \textit{Jan Lammel} \\
+%	\Large \textit{born in Heidelberg} \\[4ex]
+%	\Large \textit{Heidelberg, \today }\\[3ex]
+%	\Large \textit{Supervisor:}\\
+%	\Large \textit{Prof. Dr. Dr. h. c. mult. Hans Georg Bock}\\
+%	\Large \textit{\todo{...}}
+%	
+%	\end{center}
+%\end{titlepage}
+
+
+
 \begin{titlepage}
 	\begin{center}
+		
+	\Large{Department of Mathematics and Computer Science} \\[3ex]
 	
-	\textsc{\large Ruprecht-Karls-Universit\"{a}t Heidelberg} \\[0.5cm]
-	\textsc{\large Master Thesis}\\[0.5ex]
-	\textsc{\large in the field of study}\\[0.5ex]
-	\textsc{\large Scientific Computing}\\[1cm]
+	University of Heidelberg \\
 	
-	\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
-	\HRule \\[0.4cm]
-	\huge \bfseries Simulation of heat flux differential scanning calorimetry with phase change materials and parameter estimation of the specific heat capacity 
-	\HRule 
+	\vspace{13cm}
 	
-	\vspace{6.5cm}
-	
-	\Large \textit{Jan Lammel} \\
-	\Large \textit{born in Heidelberg} \\[4ex]
-	\Large \textit{Heidelberg, \today }\\[3ex]
-	\Large \textit{Supervisor:}\\
-	\Large \textit{Prof. Dr. Dr. h. c. mult. Hans Georg Bock}\\
-	\Large \textit{\todo{...}}
-	
+	Master Thesis \\[0.5ex]
+	in Scientific Computing \\[2ex]
+	submitted by \\[2ex]
+	Jan Lammel \\[0.5ex]
+	born in Heidelberg \\[3ex]
+	2018 \\[2ex]
+		
 	\end{center}
 \end{titlepage}
 
-\newpage \mbox{}\\
+
+\newpage 
+
+\begin{titlepage}
+	\mbox{}\\
+\end{titlepage}
+
+\begin{titlepage}
+	\begin{center}
+		\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+		\HRule \\[0.1cm]
+%		{\huge \bfseries Simulation of heat flux differential \\[0.1ex]
+%		scanning calorimetry with phase change \\[0.1ex]
+%		materials and parameter estimation of the \\[0.2ex]
+%		specific heat capacity }
+		{\huge \bfseries Heat flux differential scanning calorimetry simulation and applied parameter estimation of the specific heat capacity of phase change materials}
+		\HRule \\[0.3cm]
+		
+		\vspace{9cm}
+		
+		{\Large This master thesis has been carried out by Jan Lammel \\[2ex]
+		at the \\[2ex]
+		Interdisciplinary Center for Scientific Computing (IWR)\\ 
+		in the group Simulation and Optimization \\[3ex]
+		under the supervision of \\[3ex]
+		Herrn Prof. Dr. Dr. h. c. mult. Hans Georg Bock}
+		
+	\end{center}
+\end{titlepage}
+
 
 \newpage
 
@@ -1533,7 +1583,7 @@ Analogously to the experimental setup, the silver plate is connected with the fu
 
 
 In order to solve \cref{eq:heat_equation_model}, the method of lines is applied for spatial discretization of the temperature field $T(x,t)$. In this context, on the BVP \cref{eq:method_of_lines} (which has the same form as \cref{eq:heat_equation_model} with constant heat conductivity $\lambda$) has been applied the method of lines already in \cref{sec:pde_discretization}. Therefore the analogous procedure is performed here. \\
-The silver plate has $N_{Ag}$ and the PCM $N_{pcm}$ discretization points and therefore the total number of discretization points is $N = N_{Ag} + N_{pcm}$. $T^i(t)$ is the discretized temperature at physical grid position $x_i$ for $i=0,...,N-1$. Since an inhomogeneous grid has been used, the gridsizes are computed by $\Delta x_i = {x^{i+1} - x^i}$ for $i=0,...,N-2$. \\
+The silver plate has $N_{Ag}$ and the PCM $N_{pcm}$ discretization points and therefore the total number of discretization points is $N = N_{Ag} + N_{pcm}$. $T^i(t)$ is the discretized temperature at physical grid position $x^i$ for $i=0,...,N-1$. Since an inhomogeneous grid has been used, the gridsizes are computed by $\Delta x_i = {x^{i+1} - x^i}$ for $i=0,...,N-2$. \\
 An illustration of the discretized model is depicted in \cref{fig:mathematical_model_discretized}. Note that the first discretized temperature within the PCM is $T^{N_{Ag}}$.
 In \cref{sec:spatial_discretization_grid} the construction of the inhomogeneous grid will be explained in detail. The resulting initial value problem reads as
 
@@ -1616,7 +1666,7 @@ Solving \cref{eq:heat_equation_discretized} yields the temperature but we are pr
 
 
 The first approximation comes from the spatial discretization and the second one is necessary because we do not know the heat conductivity $\bar{\lambda}$ at the transition between the silver plate and the PCM and therefore use the subsequent two grid points within the PCM (marked in \cref{fig:mathematical_model_discretized}). \\
-Since Fourier's law gives a heat flux density we needed to add a factor of the PCM's cross section $A_{pcm}$. It is computed by
+Since Fourier's law gives a heat flux density we multiply with the PCM's cross section $A_{pcm}$. It is computed by
 
 \begin{equation}
 	\frac{m_{pcm}}{N_{pcm}} \approx \Delta m_{pcm,N_{Ag}} = \rho_{pcm} \cdot A_{pcm} \cdot \Delta x_{N_{Ag}}
@@ -1634,7 +1684,7 @@ assuming a homogeneous mass distribution and a constant grid size $\Delta x$ in 
 \subsection{Spatial discretization grid}
 \label{sec:spatial_discretization_grid}
 
-We are primarily interested in the phase transition within the PCM, that is why we need there a fine spatial discretization. Though, the physical length of the silver plate is much larger, i.e. $L_{Ag} \gg L_{pcm}$. Therefore, an equidistant grid would need a tremendous amount of grid points $N$ and it is appropriate to use different gridsizes $\Delta x$ for the silver plate and the PCM, respectively. In preliminary computations just two different gridsizes $\Delta x_{Ag} \gg \Delta x_{pcm}$ has been used. In order to avoid numerical problems due to this discontinuity of the grid size at the transition from silver to PCM the used framework of generating a smooth grid will be explained now. \\
+We are primarily interested in the phase transition within the PCM, that is why we need there a fine spatial discretization. Though, the physical length of the silver plate is much larger, i.e. $L_{Ag} \gg L_{pcm}$. Therefore, an equidistant grid would need a tremendous amount of grid points $N$ and it is appropriate to use different gridsizes $\Delta x$ for the silver plate and the PCM, respectively. In preliminary computations, just two different gridsizes $\Delta x_{Ag} \gg \Delta x_{pcm}$ has been used. In order to avoid numerical problems due to this discontinuity of the grid size at the transition from silver to PCM, the used framework of generating a smooth grid will be explained now. \\
 In the following, $x$ will denote the physical grid, $\tilde{x}$ the computation grid and $\chi(\tilde{x}) = x$ the corresponding monotonically increasing mapping (see \cref{fig:computation_physical_grid}) which is defined by its derivative
 
 
@@ -1654,9 +1704,9 @@ with the parameters $\Delta \underline{x}, \Delta \bar{x} \in \mathbb{R}^+$ as l
 
 \begin{itemize}
 	\item $N \in \mathbb{N}$: total number of computation grid points.
-	\item $n_{pcm} \in (0,1)$: Ratio of grid points for the \underline{PCM}.
-	\item $n_{tr} \in (0,1)$: Ratio of grid points for the \underline{transition}.
-	\item $n_{m} \in (0,1)$: Ratio of grid points: \underline{Margin} to the PCM, where the transition is finished up to a threshold.
+	\item $n_{pcm} \in (0,1)$: Fraction of grid points for the \underline{PCM}.
+	\item $n_{tr} \in (0,1)$: Fraction of grid points for the \underline{transition}.
+	\item $n_{m} \in (0,1)$: Fraction of grid points: \underline{Margin} to the PCM, where the transition is finished up to a threshold.
 	\item $\tau < 1$: At grid point $N-N_{pcm}-N_m$, $\frac{\partial \chi(\tilde{x})}{\partial \tilde{x}}$ has finished the transition by \underline{threshold} $(100 \cdot \tau)\%$.
 \end{itemize}
 
@@ -1664,7 +1714,7 @@ First of all, the ratios of grid points $n_i$ can be converted into absolute num
 We now derive the unknown parameters $b$, $\gamma$, $\Delta \underline{x}$ and $\Delta \bar{x}$. On the computation grid the central position of the grid transition is
 
 \begin{equation}
-	b = N - N_{pcm} - N_m - \frac{1}{2} N_{tr}
+	b = N-1 - \left(N_{pcm} + N_m + \frac{1}{2} N_{tr} \right)
 	\label{eq:spatial_grid_b}
 \end{equation}
 
@@ -1672,9 +1722,9 @@ Furthermore we get $\gamma$ by ($\delta \underline{x}(\tau)$ illustrated in \cre
 
 \begin{subequations}
 \begin{align}
-	\frac{\partial \chi}{\partial \tilde{x}}(\tilde{x}=N-N_{pcm}-N_m) = \ & \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x}) \cdot (1-\tau) =: \delta \underline{x}(\tau) \\
-	\Leftrightarrow \frac{\Delta \bar{x} - \Delta \underline{x}}{1 + e^{\gamma(N-N_{pcm}-N_m - b)}} + \Delta \underline{x} = \ & \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x}) \cdot (1-\tau) =: \delta \underline{x}(\tau)  \\
-	\stackrel{\cref{eq:spatial_grid_b}}{\Leftrightarrow}  1 + e^{\gamma \frac{N_{tr}}{2}} = \ & \frac{1}{1 - \tau}  \\[2ex]
+	\frac{\partial \chi}{\partial \tilde{x}}(\tilde{x}=N-1-(N_{pcm}+N_m)) = \ & \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x}) \cdot (1-\tau) =: \delta \underline{x}(\tau) \\
+	\Leftrightarrow \ \frac{\Delta \bar{x} - \Delta \underline{x}}{1 + e^{\gamma(N-1-(N_{pcm}+N_m) - b)}} + \Delta \underline{x} = \ & \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x}) \cdot (1-\tau) =: \delta \underline{x}(\tau)  \\
+	\stackrel{\eqref{eq:spatial_grid_b}}{\Leftrightarrow}  1 + e^{\gamma \frac{N_{tr}}{2}} = \ & \frac{1}{1 - \tau}  \\[2ex]
 	\Leftrightarrow \gamma = \frac{2}{N \cdot n_{tr}} \ln\left(\frac{\tau}{1-\tau}\right)
 \end{align}
 \end{subequations}
@@ -1781,7 +1831,7 @@ This gives the linear system
 	xticklabels={, , , $N\text{-}1$},
 	yticklabels={$\Delta \underline{x}$, $\Delta \bar{x}$, $\delta \underline{x}(\tau)$, $\delta {\bar{x}}(\tau)$},
 	xmin=0, xmax=27,
-	ymin=-0.2, ymax=1.1,
+	ymin=-0.4, ymax=1.1,
 	xlabel=$\tilde{x}$, xlabel style={at=(current axis.right of origin), anchor=west},
 	]
 	\addplot [domain=0:25] {(1 - 0.05) / (exp(0.7*(x-10))+1) + 0.05} node[pos=0.9, above, sloped] {$\frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$};
@@ -1800,6 +1850,11 @@ This gives the linear system
 	(axis cs:7,0) --
 	node[below=7pt] {$N_{tr}$} 
 	(axis cs:13,0);
+	
+	\draw [thick,decoration={brace,mirror,raise=3pt},decorate] 
+	(axis cs:0,-0.2) --
+	node[below=7pt] {$N_{Ag}$} 
+	(axis cs:16,-0.2);
 
 	\addplot[only marks, mark=x, color=black] 
 	table {7	0.895
@@ -1807,19 +1862,20 @@ This gives the linear system
 	};	
 	
 	% L1
-	\draw [loosely dashed] (0, 109.5) -- (70, 109.5);
-	\draw [loosely dashed] (70, 20) -- (70, 109.5);	
+	\draw [loosely dashed] (0, 129.5) -- (70, 129.5);
+	\draw [loosely dashed] (70, 40) -- (70, 129.5);	
 	
 	% L1 + L3
-	\draw [loosely dashed] (0, 35.5) -- (130, 35.5);
-	\draw [loosely dashed] (130, 20) -- (130, 35.5);	
+	\draw [loosely dashed] (0, 55.5) -- (130, 55.5);
+	\draw [loosely dashed] (130, 40) -- (130, 55.5);	
 
+	\draw [loosely dashed] (160, 20) -- (160, 40);	
 	
 	
 	
 	\end{axis}
 	\end{tikzpicture}
-	\caption{Illustrative mapping of the gridsize $\Delta x = \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$ as a function of the computation grid $\tilde{x}$. $N$, $N_{pcm}$, $N_m$ and $N_{tr}$ are the number of discretization points in total, within the PCM, margin and grid transition part. Start $\delta \bar{x}(\tau) := \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x})\cdot \tau$  \ and end $\delta \underline{x}(\tau) := \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x})\cdot(1-\tau)$ of the grid transition w.r.t. threshold $\tau$ are marked. Grid size lower and upper bound $\Delta \underline{x}$ and $\Delta \bar{x}$ used in \cref{eq:gridsize_definition}. \\
+	\caption{Illustrative mapping of the gridsize $\Delta x = \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$ as a function of the computation grid $\tilde{x}$ (note: first discretization point at $\tilde{x}=0$). $N$, $N_{pcm}$, $N_m$ and $N_{tr}$ are the number of discretization points in total, within the PCM, margin and grid transition part. Start $\delta \bar{x}(\tau) := \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x})\cdot \tau$  \ and end $\delta \underline{x}(\tau) := \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x})\cdot(1-\tau)$ of the grid transition w.r.t. threshold $\tau$ are marked. Grid size lower and upper bound $\Delta \underline{x}$ and $\Delta \bar{x}$ used in \cref{eq:gridsize_definition}. \\
 	Remark: Gridsize still changes noticeable outside transition zone here since threshold is set here to a very low value ${\tau=0.85}$ in order to illustrate how the gridsize construction works. In the numerical experiments ${\tau=0.999}$ was used.}
 	\label{fig:grid_size}
 \end{figure}
@@ -1831,7 +1887,7 @@ This gives the linear system
 %The measurement data for the residuum computation is given as a function dependent on the temperature at the reference crucible $T_{ref}^{\eta_i}$. Since we need to evaluate the solution of the heat equation (PCM side) at the corresponding time points $t_i$ it is necessary to calculate these.
 %This is done by applying Newton's method on the heat equation's solution of the reference side which can be solved analytically as follows. \\
 
-As the crucible of the reference side is empty there is just the silver plate with a constant temperature conductivity $\alpha_{Ag}=\frac{\lambda_{Ag}}{\rho_{Ag} \cdot c_{p,Ag}}$. The start and boundary conditions are equal to the ones of the PCM side. Therefore the boundary value problem reads 
+As the crucible of the reference side is empty there is only the silver plate with a constant temperature conductivity $\alpha_{Ag}=\frac{\lambda_{Ag}}{\rho_{Ag} \cdot c_{p,Ag}}$. The initial and boundary conditions are equal to the ones of the PCM side. Therefore the boundary value problem reads 
 
 \begin{subequations}
 	\begin{empheq}[box=\widefbox]{align}
@@ -1924,7 +1980,7 @@ where $c_1$ and $c_2$ are determined by the boundary conditions $X(0) = 0$ and $
 \end{align}
 
 Note: The trivial solution $\sqrt{\lambda}=0$ leads to $X(x) = 0$ and is therefore omitted. \\
-The general solution of $X_n(x)$ is then given by
+The eigenfunctions $X_n(x)$ are then given by
 
 \begin{equation}
 	\tilde{X}_n(x) = c_1 \cdot \sin\left(\frac{(2n -1)\pi}{2 L_{Ag}} \cdot x\right) =: c_1 \cdot X_n(x)
@@ -2329,7 +2385,7 @@ The optimization took in this case about 40 minutes on my laptop and stopped bec
 
 
 \subsection{Error analysis with respect to integration tolerance}
-In this section we quantify the occurring numerical errors due to the used integration tolerance in order to ensure that this does not influence the results significantly. \\
+In this section we quantify the occurring numerical errors due to the used integration tolerance in order to ensure that this does not influence the results significantly. The same specific heat capacity as in \cref{fig:smearing_effect_c_p} has been used. \\
 From here on the numerical integrator DAESOL-II within the SolvIND Suite and the material properties of silver for the silver plate were used for all upcoming numerical experiments. \\
 The relative error computed by
 
@@ -2340,7 +2396,7 @@ The relative error computed by
 
 comparing integration tolerances $10^{-7}$ and $10^{-8}$  is shown in \cref{fig:integration_tolerance_error}.
 The temperature at the last discretization point of the silver plate $T^{N_{Ag-1}}$ was evaluated for all measurement time points which equates a temperature at the reference crucible $T_{ref}$. 
-As one can see the maximum relative error $1.7 \cdot 10^{-6}$ occurs approximately at the PCM's phase transition. 
+The maximum relative error $1.7 \cdot 10^{-6}$ occurs approximately at the PCM's phase transition. 
 From the magnitude we can conclude that an integration tolerance of $10^{-7}$ is sufficient. \\
 
 
@@ -2361,7 +2417,7 @@ Next we compare several configurations of the spatial discretization grid (see \
 \end{equation}
 
 where $T_{grid_i}^{N_{Ag}-1}$ is the temperature using grid $i$ and $T_{eq}^{N_{Ag}-1}$ is the temperature from the reference equidistant grid using $N_{pcm}=50$ and $N_{Ag}=20,000$. Both temperatures are evaluated at the silver plate's last discretization point since this equates to the same physical coordinate $x=L_{Ag}$ by construction in all grids. 
-We set $n_m=0.01$ and $t=0.999$ for all experiments in order to guarantee that the transition of the grid size is finished sufficiently once the PCM starts which is necessary for the heat flux approximation. \\
+We set $n_m=0.01$ and $t=0.999$ for all experiments in order to guarantee that the transition of the grid size is finished sufficiently once the PCM starts which is necessary for the heat flux approximation. The same specific heat capacity as in \cref{fig:smearing_effect_c_p} has been used. \\
 
 \subsubsection{Varying total number of discretization points $N$}
 In the first set of tests we varied the total number of discretization points $N$ while fixing $n_{pcm}=0.2$ and $n_{tr}=0.1$. The results are shown in \cref{fig:grid_mod_N} where in all upcoming cases (a) shows the grid size $\Delta x = \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$ as a function of the computation grid $\tilde{x}$ (the y-axis is logarithmic since differences in the minimum gridsize $\Delta x$ are better recognizable then) and (b) maps the corresponding relative error computed by \cref{eq:relErr_grid}. In all cases the error increases during the phase transition at the reference crucible temperature of about $130^{\circ} C$ where the maximum is reached for the least amount of tested discretization points $N=200$ with $|\text{Relative error|}=1.5 \cdot 10^{-5}$. Surprisingly the error for $N > 1000$ increases again but in all tested cases the relative error has an order of magnitude lower equal than $10^{-5}$. 
@@ -2433,6 +2489,16 @@ Summarized, a total number of discretization points $N=300$ is sufficient while 
 So far, finite differences were used to compute the optimization Jacobian \cref{eq:optimization_jacobian}. Because of the problems described in \cref{sec:param_estim_NURBS}, from now on internal numerical differentiation is used instead with the software package SolvIND. The parameter estimation is performed in two different ways in this and the following section, deploying different parametrizations. In this section, we aim to minimize the heat flux residuum as far as possible, while in the next section a regularization in form of a predefined peak shape (Fraser-Suzuki) is active, in order to compare both results in the end. \\
 Now, the parameter estimation is performed using the parametrization of 5 Gaussians, linear and constant part (see \cref{sec:parametrization_Gausse}), i.e. in total $n_p=17$ optimization parameters. Five Gaussians were used since this is the minimum number such that the residuum almost vanishes as one can see in the upcoming \cref{fig:optim_c_p_heat_flux_5Gaussians_1,fig:optim_c_p_heat_flux_5Gaussians_2}. The optimization was performed again with the matlab routine $lsqnonlin$. Start values (see \cref{sec:initial_values_5Gaussians}) for the first heat rate $\beta = 20 \frac{K}{min}$ were used from previously existing results with already reduced residuum. Afterwards the optimizations were performed in a decreasing order of heat rates where parameters estimated in this process were used as start values in subsequent steps. I.e. estimated parameters at heat rate $\beta=20 \frac{K}{min}$ were used as start values for the parameter estimation at heat rate $\beta=10 \frac{K}{min}$ etc. \\
 The optimization process took on average about $7$ minutes and 50 iterations per heat rate.
+
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\textwidth]{/home/argo/masterarbeit/thesis/images/dqdp_5Gausse.png}
+	\caption{Optimization Jacobian $J_1(p_{c_p})$ computed by \cref{eq:optimization_jacobian} with IND in forward mode using Gaussian parametrization. Exemplary from heat rate $\beta=20 \frac{K}{min}$ at the end of optimization. \\
+	Cf. approximated Jacobian via finite differences in \cref{fig:NURBS_results} (c) and (d).}
+	\label{fig:dqdp_5Gausse}
+\end{figure}
+
 
 \subsubsection{Specific heat capacity and heat flux separately for all heat rates}
 
@@ -3109,11 +3175,21 @@ Vielen lieben Dank!
 
 
 \newpage
-\addsec{Erklärung}
-Ich versichere, dass ich diese Arbeit selbständig verfasst und keine anderen als die angegebenen Quellen und Hilfsmittel verwendet habe.\\[2ex]
+\textbf{Erklärung:} \\[3ex]
+Ich versichere, dass ich diese Arbeit selbständig verfasst habe und keine anderen als die angegebenen Quellen und Hilfsmittel verwendet habe.\\[2ex]
 
 Heidelberg, den 15. Januar 2018 \\[6ex]
 
 $\overline{\qquad \quad \text{Jan Lammel} \quad \qquad}$
+
+
+%\vspace{5cm}
+%
+%\textbf{Declaration:} \\[3ex]
+%I hereby confirm that I wrote this work independently and did not use any sources other than those indicated.\\[2ex]
+%
+%Heidelberg, January 15, 2018 \\[6ex]
+%
+%$\overline{\qquad \quad \text{Jan Lammel} \quad \qquad}$
 
 \end{document}

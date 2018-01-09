@@ -69,6 +69,10 @@
 % fwdSensTol decreased
 [fig, enthalpies] = get_fit_results('2017-12-14_23:47:55_407_L1=40_L3=0,1_N1=200_N3=50_GN_FS');  % FS
 
+% finally used ones
+[fig, enthalpies] = get_fit_results('2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used');  % FS
+[fig, enthalpies] = get_fit_results('2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used');  % FS
+
 
 
 
