@@ -173,7 +173,7 @@
 		{\huge \bfseries Heat flux differential scanning calorimetry simulation and applied parameter estimation of the specific heat capacity of phase change materials}
 		\HRule \\[0.3cm]
 		
-		\vspace{9cm}
+		\vspace{10cm}
 		
 		{\Large This master thesis has been carried out by Jan Lammel \\[2ex]
 		at the \\[2ex]
@@ -181,44 +181,56 @@
 		in the group Simulation and Optimization \\[3ex]
 		under the supervision of \\[3ex]
 		Herrn Prof. Dr. Dr. h. c. mult. Hans Georg Bock}
-		
 	\end{center}
 \end{titlepage}
 
-
-\newpage
-
-\tableofcontents 
 \newpage
 
 
+\begin{titlepage}
+	\mbox{}\\
+\end{titlepage}
 
 
 
-\addsec{Abstract}
+\section*{Abstract}
 
-This thesis approaches the problem of identifying the specific heat capacity $c_p$ of phase change materials (PCM). An usual method using measurement data of a heat flux differential scanning calorimetry (DSC) results in different outcomes dependent on a measurement parameter, the heat rate. 
+This thesis approaches the problem of identifying the specific heat capacity $c_p$ of phase change materials (PCM). An usual method using measurement data of heat flux differential scanning calorimetry (DSC) results in different outcomes dependent on a measurement parameter, the heat rate. 
 Therefore in this thesis a new developed model is introduced to simulate the measuring process of a heat flux DSC where phase change materials are used as sample. 
 The simulation is accomplished by solving the heat equation where the PCM's specific heat capacity is temperature dependent and has a phase transition peak. 
 This simulation is capable of reproducing heat fluxes into the sample analogously to the physical experiment. 
-With this insight the simulation has been embedded in a least squares parameter estimation framework using heat flux measurement data in order to estimate the sample's specific heat capacity, independently from the heat rate. With $c_p(T)$ parametrized with a Fraser-Suzuki peak and linear baseline, a distinct reduction in the deviation of peak characteristics maximum position $T_{max}$, offset of melting $T_{off}$ and melting enthalpy $\Delta H$ was possible.
+With this insight the simulation has been embedded in a least squares parameter estimation framework using heat flux measurement data in order to estimate the sample's specific heat capacity, independently from the heat rate. With $c_p(T)$ parametrized with a Fraser-Suzuki peak and linear baseline, a distinct reduction in the deviation of peak characteristics maximum position $T_{max}$, offset of melting $T_{off}$ and melting enthalpy $\Delta H$ for specified heat rates was possible.
 
- 
- 
- \newpage
 
-\addsec{Zusammenfassung}
+
+\section*{Kurzbeschreibung}
+
 \todo{!}
 
 \newpage
 
 
 
+\tableofcontents 
+\newpage
 
 
 \pagenumbering{arabic}
+\addsec{Summary}
+This thesis comprises the modeling of and parameter estimation in the physical measurement process of heat flux differential scanning calorimetry (DSC). As part of the research project modELTES, phase change materials (PCM) are analyzed with respect to their specific heat capacity $c_p$. Therefore a new model of the measuring process of a heat flux DSC has been developed. This model is embedded in a parameter estimation framework to identify the PCM's specific heat capacity. \\
+
+The thesis begins with a general introduction in \cref{sec:introduction} about PCMs with exemplary applications of those and the motivation of developing a new method for the identification of the specific heat capacity. \Cref{sec:physical_background} introduces the physical quantities, relevant for further comprehension. The physics of a phase transition is elucidated including its relation to the temperature dependent specific heat capacity, exhibiting a phase transition peak.
+Associated characteristic quantities are named and explained. The heat equation, essential for our mathematical model, is derived. The physical measurement process of differential scanning calorimetry (DSC) is elucidated, origin of the measurement data deployed later in the parameter estimation. \Cref{sec:physical_background} concludes with expounding the smearing problem, occurring for a hitherto usual way of computing $c_p(T)$ from DSC measurement data. The obtained $c_p(T)$ here depend on the heat rate, a measurement parameter. Since $c_p(T)$ is a material property, this is unphysical and further, a motivation of this thesis to avoid this problem in a parameter estimation framework. \\ 
+Mathematical problems within the scope of this thesis and corresponding methods for their (numerical) solution are elucidated in \cref{sec:mathematical_background}. Two approaches of generating derivatives are shown. First, in an approximative way by finite differences and secondly via Automatic Differentiation (AD). In this context, variational differential equations are explained regarding the sensitivities of a differential equation w.r.t. its parameters. The used methods of obtaining these sensitivities by applying internal numerical differentiation (IND) and AD is shown. An essential problem is the initial value problem (IVP). Its numerical solution via the backward differentiation formula (BDF) method is presented.
+
+
+
+
+\newpage
+
 
 \section{Introduction}
+\label{sec:introduction}
 This thesis is part of project modELTES, a cooperation of the Austrian Institute of Technology GmbH (AIT), VOIGT+WIPP Engineers GmbH and Interdisziplinäres Zentrum für Wissenschaftliches Rechnen (IWR) here at Ruprecht-Karls-Universität Heidelberg in order to examine so called phase change materials (PCM). The physical experiments have been performed in Wien at the AIT while in Heidelberg the aim is on the development of simulation software. \\
 A popular application of PCMs are heating pads (see \cref{fig:heating_pad}) which are liquid in fully charged state. Folding induces a phase change to a solid state where energy is released and therefore the temperature increases. They can be recharged by applying a temperature for a sufficiently long time above the melting point (e.g. with boiling water). 
 
@@ -705,6 +717,7 @@ This simplicity is at the expense of accuracy. If we choose $h$ too small, cance
 
 
 \subsubsection{Automatic Differentiation and Internal Numerical Differentiation}
+\label{sec:Automatic_diff_IND_theory}
 The basic idea of Automatic Differentiation (AD) is to subdivide a sufficiently smooth function ${f: \mathbb{R}^n \rightarrow \mathbb{R}^m}$ into so called elementary functions $\varphi_i$ of which the derivative is known. 
 
 The evaluation of these elementary functions give intermediate values $v_i = \varphi_i(v_j)_{j \prec i}$ where the dependency relation $\prec$ is defined as
@@ -2305,8 +2318,8 @@ with
 	\forall \ i = 1,...,n_{mp} \nonumber
 \end{align}
 
-using \cref{eq:heat_flux_computation_final}. The non-zero entries are in column $N_{Ag+1}$ and $N_{Ag}+2$ (since first discretized temperature is $T^0$). \\
-The sensitivities $\frac{\partial T}{\partial p_{c_p}}(t_i) \in \mathbb{R}^{N \times n_p}$ are obtained by IND while solving the differential equation in forward mode with the software SolvIND. 
+using \cref{eq:heat_flux_computation_final}. The non-zero entries are in column $N_{Ag+1}$ and $N_{Ag}+2$ (since first discretized temperature is $T^0$). 
+The sensitivities $\frac{\partial T}{\partial p_{c_p}}(t_i) \in \mathbb{R}^{N \times n_p}$ can be computed by the methods described in \cref{sec:Automatic_diff_IND_theory}. 
 
 
 \newpage
@@ -3219,13 +3232,13 @@ Heidelberg, den 15. Januar 2018 \\[6ex]
 $\overline{\qquad \quad \text{Jan Lammel} \quad \qquad}$
 
 
-%\vspace{5cm}
-%
-%\textbf{Declaration:} \\[3ex]
-%I hereby confirm that I wrote this work independently and did not use any sources other than those indicated.\\[2ex]
-%
-%Heidelberg, January 15, 2018 \\[6ex]
-%
-%$\overline{\qquad \quad \text{Jan Lammel} \quad \qquad}$
+\vspace{5cm}
+
+\textbf{Declaration:} \\[3ex]
+I hereby confirm that I wrote this work independently and did not use any sources other than those indicated.\\[2ex]
+
+Heidelberg, January 15, 2018 \\[6ex]
+
+$\overline{\qquad \quad \text{Jan Lammel} \quad \qquad}$
 
 \end{document}
