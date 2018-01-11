@@ -586,7 +586,7 @@ A common way to perform the heat flux DSC calibration, measurement and specific 
 \end{equation}
 
 where the indices $S$ and $R$ denote the sample respectively reference. Reference means here a material with known specific heat capacity $c_p^R(T)$, not to be mistaken with the reference side of the experimental setup which is usually empty. In our case this reference material is sapphire. Furthermore $m$ is the mass and $\varPhi^0$ is the heat flux if both crucibles are empty. $\varPhi^0$ is subtracted to compensate asymmetries in the experimental setup. \\
-In \cref{fig:heat_flux_measurements} the measurement data of the heat flux into the PCM $\varPhi_q^{\eta}(T_{ref})$ is shown for all heat rates dependent on the temperature at the reference crucible. Using \cref{eq:c_p_formula_DIN} the computed specific heat capacities for the PCM are shown in \cref{fig:c_p_DIN_formula}. For higher heat rates the peak position shifts to higher temperatures and furthermore the peak is smeared out. This is known as the smearing problem since $c_p(T)$ is a material property and therefore independent of the heat rate.
+In \cref{fig:heat_flux_measurements} the measurement data of the heat flux into the PCM $\varPhi_q^{\eta}(T_{ref})$ is shown for all heat rates dependent on the temperature at the reference crucible. For higher heat rates the peak position shifts to higher temperatures and the peak is widened (smearing effect). Using \cref{eq:c_p_formula_DIN} the computed specific heat capacities for the PCM are shown in \cref{fig:c_p_DIN_formula}, exhibiting the smearing effect as well. This is known as the smearing problem since $c_p(T)$ is a material property and therefore independent of the heat rate.
 
 
 \begin{figure}[H]
@@ -601,7 +601,7 @@ In \cref{fig:heat_flux_measurements} the measurement data of the heat flux into 
 		\caption{}
 		\label{fig:c_p_DIN_formula}
 	\end{subfigure}
-	\caption{(a) Heat flux measurement values $\varPhi_q^{\eta}(T_{ref})$ and (b) computed specific heat capacity $c_p(T)$ using \cref{eq:c_p_formula_DIN} with distinct smearing effect for higher heat rates. \\
+	\caption{(a) Heat flux measurement values $\varPhi_q^{\eta}(T_{ref})$ and (b) computed specific heat capacity $c_p(T)$ using \cref{eq:c_p_formula_DIN}. Distinct smearing effect for higher heat rates. \\
 	Cf. Simulated heat flux (\cref{fig:smearing_effect_simulation_heat_flux}) and $c_p(T)$ obtained by parameter estimation depicted in \cref{fig:5Gaussians_all_c_p,fig:FS_all_c_p,fig:FS_all_c_p_modHeatRate}.}
 \end{figure}
 
@@ -2279,7 +2279,7 @@ This is reasonable since the difference between these two temperatures is very s
 	\label{fig:obtaining_measurement_times}
 \end{figure}
 
-\subsubsection{Heat flux residuum and optimization Jacobian computation}
+\subsubsection{Heat flux residuum and objective function Jacobian computation}
 
 For the optimization process using Gauss-Newton method (see \cref{sec:Gauss_Newton}) we define the residuum vector 
 
@@ -2327,35 +2327,46 @@ The sensitivities $\frac{\partial T}{\partial p_{c_p}}(t_i) \in \mathbb{R}^{N \t
 \section{Numerical experiments and results}
 \label{sec:numerical_experiments}
 
+In this section all conducted numerical experiments are presented and evaluated where first, general settings of the numerical experiments are listed. Reproducibility of heat flux measurement data with our model is shown. An error analysis with respect to used relative integration tolerance and spatial discretization grid is conducted. Parameter estimations and corresponding analysis is performed for all parametrizations introduced in \cref{sec:parametrizations}. Based on the observation of a deviation in the measured heat rate, an additional parameter estimation is performed. The section conducts with a comparison of the peak characteristics of $c_p(T)$ obtained by a hitherto existing method (see \cref{sec:smearing_problem}) and the parameter estimation performed in this thesis.
 
-All conducted numerical experiments involve the following subproblems: The numerical integration where we solve \cref{eq:heat_equation_discretized} gives us the temperature vector $T = \begin{pmatrix} T^0 & ... & T^{N-1}  \end{pmatrix}^T$ and sensitivities $\frac{\partial T}{\partial p}$. This was accomplished with the numerical integrator DAESOL-II embedded in SolvIND. The integration tolerance was set to $10^{-7}$ except in \cref{sec:param_estimation_fs}.
-The sensitivities were obtained in forward mode. Theoretically adjoint mode is computationally cheaper since we just need two adjoint directions $T^{N_{Ag}}$ and $T^{N_{Ag}+1}$ compared to $n_p$ directions in forward mode. But in practice it turned out that the computation is faster using the forward mode.
-The heat flux $\varPhi_q^{pcm,in}$ is then computed with \cref{eq:heat_flux_computation_final} and the optimization Jacobian $J_1(p_{c_p})$ with \cref{eq:optimization_jacobian}. Usual choice for PCM discretization points was set to $N_{pcm}=50$ as the heat flux approximation error is then negligible. The parameter estimation is performed by solving the least squares problem \cref{eq:parameter_estimation_least_squares_problem} on the one hand with the Matlab routine $lsqnonlin$ which uses a trust-region method and Gauss-Newton directions based on interior-reflective Newton method described in \cite{lsqnonlin_alg1} and \cite{lsqnonlin_alg2}. Later then, a self written Gauss-Newton solver has been used (\cref{alg:Gauss_Newton_unconstrained}).
-When solving the reference side with the analytical solution \cref{eq:analytical_soln_final_formula} we stopped the actually infinite sum after $100$ summands which is definitively sufficient, since the $n$'th summand is proportional to $n^{-3}$. \\
+
+\subsection{Computation settings}
+
+All conducted numerical experiments involve the following subproblems: The numerical integration where we solve the model IVP \cref{eq:heat_equation_discretized} gives the temperature vector $T = (T^0 \ ... \ \ T^{N-1} )^T$ and sensitivities $\frac{\partial T}{\partial p}$. 
+This was accomplished with the numerical integrator DAESOL-II embedded in SolvIND. Relative integration tolerance was set to $10^{-7}$ unless otherwise noted.
+Sensitivities were obtained in forward mode. Theoretically adjoint mode is computationally cheaper since we just need two adjoint directions $T^{N_{Ag}}$ and $T^{N_{Ag}+1}$ compared to $n_p$ directions in forward mode. But in practice it turned out that the computation is faster using the forward mode.
+The heat flux into the PCM $\varPhi_q^{pcm,in}$ is then computed with \cref{eq:heat_flux_computation_final} and the objective function Jacobian $J_1(p_{c_p})$ with \cref{eq:optimization_jacobian}. 
+The number of PCM discretization points was set to $N_{pcm}=50$ as the heat flux approximation error is then negligible (ascertained in a comparison with $N_{pcm}=200$). 
+The parameter estimation is performed by solving the least squares problem \cref{eq:parameter_estimation_least_squares_problem}. 
+For comparison, this was accomplished on the one hand with Matlab's industry-standard-solver $lsqnonlin$, which uses a trust-region method and Gauss-Newton directions based on interior-reflective Newton method described in \cite{lsqnonlin_alg1} and \cite{lsqnonlin_alg2}. 
+On the other hand, a self written Gauss-Newton solver for equality constrained and parameter bounded problems with active set strategy and line search has been used (\cref{alg:Gauss_Newton_unconstrained} for unconstrained case, see \cref{sec:param_estimation_fs}).
+When computing the reference side with the analytical solution \cref{eq:analytical_soln_final_formula} we stopped the actually infinite sum after $100$ summands which is definitively sufficient, since the $n$'th summand is in the order of $\mathcal{O}(n^{-3})$. \\
 
 The constant material properties used throughout are shown in \cref{tab:const_material_properties}.
+Physical lengths $L_{Ag}$ and $L_{pcm}$ are set such that the specific heat capacities from the parameter estimation deviate least for different heat rates. The determined values are $L_{Ag}=40mm$ and $L_{pcm}=0.1mm$ unless otherwise noted. Since the silver plate is a disk and our model is simplified to 1D, the physical meaning of these values is not obvious.
+Initial temperature of both the silver plate and the PCM (see \cref{eq:heat_equation_discretized}) was set to $T_0=10^\circ C$ and the simulation was stopped at a furnace temperature $T^0(t_f)=200^\circ C$, ensuring that the phase transition is completed entirely. \\
+
+%Except for the forward simulation with an equidistant grid as reference for the error analysis of different spatial grids, all experiments have been done on my laptop using Linux Ubuntu Mate, 2 Cores Intel(R) Core(TM) i3-4100M CPU @ 2.50GHz and 8GB RAM. Former was computed on the IWR-Compute Server Quadxeon2 (4 x Dual Core E7220 2.93 GHz, 256 GB RAM).
+
+All computations have been done on a laptop using Linux Ubuntu Mate, 2 Cores Intel(R) Core(TM) i3-4100M CPU @ 2.50GHz and 8GB RAM. 
+
 
 \begin{table}[H]
 	\centering
+	\caption{Material properties for specific heat capacity $c_p$, mass density $\rho$ and heat conductivity $\lambda$ used in numerical experiments. $^*$ Specific heat capacity of PCM is temperature dependent and parametrized, see \cref{sec:parametrizations}. \vspace{0.1cm}}
+
 	\begin{tabular}{| c | c | c | c |} \hline
 		& $c_p \ [\frac{mJ}{mg \ K}]$ & $\rho \ [\frac{mg}{mm^3}]$ & $\lambda \ [\frac{mW}{mm \ K}]$ \\ \hline
 		Silver (Ag) & $0.235$ & $10.49$ & $430$ \\
 		PCM & ---$^*$ & $0.85$ & $0.96$ \\ \hline
 	\end{tabular}
-	\caption{Material properties for specific heat capacity $c_p$, mass density $\rho$ and heat conductivity $\lambda$ used in numerical experiments. $^*$ Specific heat capacity of PCM is temperature dependent and parametrized, see \cref{sec:parametrizations}.}
 	\label{tab:const_material_properties}
 \end{table}
 
-The initial temperature (see \cref{eq:heat_equation_discretized}) was set to $T_0=10^\circ C$ and the simulation stopped for the furnace temperature $T^0(t_f)=200^\circ C$ such that the phase transition is finished entirely. \\
-
-%Except for the forward simulation with an equidistant grid as reference for the error analysis of different spatial grids, all experiments have been done on my laptop using Linux Ubuntu Mate, 2 Cores Intel(R) Core(TM) i3-4100M CPU @ 2.50GHz and 8GB RAM. Former was computed on the IWR-Compute Server Quadxeon2 (4 x Dual Core E7220 2.93 GHz, 256 GB RAM).
-
-All experiments have been done on my laptop using Linux Ubuntu Mate, 2 Cores Intel(R) Core(TM) i3-4100M CPU @ 2.50GHz and 8GB RAM. 
-
-
-\subsection{Smearing effect on simulated heat flux for different heat rates}
-The first basic numerical experiment shows that our mathematical model is capable of reproducing heat fluxes exhibiting the smearing effect similar to those measured (see \cref{sec:smearing_problem}). This was achieved by a forward simulation, i.e. solving \cref{eq:heat_equation_discretized} for several different heat rates using the same specific heat capacity (see \cref{fig:smearing_effect_c_p}) each time. \\
-The resulting heat fluxes for all heat rates from the forward simulation can be seen in \cref{fig:smearing_effect_simulation_heat_flux}. They exhibit a widening of the peak and a shift of the maximum to higher temperatures for increasing heat rates similar to the measured heat fluxes shown in \cref{fig:smearing_effect_measurement_heat_flux}. This forms the basis of reproducing the heat flux measurement values by performing a parameter estimation in the following numerical experiments in order to obtain the specific heat capacity.\\
+%\subsection{Smearing effect on simulated heat flux for different heat rates}
+\subsection{Successful reconstruction of smearing effect}
+We first show that our mathematical model is capable of reproducing heat fluxes exhibiting the smearing effect similar to those measured (see \cref{sec:smearing_problem}). This was achieved by a forward simulation, i.e. solving \cref{eq:heat_equation_discretized} for several different heat rates using the same specific heat capacity (see \cref{fig:smearing_effect_c_p}) each time. \\
+The resulting heat fluxes for all heat rates from the forward simulation are displayed in \cref{fig:smearing_effect_simulation_heat_flux}. They exhibit a widening of the peak and a shift of the maximum to higher temperatures for increasing heat rates similar to the measured heat fluxes shown in \cref{fig:smearing_effect_measurement_heat_flux}. This forms the basis of reproducing the heat flux measurement values by performing a parameter estimation in the following numerical experiments in order to obtain the specific heat capacity.\\
 
 
 
@@ -2377,13 +2388,13 @@ The resulting heat fluxes for all heat rates from the forward simulation can be 
 		\caption{}
 		\label{fig:smearing_effect_simulation_heat_flux}
 	\end{subfigure}
-	\caption{(a) Used specific heat capacity for all heat rates. Parametrization is Fraser-Suzuki (\cref{eq:fraser_suzuki}) with $h=10$, $r=2$, $wr=5$, $sr=0.3$, $z=130$, $m=0.003$ and $b=2$. (b) Heat flux measurement values for specified heat rates. (c) Heat flux from simulation for specified heat rates. Widening of the peak and shift of maximum position visible analogously to measurement values. \\
-	Cf. smearing problem in \cref{sec:smearing_problem}.}
+	\caption{(a) Used specific heat capacity for specified heat rates. Parametrization is Fraser-Suzuki (\cref{eq:fraser_suzuki}) with $h=10$, $r=2$, $wr=5$, $sr=0.3$, $z=130$, $m=0.003$ and $b=2$. (b) Heat flux measurements for specified heat rates. (c) Simulated heat flux for specified heat rates. Widening of the peak and shift of maximum position qualitatively similar to measurement values. \\
+	See smearing problem in \cref{sec:smearing_problem}.}
 \end{figure}
 
 
 
-\subsection{Preliminary parameter estimation using NURBS parametrization and optimization jacobian computed via finite differences}
+\subsection{Preliminary parameter estimation using NURBS parametrization and objective function Jacobian computed via finite differences}
 \label{sec:param_estim_NURBS}
 
 For the first attempt of estimating $c_p(T)$  we used the NURBS parametrization (see \cref{sec:nurbs}). In total we used 33 control points where the y-coordinates ($\hat{=}$ $c_p$) are optimization variables and the x-coordinates ($\hat{=}$ $T$) were fixed to 
@@ -2531,7 +2542,7 @@ Summarized, a total number of discretization points $N=300$ is sufficient while 
 
 \subsection{Parameter estimation using parametrization of linear combination of Gaussians}
 \label{sec:param_estimation_5Gausse}
-So far, finite differences were used to compute the optimization Jacobian \cref{eq:optimization_jacobian}. Because of the problems described in \cref{sec:param_estim_NURBS}, from now on internal numerical differentiation is used instead with the software package SolvIND. The parameter estimation is performed in two different ways in this and the following section, deploying different parametrizations. In this section, we aim to minimize the heat flux residuum as far as possible, while in the next section a regularization in form of a predefined peak shape (Fraser-Suzuki) is active, in order to compare both results in the end. \\
+So far, finite differences were used to compute the objective function Jacobian \cref{eq:optimization_jacobian}. Because of the problems described in \cref{sec:param_estim_NURBS}, from now on internal numerical differentiation is used instead with the software package SolvIND. The parameter estimation is performed in two different ways in this and the following section, deploying different parametrizations. In this section, we aim to minimize the heat flux residuum as far as possible, while in the next section a regularization in form of a predefined peak shape (Fraser-Suzuki) is active, in order to compare both results in the end. \\
 Now, the parameter estimation is performed using the parametrization of 5 Gaussians, linear and constant part (see \cref{sec:parametrization_Gausse}), i.e. in total $n_p=17$ optimization parameters. Five Gaussians were used since this is the minimum number such that the residuum almost vanishes as one can see in the upcoming \cref{fig:optim_c_p_heat_flux_5Gaussians_1,fig:optim_c_p_heat_flux_5Gaussians_2}. The optimization was performed again with the matlab routine $lsqnonlin$. Start values (see \cref{sec:initial_values_5Gaussians}) for the first heat rate $\beta = 20 \frac{K}{min}$ were used from previously existing results with already reduced residuum. Afterwards the optimizations were performed in a decreasing order of heat rates where parameters estimated in this process were used as start values in subsequent steps. I.e. estimated parameters at heat rate $\beta=20 \frac{K}{min}$ were used as start values for the parameter estimation at heat rate $\beta=10 \frac{K}{min}$ etc. \\
 The optimization process took on average about $7$ minutes and 50 iterations per heat rate.
 
@@ -2539,7 +2550,7 @@ The optimization process took on average about $7$ minutes and 50 iterations per
 \begin{figure}
 	\centering
 	\includegraphics[width=0.7\textwidth]{/home/argo/masterarbeit/thesis/images/dqdp_5Gausse.png}
-	\caption{Optimization Jacobian $J_1(p_{c_p})$ computed by \cref{eq:optimization_jacobian} with IND in forward mode using Gaussian parametrization. Exemplary from heat rate $\beta=20 \frac{K}{min}$ at the end of optimization. \\
+	\caption{Objective function Jacobian $J_1(p_{c_p})$ computed by \cref{eq:optimization_jacobian} with IND in forward mode using Gaussian parametrization. Exemplary from heat rate $\beta=20 \frac{K}{min}$ at the end of optimization. \\
 	Cf. approximated Jacobian via finite differences in \cref{fig:NURBS_results} (c) and (d).}
 	\label{fig:dqdp_5Gausse}
 \end{figure}
