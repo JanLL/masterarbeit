@@ -628,6 +628,7 @@ For global existence and uniqueness the theorem of Picard-Lindelöf holds, requi
 
 
 \subsection{Derivative generation}
+\label{sec:derivative_generation}
 In the context of continuous optimization we take advantage of derivative information in order to minimize some function. 
 There are several possibilities to obtain these derivatives. We will introduce here the concept of finite differences and automatic differentiation which were used in this thesis. 
 Beside them the methods of symbolic- and complex step-differentiation exist and are explained e.g. in \cite{diss_jan}.
@@ -2868,6 +2869,7 @@ Regarding $T_{max}$ and $\Delta H$, the deviations among different heat rates ha
 \end{figure}
 
 \subsubsection{Examination of Gauss-Newton iterates}
+\label{sec:param_estimation_fs_examin_GN}
 
 As remarked, an self written Gauss-Newton solver (\cref{alg:Gauss_Newton_unconstrained}) has been used in order to solve the unconstrained nonlinear least squares problem and analyse the optimization process. Termination criteria parameters were set to $[NOC1]_{TOL}=10^{-2}$, $\Delta x_{TOL}=10^{-5}$, $t_{TOL}=10^{-6}$ and iterations$_{max}=1000$ though just the first two were triggered. Stepsize decrease rate $d=0.8$ has been used. \\
 Results are depicted in \cref{fig:optimization_progress_FS_1,fig:optimization_progress_FS_2} for all heat rates where the norm of residuum $||F_1^{(k)}||_2$, Gauss-Newton step $||\Delta x^{(k)}||_2$, gradient of Lagrange function (here objective function since unconstrained) $|| \nabla \mathcal{L} ||_2 = || \nabla F_1^T F_1 ||_2 = || 2 J_1^T F_1 ||_2$ and step size $t^{(k)}$ were recorded in each iteration $k$. The residuum decreases perceptibly only in the first iteration step. This is related to the fact that $||\Delta x^{(k)}||_2$ declines monotonically in a few iterations to an order of $10^{-5}$ where it starts to fluctuate as one can see very well for heat rate $5 \frac{K}{min}$ and therefore the parameters do not change significantly. An analog behaviour to $||\Delta x^{(k)}||_2$ can be observed in the norm of the first order optimality condition  $|| \nabla \mathcal{L} ||_2$ which did not get smaller than $10^{-3}$ (observed with different termination criteria).
@@ -3021,9 +3023,23 @@ Unfortunately we do not have the true specific heat capacity of the examined PCM
 \section{Discussion}
 \label{sec:discussion}
 
+The essential result of this thesis is that we are able to reconstruct the smearing effect with a very simple 1D model. Applied in a parameter estimation framework, this allows the reconstruction of the specific heat capacity $c_p(T)$ of a material at phase change. Compared to the hitherto existing method of determining $c_p(T)$ described in DIN 11357, peak characteristics $T_{max}$, $T_{off}$ and $\Delta H$ deviate much less in our parameter estimation with Fraser-Suzuki parametrization. Possibly a less simplified model (e.g. with a crucible layer or in more than one dimension) improve the results further. As remarked earlier (\cref{sec:param_estimation_summary}), "better determined" here means less deviation of $c_p(T)$ for different heat rates due to the fact that the specific heat capacity is a material property and therefore independent of the heat rate. Ideally one would compare with the true $c_p(T)$ which is unfortunately not available. This leads to the problem that we possibly chose the physical lengths $L_{Ag}$ and $L_{pcm}$ (which are unaccessible, too since our model is 1D and the silver plate is a disk) in such a way that our expectations on the results influences the results. The results could be verified  with measurement data from another sample with different sample mass. Although the corresponding physical lengths in the model then change, equal specific heat capacities should be obtained by the parameter estimation. \\
+Two assumptions of our model were that the mass density $\rho$ and heat conductivity $\lambda$ of the PCM are constant. Measurement data indicates that these assumptions are not fulfilled entirely. A temperature dependent heat conductivity leads to another nonlinear term in the partial differential equation. Its influence is not a priori clear. 
+If the mass density is temperature dependent, the PCM's volume change. Therefore, mechanical work has to be done which has influence on the energy balance since conservation of energy still has to be fulfilled. Both modifications are worth investigating for future work. \\
+For further work, an analogous modeling of a power compensated DSC (see \cref{sec:power_compensated_dsc}) is possible. 
+A different approach could be the construction of a experimental setup of a heat flux DSC, as similar as possible to the simplified simulated model in order to improve results this way. \\
+
+
+Regarding the numerical computation of the sensitivities $\frac{\partial T}{\partial p_{c_p}}$ using SolvIND, it is unclear why the forward mode is faster than the adjoint mode contrary to theoretical expectations. Possibly, SolvIND only saves the intermediate elementary functions $\phi_i$ without the corresponding intermediate values $v_i$ (see \cref{sec:derivative_generation}). In the adjoint sweep the intermediate values then need to be computed again. An investigation on this issue would be revealing. 
+Another open question is why the necessary optimality condition [NOC1] could not be decreased further in \cref{sec:param_estimation_fs_examin_GN}. Possibly this is related to the fact that integration problems occurred with local relative error controlled forward sensitivities. The higher the forward sensitivity accuracy is set, the lower [NOC1] becomes. Solving the numerical problems here could resolve the problem with [NOC1] as well. A possible remedy could be to solve the variational differential equation instead using IND and AD. \\
+
+
+
+
+
+
 \begin{itemize}
 	\item A pleasant observation is that the differential equation's solution is not very sensitive with respect to the chosen grid.  Ausser: $t=0.999$ statt $t=0.99$ ist wichtig.
-	\item Problem: Moeglicherweise hier auf diese Messwerte optimiert s.d. moeglichst gleiche $c_p$ rauskommen. Vllt kommen bei anderen Messwerten ganz andere Dinge raus...
 	\item Messdaten bei Heizrate $20 \frac{K}{min}$ hinten abgeschnitten, was vllt zu dummem Wert fuer dH fuehrt weil wir hier Integral von 100 bis 160 oder so genommen haben und wir Teile mitnehmen die nicht vom heat flux residuum beeinflusst wurden.
 \end{itemize}
 
