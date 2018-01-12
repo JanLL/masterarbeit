@@ -154,7 +154,7 @@
 		Interdisciplinary Center for Scientific Computing (IWR)\\ 
 		in the group Simulation and Optimization \\[3ex]
 		under the supervision of \\[3ex]
-		Herrn Prof. Dr. Dr. h. c. mult. Hans Georg Bock}
+		Prof. Dr. Dr. h. c. mult. Hans Georg Bock}
 	\end{center}
 \end{titlepage}
 
@@ -195,54 +195,58 @@ With $c_p(T)$ parametrized with a Fraser-Suzuki peak and linear baseline, a dist
 \addsec{Summary}
 This thesis comprises the modeling of and parameter estimation in the physical measurement process of heat flux differential scanning calorimetry (DSC). As part of the research project modELTES, phase change materials (PCM) are analyzed with respect to their specific heat capacity $c_p$. Therefore a new model of the measuring process of a heat flux DSC has been developed. This model is embedded in a parameter estimation framework in order to identify the PCM's specific heat capacity. \\
 
-The thesis begins with a general introduction in \cref{sec:introduction} about PCMs with exemplary applications of those. 
+The thesis begins with a general introduction in \cref{sec:introduction} about PCMs with exemplary applications of those and an overview of related work \todo{satz pruefen nachdem related work geschrieben wurde}. 
 Further, the development of a new method for the identification of the specific heat capacity is motivated.
 \Cref{sec:physical_background} introduces the physical quantities, relevant for further comprehension. 
-The physics of a phase transition and its relation to the temperature dependent specific heat capacity, exhibiting a phase transition peak, is elucidated.
+The physics of a solid-liquid phase transition and its relation to the temperature dependent specific heat capacity, exhibiting a phase transition peak, is elucidated.
 Associated characteristic quantities, namely maximum position $T_{max}$, on- and offset of melting $T_{on}$ and $T_{off}$, respectively and melting enthalpy $\Delta H$ are explained further. 
 The heat equation, essential for our mathematical model, is derived. 
 The physical measurement process of differential scanning calorimetry (DSC) is elucidated, origin of the measurement data deployed later in the parameter estimation. 
 \Cref{sec:physical_background} concludes with expounding the smearing problem, occurring for a hitherto usual way of computing $c_p(T)$ from DSC measurement data explained in DIN 11357. 
 The obtained specific heat capacity here depends on the heat rate, a measurement parameter. 
-Since $c_p(T)$ is a material property, this is unphysical and further, a motivation of this thesis to avoid this problem in a parameter estimation framework. \\ 
-Mathematical problems within the scope of this thesis and corresponding methods for their (numerical) solution are elucidated in \cref{sec:mathematical_background}. 
+Since $c_p(T)$ is a material property, this is unphysical and thus, a motivation of this thesis to tackle this problem in a parameter estimation framework. \\ 
+Mathematical problems that occur within the scope of this thesis and corresponding methods for their (numerical) solution are elucidated in \cref{sec:mathematical_background}. 
 Two approaches of generating derivatives are shown. 
 First, in an approximative way by finite differences and secondly via Automatic Differentiation (AD). 
 In this context, variational differential equations are explained regarding the sensitivities of a differential equation with respect to its parameters. 
 The used methods of obtaining these sensitivities by applying internal numerical differentiation (IND) and AD is shown. 
 An essential problem is the initial value problem (IVP). 
 Its numerical solution via the backward differentiation formula (BDF) method is presented. 
-As the heat equation occurs in the model, the method of lines for a spatial discretization of parabolic partial differential equations (PDE) is introduced and applied on an analogous boundary value problem (BVP) as in our model. 
+As the heat equation occurs in the model, the method of lines for a spatial discretization of parabolic partial differential equations (PDE) is introduced and applied to the boundary value problem (BVP) which also occurs in our model. 
+Thereby the PDE is transformed into an ordinary differential equation (ODE).
 Fundamentals on optimization theory and especially regarding nonlinear least squares problems are depicted. 
-In this context, the Gauss-Newton method is presented inclusively aspects on the numerical implementation. 
-The parameter estimation problem with least squares objective is formulated and discussed with respect to linearized confidence regions of the obtained parameters in an a posteriori analysis. \\
-\Cref{sec:simulation_of_DSC} introduces the new model to simulate the measuring process of heat flux DSC. 
-In this model the heat equation occurs which is treated with the mathematical methods introduced, resulting in an IVP to solve. 
-The construction of the spatial discretization grid is presented, which occurs in the context of the method of lines. 
+In this context, the Gauss-Newton method is presented as well as aspects on the numerical implementation. 
+In particular, the linearized subproblems, active set strategy for inequality constraints and methods for global convergence are treated.
+The parameter estimation problem with least squares objective is formulated and discussed with respect to linearized confidence regions of the obtained parameters in an statistical a posteriori analysis. \\
+\Cref{sec:simulation_of_DSC} develops the new model to simulate the measuring process of heat flux DSC. 
+In this model, the occurring heat equation is treated with the mathematical methods from \cref{sec:mathematical_background}, resulting in an IVP to solve. 
+The method of constructing spatial discretization grids is presented, which occurs in the context of the method of lines. 
 In one part of the model, the diffusion parameter of the heat equation is constant. 
-Therefore, the corresponding analytical solution of this subproblem is derived. The least squares optimization problem for the parameter estimation is formulated in \cref{sec:parameter_estimation_applied}. 
+Therefore, the corresponding analytical solution of this subproblem is derived. \\
+The least squares optimization problem for the parameter estimation is formulated in \cref{sec:parameter_estimation_applied}. 
 In this context, the three parametrizations of $c_p(T)$ used in the scope of this thesis are introduced. 
-Namely, these are NURBS, a linear combination of Gaussians and a Fraser-Suzuki peak. 
+Namely, these consist of Non-Uniform Rational B-Splines (NURBS), a linear combination of Gaussians and a Fraser-Suzuki peak. 
 The measurement times are not given but needed in the optimization problem. 
-Therefore, these are computed via the derived analytical solution of the heat equation. 
-In order to apply the Gauss-Newton method to solve the nonlinear least squares problem, the residuum function is defined and corresponding Jacobian is derived. \\
+Therefore, these are computed with measurement data of a reference temperature and the application of the derived analytical solution of the heat equation and Newton's method.
+In order to apply the Gauss-Newton method to solve the nonlinear least squares problem of the parameter estimation, the residuum function is defined and corresponding Jacobian is derived. \\
 The conducted numerical experiments are presented and evaluated in \cref{sec:numerical_experiments}. 
-First, the capability of the new model to reproduce heat fluxes similar to those measured is shown. 
-In a preliminary study, the optimization is performed with NURBS parametrization and the Jacobian of the objective function is approximated by finite differences. 
+First, the capability of the new model to reproduce heat fluxes similar to those measured (exhibit smearing) is shown. 
+In a preliminary study, the optimization is performed with NURBS parametrization of $c_p$ and the Jacobian of the objective function is approximated by finite differences. 
 The occurred problems with this setting are analyzed. 
 An error analysis with respect to the integration accuracy is performed in order to assess its influence on the results. 
-With analogous intention, the spatial discretization grid has been varied and compared with an equidistant grid. Resulting that the IVP's solution is very insensitive on the used grid.
+With analogous intention, the spatial discretization grid has been varied and compared with an equidistant grid. 
+It is shown that the IVP's solution is insensitive to the underlying spatial discretization grid.
 The parameter estimation with the parametrization of linear combination of Gaussians is examined. 
 Here and in the following, exact derivatives of the numerical solution computed via IND and AD are used. 
 The specific heat capacity, estimated for each heat rate separately, is analyzed. 
-An a posteriori analysis of the obtained parameters is performed, showing indications of overfitting. 
+An statistical a posteriori analysis of the obtained parameters is performed, showing indications of overfitting. 
 A collective comparison of $c_p(T)$, obtained by the different heat rates, and its peak characteristics is conducted. 
 The parameter estimation with Fraser-Suzuki parametrization is performed and analyzed analogously. 
-In addition, the Gauss-Newton optimization process is examined and compared to theoretical expectations. The necessary optimality condition [NOC1] is only decreased on a size of order $10^{-2}$.
-Due to the observation of a small deviation of the nominal and measured heat rate in the experiment, the parameter estimation is performed again with the mean value of the measured heat rate. 
-No significant difference to the results before is observed here, indicating a small sensitivity with respect to the heat rate. 
-\Cref{sec:numerical_experiments} concludes with a comparison of $c_p(T)$ obtained both by the hitherto usual method in DIN 11357 and the parameter estimation performed in this thesis. 
-This leads to the result that the deviation of the peak characteristics $T_{max}$, $T_{off}$ and $\Delta H$ among the different heat rates is reduced significantly with the parameter estimation with Fraser-Suzuki parametrization. \\
+In addition, the Gauss-Newton optimization process is examined and compared to theoretical expectations.
+Due to the observation of a small deviation of the nominal and measured heat rate in the experiment, the parameter estimation is repeated using the heat rate recovered from measurement data.
+It is shown that there is no significant difference to the results before, indicating that the sensitivity with respect to the heat rate is small. 
+\Cref{sec:numerical_experiments} concludes with a comparison of $c_p(T)$ obtained both by the method in DIN 11357 and the parameter estimation performed in this thesis. 
+This leads to the result that the deviation of the peak characteristics $T_{max}$, $T_{off}$ and $\Delta H$ among the different heat rates is significantly reduced when employing the parameter estimation with Fraser-Suzuki parametrization. \\
 The thesis concludes in \cref{sec:discussion} with a discussion of the results, occured problems and possibilities for future work on this subject.
 
 
@@ -251,7 +255,7 @@ The thesis concludes in \cref{sec:discussion} with a discussion of the results, 
 
 \section{Introduction}
 \label{sec:introduction}
-This thesis is part of project modELTES, a cooperation of the Austrian Institute of Technology GmbH (AIT), VOIGT+WIPP Engineers GmbH and Interdisziplinäres Zentrum für Wissenschaftliches Rechnen (IWR) here at Ruprecht-Karls-Universität Heidelberg in order to examine so called phase change materials (PCM). The physical experiments have been performed in Wien at the AIT while in Heidelberg the aim is on the development of simulation software. \\
+This thesis is part of project modELTES \cite{modELTES}, a cooperation of the Austrian Institute of Technology GmbH (AIT), VOIGT+WIPP Engineers GmbH and Interdisziplinäres Zentrum für Wissenschaftliches Rechnen (IWR) here at Ruprecht-Karls-Universität Heidelberg in order to examine so called phase change materials (PCM). The physical experiments have been performed in Wien at the AIT while in Heidelberg the aim is on the development of simulation software. \\
 A popular application of PCMs are heating pads (see \cref{fig:heating_pad}) which are liquid in fully charged state. Folding induces a phase change to a solid state where energy is released and therefore the temperature increases. They can be recharged by applying a temperature for a sufficiently long time above the melting point (e.g. with boiling water). 
 
 \begin{wrapfigure}{l}{0.4\textwidth}
@@ -268,7 +272,7 @@ A popular application of PCMs are heating pads (see \cref{fig:heating_pad}) whic
 %	\label{fig:heating_pad}
 %\end{figure}
 
-In general, PCMs work as an energy buffer. Another application are industry processes to store the process heat for later usage \cite{pcm_process_heat}. Furthermore they can be used to optimize  photovoltaic cells as the efficiency of those cells is temperature dependent with a maximum at a certain point. PCMs are able to stabilize the temperature where the efficiency is maximal \cite{pcm_solar_cells}. 
+In general, PCMs work as an energy buffer (LHTES: Latent heat thermal energy storage). Another application are industry processes to store the process heat for later usage \cite{pcm_process_heat}. Furthermore they can be used to optimize  photovoltaic cells as the efficiency of those cells is temperature dependent with a maximum at a certain point. PCMs are able to stabilize the temperature where the efficiency is maximal \cite{pcm_solar_cells}. 
 A last example are insulations of houses. During the day when it is hot, the PCM becomes liquid and absorbs heat from outside, so they work as a cooling system. On the contrary at night when it is cold outside the PCM becomes solid, releases heat and works as a heating \cite{pcm_house_insulation}. \\
 An important material property is the specific heat capacity $c_p(T)$ where a phase transition peak tells us at which temperature the phase change occurs and how much energy can be stored. The common way of computing $c_p(T)$ from differential scanning calorimetry (DSC) measurement data yields different results depending on the heat rate, a measurement parameter. Since $c_p(T)$ is a material property this is unphysical and this issue is known as the smearing problem. By applying a parameter estimation we aim to avoid this problem.
 Therefore the two major goals of this thesis is both simulate the measuring process of a DSC where a PCM undergoes a phase transition and perform a parameter estimation in order to get the PCM's true specific heat capacity. 
@@ -3192,6 +3196,13 @@ In \cref{sec:param_estimation_summary} the specific heat capacity $c_p(T)$ obtai
 	Differential Scanning Calorimetry of Polymers: physics, chemistry, analysis, technology,
 	Vladimir A. Bershtein, Victor M. Egorov,
 	1994
+	
+\bibitem{modELTES}
+	modELTES (model based engineering and control of latent heat thermal energy storages), 
+	funded by the Austrian Research Promotion Agency (Österreichische Forschungsförderungsgesellschaft, FFG) within BRIDGE Early State, project number 851262
+	\url{http://www.iwr.uni-heidelberg.de/groups/agbock/USER_PAGES/SOMMER_ANDREAS/WWW/modELTES.php}, 
+	\url{https://www.ait.ac.at/themen/sustainable-thermal-energy-systems/projects/modeltes/}, 
+	\url{http://www.voigt-wipp.at/forschung/forschungsprojekte/modeltes/}, queried 12.01.2018
 	
 \bibitem{diss_DSC}
 	Kalorimetrische Methoden zur Bestimmung
