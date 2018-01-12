@@ -109,32 +109,6 @@
 
  \pagenumbering{Roman}  
 
-%\begin{titlepage}
-%	\begin{center}
-%	
-%	\textsc{\large Ruprecht-Karls-Universit\"{a}t Heidelberg} \\[0.5cm]
-%	\textsc{\large Master Thesis}\\[0.5ex]
-%	\textsc{\large in the field of study}\\[0.5ex]
-%	\textsc{\large Scientific Computing}\\[1cm]
-%	
-%	\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
-%	\HRule \\[0.4cm]
-%	\huge \bfseries Simulation of heat flux differential scanning calorimetry with phase change materials and parameter estimation of the specific heat capacity 
-%	\HRule 
-%	
-%	\vspace{6.5cm}
-%	
-%	\Large \textit{Jan Lammel} \\
-%	\Large \textit{born in Heidelberg} \\[4ex]
-%	\Large \textit{Heidelberg, \today }\\[3ex]
-%	\Large \textit{Supervisor:}\\
-%	\Large \textit{Prof. Dr. Dr. h. c. mult. Hans Georg Bock}\\
-%	\Large \textit{\todo{...}}
-%	
-%	\end{center}
-%\end{titlepage}
-
-
 
 \begin{titlepage}
 	\begin{center}
@@ -195,11 +169,13 @@
 
 \section*{Abstract}
 
-This thesis approaches the problem of identifying the specific heat capacity $c_p$ of phase change materials (PCM). An usual method using measurement data of heat flux differential scanning calorimetry (DSC) results in different outcomes dependent on a measurement parameter, the heat rate. 
+This thesis approaches the problem of identifying the specific heat capacity $c_p$ of phase change materials (PCM). 
+An usual method elucidated in DIN 11357, using measurement data of heat flux differential scanning calorimetry (DSC), results in different outcomes dependent on a measurement parameter, the heat rate. For higher heat rates the peak is widened and its position shifts to higher temperatures. This is known as smearing.
 Therefore in this thesis a new developed model is introduced to simulate the measuring process of a heat flux DSC where phase change materials are used as sample. 
 The simulation is accomplished by solving the heat equation where the PCM's specific heat capacity is temperature dependent and has a phase transition peak. 
 This simulation is capable of reproducing heat fluxes into the sample analogously to the physical experiment. 
-With this insight the simulation has been embedded in a least squares parameter estimation framework using heat flux measurement data in order to estimate the sample's specific heat capacity, independently from the heat rate. With $c_p(T)$ parametrized with a Fraser-Suzuki peak and linear baseline, a distinct reduction in the deviation of peak characteristics maximum position $T_{max}$, offset of melting $T_{off}$ and melting enthalpy $\Delta H$ for specified heat rates was possible.
+With this insight the simulation has been embedded in a least squares parameter estimation framework using heat flux measurement data in order to estimate the sample's specific heat capacity, independently from the heat rate. 
+With $c_p(T)$ parametrized with a Fraser-Suzuki peak and linear baseline, a distinct reduction compared to the usual method in DIN 11357 in the deviation of peak characteristics maximum position $T_{max}$, offset of melting $T_{off}$ and melting enthalpy $\Delta H$ for specified heat rates was possible.
 
 
 
@@ -217,13 +193,56 @@ With this insight the simulation has been embedded in a least squares parameter 
 
 \pagenumbering{arabic}
 \addsec{Summary}
-This thesis comprises the modeling of and parameter estimation in the physical measurement process of heat flux differential scanning calorimetry (DSC). As part of the research project modELTES, phase change materials (PCM) are analyzed with respect to their specific heat capacity $c_p$. Therefore a new model of the measuring process of a heat flux DSC has been developed. This model is embedded in a parameter estimation framework to identify the PCM's specific heat capacity. \\
+This thesis comprises the modeling of and parameter estimation in the physical measurement process of heat flux differential scanning calorimetry (DSC). As part of the research project modELTES, phase change materials (PCM) are analyzed with respect to their specific heat capacity $c_p$. Therefore a new model of the measuring process of a heat flux DSC has been developed. This model is embedded in a parameter estimation framework in order to identify the PCM's specific heat capacity. \\
 
-The thesis begins with a general introduction in \cref{sec:introduction} about PCMs with exemplary applications of those and the motivation of developing a new method for the identification of the specific heat capacity. \Cref{sec:physical_background} introduces the physical quantities, relevant for further comprehension. The physics of a phase transition is elucidated including its relation to the temperature dependent specific heat capacity, exhibiting a phase transition peak.
-Associated characteristic quantities, namely maximum position $T_{max}$, on- and offset of melting $T_{on}$ and $T_{off}$, respectively and melting enthalpy $\Delta H$ are explained further. The heat equation, essential for our mathematical model, is derived. The physical measurement process of differential scanning calorimetry (DSC) is elucidated, origin of the measurement data deployed later in the parameter estimation. \Cref{sec:physical_background} concludes with expounding the smearing problem, occurring for a hitherto usual way of computing $c_p(T)$ from DSC measurement data. The obtained $c_p(T)$ here depend on the heat rate, a measurement parameter. Since $c_p(T)$ is a material property, this is unphysical and further, a motivation of this thesis to avoid this problem in a parameter estimation framework. \\ 
-Mathematical problems within the scope of this thesis and corresponding methods for their (numerical) solution are elucidated in \cref{sec:mathematical_background}. Two approaches of generating derivatives are shown. First, in an approximative way by finite differences and secondly via Automatic Differentiation (AD). In this context, variational differential equations are explained regarding the sensitivities of a differential equation w.r.t. its parameters. The used methods of obtaining these sensitivities by applying internal numerical differentiation (IND) and AD is shown. An essential problem is the initial value problem (IVP). Its numerical solution via the backward differentiation formula (BDF) method is presented. As the heat equation occurs in the model, the method of lines for a spatial discretization of parabolic partial differential equations (PDE) is introduced and applied on an analogous boundary value problem (BVP) as in our model. Fundamentals on optimization theory and especially regarding nonlinear least squares problems are depicted. In this context, the Gauss-Newton method is presented inclusively aspects on the numerical implementation. The parameter estimation problem with least squares objective is formulated and discussed with respect to confidence regions of the obtained parameters in an a posteriori analysis. \\
-\Cref{sec:simulation_of_DSC} introduces the new model to simulate the measuring process of heat flux DSC. In this model the heat equation occurs which is treated with the mathematical methods introduced, resulting in an IVP to solve. The construction of the spatial discretization grid is presented, which occurs in the context of the method of lines. In one part of the model, the diffusion constant of the heat equation is constant. Therefore, the corresponding analytical solution of this subproblem is derived. The least squares optimization problem for the parameter estimation is formulated in \cref{sec:parameter_estimation_applied}. In this context, the three parametrizations of $c_p(T)$ used in the scope of this thesis are introduced. Namely these are NURBS, a linear combination of Gaussians and a Fraser-Suzuki peak. The measurement times are not given but needed in the optimization problem. Therefore, these are computed via the derived analytical solution of the heat equation. In order to apply the Gauss-Newton method to solve the nonlinear least squares problem, the residuum function is defined and corresponding Jacobian is derived. \\
-The conducted numerical experiments are presented and evaluated in \cref{sec:numerical_experiments}. First, the capability of the new model to reproduce heat fluxes similar to those measured is shown. In a preliminary study the optimization is performed with NURBS parametrization and the Jacobian of the objective function is computed by finite differences. The occurred problems with this setting are analyzed. An error analysis with respect to the integration accuracy is performed in order to assess its influence on the results. With analogous intention, the spatial discretization grid has been varied and compared with an equidistant grid. The parameter estimation with the parametrization of linear combination of Gaussians is examined. Here and in the following, exact derivatives of the numerical solution computed via IND and AD are used. The specific heat capacity, estimated for each heat rate separately, is analyzed. An a posteriori analysis of the obtained parameters is performed, showing indications of overfitting. A collective comparison of $c_p(T)$, obtained by the different heat rates, and its peak characteristics is conducted. The parameter estimation with Fraser-Suzuki parametrization is performed and analyzed analogously. Additionally, the Gauss-Newton iterates in the optimization process are examined and compared to theoretical expectations. Due to the observation of a small deviation of the nominal and measured heat rate in the experiment, the parameter estimation is performed again with the mean value of the measured heat rate. No significant difference to the results before is observed here, indicating a small sensitivity with respect to the heat rate. \Cref{sec:numerical_experiments} concludes with a comparison of $c_p(T)$ obtained both by an hitherto usual method and the parameter estimation performed in this thesis. This leads to the result that the deviation of the peak characteristics $T_{max}$, $T_{off}$ and $\Delta H$ among the different heat rates is reduced significantly with the parameter estimation with Fraser-Suzuki parametrization. \\
+The thesis begins with a general introduction in \cref{sec:introduction} about PCMs with exemplary applications of those. 
+Further, the development of a new method for the identification of the specific heat capacity is motivated.
+\Cref{sec:physical_background} introduces the physical quantities, relevant for further comprehension. 
+The physics of a phase transition and its relation to the temperature dependent specific heat capacity, exhibiting a phase transition peak, is elucidated.
+Associated characteristic quantities, namely maximum position $T_{max}$, on- and offset of melting $T_{on}$ and $T_{off}$, respectively and melting enthalpy $\Delta H$ are explained further. 
+The heat equation, essential for our mathematical model, is derived. 
+The physical measurement process of differential scanning calorimetry (DSC) is elucidated, origin of the measurement data deployed later in the parameter estimation. 
+\Cref{sec:physical_background} concludes with expounding the smearing problem, occurring for a hitherto usual way of computing $c_p(T)$ from DSC measurement data explained in DIN 11357. 
+The obtained specific heat capacity here depends on the heat rate, a measurement parameter. 
+Since $c_p(T)$ is a material property, this is unphysical and further, a motivation of this thesis to avoid this problem in a parameter estimation framework. \\ 
+Mathematical problems within the scope of this thesis and corresponding methods for their (numerical) solution are elucidated in \cref{sec:mathematical_background}. 
+Two approaches of generating derivatives are shown. 
+First, in an approximative way by finite differences and secondly via Automatic Differentiation (AD). 
+In this context, variational differential equations are explained regarding the sensitivities of a differential equation with respect to its parameters. 
+The used methods of obtaining these sensitivities by applying internal numerical differentiation (IND) and AD is shown. 
+An essential problem is the initial value problem (IVP). 
+Its numerical solution via the backward differentiation formula (BDF) method is presented. 
+As the heat equation occurs in the model, the method of lines for a spatial discretization of parabolic partial differential equations (PDE) is introduced and applied on an analogous boundary value problem (BVP) as in our model. 
+Fundamentals on optimization theory and especially regarding nonlinear least squares problems are depicted. 
+In this context, the Gauss-Newton method is presented inclusively aspects on the numerical implementation. 
+The parameter estimation problem with least squares objective is formulated and discussed with respect to linearized confidence regions of the obtained parameters in an a posteriori analysis. \\
+\Cref{sec:simulation_of_DSC} introduces the new model to simulate the measuring process of heat flux DSC. 
+In this model the heat equation occurs which is treated with the mathematical methods introduced, resulting in an IVP to solve. 
+The construction of the spatial discretization grid is presented, which occurs in the context of the method of lines. 
+In one part of the model, the diffusion parameter of the heat equation is constant. 
+Therefore, the corresponding analytical solution of this subproblem is derived. The least squares optimization problem for the parameter estimation is formulated in \cref{sec:parameter_estimation_applied}. 
+In this context, the three parametrizations of $c_p(T)$ used in the scope of this thesis are introduced. 
+Namely, these are NURBS, a linear combination of Gaussians and a Fraser-Suzuki peak. 
+The measurement times are not given but needed in the optimization problem. 
+Therefore, these are computed via the derived analytical solution of the heat equation. 
+In order to apply the Gauss-Newton method to solve the nonlinear least squares problem, the residuum function is defined and corresponding Jacobian is derived. \\
+The conducted numerical experiments are presented and evaluated in \cref{sec:numerical_experiments}. 
+First, the capability of the new model to reproduce heat fluxes similar to those measured is shown. 
+In a preliminary study, the optimization is performed with NURBS parametrization and the Jacobian of the objective function is approximated by finite differences. 
+The occurred problems with this setting are analyzed. 
+An error analysis with respect to the integration accuracy is performed in order to assess its influence on the results. 
+With analogous intention, the spatial discretization grid has been varied and compared with an equidistant grid. Resulting that the IVP's solution is very insensitive on the used grid.
+The parameter estimation with the parametrization of linear combination of Gaussians is examined. 
+Here and in the following, exact derivatives of the numerical solution computed via IND and AD are used. 
+The specific heat capacity, estimated for each heat rate separately, is analyzed. 
+An a posteriori analysis of the obtained parameters is performed, showing indications of overfitting. 
+A collective comparison of $c_p(T)$, obtained by the different heat rates, and its peak characteristics is conducted. 
+The parameter estimation with Fraser-Suzuki parametrization is performed and analyzed analogously. 
+In addition, the Gauss-Newton optimization process is examined and compared to theoretical expectations. The necessary optimality condition [NOC1] is only decreased on a size of order $10^{-2}$.
+Due to the observation of a small deviation of the nominal and measured heat rate in the experiment, the parameter estimation is performed again with the mean value of the measured heat rate. 
+No significant difference to the results before is observed here, indicating a small sensitivity with respect to the heat rate. 
+\Cref{sec:numerical_experiments} concludes with a comparison of $c_p(T)$ obtained both by the hitherto usual method in DIN 11357 and the parameter estimation performed in this thesis. 
+This leads to the result that the deviation of the peak characteristics $T_{max}$, $T_{off}$ and $\Delta H$ among the different heat rates is reduced significantly with the parameter estimation with Fraser-Suzuki parametrization. \\
 The thesis concludes in \cref{sec:discussion} with a discussion of the results, occured problems and possibilities for future work on this subject.
 
 
@@ -253,7 +272,13 @@ In general, PCMs work as an energy buffer. Another application are industry proc
 A last example are insulations of houses. During the day when it is hot, the PCM becomes liquid and absorbs heat from outside, so they work as a cooling system. On the contrary at night when it is cold outside the PCM becomes solid, releases heat and works as a heating \cite{pcm_house_insulation}. \\
 An important material property is the specific heat capacity $c_p(T)$ where a phase transition peak tells us at which temperature the phase change occurs and how much energy can be stored. The common way of computing $c_p(T)$ from differential scanning calorimetry (DSC) measurement data yields different results depending on the heat rate, a measurement parameter. Since $c_p(T)$ is a material property this is unphysical and this issue is known as the smearing problem. By applying a parameter estimation we aim to avoid this problem.
 Therefore the two major goals of this thesis is both simulate the measuring process of a DSC where a PCM undergoes a phase transition and perform a parameter estimation in order to get the PCM's true specific heat capacity. 
-Furthermore the heat rate is proportional to the time duration of the experiment. If we get the same $c_p(T)$ for all heat rates we are able to accelerate the measuring process and therefore the research on this materials. \\
+Furthermore the heat rate is proportional to the time duration of the experiment. If we get the same $c_p(T)$ for all heat rates we are able to accelerate the measuring process and therefore the research on this materials.
+
+\paragraph{Related work} \mbox{}\\
+\cite{wunderlich_thermal_analysis}, \cite{standardization_of_PCM}, \cite{fokker_planck_desmearing_asommer} \\
+
+\todo{!} \\
+
 This thesis is structured as follows. In \cref{sec:physical_background} the physics of a phase transition and the measuring process of a DSC are elucidated. 
 The mathematical methods for simulation and parameter estimation are introduced in \cref{sec:mathematical_background}. These methods then have been applied in \cref{sec:simulation_of_DSC} to simulate the DSC measuring process and in \cref{sec:parameter_estimation_applied} for the parameter estimation of the specific heat capacity. Performed numerical experiments and corresponding results are shown in \cref{sec:numerical_experiments}. Finally \cref{sec:discussion} concludes this thesis with a discussion of results, problems and potential next working steps on this subject.
 
@@ -719,6 +744,7 @@ This simplicity is at the expense of accuracy. If we choose $h$ too small, cance
 
 
 \subsubsection{Automatic Differentiation and Internal Numerical Differentiation}
+\label{sec:AD_IND}
 \label{sec:Automatic_diff_IND_theory}
 The basic idea of Automatic Differentiation (AD) is to subdivide a sufficiently smooth function ${f: \mathbb{R}^n \rightarrow \mathbb{R}^m}$ into so called elementary functions $\varphi_i$ of which the derivative is known. 
 
@@ -1348,8 +1374,8 @@ Based on decomposing $J_1$ two solution strategies are shown (cf. \cite{nonlinea
 
 The singular value decomposition is computationally more costly than pivoting QR, though has the advantage that we get get the matrix' singular values we may require (e.g. to compute the matrix' condition number). \\
 
-\Cref{alg:Gauss_Newton_unconstrained} depicts the procedure of finding a local minimum of an unconstrained least squares problem using Gauss-Newton iterates. The algorithm is terminated successfully if the necessary optimality condition [NOC1] is satisfied numerically, i.e. below a tolerance. Further, it stops if the computed Gauss-Newton direction $\Delta x^{(k)}$ or the stepsize $t^{(k)}$ becomes too small or if a maximum number of iterations is reached. Stepsize control is achieved via the trivial level function $T(x) = ||F_1(x)||_2$ and a step is accepted for any decrease in the level function. Otherwise the step $t^{(k)}$ is reduced by an factor $d$. \\
-This algorithm has been used in \cref{sec:param_estimation_fs} in order to analyse the sequence of Gauss-Newton iterates at the parameter estimation.  \\
+\Cref{alg:Gauss_Newton_unconstrained} depicts the procedure of finding a local minimum of an unconstrained least squares problem using Gauss-Newton iterations. The algorithm is terminated successfully if the necessary optimality condition [NOC1] is satisfied numerically, i.e. below a tolerance. Further, it stops if the computed Gauss-Newton direction $\Delta x^{(k)}$ or the stepsize $t^{(k)}$ becomes too small or if a maximum number of iterations is reached. Stepsize control is achieved via the trivial level function $T(x) = ||F_1(x)||_2$ and a step is accepted for any decrease in the level function. Otherwise the step $t^{(k)}$ is reduced by an factor $d$. \\
+This algorithm has been used in \cref{sec:param_estimation_fs} in order to analyse the sequence of Gauss-Newton iterations at the parameter estimation.  \\
 
 
 
@@ -2750,7 +2776,7 @@ In order to avoid overfitting seen in the previous section we apply the Fraser-S
 We have in total 6 parameters instead of 17 with Gaussian parametrization in the previous section. As there are fewer degrees of freedom and Fraser-Suzuki prescribes a peak shape, a form of regularization is active. \\
 The optimization was performed here with a self written Gauss-Newton solver based on \cref{sec:GN_numerical_solution} using a singular value decomposition of $J_1(p_{c_p})$ for the linearized subproblem. 
 An active set strategy for lower and upper bounds of the optimization variables has been implemented to ensure $0 < s_r < 1$ and $w_r > 0$ but it became apparent that the optimizer does not approach these limiting values. Therefore lower and upper bounds were disabled and we solve an unconstrained problem. Initial guesses (see \cref{sec:initial_values_FS}) for the parametrization at heat rate $20 \frac{K}{min}$ were chosen to be $h=14$, $w_r=10.7$, $s_r=0.705$, $z=129$, $m=0.0079$ and $b=1.69$ and following heat rates use the previous result analog to Gaussian parametrization \cref{sec:param_estimation_5Gausse}. The linear parameter $m$ was fixed to the previously obtained result for the heat rates $0.6$ and $0.3 \frac{K}{min}$ because of the problems remarked in the last section, namely the lack of measurement data when the heat flux is linear. \\
-The integration tolerance was set to $10^{-9}$ and local error control of the forward sensitivities has been enabled and set to a relative tolerance $5\cdot 10^{-6}$ which is the minimum possible. For lower values, integration problems occurred in a way that the minimum stepsize has been reached. By using this modified tolerances the first order necessary optimality condition could be satisfied better, i.e. decreased further. \\
+The relative local integration tolerance was set to $10^{-9}$ and local error control of the forward sensitivities has been enabled and set to a relative tolerance $5\cdot 10^{-6}$ which is the minimum possible. For lower values, integration problems occurred in a way that the minimum stepsize has been reached. By using this modified tolerances the first order necessary optimality condition could be satisfied better, i.e. decreased further. \\
 The optimization process took on average about $3$ minutes.
 
 
@@ -2868,13 +2894,14 @@ Regarding $T_{max}$ and $\Delta H$, the deviations among different heat rates ha
 	\label{fig:FS_all_c_p}
 \end{figure}
 
-\subsubsection{Examination of Gauss-Newton iterates}
+\subsubsection{Examination of Gauss-Newton iterations}
 \label{sec:param_estimation_fs_examin_GN}
 
-As remarked, an self written Gauss-Newton solver (\cref{alg:Gauss_Newton_unconstrained}) has been used in order to solve the unconstrained nonlinear least squares problem and analyse the optimization process. Termination criteria parameters were set to $[NOC1]_{TOL}=10^{-2}$, $\Delta x_{TOL}=10^{-5}$, $t_{TOL}=10^{-6}$ and iterations$_{max}=1000$ though just the first two were triggered. Stepsize decrease rate $d=0.8$ has been used. \\
-Results are depicted in \cref{fig:optimization_progress_FS_1,fig:optimization_progress_FS_2} for all heat rates where the norm of residuum $||F_1^{(k)}||_2$, Gauss-Newton step $||\Delta x^{(k)}||_2$, gradient of Lagrange function (here objective function since unconstrained) $|| \nabla \mathcal{L} ||_2 = || \nabla F_1^T F_1 ||_2 = || 2 J_1^T F_1 ||_2$ and step size $t^{(k)}$ were recorded in each iteration $k$. The residuum decreases perceptibly only in the first iteration step. This is related to the fact that $||\Delta x^{(k)}||_2$ declines monotonically in a few iterations to an order of $10^{-5}$ where it starts to fluctuate as one can see very well for heat rate $5 \frac{K}{min}$ and therefore the parameters do not change significantly. An analog behaviour to $||\Delta x^{(k)}||_2$ can be observed in the norm of the first order optimality condition  $|| \nabla \mathcal{L} ||_2$ which did not get smaller than $10^{-3}$ (observed with different termination criteria).
-Unlike expectation from theory the step size does not reach and keep value $t^{(k)}=1$ once in an area of local contraction for almost all heat rates. 
-
+As remarked, an self written Gauss-Newton solver (\cref{alg:Gauss_Newton_unconstrained}) has been used in order to solve the unconstrained nonlinear least squares problem and analyse the optimization process. Termination criteria (see \cref{alg:Gauss_Newton_unconstrained}) were set to $[NOC1]_{TOL}=10^{-2}$, $\Delta x_{TOL}=10^{-5}$, $t_{TOL}=10^{-6}$ and iterations$_{max}=1000$ though just the first two were triggered. Stepsize decrease rate $d=0.8$ has been used. \\
+Results are depicted in \cref{fig:optimization_progress_FS_1,fig:optimization_progress_FS_2} for all heat rates where the norm of residuum $||F_1^{(k)}||_2$, Gauss-Newton step $||\Delta x^{(k)}||_2$, gradient of Lagrange function (here objective function since unconstrained) $|| \nabla \mathcal{L} ||_2 = || \nabla F_1^T F_1 ||_2 = || 2 J_1^T F_1 ||_2$ and step size $t^{(k)}$ were recorded in each iteration $k$. The residuum decreases perceptibly only in the first iteration step. This is related to the fact that $||\Delta x^{(k)}||_2$ declines monotonically in a few iterations to an order of $10^{-5}$ where it starts to fluctuate as one can see very well for heat rate $5 \frac{K}{min}$ and therefore the parameters do not change significantly. 
+An similar behaviour can be observed in the norm of the first order optimality condition  $|| \nabla \mathcal{L} ||_2$ which did not get smaller than $10^{-3}$ (observed with different termination criteria).
+Unlike expectation from theory for exact arithmetic the step size does not reach and keep value $t^{(k)}=1$ once in an area of local contraction for almost all heat rates. 
+This could be related to the integration problems (remarked at the beginning of this \cref{sec:param_estimation_fs}) with local error controlled sensitivities. Resolving this integration problems and a further increase in the sensitivity accuracy could lead to better satisfied optimality conditions.
 
 
 \begin{figure}[H]
@@ -2894,8 +2921,8 @@ Unlike expectation from theory the step size does not reach and keep value $t^{(
 		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:39:25_407_2,5Kmin_L1=40_L3=0,1/optimization_progress.png}
 		\caption{$\beta = 2.5 \frac{K}{min}$}
 	\end{subfigure}
-	\caption{Gauss-Newton iterates for heat rates $\beta = \{ 20, 10, 5, 2.5 \}$ with value of the objective function $||F_1^{(k)}||_2$, norm of Gauss-Newton step $||\Delta x^{(k)}||_2$, stepsize $t^{(k)}$ and norm of first order necessary optimality condition $|| \nabla \mathcal{L} ||_2$ for all iterates $k$.  \\
-	Cf. Gauss-Newton method in \cref{sec:Gauss_Newton,sec:GN_numerical_solution} and used \cref{alg:Gauss_Newton_unconstrained}.} 
+	\caption{Gauss-Newton iteration characteristics for heat rates $\beta = \{ 20, 10, 5, 2.5 \}$ with norm of the residuum function $||F_1^{(k)}||_2$, norm of Gauss-Newton step $||\Delta x^{(k)}||_2$, stepsize $t^{(k)}$ and norm of first order necessary optimality condition $|| \nabla \mathcal{L} ||_2$ for all iterations $k$.  \\
+	For further information, see Gauss-Newton method in \cref{sec:Gauss_Newton,sec:GN_numerical_solution} and applied \cref{alg:Gauss_Newton_unconstrained}.} 
 	\label{fig:optimization_progress_FS_1}
 \end{figure}
 
@@ -2914,8 +2941,8 @@ Unlike expectation from theory the step size does not reach and keep value $t^{(
 		\caption{$\beta = 0.3 \frac{K}{min}$}
 	\end{subfigure}
 
-	\caption{Gauss-Newton iterates for heat rates $\beta = \{ 1.25, 0.6, 0.3 \}$ with value of the objective function $||F_1^{(k)}||_2$, norm of Gauss-Newton step $||\Delta x^{(k)}||_2$, stepsize $t^{(k)}$ and norm of first order necessary optimality condition $|| \nabla \mathcal{L} ||_2$ for all iterates $k$.  \\
-	Cf. Gauss-Newton method in \cref{sec:Gauss_Newton,sec:GN_numerical_solution} and used \cref{alg:Gauss_Newton_unconstrained}.}
+	\caption{Gauss-Newton iteration characteristics for heat rates $\beta = \{ 1.25, 0.6, 0.3 \}$ with norm of the residuum function $||F_1^{(k)}||_2$, norm of Gauss-Newton step $||\Delta x^{(k)}||_2$, stepsize $t^{(k)}$ and norm of first order necessary optimality condition $|| \nabla \mathcal{L} ||_2$ for all iterations $k$.  \\
+	For further information, see Gauss-Newton method in \cref{sec:Gauss_Newton,sec:GN_numerical_solution} and applied \cref{alg:Gauss_Newton_unconstrained}.}
 	\label{fig:optimization_progress_FS_2}
 \end{figure}
 
@@ -2925,26 +2952,28 @@ Unlike expectation from theory the step size does not reach and keep value $t^{(
 \label{sec:param_estimation_mod_heat_rate_FS}
 So far, just the nominal heat rate of the appropriate measurement scheme was used. 
 \Cref{fig:heat_rate_measurement} shows the measurement data of the heat rate at the reference crucible $\frac{\partial T_{ref}(t)}{\partial t}(T_{ref})$ exemplary for a nominal heat rate $\beta = 2.5 \frac{K}{min}$. 
-There are distinct fluctuations increasing in time due to the regulation which tries to keep the heat rate at the nominal value. 
-Computing the mean value gives a lower measured heat rate than the nominal value (red line in \cref{fig:heat_rate_measurement}). 
+There are distinct fluctuations increasing in time due to the DSC temperature control which tries to keep the heat rate at the nominal value. 
+Computing the mean value gives a slightly lower measured heat rate than the nominal value (red line in \cref{fig:heat_rate_measurement}). 
 This is the case for all used measurements as one can see in \cref{tab:mod_heat_rate}. 
-Since the reference side' material properties are constant, the heat rate at the crucible and the furnace are comparable.
+Since the reference side's material properties are constant, the heat rate at the crucible and the furnace are comparable.
 Although the observed difference is quite small, with increasing time the shift in temperature accumulates.
 This could be a reason for the observed shift in the obtained specific heat capacity in the previous sections.
-This is why we perform the parameter estimation in this section with the modified heat rate $\bar{\beta}_{meas}$ stated in \cref{tab:mod_heat_rate}.
+This is why we re-perform the parameter estimation in this section with the modified heat rate $\bar{\beta}_{meas}$ stated in \cref{tab:mod_heat_rate}.
 
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.75\textwidth]{/home/argo/masterarbeit/thesis/images/heat_rate_ref_crucible.png}
-	\caption{Measured heat rate at the reference crucible $\frac{\partial T_{ref}(t)}{\partial t}(T_{ref})$ and the corresponding mean value for the nominal heat rate $2.5 \frac{K}{min}$.}
+	\caption{Measured heat rate at the reference crucible $\frac{\partial T_{ref}(t)}{\partial t}(T_{ref})$ and the corresponding mean value for the nominal heat rate $2.5 \frac{K}{min}$. Note here the small domain depicted at the y-axis.}
 	\label{fig:heat_rate_measurement}
 \end{figure}
 
 \begin{table}[H]
 	\centering
+	\caption{Heat rate measurement values $\beta_{meas}$ (see \cref{fig:heat_rate_measurement}). Relative variation from nominal heat rate $\beta$ in last column. $^{(1)}$ SD: Standard deviation with applied Bessel correction.}
 	\begin{tabular}{| c | c | c |} \hline 
-		$\beta \ [K/min]$ & $\beta_{meas} \ [K/min]$ & $\left(1 - \frac{\beta_{meas}}{\beta}\right) \cdot 100\%$  \\ \hline
+		$\beta \ [K/min]$ & $\beta_{meas} \ [K/min]$ & $\left(1 - \frac{\beta_{meas}}{\beta}\right) \cdot 100\%$  \\ 
+		& Mean $\pm$ SD (SD\%)$^{(1)}$ & \\ \hline
 		$20$ & $19.97 \pm 0.033 \ (0.17\%)$ & $0.15\%$ \\
 		$10$ & $9.98 \pm 0.019 \ (0.19\%)$ & $0.20\%$ \\
 		$5$ & $4.991 \pm 0.0095 \ (0.19\%)$ & $0.18\%$ \\
@@ -2953,18 +2982,17 @@ This is why we perform the parameter estimation in this section with the modifie
 		$0.6$ & $0.5989 \pm 0.00078 \ (0.13\%)$ & $0.18\%$ \\
 		$0.3$ & $0.2994 \pm 0.00046 \ (0.15\%)$ & $0.20\%$ \\ \hline
 	\end{tabular}
-	\caption{Heat rate measurement values $\beta_{meas}$ obtained as depicted in \cref{fig:heat_rate_measurement} including corresponding Bessel corrected sample standard deviation. Relative variation from nominal heat rate $\beta$ in last column.}
 	\label{tab:mod_heat_rate}
 \end{table}
 
 The resulting specific heat capacities $c_p(T)$ are depicted in \cref{fig:FS_all_c_p_modHeatRate}. There is no qualitative difference compared to the parameter estimation with nominal heat rate in \cref{sec:param_estimation_fs}. Further, the peak characteristics $T_{max}$, $T_{on}$, $T_{off}$ and $\Delta H$ do not differ in the accuracy given in \cref{tab:eval_table_Tmax_deltaH_FS}. \\
-Therefore it follows that the specific heat capacity estimate is not that sensitive to the used heat rate as experimental variations given in \cref{tab:mod_heat_rate} have significant influence.
-
+Therefore it seems reasonable to conclude that the specific heat capacity estimate is not sensitive to heat rate deviations in the size of those from experimental data (see \cref{tab:mod_heat_rate}).
+%Therefore it seems reasonable to conclude that the specific heat capacity estimate is not that sensitive to the used heat rate as experimental variations given in \cref{tab:mod_heat_rate} have significant influence.
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_22:35:53_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_modHeatRate/c_p_all.png}
-	\caption{Specific heat capacities $c_p(T)$ from parameter estimation with heat rate retrieved from measurement data (\cref{tab:mod_heat_rate}) for all heat rates. There is no qualitative difference to the case with nominal heat rate (\cref{fig:FS_all_c_p}).}
+	\caption{Specific heat capacities $c_p(T)$ from parameter estimation with heat rate from measurement data (\cref{tab:mod_heat_rate}) for all heat rates. These are virtually identical to the case with nominal heat rate (\cref{fig:FS_all_c_p}).}
 	\label{fig:FS_all_c_p_modHeatRate}
 \end{figure}
 
@@ -2973,18 +3001,33 @@ Therefore it follows that the specific heat capacity estimate is not that sensit
 \subsection{Summary of parameter estimation results}
 \label{sec:param_estimation_summary}
 
-In this section, the parameter estimation results of the specific heat capacity $c_p(T)$ are summarized. Additionally, these results will be compared with $c_p^{\text{DIN}}(T)$ obtained by \cref{eq:c_p_formula_DIN} (derived in DIN 11357), using explicitly the noisy heat flux measurement data. In \cref{tab:eval_table_summary} all peak characteristics are listed. The evaluation using the DIN formula is performed in two different ways. First, the raw noisy $c_p^{\text{DIN}}(T)$ has been utilized. $T_{on}$ and $T_{off}$ have been computed here by an estimate of the tangent at the inflection points and $\Delta H$ by an estimate of the base line and numerical integration. Secondly, a least squares fit of $c_p^{\text{DIN}}(T)$ on a Fraser-Suzuki peak with linear and constant part \cref{eq:fraser_suzuki} has been performed (see \cref{sec:FS_DIN_fits}), which allows a simple objective extraction of all peak characteristics.  \\
-Both evaluations of $c_p^{\text{DIN}}(T)$ lead to very similar peak characteristics for all heat rates. $T_{on}$ is best determined here with a scattering of $\pm 1.1\%$. With Gaussian parametrization in the  parameter estimation, the values for $T_{max}$ deviate less with $\pm 1.3\%$ while the melting enthalpy has a higher mean value but similar scattering with $\pm 8\%$. Further, in the parameter estimation with Fraser-Suzuki parametrization, $T_{max}$, $T_{off}$ and $\Delta H$ deviate less compared to $c_p^{\text{DIN}}(T)$. Especially $T_{max}$ with $\pm 0.6\%$ against $\pm 3.7\%$ and $T_{off}$ with $\pm 1.2\%$ against $\pm 5.3 \%$ are better determined. Interestingly $T_{on}$ deviates more in our parameter estimation with $\pm 2.6\%$ against $\pm 1.1\%$. Potentially a complementary evaluation deploying DIN \cref{eq:c_p_formula_DIN} and our parameter estimation could be reasonable. \\
-Note that the melting enthalpy $\Delta H$ value for heat rate $20 \frac{K}{min}$ differs significantly compared to the other heat rates. This outlier has been used nevertheless for the mean computation since this is the case for all four different evaluations and therefore comparable. \\
-Unfortunately we do not have the true specific heat capacity of the examined PCM. Therefore, "better determined" here means less deviation for different heat rates since $c_p(T)$ is a material property and therefore independent of the heat rate.
+In this section the parameter estimation results of the reconstructed specific heat capacity will be compared with $c_p^{\text{DIN}}(T)$ obtained by \cref{eq:c_p_formula_DIN} (derived in DIN 11357), using explicitly the noisy heat flux measurement data. 
+In \cref{tab:eval_table_summary} all peak characteristics are listed. 
+The evaluation using the DIN formula is performed in two different ways. 
+First, the raw noisy $c_p^{\text{DIN}}(T)$ has been utilized. 
+$T_{on}$ and $T_{off}$ have been computed here by an estimate of the tangent at the inflection points via a linear fit on selected intervals and $\Delta H$ by an estimate of the base line and numerical integration. 
+Second, a least squares fit of $c_p^{\text{DIN}}(T)$ on a Fraser-Suzuki peak with linear and constant part as in \cref{eq:fraser_suzuki} has been performed (see \cref{sec:FS_DIN_fits}), which allows a simple and objective extraction of all peak characteristics.  \\
+Both evaluations of $c_p^{\text{DIN}}(T)$ lead to very similar peak characteristics for all heat rates. $T_{on}$ is best determined here with a standard deviation (SD) of $\pm 1.1\%$. 
+With Gaussian parametrization in the  parameter estimation, the values for $T_{max}$ deviate less ($\pm 1.3\%$) while the melting enthalpy has a higher mean value but similar SD of $\pm 8\%$. 
+Further, in the parameter estimation with Fraser-Suzuki parametrization, $T_{max}$, $T_{off}$ and $\Delta H$ deviate less compared to $c_p^{\text{DIN}}(T)$. 
+Especially $T_{max}$ with a SD of $\pm 0.6\%$ against $\pm 3.7\%$ and $T_{off}$ with a SD of $\pm 1.2\%$ against $\pm 5.3 \%$ are better determined. 
+Interestingly, $T_{on}$ deviates more in the parameter estimation with a SD of $\pm 2.6\%$ against $\pm 1.1\%$. 
+Potentially, a complementary evaluation deploying DIN \cref{eq:c_p_formula_DIN} and our parameter estimation could be reasonable. \\
+Note that the melting enthalpy $\Delta H$ value for heat rate $20 \frac{K}{min}$ differs significantly compared to the other heat rates. 
+This outlier has been used nevertheless for the mean computation since this is the case for all four different evaluations and therefore comparable. \\
+Unfortunately, the true specific heat capacity of the examined PCM is not available. Therefore, "better determined" here means less deviation for different heat rates since $c_p(T)$ is a material property and therefore independent of the heat rate.
 
 
 
 
 \begin{table}[H]
+	\caption{Peak characteristics from $c_p(T)$ by DIN 11357 formula using raw measurement data (first group, see also \cref{fig:c_p_DIN_formula}) and those data fitted on a Fraser-Suzuki peak (second group, see also \cref{eq:fraser_suzuki}). Furthermore the peak characteristics from parameter estimation with Gaussian (third group) and Fraser-Suzuki (fourth group) parametrization from \cref{tab:eval_table_Tmax_deltaH_5Gaussians,tab:eval_table_Tmax_deltaH_FS}. \\
+	$^{(1)}$ SD: Standard deviation with applied Bessel correction. $^{(2)}$ Value omitted as there are two maxima. 
+	$^{(3)}$ Values not considered for mean computation since the two maxima in Gaussian parametrization deform the peak shape and therefore compromise $\Delta H$. The other three values are omitted for comparability. \\
+	See for peak characteristics \cref{sec:peak_characteristics}.}
 	\hspace{-1.7cm}
 	\begin{tabular}{| c | c | c | c | c | c | c | c || c |} \hline
-		Heat rate $\beta$ & 20 & 10 & 5 & 2.5 & 1.25 & 0.6 & 0.3 & Mean$^{(1)}$ \\
+		Heat rate $\beta$ & 20 & 10 & 5 & 2.5 & 1.25 & 0.6 & 0.3 & Mean $\pm$ SD (SD\%)$^{(1)}$ \\
 		$[K/min]$ & & & & & & & & \\ \hline
 		\textbf{DIN \cref{eq:c_p_formula_DIN}} & & & & & & & & \\[0.7ex]
 		$T_{max} \ [^{\circ}C]$ & $144.5$ & $140.3$ & $134.9$ & $132.5$ & $132.2$ & $131.9$ & $131.7$ & $135.4 \pm 5.0 \ (3.7\%)$ \\[0.7ex]
@@ -3010,9 +3053,6 @@ Unfortunately we do not have the true specific heat capacity of the examined PCM
 		$T_{off} [^{\circ} C]$ & $136.1$ & $135.7$ & $133.6$ & $132.6$ & $132.4$ & $132.5$ & $132.7$ & $133.7 \pm 1.6 \ (1.2\%)$ \\[0.7ex]
 		$\Delta H \ [\frac{mJ}{mg}]$ & $162.7$ & $197.0^{(3)}$ & $184.3$ & $176.6$ & $173.1$ & $171.5$ & $172.2$ & $173.4 \pm 7.1 \ (4.1\%)$ \\ \hline
 	\end{tabular}
-	\caption{Peak characteristics from $c_p(T)$ by DIN 11357 formula both raw measurement data \cref{fig:c_p_DIN_formula} and those data fitted on a Fraser-Suzuki peak \cref{eq:fraser_suzuki}. Furthermore the peak characteristics from parameter estimation with Gaussian and Fraser-Suzuki parametrization from \cref{tab:eval_table_Tmax_deltaH_5Gaussians,tab:eval_table_Tmax_deltaH_FS}. \\
-	$^{(1)}$ Bessel corrected sample standard deviation used here. $^{(2)}$ Value omitted as there are two maxima. $^{(3)}$ Values not considered for mean computation since the two maxima in Gaussian parametrization deforming the peak shape and therefore $\Delta H$. The other three values are omitted for comparability. \\
-	Cf. peak characteristics \cref{sec:peak_characteristics}.}
 	\label{tab:eval_table_summary}
 \end{table}
 
@@ -3023,25 +3063,43 @@ Unfortunately we do not have the true specific heat capacity of the examined PCM
 \section{Discussion}
 \label{sec:discussion}
 
-The essential result of this thesis is that we are able to reconstruct the smearing effect with a very simple 1D model. Applied in a parameter estimation framework, this allows the reconstruction of the specific heat capacity $c_p(T)$ of a material at phase change. Compared to the hitherto existing method of determining $c_p(T)$ described in DIN 11357, peak characteristics $T_{max}$, $T_{off}$ and $\Delta H$ deviate much less in our parameter estimation with Fraser-Suzuki parametrization. Possibly a less simplified model (e.g. with a crucible layer or in more than one dimension) improve the results further. As remarked earlier (\cref{sec:param_estimation_summary}), "better determined" here means less deviation of $c_p(T)$ for different heat rates due to the fact that the specific heat capacity is a material property and therefore independent of the heat rate. Ideally one would compare with the true $c_p(T)$ which is unfortunately not available. This leads to the problem that we possibly chose the physical lengths $L_{Ag}$ and $L_{pcm}$ (which are unaccessible, too since our model is 1D and the silver plate is a disk) in such a way that our expectations on the results influences the results. The results could be verified  with measurement data from another sample with different sample mass. Although the corresponding physical lengths in the model then change, equal specific heat capacities should be obtained by the parameter estimation. \\
-Two assumptions of our model were that the mass density $\rho$ and heat conductivity $\lambda$ of the PCM are constant. Measurement data indicates that these assumptions are not fulfilled entirely. A temperature dependent heat conductivity leads to another nonlinear term in the partial differential equation. Its influence is not a priori clear. 
-If the mass density is temperature dependent, the PCM's volume change. Therefore, mechanical work has to be done which has influence on the energy balance since conservation of energy still has to be fulfilled. Both modifications are worth investigating for future work. \\
-For further work, an analogous modeling of a power compensated DSC (see \cref{sec:power_compensated_dsc}) is possible. 
-A different approach could be the construction of a experimental setup of a heat flux DSC, as similar as possible to the simplified simulated model in order to improve results this way. \\
+The essential result of this thesis is that we are able to reconstruct the smearing effect with a very simple 1D model. Applied in a parameter estimation framework, this allows the reconstruction of the specific heat capacity $c_p(T)$ of a material at phase change. Compared to the hitherto existing method of determining $c_p(T)$ described in DIN 11357, peak characteristics maximum position $T_{max}$, offset of melting $T_{off}$ and melting enthalpy $\Delta H$ deviate much less in our parameter estimation with Fraser-Suzuki parametrization. 
+It became apparent that Fraser-Suzuki is advantageous compared to the Gaussian parametrization since here we have identifiability and the regularization seems to work fine.
+Possibly, a less simplified model (e.g. with a crucible layer or more than one dimension) improve the results further. 
+As remarked earlier (\cref{sec:param_estimation_summary}), "better determined" here means less deviation of $c_p(T)$ for different heat rates, due to the fact that the specific heat capacity is a material property and therefore independent of the heat rate. 
+Ideally one would compare with the true $c_p(T)$ which is unfortunately not available. 
+This leads to the problem that we possibly chose the physical lengths $L_{Ag}$ and $L_{pcm}$ (which are unaccessible, too, since our model is 1D and e.g. the silver plate is a disk) in such a way that our expectations on the results have influence on those. 
+The results could be verified  with measurement data from another sample with different sample mass. Although the corresponding physical lengths in the model then change (due to different mass but same mass density), equal specific heat capacities should be obtained by the parameter estimation. \\
+Two assumptions of our model were that the mass density $\rho_{pcm}$ and heat conductivity $\lambda_{pcm}$ of the PCM are constant. 
+Measurement data indicates that these assumptions are not fulfilled entirely. 
+A temperature dependent heat conductivity leads to another nonlinear term in the partial differential equation. 
+Its influence is not a priori clear. 
+Further, if the mass density is temperature dependent, the PCM's volume change. 
+Therefore, mechanical work has to be done which has influence on the energy balance since conservation of energy still has to be fulfilled. 
+Both modifications are worth investigating. \\
+For future work, an analogous modeling of a power compensated DSC (see \cref{sec:power_compensated_dsc}) is conceivable. 
+A different approach could be the construction of an experimental setup of a heat flux DSC, as similar as possible to the simplified simulated model in order to improve results this way. \\
 
 
-Regarding the numerical computation of the sensitivities $\frac{\partial T}{\partial p_{c_p}}$ using SolvIND, it is unclear why the forward mode is faster than the adjoint mode contrary to theoretical expectations. Possibly, SolvIND only saves the intermediate elementary functions $\phi_i$ without the corresponding intermediate values $v_i$ (see \cref{sec:derivative_generation}). In the adjoint sweep the intermediate values then need to be computed again. An investigation on this issue would be revealing. 
-Another open question is why the necessary optimality condition [NOC1] could not be decreased further in \cref{sec:param_estimation_fs_examin_GN}. Possibly this is related to the fact that integration problems occurred with local relative error controlled forward sensitivities. The higher the forward sensitivity accuracy is set, the lower [NOC1] becomes. Solving the numerical problems here could resolve the problem with [NOC1] as well. A possible remedy could be to solve the variational differential equation instead using IND and AD. \\
+Regarding the numerical computation of the sensitivities $\frac{\partial T}{\partial p_{c_p}}$ using SolvIND, it is unclear why in contrast to theoretical expectations, the forward mode is faster than the adjoint mode.
+Possibly, SolvIND only saves the intermediate elementary functions $\varphi_i$ without the corresponding intermediate values $v_i$ (see \cref{sec:AD_IND}). 
+In the adjoint sweep the intermediate values then need to be computed again. 
+An investigation on this issue would be revealing. 
+Another open question is why the necessary optimality condition [NOC1] could not be decreased further in the parameter estimation using Fraser-Suzuki parametrization and the self written Gauss-Newton in \cref{sec:param_estimation_fs_examin_GN}. 
+Possibly this is related to the fact that integration problems occurred with local relative error controlled forward sensitivities. 
+The higher the forward sensitivity accuracy is set, the lower [NOC1] becomes. 
+Solving the numerical integration problems here could resolve the problem with [NOC1] as well. 
+A possible remedy could be to solve the variational differential equation instead using IND and AD. \\
 
 
 
 
 
 
-\begin{itemize}
-	\item A pleasant observation is that the differential equation's solution is not very sensitive with respect to the chosen grid.  Ausser: $t=0.999$ statt $t=0.99$ ist wichtig.
-	\item Messdaten bei Heizrate $20 \frac{K}{min}$ hinten abgeschnitten, was vllt zu dummem Wert fuer dH fuehrt weil wir hier Integral von 100 bis 160 oder so genommen haben und wir Teile mitnehmen die nicht vom heat flux residuum beeinflusst wurden.
-\end{itemize}
+%\begin{itemize}
+%	\item A pleasant observation is that the differential equation's solution is not very sensitive with respect to the chosen grid. 
+%	\item Messdaten bei Heizrate $20 \frac{K}{min}$ hinten abgeschnitten, was vllt zu dummem Wert fuer dH fuehrt weil wir hier Integral von 100 bis 160 oder so genommen haben und wir Teile mitnehmen die nicht vom heat flux residuum beeinflusst wurden.
+%\end{itemize}
 
 
 \newpage
@@ -3129,15 +3187,32 @@ In \cref{sec:param_estimation_summary} the specific heat capacity $c_p(T)$ obtai
 	 Adjoint-based algorithms and numerical methods for sensitivity generation and optimization of large scale dynamic systems, 
 	 Jan Albersmeyer, 2010,
 	 http://www.ub.uni-heidelberg.de/archiv/11651
+
 \bibitem{DSC_buch}
 	Differential Scanning Calorimetry of Polymers: physics, chemistry, analysis, technology,
 	Vladimir A. Bershtein, Victor M. Egorov,
 	1994
+	
 \bibitem{diss_DSC}
 	Kalorimetrische Methoden zur Bestimmung
 	der Enthalpie von Latentwärmespeichermaterialien
 	während des Phasenübergangs,
 	Stefan Hiebler, Dissertation an der technischen Universität München, 2006
+	
+\bibitem{wunderlich_thermal_analysis}
+	Thermal Analysis of Polymeric Materials, 
+	B. Wunderlich,
+	Springer, Berlin, Heidelberg (2005)
+	
+\bibitem{standardization_of_PCM}
+	Standardization of PCM Characterization via DSC,
+	S. Gschwander, T. Haussmann, G. Hagelstein, A. Sole, L.F. Cabeza, G. Diarce, W. Hohenauer, D. Lager, A. Ristic, C. Rathgeber, P. Hennemann, H. Mehling, C. Peñalosa, A. Lazaro,
+	Proceedings of 11th IIR Conference on Phase-Change Materials and Slurries for Refrigeration and Air Conditioning, Karlsruhe, Germany (2016)
+	
+\bibitem{fokker_planck_desmearing_asommer}
+	Data-driven de-smearing of DSC signals
+	Andreas Sommer, Tilman Barz, Wolfgang Hohenauer
+	\todo{Journal?}
 	
 \bibitem{numerik1_skript_koerkel}
 	Numerische Mathematik 1 Vorlesungsskript, 
@@ -3215,9 +3290,6 @@ In \cref{sec:param_estimation_summary} the specific heat capacity $c_p(T)$ obtai
 	Evaluating Derivatives: Principles and Techniques of Algorithmic Differentiation, Second Edition,
 	Andreas Griewank and Andrea Walther, 2008,
 	ISBN: 978-0-89871-659-7
-	
-\bibitem{Bock1981}
-	\todo{}
 
 
 \bibitem{diff_equations_numerics}
@@ -3284,12 +3356,11 @@ Mein erster und besonderer Dank gilt Dr. Andreas Sommer, der sehr viel Zeit der 
 
 Bedanken möchte ich mich bei der gesamten Arbeitsgruppe Simulation und Optimierung für die sehr schöne und angenehme Zeit. \\
 
-Professor Hans Georg Bock danke ich fuer die Vorlesungen über Optimierung gewöhnlicher Differentialgleichungen, die mein Interesse an diesem Thema geweckt haben. Ausserdem bedanke ich mich für die Möglichkeit diese Arbeit in seiner Arbeitsgruppe durchzuführen. \\
+Professor Hans Georg Bock danke ich für die Vorlesungen über Optimierung gewöhnlicher Differentialgleichungen, die mein Interesse an diesem Thema geweckt haben. Ausserdem bedanke ich mich für die Möglichkeit diese Arbeit in seiner Arbeitsgruppe durchzuführen. \\
 
-Mein Dank gilt auch Dr. Johannes P. Schlöder, der sich bereit erklärt hat, das Zweitgutachten dieser Arbeit zu übernehmen \todo{?!}. \\  
+Mein Dank gilt auch Professor Dr. Ekaterina A. Kostina, die sich bereit erklärt hat, das Zweitgutachten dieser Arbeit zu übernehmen \todo{?!}. \\  
 
 \todo{AIT danken? wem genau?} \\
-
 
 Tiefster Dank geht indes an meine Eltern, Freunde und meine Freundin Ina für die kontinuierliche Unterstützung über alle Phasen hinweg. \\
 
