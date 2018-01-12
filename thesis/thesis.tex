@@ -279,7 +279,8 @@ Therefore the two major goals of this thesis is both simulate the measuring proc
 Furthermore the heat rate is proportional to the time duration of the experiment. If we get the same $c_p(T)$ for all heat rates we are able to accelerate the measuring process and therefore the research on this materials.
 
 \paragraph{Related work} \mbox{}\\
-\cite{wunderlich_thermal_analysis}, \cite{standardization_of_PCM}, \cite{fokker_planck_desmearing_asommer} \\
+\cite{wunderlich_thermal_analysis}, \cite{standardization_of_PCM}, 
+\cite{diss_DSC}, \cite{fokker_planck_desmearing_asommer} \\
 
 \todo{!} \\
 
@@ -3067,33 +3068,33 @@ Unfortunately, the true specific heat capacity of the examined PCM is not availa
 \section{Discussion}
 \label{sec:discussion}
 
-The essential result of this thesis is that we are able to reconstruct the smearing effect with a very simple 1D model. Applied in a parameter estimation framework, this allows the reconstruction of the specific heat capacity $c_p(T)$ of a material at phase change. Compared to the hitherto existing method of determining $c_p(T)$ described in DIN 11357, peak characteristics maximum position $T_{max}$, offset of melting $T_{off}$ and melting enthalpy $\Delta H$ deviate much less in our parameter estimation with Fraser-Suzuki parametrization. 
-It became apparent that Fraser-Suzuki is advantageous compared to the Gaussian parametrization since here we have identifiability and the regularization seems to work fine.
-Possibly, a less simplified model (e.g. with a crucible layer or more than one dimension) improve the results further. 
+One essential result of this thesis is that we are able to reconstruct the smearing effect with a 1D model. Applied in a parameter estimation framework, this allows the reconstruction of the specific heat capacity $c_p(T)$ of a material at phase change. Compared to the method of determining $c_p(T)$ as described in DIN 11357, peak characteristics maximum position $T_{max}$, offset of melting $T_{off}$ and melting enthalpy $\Delta H$ deviate much less in our approach with Fraser-Suzuki parametrization. 
+It became apparent that Fraser-Suzuki is advantageous compared to the Gaussian parametrization due to improved identifiability.
+Possibly, a less simplified model (e.g. with a crucible layer or more than one dimension) improve the results further. \\
 As remarked earlier (\cref{sec:param_estimation_summary}), "better determined" here means less deviation of $c_p(T)$ for different heat rates, due to the fact that the specific heat capacity is a material property and therefore independent of the heat rate. 
 Ideally one would compare with the true $c_p(T)$ which is unfortunately not available. 
 This leads to the problem that we possibly chose the physical lengths $L_{Ag}$ and $L_{pcm}$ (which are unaccessible, too, since our model is 1D and e.g. the silver plate is a disk) in such a way that our expectations on the results have influence on those. 
-The results could be verified  with measurement data from another sample with different sample mass. Although the corresponding physical lengths in the model then change (due to different mass but same mass density), equal specific heat capacities should be obtained by the parameter estimation. \\
+The results could be verified  with measurement data from another sample with different sample mass. Although the corresponding physical lengths in the model then change (due to different mass but same mass density), ideally equal specific heat capacities should be obtained by the parameter estimation. \\
 Two assumptions of our model were that the mass density $\rho_{pcm}$ and heat conductivity $\lambda_{pcm}$ of the PCM are constant. 
 Measurement data indicates that these assumptions are not fulfilled entirely. 
 A temperature dependent heat conductivity leads to another nonlinear term in the partial differential equation. 
 Its influence is not a priori clear. 
-Further, if the mass density is temperature dependent, the PCM's volume change. 
+Further, if the mass density is temperature dependent, the PCM's volume changes. 
 Therefore, mechanical work has to be done which has influence on the energy balance since conservation of energy still has to be fulfilled. 
 Both modifications are worth investigating. \\
 For future work, an analogous modeling of a power compensated DSC (see \cref{sec:power_compensated_dsc}) is conceivable. 
 A different approach could be the construction of an experimental setup of a heat flux DSC, as similar as possible to the simplified simulated model in order to improve results this way. \\
 
 
-Regarding the numerical computation of the sensitivities $\frac{\partial T}{\partial p_{c_p}}$ using SolvIND, it is unclear why in contrast to theoretical expectations, the forward mode is faster than the adjoint mode.
+Regarding the numerical computation of the sensitivities $\frac{\partial T}{\partial p_{c_p}}$ using SolvIND, it is unclear why in contrast to theoretical expectations, the forward mode showed to be faster than the adjoint mode.
 Possibly, SolvIND only saves the intermediate elementary functions $\varphi_i$ without the corresponding intermediate values $v_i$ (see \cref{sec:AD_IND}). 
-In the adjoint sweep the intermediate values then need to be computed again. 
+In the adjoint sweep, the intermediate values then need to be computed again. 
 An investigation on this issue would be revealing. 
 Another open question is why the necessary optimality condition [NOC1] could not be decreased further in the parameter estimation using Fraser-Suzuki parametrization and the self written Gauss-Newton in \cref{sec:param_estimation_fs_examin_GN}. 
 Possibly this is related to the fact that integration problems occurred with local relative error controlled forward sensitivities. 
 The higher the forward sensitivity accuracy is set, the lower [NOC1] becomes. 
 Solving the numerical integration problems here could resolve the problem with [NOC1] as well. 
-A possible remedy could be to solve the variational differential equation instead using IND and AD. \\
+A possible remedy could be to solve the variational differential equation instead using IND and AD, although associated with higher computational costs. \\
 
 
 
@@ -3109,7 +3110,7 @@ A possible remedy could be to solve the variational differential equation instea
 \newpage
 \appendix
 \section{Parameter estimation start values}
-In this section the initial values for the iterative optimization process for parameter estimation in \cref{sec:param_estimation_5Gausse,sec:param_estimation_fs} are listed. The depicted values were used for heat rate $\beta = 20 \frac{K}{min}$. The following heat rates used successively the obtained parameters from the last heat rate as initial values, i.e. heat rate $\beta = 10 \frac{K}{min}$ used the obtained parameters from $\beta = 20 \frac{K}{min}$, heat rate $\beta = 5 \frac{K}{min}$ used the obtained parameters from $\beta = 10 \frac{K}{min}$ etc.
+In this section the initial values for the iterative optimization process for parameter estimation in \cref{sec:param_estimation_5Gausse,sec:param_estimation_fs} are listed. The depicted values were used for heat rate $\beta = 20 \frac{K}{min}$. The following heat rates used successively the obtained parameters from the last heat rate as initial values, i.e. heat rate $\beta = 10 \frac{K}{min}$ used the obtained parameters from $\beta = 20 \frac{K}{min}$, heat rate $\beta = 5 \frac{K}{min}$ used the obtained parameters from $\beta = 10 \frac{K}{min}$ and so forth.
 
 \subsection{5 Gaussians}
 \label{sec:initial_values_5Gaussians}
@@ -3118,14 +3119,14 @@ The initial values for the least squares solver $lsqnonlin$ in the parameter est
 
 \begin{table}[H]
 	\centering
+	\caption{Initial values (heat rate $\beta=20 \frac{K}{min}$) for least squares solver $lsqnonlin$ in parameter estimation in \cref{sec:param_estimation_5Gausse}. \\
+		Remark: These initial values are obtained from previous parameter estimations (with much smaller variance values) and used then in order to accelerate the optimization process by starting already from a decreased residuum.}
 	\begin{tabular}{| c | c | c | c | c | c || c | c |} \hline
 		& Gauss1 & Gauss2 & Gauss3 & Gauss4 & Gauss5 & Linear $m$ & Constant $b$ \\ \hline
 		$A_i$ & $2.3$ & $13.39$ & $-2.66$ & $1.0$ & $1.0$ & $0.01$ & $1.5$ \\
 		$\var_i$ & $473.9$ & $24.51$ & $121.8$ & $30.0$ & $30.0$ & & \\
 		$T_{offset_i}$ & $134.8$ & $127.9$ & $145.7$ & $123.5$ & $136.5$ & & \\ \hline
 	\end{tabular}
-	\caption{Initial values (heat rate $\beta=20 \frac{K}{min}$) for least squares solver $lsqnonlin$ in parameter estimation in \cref{sec:param_estimation_5Gausse}. \\
-	Remark: These initial values are obtained from previous parameter estimations (with much smaller variance values) and used then in order to accelerate the optimization process by starting already from a decreased residuum.}
 	\label{tab:initial_values_5Gausse}
 \end{table}
 
@@ -3133,16 +3134,16 @@ The initial values for the least squares solver $lsqnonlin$ in the parameter est
 \subsection{Fraser-Suzuki}
 \label{sec:initial_values_FS}
 
-The initial values for the self written Gauss-Newton \cref{alg:Gauss_Newton_unconstrained} in the parameter estimation using the Fraser-Suzuki parametrization in \cref{sec:param_estimation_fs} are depicted in \cref{tab:initial_values_FS}. 
+The initial values for the self written Gauss-Newton \cref{alg:Gauss_Newton_unconstrained} in the parameter estimation using the Fraser-Suzuki parametrization in \cref{sec:param_estimation_fs} are depicted in \cref{tab:initial_values_FS}. In order to ensure identifiability it was fixed $r=2$.
 
 \begin{table}[H]
 	\centering
+	\caption{Initial values (heat rate $\beta=20 \frac{K}{min}$) for self written Gauss-Newton \cref{alg:Gauss_Newton_unconstrained} in parameter estimation in \cref{sec:param_estimation_fs}. \\
+		Remark: These initial values are obtained from previous parameter estimations and used then in order to accelerate the optimization process by starting already from a decreased residuum.}
 	\begin{tabular}{| c | c | c | c | c | c |} \hline
-		$h$ & $wr$ & $sr$ & $z$ & Linear $m$ & Constant $b$ \\ \hline
+		$h$ & $w_r$ & $s_r$ & $z$ & Linear $m$ & Constant $b$ \\ \hline
 		$14.0$ & $10.7$ & $0.705$ & $129.0$ & $0.0079$ & $1.69$ \\ \hline
 	\end{tabular}
-	\caption{Initial values (heat rate $\beta=20 \frac{K}{min}$) for self written Gauss-Newton \cref{alg:Gauss_Newton_unconstrained} in parameter estimation in \cref{sec:param_estimation_fs}. \\
-	Remark: These initial values are obtained from previous parameter estimations and used then in order to accelerate the optimization process by starting already from a decreased residuum.}
 	\label{tab:initial_values_FS}
 \end{table}
 
@@ -3190,7 +3191,7 @@ In \cref{sec:param_estimation_summary} the specific heat capacity $c_p(T)$ obtai
 \bibitem{diss_jan}
 	 Adjoint-based algorithms and numerical methods for sensitivity generation and optimization of large scale dynamic systems, 
 	 Jan Albersmeyer, 2010,
-	 http://www.ub.uni-heidelberg.de/archiv/11651
+	 \url{http://www.ub.uni-heidelberg.de/archiv/11651}
 
 \bibitem{DSC_buch}
 	Differential Scanning Calorimetry of Polymers: physics, chemistry, analysis, technology,
@@ -3256,12 +3257,12 @@ In \cref{sec:param_estimation_summary} the specific heat capacity $c_p(T)$ obtai
 	of chromatographic peak parameters
 	from graphical measurements,
 	Joan O. Grimalt, Joaquim Olivé,
-	Anaivtwa Chzmlca Act4 248 (1991) 59-70
+	Analytica Chimica Acta 248 (1991) 59-70
 	Elsevler Sctence Publishers B.V., Amsterdam
 	
 \bibitem{fraser_suzuki_many_fcts}
 	Mathematical functions for the representation of chromatographic
-	peaks
+	peaks.
 	Valerio B. Di Marco, G. Giorgio Bombi,
 	Journal of Chromatography A, 931 (2001) 1–30
 	
@@ -3279,7 +3280,7 @@ In \cref{sec:param_estimation_summary} the specific heat capacity $c_p(T)$ obtai
 	Randwertproblemmethoden zur Parameteridentifizierung in Systemen nichtlinearer Differentialgleichungen,
 	Hans Georg Bock,
 	Bonner Mathematische Schriften, Volume 183, Universität Bonn, 1987,
-	\url{http://www.iwr.uni-heidelberg.de/groups/agbock/FILES/Bock1987.pdf}
+	\url{http://www.iwr.uni-heidelberg.de/groups/agbock/FILES/Bock1987.pdf}, queried 12.01.2018
 	
 \bibitem{nonlinear_optimiziation_wright}
 	Numerical Optimization,
@@ -3295,7 +3296,7 @@ In \cref{sec:param_estimation_summary} the specific heat capacity $c_p(T)$ obtai
 	Numerische Methoden
 	für Optimale Versuchsplanungsprobleme
 	bei nichtlinearen DAE-Modellen,
-	Dissertation Stefan Körkel, 2002
+	Dissertation, Stefan Körkel, 2002
 	
 \bibitem{eval_derivatives_walther_griewank}
 	Evaluating Derivatives: Principles and Techniques of Algorithmic Differentiation, Second Edition,
@@ -3311,7 +3312,7 @@ In \cref{sec:param_estimation_summary} the specific heat capacity $c_p(T)$ obtai
 	
 \bibitem{disseration_andreas_sommer}
 	Numerical Methods for Parameter Estimation
-	in Dynamical Systems with Noise --- with Applications in Systems Biology
+	in Dynamical Systems with Noise --- with Applications in Systems Biology,
 	Dissertation Andreas Sommer, 2016
 	
 \bibitem{lsqnonlin_alg1}
@@ -3328,7 +3329,7 @@ In \cref{sec:param_estimation_summary} the specific heat capacity $c_p(T)$ obtai
 	Bock H.G., Kostina E., Schlöder J.P. (2000) On the Role of Natural Level Functions to Achieve Global Convergence for Damped Newton Methods. In: Powell M.J.D., Scholtes S. (eds) System Modelling and Optimization. CSMO 1999. IFIP — The International Federation for Information Processing, vol 46. Springer, Boston, MA
 	
 \bibitem{heating_pad_image}
-	https://de.wikipedia.org/wiki/Latentwärmespeicher, 27.12.2017
+	\url{https://de.wikipedia.org/wiki/Latentwärmespeicher}, queried 27.12.2017
 	
 \bibitem{pde_buch_solin}
 	Partial Differential Equations and the Finite Element Method,
@@ -3336,12 +3337,12 @@ In \cref{sec:param_estimation_summary} the specific heat capacity $c_p(T)$ obtai
 	ISBN-13 978-0-471-72070-6
 	
 \bibitem{TC-prop_basis}
-	R.E. Moore. Interval analysis . Prentice-Hall, Englewood Cliffs, NJ, 1966.
+	R.E. Moore. Interval analysis. Prentice-Hall, Englewood Cliffs, NJ, 1966.
   
 \bibitem{analytical_soln}
 	Leon van Dommelen, 
 	Partial Differential Equations, 3/21/11 Version 0.15 alpha,
-	\url{http://www.eng.famu.fsu.edu/~dommelen/pdes/style_a/index.html}
+	\url{http://www.eng.famu.fsu.edu/~dommelen/pdes/style_a/index.html}, queried 12.01.2018
 	
 \bibitem{ODE_analytic}
 	A Textbook on Ordinary Differential Equations, Second Edition
@@ -3370,8 +3371,6 @@ Bedanken möchte ich mich bei der gesamten Arbeitsgruppe Simulation und Optimier
 Professor Hans Georg Bock danke ich für die Vorlesungen über Optimierung gewöhnlicher Differentialgleichungen, die mein Interesse an diesem Thema geweckt haben. Ausserdem bedanke ich mich für die Möglichkeit diese Arbeit in seiner Arbeitsgruppe durchzuführen. \\
 
 Mein Dank gilt auch Professor Dr. Ekaterina A. Kostina, die sich bereit erklärt hat, das Zweitgutachten dieser Arbeit zu übernehmen \todo{?!}. \\  
-
-\todo{AIT danken? wem genau?} \\
 
 Tiefster Dank geht indes an meine Eltern, Freunde und meine Freundin Ina für die kontinuierliche Unterstützung über alle Phasen hinweg. \\
 
