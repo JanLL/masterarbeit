@@ -169,13 +169,13 @@
 
 \section*{Abstract}
 
-This thesis approaches the problem of identifying the specific heat capacity $c_p$ of phase change materials (PCM). 
-An usual method elucidated in DIN 11357, using measurement data of heat flux differential scanning calorimetry (DSC), results in different outcomes dependent on a measurement parameter, the heat rate. For higher heat rates the peak is widened and its position shifts to higher temperatures. This is known as smearing.
-Therefore in this thesis a new developed model is introduced to simulate the measuring process of a heat flux DSC where phase change materials are used as sample. 
-The simulation is accomplished by solving the heat equation where the PCM's specific heat capacity is temperature dependent and has a phase transition peak. 
-This simulation is capable of reproducing heat fluxes into the sample analogously to the physical experiment. 
-With this insight the simulation has been embedded in a least squares parameter estimation framework using heat flux measurement data in order to estimate the sample's specific heat capacity, independently from the heat rate. 
-With $c_p(T)$ parametrized with a Fraser-Suzuki peak and linear baseline, a distinct reduction compared to the usual method in DIN 11357 in the deviation of peak characteristics maximum position $T_{max}$, offset of melting $T_{off}$ and melting enthalpy $\Delta H$ for specified heat rates was possible.
+This thesis approaches the problem of identifying the specific heat capacity $c_p(T)$ of phase change materials (PCM). 
+An usual method elucidated in DIN 11357, using measurement data of heat flux differential scanning calorimetry (DSC), results in different outcomes $c_p^{\text{DIN}}(T)$ dependent on a measurement parameter, the heat rate. For higher heat rates, the peak of $c_p^{\text{DIN}}(T)$ is widened and its position shifts to higher temperatures. This is known as smearing problem since $c_p(T)$ is a material property and therefore independent from the heat rate.
+Therefore, in this thesis a new model is developed to simulate the measuring process of a heat flux DSC with a PCM as sample.
+The simulation is accomplished by solving the 1D heat equation where the PCM's specific heat capacity is temperature dependent and has a phase transition peak. 
+This model is capable of reproducing heat fluxes into the sample similar to those measured. 
+The simulation is embedded in a least squares parameter estimation framework using heat flux measurement data in order to estimate the PCM's specific heat capacity. 
+With $c_p(T)$ parametrized with a Fraser-Suzuki peak and linear baseline, a distinct reduction compared to $c_p^{\text{DIN}}(T)$ in the deviation of peak characteristics maximum position $T_{max}$, offset of melting $T_{off}$ and melting enthalpy $\Delta H$ for different heat rates was possible.
 
 
 
@@ -279,10 +279,12 @@ Therefore the two major goals of this thesis is both simulate the measuring proc
 Furthermore the heat rate is proportional to the time duration of the experiment. If we get the same $c_p(T)$ for all heat rates we are able to accelerate the measuring process and therefore the research on this materials.
 
 \paragraph{Related work} \mbox{}\\
-\cite{wunderlich_thermal_analysis}, \cite{standardization_of_PCM}, 
-\cite{diss_DSC}, \cite{fokker_planck_desmearing_asommer} \\
-
-\todo{!} \\
+Fundamentals about the heat capacity of polymers and experimental identification is are depicted in \cite{wunderlich_heat_capacity_polymers}.
+The subject of thermal analysis of polymeric materials is extensively dealt with in \cite{wunderlich_thermal_analysis}. 
+The measuring method of differential scanning calorimetry is in particular elucidated in \cite{Hoehne_DSC}, as well as on the remarked smearing problem. 
+There are recent attempts on standardizing calibration procedures for consistent measuring results \cite{standardization_of_PCM}. 
+In \cite{diss_DSC} a model similar to the one we developed has been used to assess specific measurement schemes regarding their ability on the identification of the specific heat capacity of an PCM. 
+Altogether, there is research done in order to tackle the smearing problem. Although, not satisfactorily resolved yet. \\
 
 This thesis is structured as follows. In \cref{sec:physical_background} the physics of a phase transition and the measuring process of a DSC are elucidated. 
 The mathematical methods for simulation and parameter estimation are introduced in \cref{sec:mathematical_background}. These methods then have been applied in \cref{sec:simulation_of_DSC} to simulate the DSC measuring process and in \cref{sec:parameter_estimation_applied} for the parameter estimation of the specific heat capacity. Performed numerical experiments and corresponding results are shown in \cref{sec:numerical_experiments}. Finally \cref{sec:discussion} concludes this thesis with a discussion of results, problems and potential next working steps on this subject.
@@ -3205,26 +3207,31 @@ In \cref{sec:param_estimation_summary} the specific heat capacity $c_p(T)$ obtai
 	\url{https://www.ait.ac.at/themen/sustainable-thermal-energy-systems/projects/modeltes/}, 
 	\url{http://www.voigt-wipp.at/forschung/forschungsprojekte/modeltes/}, queried 12.01.2018
 	
-\bibitem{diss_DSC}
-	Kalorimetrische Methoden zur Bestimmung
-	der Enthalpie von Latentwärmespeichermaterialien
-	während des Phasenübergangs,
-	Stefan Hiebler, Dissertation an der technischen Universität München, 2006
+\bibitem{wunderlich_heat_capacity_polymers}
+	B. Wunderlich.
+	The heat capacity of polymers.
+	Thermochimica Acta 300 (1997) 43-65
 	
 \bibitem{wunderlich_thermal_analysis}
 	Thermal Analysis of Polymeric Materials, 
 	B. Wunderlich,
 	Springer, Berlin, Heidelberg (2005)
 	
+\bibitem{Hoehne_DSC}
+	G. Höhne, W.F. Hemminger, H.-J. Flammersheim.
+	Differential Scanning Calorimetry.
+	2. edition, Springer, Berlin, Heidelberg (2003)
+	
 \bibitem{standardization_of_PCM}
 	Standardization of PCM Characterization via DSC,
 	S. Gschwander, T. Haussmann, G. Hagelstein, A. Sole, L.F. Cabeza, G. Diarce, W. Hohenauer, D. Lager, A. Ristic, C. Rathgeber, P. Hennemann, H. Mehling, C. Peñalosa, A. Lazaro,
 	Proceedings of 11th IIR Conference on Phase-Change Materials and Slurries for Refrigeration and Air Conditioning, Karlsruhe, Germany (2016)
 	
-\bibitem{fokker_planck_desmearing_asommer}
-	Data-driven de-smearing of DSC signals
-	Andreas Sommer, Tilman Barz, Wolfgang Hohenauer
-	\todo{Journal?}
+\bibitem{diss_DSC}
+	Kalorimetrische Methoden zur Bestimmung
+	der Enthalpie von Latentwärmespeichermaterialien
+	während des Phasenübergangs,
+	Stefan Hiebler, Dissertation an der technischen Universität München, 2006
 	
 \bibitem{numerik1_skript_koerkel}
 	Numerische Mathematik 1 Vorlesungsskript, 
@@ -3364,13 +3371,15 @@ In \cref{sec:param_estimation_summary} the specific heat capacity $c_p(T)$ obtai
 \newpage
 \addsec{Danksagung}
 
-Mein erster und besonderer Dank gilt Dr. Andreas Sommer, der sehr viel Zeit der Besprechung der Arbeit gewidmet hat, allzeit mit Rat und Tat zur Seite stand und durch den ich sehr viel gelernt habe.\\
+Mein erster Dank gilt Professor Hans Georg Bock für die Vorlesungen über Optimierung gewöhnlicher Differentialgleichungen, die mein Interesse an diesem Thema geweckt haben. Ausserdem bedanke ich mich für die Möglichkeit diese Arbeit in seiner Arbeitsgruppe durchzuführen. \\
+
+Mein Dank gilt auch Professor Dr. Ekaterina A. Kostina, die sich bereit erklärt hat, das Zweitgutachten dieser Arbeit zu übernehmen \todo{?!}. \\ 
+
+Ein besonderer Dank gilt Dr. Andreas Sommer, der sehr viel Zeit der Besprechung der Arbeit gewidmet hat, allzeit mit Rat und Tat zur Seite stand und durch den ich sehr viel gelernt habe.\\
 
 Bedanken möchte ich mich bei der gesamten Arbeitsgruppe Simulation und Optimierung für die sehr schöne und angenehme Zeit. \\
 
-Professor Hans Georg Bock danke ich für die Vorlesungen über Optimierung gewöhnlicher Differentialgleichungen, die mein Interesse an diesem Thema geweckt haben. Ausserdem bedanke ich mich für die Möglichkeit diese Arbeit in seiner Arbeitsgruppe durchzuführen. \\
-
-Mein Dank gilt auch Professor Dr. Ekaterina A. Kostina, die sich bereit erklärt hat, das Zweitgutachten dieser Arbeit zu übernehmen \todo{?!}. \\  
+ 
 
 Tiefster Dank geht indes an meine Eltern, Freunde und meine Freundin Ina für die kontinuierliche Unterstützung über alle Phasen hinweg. \\
 
