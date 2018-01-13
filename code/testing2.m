@@ -121,7 +121,7 @@ save_root_dir = '/home/argo/masterarbeit/thesis/images/';
 
 set(fig1, 'units', 'normalized', 'outerposition', [0 0 0.66 1]);
 set(ax1,'FontSize',25);
-xlabel(ax1, 'T_{ref} [degC]');
+xlabel(ax1, 'T_{ref} [°C]');
 ylabel(ax1, '\eta^{\Phi}[mW]');
 set(ax1, 'xlim', [30 160]);
 legend(ax1, 'show', 'location', 'northwest');
@@ -133,7 +133,7 @@ close(fig1);
 
 set(fig2, 'units', 'normalized', 'outerposition', [0 0 0.66 1]);
 set(ax2,'FontSize',25);
-xlabel(ax2, 'T [degC]');
+xlabel(ax2, 'T [°C]');
 ylabel(ax2, 'c_p [mJ/(mg*K)]');
 set(ax2, 'xlim', [30 160]);
 legend(ax2, 'show', 'location', 'northwest');
@@ -502,14 +502,16 @@ c_p = c_p_fs(T, p_fs_scaled);
 fig1 = figure(5);
 ax1 = gca; cla;
 
-plot(ax1, T,c_p, 'linewidth', 1.2);
+plot(ax1, T,c_p, 'linewidth', 1.2, 'DisplayName', 'c_p(T)');
 
 set(ax1,'FontSize', 12);
-xlabel(ax1, 'T [degC]');
+xlim(ax1, [30, 160])
+xlabel(ax1, 'T [°C]');
 ylabel(ax1, 'c_p [mJ/(mg*K)]')
+legend(ax1, 'show', 'location', 'northwest')
 box off
 
-print(fig, '/home/argo/masterarbeit/thesis/images/fraser_suzuki_example', '-dpng', '-r200');
+print(fig1, '/home/argo/masterarbeit/thesis/images/fraser_suzuki_example', '-dpng', '-r200');
 close();
 
 
@@ -525,8 +527,8 @@ fig = open([root_dir, 'jac_output.fig']);
 colormap('parula')
 set(gca,'FontSize',13);
 
-xlabel('Control points x-coordinate P^x [degC]');
-ylabel('T_{ref} [degC]')
+xlabel('Control points x-coordinate P^x [°C]');
+ylabel('T_{ref} [°C]')
 
 print(fig, '/home/argo/masterarbeit/thesis/images/NURBS_jac2', '-dpng', '-r200');
 
@@ -549,6 +551,7 @@ children(2).LineWidth = 1.3;
 
 xlim(gca, [30, 160]);
 ylabel('c_p [mJ/(mg*K)]')
+xlabel('T [°C]')
 box off  % entfernt den Rahmen um die figure
 
 print(fig, '/home/argo/masterarbeit/thesis/images/NURBS_c_p(T)', '-dpng', '-r200');
@@ -566,6 +569,7 @@ children(2).LineStyle = '--';
 set(gca,'FontSize',13);
 
 xlim(gca, [30, 160]);
+xlabel('T_{ref} [°C]')
 ylabel('\Phi_q^{PCM,in} [mW]')
 
 legend('off')
@@ -596,6 +600,7 @@ print(fig, '/home/argo/masterarbeit/thesis/images/smearing_effect_simulation_hea
 
 % zoom for comparison with measured heat flux values
 xlim([80, 160]);
+xlabel('T_{ref} [°C]')
 
 print(fig, '/home/argo/masterarbeit/thesis/images/smearing_effect_simulation_heat_fluxes_zoom', '-dpng', '-r200');
 close();
@@ -611,6 +616,7 @@ children = get(gca, 'Children');
 children(1).LineWidth = 2.2;
 
 xlim([30, 160]);
+xlabel('T [°C]')
 ylabel('c_p [mJ/(mg*K)]')
 
 print(fig, '/home/argo/masterarbeit/thesis/images/smearing_effect_simulation_c_p', '-dpng', '-r200');
@@ -658,7 +664,7 @@ for i=1:length(T_test_dirs)
 end
 
 legend(ax1, 'show', 'location', 'northwest', 'Orientation', 'horizontal');
-xlabel(ax1, 'T_{ref} [degC]')
+xlabel(ax1, 'T_{ref} [°C]')
 ylabel(ax1, 'Relative error')
 set(ax1,'FontSize',24);
 xlim(ax1, [T_test_data.T_ref_dsc(1), T_test_data.T_ref_dsc(end)]);
@@ -726,7 +732,7 @@ for i=1:length(T_test_dirs)
 end
 
 legend(ax1, 'show', 'location', 'north', 'orientation', 'horizontal');
-xlabel(ax1, 'T_{ref} [degC]')
+xlabel(ax1, 'T_{ref} [°C]')
 ylabel(ax1, 'Relative error')
 xlim(ax1, [T_test_data.T_ref_dsc(1), T_test_data.T_ref_dsc(end)]);
 ylim(ax1, [1e-11, 1e-4]);
@@ -793,7 +799,7 @@ for i=1:length(T_test_dirs)
 end
 
 legend(ax1, 'show', 'location', 'north', 'orientation', 'horizontal');
-xlabel(ax1, 'T_{ref} [degC]')
+xlabel(ax1, 'T_{ref} [°C]')
 ylabel(ax1, 'Relative error')
 xlim(ax1, [T_test_data.T_ref_dsc(1), T_test_data.T_ref_dsc(end)]);
 ylim(ax1, [1e-11, 1e-4]);
@@ -850,7 +856,7 @@ relErr = abs(1 - T_ref7 ./ T_ref8);
 fig1 = figure(23); clf; ax1 = gca; set(ax1, 'YScale', 'log'); hold on
 
 plot(ax1, T_ref_dsc, relErr, 'Linewidth', 1.2);
-xlabel(ax1, 'T_{ref} [degC]')
+xlabel(ax1, 'T_{ref} [°C]')
 ylabel(ax1, 'Relative error')
 set(ax1,'FontSize',12);
 print(fig1, '/home/argo/masterarbeit/thesis/images/integration_tolerance_relErr', '-dpng', '-r200');
@@ -883,9 +889,9 @@ heat_rate_meas_dev = 100*(heat_rate_meas ./ dsc.Tinfo.Tstep - 1);
 
 fig = figure(50); clf; hold on
 plot(dsc.data(idx_start:idx_end,1), heat_rate_meas, 'color', 'blue', ...
-    'DisplayName', 'Heat rate at reference crucible');
+    'Linewidth', 1.2, 'DisplayName', 'Heat rate at reference crucible');
 plot([dsc.data(idx_start,1), dsc.data(end,1)], mean(heat_rate_meas)*ones(1,2), ...
-    'Color', 'red', 'Linewidth', 1.3, 'Linestyle', '-', 'DisplayName', 'Mean value');
+    'Color', 'red', 'Linewidth', 2.0, 'Linestyle', '-', 'DisplayName', 'Mean value');
 yticks([2.48, 2.485, 2.49, 2.495, 2.5, 2.505, 2.51]);
 yticklabels({'2.48 (-0.8%)', '2.485 (-0.6%)', '2.49 (-0.4%)', '2.495 (-0.2%)', ...
              '2.5 (0%)', '2.505 (+0.2%)', '2.51 (+0.4%)'})
@@ -895,18 +901,21 @@ yticklabels({'2.48 (-0.8%)', '2.485 (-0.6%)', '2.49 (-0.4%)', '2.495 (-0.2%)', .
 % plot(dsc.data(idx_start:idx_end,2), dsc.data(idx_start:idx_end,1))
 
 ylim([2.48 2.511])
-xlabel('T_{ref} [degC]');
+xlim([20, 160]);
+xticks(20:20:160)
+xlabel('T_{ref} [°C]');
 ylabel('Heat rate (deviation) [K/min]')
 legend('show', 'location', 'northwest')
-set(gca,'FontSize',12);
+set(gca,'FontSize',24);
 
+set(fig, 'Units', 'normalized', 'Position', [0.0, 0.0, 0.65, 1.]); 
 
-% print(fig, '/home/argo/masterarbeit/thesis/images/heat_rate_ref_crucible', '-dpng', '-r200');
+print(fig, '/home/argo/masterarbeit/thesis/images/heat_rate_ref_crucible', '-dpng', '-r200');
 
 fprintf('%1.4f +/- %1.4f (%1.4f%%)\n', mean(heat_rate_meas), std(heat_rate_meas), ...
     std(heat_rate_meas) / mean(heat_rate_meas) * 100);
 
-
+close;
 
 %% Berechnung Konfidenzintervalle der geschaetzten Parameter
 
@@ -1197,7 +1206,7 @@ for j=1:length(nameSubDirs)
     
     plot(ax1, T_plot, c_p_plot, 'DisplayName', 'c_p(T)', 'Linewidth', 2.)
     legend(ax1, 'show', 'location', 'northwest');
-    xlabel(ax1, 'T [degC]');
+    xlabel(ax1, 'T [°C]');
     ylabel(ax1, 'c_p [mJ/(mg*K)]');
     set(ax1,'FontSize',30);
     xlim(ax1, [30, 160]);
@@ -1247,7 +1256,7 @@ for j=1:length(nameSubDirs)
          'Linestyle', '--', 'Linewidth', 2.);
     plot(ax2, T_ref_dsc, q_res, 'DisplayName', 'Residuum', 'Linewidth', 2.);
     legend(ax2, 'show', 'location', 'northwest');
-    xlabel(ax2, 'T_{ref} [degC]');
+    xlabel(ax2, 'T_{ref} [°C]');
     ylabel(ax2, '\Phi_q^{pcm,in} [mW]');
     set(ax2,'FontSize',30);
     xlim(ax2, [T_ref_dsc(1), T_ref_dsc(end)]);
@@ -1449,7 +1458,7 @@ plot(ax1, T_domain, c_p_gauss_linear_comb(T_domain, scaled_params), ...
     'DisplayName', 'c_p(T)', 'Linewidth', 1.7, 'color', 'black');
 
 set(gca,'FontSize',20)
-xlabel(ax1, 'T [degC]')
+xlabel(ax1, 'T [°C]')
 ylabel(ax1, 'c_p [mJ/(mg*K)]');
 legend(ax1, 'show', 'location', 'northwest')
 xlim(ax1, [100 140]);
@@ -1457,7 +1466,7 @@ xlim(ax1, [100 140]);
 save_path = [fit_data_path, 'Gaussians_splitted'];
 print(fig1, save_path, '-dpng', '-r200');
     
-
+close;
 
 %% Gauss plot mit allen Gaussen einzeln (beispielbild fuer parametrisierungen)
 
@@ -1498,7 +1507,7 @@ plot(ax1, T_domain, c_p_gauss_linear_comb(T_domain, scaled_params), ...
     'DisplayName', 'c_p(T)', 'Linewidth', 1.3, 'color', 'black');
 
 set(gca,'FontSize',12)
-xlabel(ax1, 'T [degC]')
+xlabel(ax1, 'T [°C]')
 ylabel(ax1, 'c_p [mJ/(mg*K)]');
 legend(ax1, 'show', 'location', 'northwest')
 xlim(ax1, [100 140]);
@@ -1669,7 +1678,7 @@ h_max = plot(ax1, T_max, c_p_fs(T_max, fs_params), 'x', ...
 
 % Baseline
 h_base = plot(ax1, T_domain, m*T_domain + b, '--', 'color', 'm', ...
-    'DisplayName', 'Linear base line', 'Linewidth', 1.5);
+    'DisplayName', 'Linear baseline', 'Linewidth', 1.5);
 
 
 
@@ -1677,7 +1686,7 @@ h_base = plot(ax1, T_domain, m*T_domain + b, '--', 'color', 'm', ...
 
 xticks([T_on, T_infl_1, T_max, T_infl_2, T_off]);
 xticklabels({'T_{on}', 'T_{infl,1}', 'T_{max}', 'T_{infl,2}', 'T_{off}'});
-xlabel('T [degC]')
+xlabel('T [°C]')
 ylabel('c_p [mJ/(mg*K)]')
 %legend('show', 'location', 'northwest');
 legend([h_c_p, h_max, h_infl, h_infl_tangent, h_base], 'location', 'northwest');
@@ -1687,7 +1696,7 @@ set(ax1, 'FontSize',20)
 save_path = '/home/argo/masterarbeit/thesis/images/T_on_T_off_illustration';
 print(fig, save_path, '-dpng', '-r200');
 
-
+close;
 
 %% Berechnung T_on, T_off von mit Formel berechnetem c_p
 
@@ -1952,7 +1961,7 @@ for i=1:length(dsc_list)
         'Linewidth', 2.5);
     
     title(ax1, ['Heat rate: ', num2str(dsc.Tinfo.Tstep), ' K/min']);
-    xlabel(ax1, 'T [degC]')
+    xlabel(ax1, 'T [°C]')
     ylabel(ax1, 'c_p [mJ/(mg*K)]');
     xlim(ax1, [min(T_data), max(T_data)])
     set(ax1, 'FontSize',30)
@@ -2098,7 +2107,7 @@ T_ref_idx = fit_data.measurement.dsc_data.data(index_T_dsc(1):index_T_dsc(2),1);
 T_ref_idx = flipud(T_ref_idx);
 
 fig1 = figure(1);
-ax1 = gca;
+ax1 = gca; cla;
 
 image(1:17, T_ref_idx, dqdp, 'CDataMapping', 'scaled')
 colorbar;
@@ -2109,7 +2118,7 @@ set(gca,'Ydir','Normal')
 colormap('parula')
 set(gca,'FontSize',12);
 
-ylabel('T_{ref} [degC]')
+ylabel('T_{ref} [°C]')
 xlabel('Parameters')
 xticks(1:3:17)
 title('')

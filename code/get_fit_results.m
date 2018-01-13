@@ -50,7 +50,7 @@ for i=1:length(nameSubDirs)
         T_max);
     
     plot(ax1, T_domain, c_p, 'DisplayName', strcat(num2str(fit_data.measurement.dsc_data.Tinfo.Tstep), ' K/min'))
-    xlabel('T [degC]')
+    xlabel('T [°C]')
     ylabel('c_p [mJ/(mg K)]')
     
     % optimization progress plot
