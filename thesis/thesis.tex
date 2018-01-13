@@ -283,8 +283,8 @@ A popular application of PCMs are heating pads (see \cref{fig:heating_pad}) whic
 In general, PCMs work as an energy buffer (LHTES: Latent heat thermal energy storage). Another application are industry processes to store the process heat for later usage \cite{pcm_process_heat}. Furthermore they can be used to optimize  photovoltaic cells as the efficiency of those cells is temperature dependent with a maximum at a certain point. PCMs are able to stabilize the temperature where the efficiency is maximal \cite{pcm_solar_cells}. 
 A last example are insulations of houses. During the day when it is hot, the PCM becomes liquid and absorbs heat from outside, so they work as a cooling system. On the contrary at night when it is cold outside the PCM becomes solid, releases heat and works as a heating \cite{pcm_house_insulation}. \\
 An important material property is the specific heat capacity $c_p(T)$ where a phase transition peak tells us at which temperature the phase change occurs and how much energy can be stored. The common way of computing $c_p(T)$ from differential scanning calorimetry (DSC) measurement data yields different results depending on the heat rate, a measurement parameter. Since $c_p(T)$ is a material property this is unphysical and this issue is known as the smearing problem. By applying a parameter estimation we aim to avoid this problem.
-Therefore the two major goals of this thesis is both simulate the measuring process of a DSC where a PCM undergoes a phase transition and perform a parameter estimation in order to get the PCM's true specific heat capacity. 
-Furthermore the heat rate is proportional to the time duration of the experiment. If we get the same $c_p(T)$ for all heat rates we are able to accelerate the measuring process and therefore the research on this materials.
+Therefore the two major goals of this thesis are both simulate the measuring process of a DSC where a PCM undergoes a solid-liquid phase transition and perform a parameter estimation in order to get the PCM's true specific heat capacity. 
+Furthermore the heat rate is proportional to the time duration of the experiment. If we get the same $c_p(T)$ for all heat rates we are able to accelerate the measuring process and therefore the research on these materials.
 
 \paragraph{Related work} \mbox{}\\
 Fundamentals about the heat capacity of polymers and experimental identification is depicted in \cite{wunderlich_heat_capacity_polymers}.
@@ -327,7 +327,7 @@ Heat $Q$ is the energy that flows from a warmer to a colder object because of th
 
 
 Probably the most important physical quantity for us is the specific heat capacity $c_p$, a temperature dependent material property that tells us how much energy is needed to increase the temperature of $1kg$ of this material by $1K$. 
-Since we are primarily interested in the phase change we handle with specific heat capacities with latent part, i.e. a peak at the melting point. Moreover the specific heat capacity not belonging to the phase transition is called sensitive part and is described by the base line. 
+Since we are primarily interested in the phase change we handle with specific heat capacities with latent part, i.e. a peak at the melting point. Moreover the specific heat capacity not belonging to the phase transition is called sensitive part and is described by the baseline. 
 For a pure substance this phase transition peak would be ideally a Dirac delta function (see  \cref{fig:physics_c_p_dirac_delta}). A constant heat flux entering such a pure substance increases the temperature until phase change. Then the heat is absorbed in order to perform the phase transition while the temperature stays constant. Finally, after the phase change has finished, the temperature increases again. 
 In mixed substances like polyethylene in our case with different lengths of the individual polymer chains or due to lattice defects, the peak extends over a temperature range. In the case of lattice defects the atom's binding energies are decreased which lowers the phase transition's temperature partially. The corresponding shape of the specific heat capacity is shown in \cref{fig:physics_fraser_suzuki}. It is not known what shape of $c_p(T)$ we should expect exactly for a polymer. \\
 The last physical quantity to introduce is the melting enthalpy $\Delta H$ which is in the case of constant pressure the heat needed to perform the phase transition. Considering the graph $c_p(T)$, the area below the phase change peak less the baseline is equal to the melting enthalpy. This is illustrated in \cref{fig:physics_fraser_suzuki}.
@@ -410,12 +410,12 @@ Beside the melting enthalpy $\Delta H$ (\cref{fig:physics_fraser_suzuki}) additi
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.79\textwidth]{/home/argo/masterarbeit/thesis/images/T_on_T_off_illustration.png}
-	\caption{Illustration of peak characteristics $T_{max}$, $T_{on}$ and $T_{off}$ where latter two are computed as intersections of the base line with inflection point tangents. \\
+	\caption{Illustration of peak characteristics $T_{max}$, $T_{on}$ and $T_{off}$ where latter two are computed as intersections of the baseline with inflection point tangents. \\
 	Used for evaluation in numerical experiment \cref{sec:param_estimation_5Gausse,sec:param_estimation_fs,sec:param_estimation_mod_heat_rate_FS}.}
 	\label{fig:T_on/off_illustration}
 \end{figure}
 
-These are the maximum point $T_{max}$ and further the extrapolated on- and offset of melting $T_{on}$ and $T_{off}$ computed as the intersection of the inflection points' tangents with the base line of $c_p(T)$, i.e. the sensitive part \cite{DIN_11357}. In the parametrizations (\cref{sec:parametrizations} except NURBS) of the specific heat capacity in this thesis the base line is modeled linear. An illustration is given above in \cref{fig:T_on/off_illustration}.
+These are the maximum point $T_{max}$ and further the extrapolated on- and offset of melting $T_{on}$ and $T_{off}$ computed as the intersection of the inflection points' tangents with the baseline of $c_p(T)$, i.e. the sensitive part \cite{DIN_11357}. In the parametrizations (\cref{sec:parametrizations} except NURBS) of the specific heat capacity in this thesis the baseline is modeled linear. An illustration is given above in \cref{fig:T_on/off_illustration}.
 
 
 \subsection{Derivation of the heat equation}
@@ -660,8 +660,8 @@ Since crucial and occurring several times in this section, we introduce the init
 \end{align}
 
 with differential state vector $y \in \mathbb{R}^n$, time $t \in \mathbb{R}$ and parameters $p \in \mathbb{R}^{n_p}$. Function $f: \mathbb{R}^n \times \mathbb{R} \rightarrow \mathbb{R}^n$ assumed sufficiently smooth is called the differential equation's right hand side within the ordinary differential equation (ODE) $\dot{y} = f(y(t), t; p)$. The semicolon separates function arguments and  parameters\footnote{E.g., also controls $u$ in the context of optimal control.}. Initial time and state are $t_0$ and $y_0$, respectively. \\
-Local existence of the solution is shown in theorem of Peano, basically requires continuity of $f$ (see e.g. \cite{ODE_analytic} Theorem 2.2.8).
-For global existence and uniqueness the theorem of Picard-Lindelöf holds, requiring essentially $f$ Lipschitz continuous (see e.g. \cite{ODE_analytic} Theorem 2.4.5). \\
+Local existence of the solution can be shown by Peano's theorem, requiring continuity of $f$ (see e.g. \cite{ODE_analytic} Theorem 2.2.8).
+To prove the global existence and uniqueness, the theorem of Picard-Lindelöf can be applied, requiring global Lipschitz continuous $f$ (see e.g. \cite{ODE_analytic} Theorem 2.4.5). \\
 
 
 
@@ -670,12 +670,12 @@ For global existence and uniqueness the theorem of Picard-Lindelöf holds, requi
 \subsection{Derivative generation}
 \label{sec:derivative_generation}
 In the context of continuous optimization we take advantage of derivative information in order to minimize some function. 
-There are several possibilities to obtain these derivatives. We will introduce here the concept of finite differences and automatic differentiation which were used in this thesis. 
+There are several possibilities to obtain these derivatives. Here, we will introduce the concept of finite differences and automatic differentiation which were used in this thesis. 
 Beside them the methods of symbolic- and complex step-differentiation exist and are explained e.g. in \cite{diss_jan}.
 
 \subsubsection{Finite differences}
 \label{sec:finite_differences}
-Derivatives approximated by finite differences are deployed beside the optimization task also in the spatial discretization of a partial differential equation which will be explained in more detail in \cref{sec:pde_discretization}.
+Derivatives approximated by finite differences are deployed beside the optimization task also in the spatial discretization of partial differential equations which will be explained in more detail in \cref{sec:pde_discretization}.
 They can be derived easily from Taylor-series expansion where we restrict ourselves to the scalar function argument case $x \in \mathbb{R}$ since derivatives in higher dimensions $x \in \mathbb{R}^n$ are obtained straight forward by applying directional derivatives under the assumption of total differentiability.  \\
 Considering the function $f: \mathbb{R} \rightarrow \mathbb{R}$ with $f \in \mathcal{C}^2$ the Taylor series looks as follows:
 
@@ -701,13 +701,13 @@ Regarding the Taylor series up to order two in both directions of the domain of 
 \end{subequations}
 
 
-subtract both equations and reorder again we get
+by subtracting both equations and reordering again we get
 
 \begin{equation}
 \frac{\partial f}{\partial x}(x) = \frac{f(x+h) - f(x-h)}{2 h} + \mathcal{O}(h^2)
 \end{equation}
 
-which has a higher error order, though at the expense of an additional function evaluation for the usual case where the function value $f(x)$ is evaluated . \\
+which has a higher error order, though at the expense of an additional function evaluation for the usual case where the function value $f(x)$ is evaluated anyway. \\
 
 Second order derivatives can be approximated analogously by adding \cref{eq:finite_differences_taylor_exp_+} and \cref{eq:finite_differences_taylor_exp_-}:
 
@@ -716,7 +716,7 @@ Second order derivatives can be approximated analogously by adding \cref{eq:fini
 \label{eq:finite_difference_2nd_der}
 \end{equation}
 
-In the spatial discretization of partial differential equations one often choose a finer grid for areas of interest. So for the resulting non-equidistant grid (see \cref{fig:2_point_formula_illustration}) one needs a more general formula which is derived by considering again the Taylor expansion
+In the spatial discretization of partial differential equations one often chooses a finer grid for areas of interest. So for the resulting non-equidistant grid (see \cref{fig:2_point_formula_illustration}) one needs a more general formula which is derived by considering again the Taylor expansion
 
 \begin{subequations}
 	\label{eq:finite_differences_taylor_exp_non-homogenous}
@@ -750,7 +750,7 @@ Note that for a homogeneous grid ($\alpha=1$) this is obviously equal to \cref{e
 \end{figure}
 
 
-As mentioned before, for simplicity we restricted ourselves to functions of scalar argument $x \in \mathbb{R}$. In the case $x \in \mathbb{R}^n$ the Jacobian can be approximated by directional derivatives. So, e.g. for the one-sided first derivative \cref{eq:one_sided_discretized_derivative} $n+1$ function evaluations are necessary. In the case of a vector-valued function each component is considered separately. \\
+As mentioned before, for simplicity we restricted ourselves to functions with scalar argument $x \in \mathbb{R}$. In the case $x \in \mathbb{R}^n$ the Jacobian can be approximated by directional derivatives. So, e.g. for the one-sided first derivative \cref{eq:one_sided_discretized_derivative} $n+1$ function evaluations are necessary. In the case of a vector-valued function each component is considered separately. \\
 
 The great advantage of finite differences is their simple implementation. We treat the function as a black box, perturb the input arguments a bit, perform $n+1$ function evaluations and get an approximation of the first derivative. \\
 This simplicity is at the expense of accuracy. If we choose $h$ too small, cancellation occurs. Otherwise with $h$ large the remainder term of the Taylor expansion gets large. Therefore this error can be minimized by varying $h$, although then the derivative approximation is still not exact.
@@ -763,7 +763,7 @@ This simplicity is at the expense of accuracy. If we choose $h$ too small, cance
 \label{sec:Automatic_diff_IND_theory}
 The basic idea of Automatic Differentiation (AD) is to subdivide a sufficiently smooth function ${f: \mathbb{R}^n \rightarrow \mathbb{R}^m}$ into so called elementary functions $\varphi_i$ of which the derivative is known. 
 
-The evaluation of these elementary functions give intermediate values $v_i = \varphi_i(v_j)_{j \prec i}$ where the dependency relation $\prec$ is defined as
+The evaluation of these elementary functions gives intermediate values $v_i = \varphi_i(v_j)_{j \prec i}$ where the dependency relation $\prec$ is defined as
 
 \begin{equation}
 j \prec i \Leftrightarrow v_j \text{\textit{ is an argument of }} \varphi_i.
@@ -791,12 +791,12 @@ In the forward mode, the directional derivative $\dot{y}$ is computed for a give
 \dot{y} = \frac{\partial f}{\partial x}(x) \cdot \dot{x}
 \end{equation}
 
-Here the notation $\dot{x}$ is not to be mistaken with the time derivative often used in physics context.
+Here the notation $\dot{x}$ should not be mixed-up with the time derivative often used in physics context.
 The algorithm called \textit{first order forward sweep} (see \cref{tab:first_order_forward_sweep}) is structured into three parts. First the auxiliary variables $v_{1-n},...,v_0$ and $\dot{v}_{1-n},...,\dot{v}_0$ are initialized with the evaluation point $x$ and the direction of the directional derivative $\dot{x}$. So if we want to get $\frac{\partial f}{\partial x_2}$ we would need to set $\dot{x} = \begin{bmatrix}
 0 & 1 & 0 & \dots & 0
 \end{bmatrix}^T$. One can see here that with one forward sweep we get one column of the Jacobian $ \frac{\partial f}{\partial x}$. 
 After the initialization the actual forward sweep begins where the $k$ elemental functions of $f$ are evaluated and saved in the intermediate values $v_i$. Simultaneously, their derivatives  $\dot{v}_i$ are computed using previously calculated intermediate values and derivatives. E.g., for $v_2 = \varphi_2(v_0, v_1)$ it holds $\dot{v}_2 = \frac{\partial \varphi_2}{\partial v_0} \dot{v_0} + \frac{\partial \varphi_2}{\partial v_1} \dot{v_1}$. \\
-The last $m$ intermediate variables represent the solution vector. Finally this values and derivatives are extracted.
+The last $m$ intermediate variables represent the solution vector. Finally these values and derivatives are extracted.
 
 
 
@@ -820,7 +820,7 @@ In order to illustrate this algorithm is applied on the example function \cref{e
 		Initialization & $v_{-2} = x_1$ & $\dot{v}_{-2} = \dot{x}_1$ \\
 		& $v_{-1} = x_2$ & $\dot{v}_{-1} = \dot{x}_2$ \\
 		& $v_{0} = x_3$ & $\dot{v_{0}} = \dot{x}_3$ \\ \hline
-		Intermediate Steps & $v_1 = 1+v_{-2}$ & $\dot{v_1} = 1 \cdot \dot{v}_{-2}$ \\
+		Intermediate steps & $v_1 = 1+v_{-2}$ & $\dot{v_1} = 1 \cdot \dot{v}_{-2}$ \\
 		& $v_2 = v_{1}^2$ & $\dot{v_2} = 2 v_1 \cdot \dot{v}_{1}$ \\
 		& $v_3 = \exp(v_{2})$ & $\dot{v_3} = \exp(v_2) \cdot \dot{v}_{2}$ \\
 		& $v_4 = \sin(v_{1})$ & $\dot{v_4} = \cos(v_1) \cdot \dot{v}_{1}$ \\
@@ -842,8 +842,8 @@ Beside the forward mode there is the adjoint mode where the adjoint directional 
 \bar{x}^T = \bar{y}^T \frac{\partial f}{\partial x}(x)
 \end{equation}
 
-The algorithm is shown in \cref{tab:first_order_adjoint_sweep} where operator $+ \hspace{-0.12cm} =$ is defined as $x + \hspace{-0.12cm} = y \ \Leftrightarrow \ x = x + y$. In contrary to the forward mode we need here an additional set of adjoint intermediate variables $\bar{v}_i$. These contain the adjoint sensitivity information which are initialized to zero in the first step. \\
-The following forward sweep is analog to the one shown in \cref{tab:first_order_forward_sweep}, however here we compute just the intermediate function evaluations without derivatives. We need these function values in the next part. \\
+The algorithm is shown in \cref{tab:first_order_adjoint_sweep} where operator $+ \hspace{-0.12cm} =$ is defined as $x + \hspace{-0.12cm} = y \ \Leftrightarrow \ x = x + y$. In contrary to the forward mode we need an additional set of adjoint intermediate variables $\bar{v}_i$ here. These contain the adjoint sensitivity information which are initialized to zero in the first step. \\
+The following forward sweep is analogous to the one shown in \cref{tab:first_order_forward_sweep}, however here we compute just the intermediate function evaluations without derivatives. We need these function values in the next part. \\
 The actual adjoint directional derivatives are now computed in the reverse sweep which consists of three sub-steps. First of all, the adjoint directions $\bar{y}$ are chosen. So for example, if we want the second row of the Jacobian $\frac{\partial f_2}{\partial x}$ we need to set $\bar{y} = \begin{bmatrix}
 0 & 1 & 0 & \dots & 0
 \end{bmatrix}^T$.
@@ -929,7 +929,7 @@ It is defined as
 \end{equation}
 
 where $\alpha_{ij} \in \mathbb{R}$ with $\alpha_{0m},\alpha_{km} \ne 0 \ \forall \ m$ are the method's coefficients. BDF methods up to order 6 are used in practice because these are zero-stable. \\
-Since \cref{eq:bdf_formula} is a nonlinear system of equations it is solved iteratively using Newton's method (therefore we need $f \in \mathcal{C}^1$). In order to obtain a good starting point a so called predictor is used, which is the integration polynomial of the previous integration step. With this initial guess for $y_{m+k}$ the Newton method can be applied to get the so called corrector polynomial, which satisfies the differential equation at $t_{m+k}$. \\
+Since \cref{eq:bdf_formula} is a nonlinear system of equations it can be solved iteratively using Newton's method (therefore we need $f \in \mathcal{C}^1$). In order to obtain a good starting point a so called predictor is used, which is the integration polynomial of the previous integration step. With this initial guess for $y_{m+k}$ the Newton method can be applied to get the so called corrector polynomial, which satisfies the differential equation at $t_{m+k}$. \\
 As we want the numerical integrator both to perform large integration steps to minimize the required time to solve the IVP and limit the inevitable numerical errors to a predefined value we are dependent on a strategy to choose the step width $h_{m+k-1}$ accordingly. This is done by estimating the local error (see e.g. \cite{diss_jan} page 128) in each integration step. Either the local error is smaller than some tolerance then the step width might be increased in the next integration step, otherwise decreased until the local error tolerance is satisfied. \\
 
 The BDF solver DAESOL-II embedded in SolvIND has been used in this thesis to solve \cref{eq:heat_equation_discretized}.
@@ -945,7 +945,7 @@ The BDF solver DAESOL-II embedded in SolvIND has been used in this thesis to sol
 
 
 Given a partial differential equation (PDE) with the sought solution $u(x,t)$ dependent on space coordinate $x$ and time $t$. Since the problem of finding $u(x,t)$ that solves the corresponding PDE is infinite-dimensional, a method of discretizing space and time is introduced in the following in order to obtain a finite-dimensional problem. \\
-Since later in \cref{sec:simulation_of_DSC} the heat conduction problem shall be solved, in this section we treat a boundary value problem (BVP) of the following analog form:
+Since later in \cref{sec:simulation_of_DSC} the heat conduction problem shall be solved, in this section we treat a boundary value problem (BVP) of the following analogous form:
 
 \begin{subequations}
 	\begin{align}
@@ -1050,7 +1050,7 @@ Putting all these together, where due to the equality in \cref{eq:method_of_line
 \end{align}
  
 where operator $.*$ is a row-wise multiplication, i.e. for vectors $v, w \in \mathbb{R}^n$ it holds $(v \ .* \ w)_i = v_i \cdot w_i$ for component $i$. This system can be solved by an appropriate ODE solver (see \cref{sec:theory_ODE_solver_BDF}) where the temporal discretization occurs. \\
-Note that we discussed here for simplicity the case of an equidistant spatial grid. The numerical experiments were done with a heterogeneous grid (\cref{sec:spatial_discretization_grid}) which modifies the discretized second derivative equation \eqref{eq:discretized_second_derivative}, see \cref{eq:2_point_formula_inhomogeneous}. \\
+Note that for simplicity we discussed here the case of an equidistant spatial grid. The numerical experiments were done with a heterogeneous grid (\cref{sec:spatial_discretization_grid}) which modifies the discretized second derivative equation \eqref{eq:discretized_second_derivative}, see \cref{eq:2_point_formula_inhomogeneous}. \\
 The method of lines was applied in this thesis in \cref{sec:mathematical_model}.
 
 
@@ -1109,7 +1109,7 @@ In this section we first treat the general nonlinear optimization problem (NLP) 
 	& \ F_3(x) \ge 0 \nonumber
 \end{align}
 
-where $x \in \mathbb{R}^n$ is the optimization variable, $f\text{: } \mathbb{R}^n \rightarrow \mathbb{R}$ is the objective function, $F_2\text{: } \mathbb{R}^n \rightarrow \mathbb{R}^{m_2}$ and $F_3\text{: } \mathbb{R}^n \rightarrow \mathbb{R}^{m_3}$ are the equality and inequality constraints, respectively. $f$, $F_2$ and $F_3$ are assumed sufficiently smooth. Index $m_1$ is missing because we will need this later in the context of a least squares problem. The results shown in this chapter can be found for example in \cite{nonlinear_optimiziation_wright}. \\
+where $x \in \mathbb{R}^n$ is the optimization variable, $f\text{: } \mathbb{R}^n \rightarrow \mathbb{R}$ is the objective function, $F_2\text{: } \mathbb{R}^n \rightarrow \mathbb{R}^{m_2}$ and $F_3\text{: } \mathbb{R}^n \rightarrow \mathbb{R}^{m_3}$ are the equality and inequality constraints, respectively. $f$, $F_2$ and $F_3$ are assumed to be sufficiently smooth. Index $m_1$ is missing because we will need this later in the context of a least squares problem. The results shown in this chapter can be found for example in \cite{nonlinear_optimiziation_wright}. \\
 
 The Lagrange function of \cref{eq:NLP_formulation} is defined as
 
@@ -1122,7 +1122,7 @@ with Lagrange multipliers $\lambda \in \mathbb{R}^{m_2}$ and $\mu \in \mathbb{R}
 Before stating the major results from optimization theory we introduce the following definitions:
 
 \begin{Definition}
-	$S := \{ x \ | \ F_2(x) = 0 \ \text{and} \ F_3(x) \ge 0 \}$ is called \underline{feasible set}.
+	$S := \{ x \in \mathbb{R}^n \ | \ F_2(x) = 0 \ \text{and} \ F_3(x) \ge 0 \}$ is called \underline{feasible set}.
 \end{Definition}
 
 \begin{Definition}
@@ -1562,7 +1562,7 @@ h_{n_{mp}}(x(t_{n_{mp}};p),p) - \eta_{n_{mp}}
 \end{pmatrix},
 \end{align}
 
-equality constraints \cref{eq:param_estimation_definition_IVP_diff_eq,eq:param_estimation_definition_IVP_init} and inequality constraints \cref{eq:param_estimation_definition_lbub}, the parameter estimation problem \cref{eq:param_estimation_definition} is analog to the stated nonlinear least squares problem \cref{eq:least_squares_problem}. \\
+equality constraints \cref{eq:param_estimation_definition_IVP_diff_eq,eq:param_estimation_definition_IVP_init} and inequality constraints \cref{eq:param_estimation_definition_lbub}, the parameter estimation problem \cref{eq:param_estimation_definition} is analogous to the stated nonlinear least squares problem \cref{eq:least_squares_problem}. \\
 
 In order to quantify how trustworthy the obtained estimated parameters are, a statistical a posteriori analysis is applied. The results shown in the following part can be found in \cite{diss_bock}. \\
 Since the measurement data $\eta$ is a random variable the estimated parameters $p$ are random variables as well. The corresponding covariance matrix of the estimate $p^*$ is defined as
@@ -2234,7 +2234,7 @@ A parametrization used frequently for chromatography and spectroscopy distributi
 
 where $h$, $r$, $s_r$, $w_r$ and $z$ are the parameters of Fraser-Suzuki. 
 Parameter $z$ is equal to the position of the maximum.
-In order to keep the argument of the logarithm positive it must hold $r > 0$, $w_r > 0$ and $s_r > 0$. Besides, at $s_r = 1$ the denominator with $\ln(s_r)^2$ becomes zero such that the condition $0 < s_r < 1$ is appropriate. Furthermore, the parameters for linear part $m$ and constant part $b$ were added to model a linear base line. An example is given in \cref{fig:parametrization_example_fraser_suzuki}.
+In order to keep the argument of the logarithm positive it must hold $r > 0$, $w_r > 0$ and $s_r > 0$. Besides, at $s_r = 1$ the denominator with $\ln(s_r)^2$ becomes zero such that the condition $0 < s_r < 1$ is appropriate. Furthermore, the parameters for linear part $m$ and constant part $b$ were added to model a linear baseline. An example is given in \cref{fig:parametrization_example_fraser_suzuki}.
 
 \begin{figure}[H]
 	\centering
@@ -2268,7 +2268,8 @@ In order to perform the parameter estimation to determine $c_p(T)$ we need to so
 
 where $p_{c_p} \in \mathbb{R}^{n_p}$ are the optimization variables, parametrizing the specific heat capacity $c_p(T)$, $n_{{mp}}$ is the number of measurement points, $\varPhi_{q}^{pcm,in}$ is the simulated heat flux into the PCM calculated from the solution $T(t_i;T_0,p_{c_p}) \in \mathbb{R}^N$ of the discretized heat equation and $\varPhi_q^{\eta_i}$ is the heat flux measurement value at measurement time $t_i$. 
 Note here that the same measurement variance $\sigma^2$ is assumed for all measurement values and it was set implicitly to $\sigma^2=1$.
-The model $\dot{T} = f(T,t;p_{c_p})$ with $T(0) = T_0$ is equivalent to the initial value problem \cref{eq:heat_equation_discretized} of solving the discretized heat equation. Lower and upper bounds for the optimization variables are set by $\underline{p}_{c_p}$ and $\bar{p}_{c_p}$, respectively to guarantee that the model can be evaluated\footnote{E.g., to prevent division by zero in a evaluation of the parametrized function $c_p(T)$.}.
+The model $\dot{T} = f(T,t;p_{c_p})$ with $T(0) = T_0$ is equivalent to the initial value problem \cref{eq:heat_equation_discretized} of solving the discretized heat equation. Lower and upper bounds for the optimization variables are set by $\underline{p}_{c_p}$ and $\bar{p}_{c_p}$, respectively to guarantee that the model can be evaluated\footnote{E.g., to prevent division by zero in an evaluation of the parametrized function $c_p(T)$.}.
+Note that \cref{eq:parameter_estimation_least_squares_problem} is solved separately for each heat rate $\beta$, which occurs in the model \cref{eq:heat_equation_discretized}.
 This least squares problem is of the form of \cref{eq:param_estimation_definition}, which has been discussed in \cref{sec:parameter_estimation_theory}.
 
 \subsubsection{Mapping measured reference temperature $T_{ref}^{\eta_i}$ to measurement times $t_i$}
@@ -2384,7 +2385,7 @@ This was accomplished with the numerical integrator DAESOL-II embedded in SolvIN
 Sensitivities were obtained in forward mode. Theoretically adjoint mode is computationally cheaper since we just need two adjoint directions $T^{N_{Ag}}$ and $T^{N_{Ag}+1}$ compared to $n_p$ directions in forward mode. But in practice it turned out that the computation is faster using the forward mode.
 The heat flux into the PCM $\varPhi_q^{pcm,in}$ is then computed with \cref{eq:heat_flux_computation_final} and the objective function Jacobian $J_1(p_{c_p})$ with \cref{eq:optimization_jacobian}. 
 The number of PCM discretization points was set to $N_{pcm}=50$ as the heat flux approximation error is then negligible (ascertained in a comparison with $N_{pcm}=200$). 
-The parameter estimation is performed by solving the least squares problem \cref{eq:parameter_estimation_least_squares_problem}. 
+The parameter estimation is performed by solving the least squares problem \cref{eq:parameter_estimation_least_squares_problem} for each heat rate $\beta$ separately. 
 For comparison, this was accomplished on the one hand with Matlab's industry-standard-solver $lsqnonlin$, which uses a trust-region method and Gauss-Newton directions based on interior-reflective Newton method described in \cite{lsqnonlin_alg1} and \cite{lsqnonlin_alg2}. 
 On the other hand, a self written Gauss-Newton solver for equality constrained and parameter bounded problems with active set strategy and line search has been used (\cref{alg:Gauss_Newton_unconstrained} for unconstrained case, see \cref{sec:param_estimation_fs}).
 When computing the reference side with the analytical solution \cref{eq:analytical_soln_final_formula} we stopped the actually infinite sum after $100$ summands which is definitively sufficient, since the $n$'th summand is in the order of $\mathcal{O}(n^{-3})$. \\
@@ -2603,7 +2604,7 @@ Summarized, a total number of discretization points $N=300$ is sufficient while 
 In the preliminary studies (see \cref{sec:param_estim_NURBS}), finite differences were used to approximate the objective function Jacobian $J_1(p_{c_p})$. 
 Because of the described problems, in the following the software package SolvIND has been used to generate exact derivatives of the numerical solution of IVP \cref{eq:heat_equation_discretized}. \\
 The parameter estimation is performed in two different ways in this and the following section, deploying different parametrizations. In this section, we focus on the residuum minimization, while in the next section a regularization in form of a predefined peak shape (Fraser-Suzuki) is active, in order to compare both results in the end. \\
-The parameter estimation is performed using the parametrization of five Gaussians, linear and constant part (see \cref{sec:parametrization_Gausse}), i.e. in total $n_p=17$ optimization parameters. 
+The parameter estimation is performed using the parametrization of five Gaussians, linear and constant part (see \cref{sec:parametrization_Gausse}), i.e. in total $n_p=17$ optimization parameters. These have been rescaled on the same order of magnitude $1$ during optimization.
 Five Gaussians were used since this is the minimum number such that the residuum almost vanishes, which has been ascertained in a comparative study with variable number of Gaussians. 
 The optimization was performed again with the matlab routine $lsqnonlin$. Start values (see \cref{sec:initial_values_5Gaussians}) for the first heat rate $\beta = 20 \frac{K}{min}$ were used from previously existing results with already reduced residuum. 
 Afterwards the optimizations were performed in a decreasing order of heat rates where parameters estimated in this process were used as start values in subsequent steps. 
@@ -2628,7 +2629,7 @@ The residuum is close to zero for all heat rates. Examining the reconstructed sp
 The reason is an anomaly in the measured heat flux at approximately $130^{\circ} C$, a decrease of the slope which is not present in the heat flux measurements from the other heat rates. 
 The following observations regarding the shape of $c_p(T)$ can be seen very well in the result for heat rate $5 \frac{K}{min}$. 
 First, the decline of the peak behind the maximum is not linear but has two different areas. 
-Second, behind the peak, $c_p(T)$ drops below the base line for a small temperature range. 
+Second, behind the peak, $c_p(T)$ drops below the baseline for a small temperature range. 
 These are probably unphysical optimization artifacts due to overfitting and a simplified, i.e incomplete model. 
 One should also notice that the $c_p(T)$ functions are quite similar.
 A more detailed comparison between them follows in \cref{sec:param_estimation_Gaussians_joint}.
@@ -2771,7 +2772,7 @@ $T_{on}$ and $T_{off}$ have not been computed since there are more than two infl
 
 \begin{table}[H]
 	\centering
-	\caption{For all heat rates: Temperature $T_{max}$ where $c_p(T)$ has its maximum and melting enthalpy $\Delta H$, i.e. the integral of $c_p(T)$ minus the base line over the temperature. Decreases below the baseline after the peak were ignored here. \\
+	\caption{For all heat rates: Temperature $T_{max}$ where $c_p(T)$ has its maximum and melting enthalpy $\Delta H$, i.e. the integral of $c_p(T)$ minus the baseline over the temperature. Decreases below the baseline after the peak were ignored here. \\
 		$^{(1)}$ SD: Standard deviation with applied Bessel correction. 
 		$^{(2)}$ $T_{max}$ for $\beta=10\frac{K}{min}$ was omitted as there are two maxima. Those are responsible for deformations influencing the peak area. Therefore corresponding $\Delta H$ value was not considered in mean computation. \\
 		Peak characteristics are elucidated in \cref{sec:peak_characteristics}. Cf. with results from Fraser-Suzuki parametrization in \cref{tab:eval_table_Tmax_deltaH_FS}.}
@@ -2790,7 +2791,9 @@ $T_{on}$ and $T_{off}$ have not been computed since there are more than two infl
 
 
 In order to avoid overfitting seen in the previous section we apply the Fraser-Suzuki parametrization (see \cref{sec:parametrization_FS}) where we fixed $r=2$ for identifiability. By this choice \cref{eq:fraser_suzuki} becomes a scaled log-normal distribution \cite{fraser_suzuki_1}.
-We have in total 6 parameters instead of 17 with Gaussian parametrization in the previous section. As there are fewer degrees of freedom and Fraser-Suzuki prescribes a peak shape, a form of regularization is active. \\
+We have in total 6 parameters instead of 17 with Gaussian parametrization in the previous section. 
+Again these parameters have been rescaled on the same order of magnitude $1$ during optimization.
+As there are fewer degrees of freedom and Fraser-Suzuki prescribes a peak shape, a form of regularization is active. \\
 The optimization was performed here with a self written Gauss-Newton solver based on \cref{sec:GN_numerical_solution} using a singular value decomposition of $J_1(p_{c_p})$ for the linearized subproblem. 
 An active set strategy for lower and upper bounds of the optimization variables has been implemented to ensure $0 < s_r < 1$ and $w_r > 0$ but it became apparent that the optimizer does not approach these limiting values. Therefore lower and upper bounds were disabled and we solve an unconstrained problem. Initial guesses (see \cref{sec:initial_values_FS}) for the parametrization at heat rate $20 \frac{K}{min}$ were chosen to be $h=14$, $w_r=10.7$, $s_r=0.705$, $z=129$, $m=0.0079$ and $b=1.69$ and following heat rates use the previous result analog to Gaussian parametrization \cref{sec:param_estimation_5Gausse}. The linear parameter $m$ was fixed to the previously obtained result for the heat rates $0.6$ and $0.3 \frac{K}{min}$ because of the problems remarked in the last section, namely the lack of measurement data when the heat flux is linear. \\
 The relative local integration tolerance was set to $10^{-9}$ and local error control of the forward sensitivities has been enabled and set to a relative tolerance $5\cdot 10^{-6}$ which is the minimum possible. For lower values, integration problems occurred in a way that the minimum stepsize has been reached. By using this modified tolerances the first order necessary optimality condition could be satisfied better, i.e. decreased further. \\
@@ -2799,7 +2802,7 @@ The optimization process took on average about $3$ minutes.
 
 \subsubsection{Specific heat capacity and heat flux separately for all heat rates}
 
-The resulting specific heat capacity $c_p(T)$ and corresponding heat flux $\varPhi_q^{pcm,in}$ for all heat rates after optimization is shown in \cref{fig:optim_c_p_heat_flux_FS_1,fig:optim_c_p_heat_flux_FS_2}. The heat flux residuum is larger than with Gaussian parametrization, especially at the rising side of the peak. Furthermore, the heat flux base line behind the peak exhibits an increased residuum as well. Altogether, the obtained specific heat capacities are very similar to each other. A detailed comparison follows after discussing the obtained parameters next.
+The resulting specific heat capacity $c_p(T)$ and corresponding heat flux $\varPhi_q^{pcm,in}$ for all heat rates after optimization is shown in \cref{fig:optim_c_p_heat_flux_FS_1,fig:optim_c_p_heat_flux_FS_2}. The heat flux residuum is larger than with Gaussian parametrization, especially at the rising side of the peak. Furthermore, the heat flux baseline behind the peak exhibits an increased residuum as well. Altogether, the obtained specific heat capacities are very similar to each other. A detailed comparison follows after discussing the obtained parameters next.
 
 
 
@@ -3022,7 +3025,7 @@ In this section the parameter estimation results of the reconstructed specific h
 In \cref{tab:eval_table_summary} all peak characteristics are listed. 
 The evaluation using the DIN formula is performed in two different ways. 
 First, the raw noisy $c_p^{\text{DIN}}(T)$ has been utilized. 
-$T_{on}$ and $T_{off}$ have been computed here by an estimate of the tangent at the inflection points via a linear fit on selected intervals and $\Delta H$ by an estimate of the base line and numerical integration. 
+$T_{on}$ and $T_{off}$ have been computed here by an estimate of the tangent at the inflection points via a linear fit on selected intervals and $\Delta H$ by an estimate of the baseline and numerical integration. 
 Second, a least squares fit of $c_p^{\text{DIN}}(T)$ on a Fraser-Suzuki peak with linear and constant part as in \cref{eq:fraser_suzuki} has been performed (see \cref{sec:FS_DIN_fits}), which allows a simple and objective extraction of all peak characteristics.  \\
 Both evaluations of $c_p^{\text{DIN}}(T)$ lead to very similar peak characteristics for all heat rates. $T_{on}$ is best determined here with a standard deviation (SD) of $\pm 1.1\%$. 
 With Gaussian parametrization in the  parameter estimation, the values for $T_{max}$ deviate less ($\pm 1.3\%$) while the melting enthalpy has a higher mean value but similar SD of $\pm 8\%$. 
@@ -3124,7 +3127,7 @@ A possible remedy could be to solve the variational differential equation instea
 \section{Parameter estimation start values}
 In this section the initial values for the iterative optimization process for parameter estimation in \cref{sec:param_estimation_5Gausse,sec:param_estimation_fs} are listed. The depicted values were used for heat rate $\beta = 20 \frac{K}{min}$. The following heat rates used successively the obtained parameters from the last heat rate as initial values, i.e. heat rate $\beta = 10 \frac{K}{min}$ used the obtained parameters from $\beta = 20 \frac{K}{min}$, heat rate $\beta = 5 \frac{K}{min}$ used the obtained parameters from $\beta = 10 \frac{K}{min}$ and so forth.
 
-\subsection{5 Gaussians}
+\subsection{Gaussians}
 \label{sec:initial_values_5Gaussians}
 
 The initial values for the least squares solver $lsqnonlin$ in the parameter estimation using the parametrization of five Gaussians in \cref{sec:param_estimation_5Gausse} are depicted in \cref{tab:initial_values_5Gausse}. 
