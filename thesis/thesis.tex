@@ -1298,7 +1298,8 @@ In the unconstrained case we want to solve the problem
 \label{eq:numerical_solution_LSQ}
 \end{equation}
 
-Based on decomposing $J_1$ two solution strategies are shown (cf. \cite{nonlinear_optimiziation_wright} chapter 10.1) :
+The normal equation $J_1^T J_1 \Delta x = -J_1^T F_1$ (obtained by applying the KKT-conditions on \cref{eq:numerical_solution_LSQ}) is not solved directly since the condition number of $J_1$ is squared here.
+Instead, based on decomposing $J_1$, two solution strategies are shown (see \cite{nonlinear_optimiziation_wright} chapter 10.1) :
 
 \begin{itemize}
 	\item \textbf{QR decomposition} \\
@@ -1551,7 +1552,7 @@ The measurement errors $\epsilon_i$ are assumed to be independently normal distr
 \eta_i = h_i(x(t_i;\hat{p}),\hat{p}) + \epsilon_i, \quad \epsilon_i \in \mathcal{N}(0,\sigma^2) \quad \text{for} \ i=1,...,n_{mp}
 \end{align}
 
-and the least squares objective function is a maximum likelihood estimator \cite{disseration_andreas_sommer}. Additional advantages of least squares is its differentiability (e.g. compared to sum over absolute residuum values) and Gauss-Newton (see \cref{sec:GN_numerical_solution}) can be applied as with
+and the least squares objective function is a maximum likelihood estimator (see e.g. \cite{disseration_andreas_sommer}). Additional advantages of least squares is its differentiability (e.g. compared to sum over absolute residuum values) and Gauss-Newton (see \cref{sec:GN_numerical_solution}) can be applied as with
 
 \begin{align}
 F_1(p) := \frac{1}{\sigma}
@@ -2150,15 +2151,15 @@ In preliminary computations, we used Non-Uniform Rational B-Splines (NURBS), see
 C^x(u), C^y(u) \end{pmatrix}^T \in \mathbb{R}^2$ is defined by
 
 \begin{equation}
-	C(u) = \frac{\sum_{i=0}^{n} N_{i,p}(u) \omega_i P_i }{\sum_{i=0}^{n} N_{i,p}(u) \omega_i} \qquad a \le u \le b
+	C(u) = \frac{\sum_{i=0}^{n} N_{i,k}(u) \omega_i P_i }{\sum_{i=0}^{n} N_{i,k}(u) \omega_i} \qquad a \le u \le b
 \end{equation}
 
 where $P_i = \begin{pmatrix}
 P_i^x, P_i^y \end{pmatrix}^T \in \mathbb{R}^2$ are called control points, $\omega_i$ are weights for each control point. Here we restrict ourselves to $\omega_i \ge 0$ where at least one weight has to be larger than zero.
-B-Spline basis functions $N_{i,p}(u)$ are defined recursively by
+B-Spline basis functions $N_{i,k}(u)$ are defined recursively by
 
 \begin{align}
-	N_{i,p}(u) = & \frac{u - u_i}{u_{i+p} - u_i} N_{i,p-1}(u) + \frac{u_{i+p+1} - u}{u_{i+p+1} - u_{i+1}} N_{i+1,p-1}(u) \label{eq:NURBS_basis_polynomial} \\[1ex]
+	N_{i,k}(u) = & \frac{u - u_i}{u_{i+k} - u_i} N_{i,k-1}(u) + \frac{u_{i+k+1} - u}{u_{i+k+1} - u_{i+1}} N_{i+1,k-1}(u) \label{eq:NURBS_basis_polynomial} \\[1ex]
 	N_{i,0} = &
 	\begin{cases}
 		1 \quad \text{if } u_i \le u < u_{i+1} \\
@@ -2170,25 +2171,26 @@ where $u_i$ are the elements of the knot vector
 
 \begin{equation}
 	U = (u_0,...,u_m)^T =
-	(\underbrace{a,...,a}_{p+1},u_{p+1},...,u_{m-p-1},\underbrace{b,...,b}_{p+1})^T
+	(\underbrace{a,...,a}_{k+1},u_{k+1},...,u_{m-k-1},\underbrace{b,...,b}_{k+1})^T
 	\label{eq:NURBS_knot_vector}
 \end{equation}
 
-With this formulation there are $n+1$ control points, $p$ is the order of the basis functions and the order of the resulting curve is defined by $p+1$. It holds ${m=n+p+1}$. The interval $[a,b]$ is arbitrary in the sense that with the knot vector \cref{eq:NURBS_knot_vector} it holds that $C(u=a)=P_0$, $C(u=b)=P_n$ and $u \in (a,b)$ are points between. \\
+With this formulation there are $n+1$ control points, $k$ is the order of the basis functions and the order of the resulting curve is defined by $k+1$. It holds ${m=n+k+1}$. The interval $[a,b]$ is arbitrary in the sense that with the knot vector \cref{eq:NURBS_knot_vector} it holds that $C(u=a)=P_0$, $C(u=b)=P_n$ and $u \in (a,b)$ are points between. \\
 
-In our experimental setup we used NURBS of order $4$, i.e. $p=3$. It was set $a=0$ and $b=1$ such that $u \in [0,1]$ and the knot vector reads
+In our experimental setup we used NURBS of order $4$, i.e. $k=3$. It was set $a=0$ and $b=1$ such that $u \in [0,1]$ and the knot vector reads
 \begin{equation}
-	U = (0,0,0,0,\frac{1}{n-p+1},\frac{2}{n-p+1},...,\frac{n-p}{n-p+1},1,1,1,1)^T 
+	U = \left(0,0,0,0,\frac{1}{n-k+1},\frac{2}{n-k+1},...,\frac{n-k}{n-k+1},1,1,1,1\right)^T 
 \end{equation}
 All control points contribute equally such that $\omega_i=1 \ \forall \ i$. 
 %With these settings it holds that $C(u) \in \mathcal{C}^2$.
 
-Since $C(u)$ is a parametrized curve we get a function $c_p(T)$ by using $C^x(u)$ as the domain of definition (temperature) and $C^y(u)$ as the co-domain ($c_p$). Evaluating $C(u)$ on an appropriate fine grid for values of $u$ and subsequently piecewise linear interpolation gives the wanted quantity $c_p(T)$, although not differentiable then.
+Since $C(u)$ is a parametrized curve we get a function $c_p(T)$ by using $C^x(u)$ as the domain of definition (temperature) and $C^y(u)$ as the co-domain ($c_p$). Evaluating $C(u)$ on an appropriate fine grid for values of $u$ and subsequently piecewise linear interpolation gives the wanted quantity $c_p(T)$, although not differentiable then\footnote{The problem of non-differentiability could be avoided by e.g. using cubic splines, but recognized only after using SolvIND with the other parametrizations.}.
 The x-coordinates of the control points were fixed on a predefined grid with $P_i^x < P_{i+1}^x$ to get a well-defined function.
 As optimization variables we used the corresponding y-coordinates $P_i^y$. \\
 The corresponding numerical experiments with this parametrization are found in \cref{sec:param_estim_NURBS}. \\
 
-As we switched for the derivative computation with respect to the optimization variables from finite differences to IND, implementation problems occurred with the case structure of \cref{eq:NURBS_basis_polynomial}. The evaluation of piecewise polynomials leads to a case structure as well. Those are supported by SolvIND only in a very limited way and not appropriate to handle these two complex case structures. Therefore the two following parametrizations has been used with IND.
+As we switched for the derivative computation with respect to the optimization variables from finite differences to IND and AD, implementation problems occurred with the case structure of \cref{eq:NURBS_basis_polynomial}. The evaluation of piecewise polynomials leads to a case structure as well. Those are supported by SolvIND only in a very limited way and not appropriate to handle these two complex case structures. 
+Therefore the two following parametrizations has been used with SolvIND.
 
 
 \subsubsection{Linear combination of Gaussian functions}
