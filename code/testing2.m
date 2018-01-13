@@ -97,8 +97,6 @@ fig1 = figure(1); hold on
 ax1 = gca();
 fig2 = figure(2); hold on
 ax2 = gca();
-fig3 = figure(3); hold on
-ax3 = gca();
 
 
 for i=1:length(dsc_list)
@@ -108,7 +106,7 @@ for i=1:length(dsc_list)
     q_meas = dsc.data(:,3) ./ dsc.data(:,4) * dsc.mass;
     legend_str = [num2str(dsc.Tinfo.Tstep), ' K/min'];
     plot(ax1, dsc.data(:,1), q_meas, 'DisplayName', legend_str, ...
-        'LineWidth', 1.3);
+        'LineWidth', 2.2);
     
     c_p = calc_cp(dsc);
     legend_str = [num2str(dsc.Tinfo.Tstep), ' K/min'];
@@ -122,7 +120,7 @@ end
 save_root_dir = '/home/argo/masterarbeit/thesis/images/';
 
 set(fig1, 'units', 'normalized', 'outerposition', [0 0 0.66 1]);
-set(ax1,'FontSize',24);
+set(ax1,'FontSize',25);
 xlabel(ax1, 'T_{ref} [degC]');
 ylabel(ax1, '\eta^{\Phi}[mW]');
 set(ax1, 'xlim', [30 160]);
@@ -134,7 +132,7 @@ close(fig1);
 
 
 set(fig2, 'units', 'normalized', 'outerposition', [0 0 0.66 1]);
-set(ax2,'FontSize',24);
+set(ax2,'FontSize',25);
 xlabel(ax2, 'T [degC]');
 ylabel(ax2, 'c_p [mJ/(mg*K)]');
 set(ax2, 'xlim', [30 160]);
@@ -483,17 +481,33 @@ sr =   0.3;
 z  = 130.0;
 m  = 0.003;
 b  =   2.0;
-p_fraser_suzuki = [h, r, wr, sr, z, m, b].';
+
+p_fraser_suzuki_unscaled = [h, r, wr, sr, z, m, b];
+
+scale_h  = 14.;
+scale_r  = 2.;
+scale_wr = 10.7;
+scale_sr = 0.705;
+scale_z  = 129.;
+scale_m  = 0.00789;
+scale_b  = 1.69;
+
+scaling_fs = [scale_h, scale_r, scale_wr, scale_sr, scale_z, scale_m, scale_b];
+
+p_fs_scaled = p_fraser_suzuki_unscaled ./ scaling_fs;
 
 
-T = 30:0.001:160;
-c_p = c_p_fs(T, p_fraser_suzuki);
-fig = figure(5); cla;
-set(gca,'FontSize',24);
-plot(T,c_p, 'linewidth', 1);
-xlabel('T [degC]');
-ylabel('c_p [mJ/(mg*K)]')
+T = 30:0.05:160;
+c_p = c_p_fs(T, p_fs_scaled);
+fig1 = figure(5);
+ax1 = gca; cla;
 
+plot(ax1, T,c_p, 'linewidth', 1.2);
+
+set(ax1,'FontSize', 12);
+xlabel(ax1, 'T [degC]');
+ylabel(ax1, 'c_p [mJ/(mg*K)]')
+box off
 
 print(fig, '/home/argo/masterarbeit/thesis/images/fraser_suzuki_example', '-dpng', '-r200');
 close();
@@ -509,7 +523,7 @@ fit_data = load([root_dir, 'fit_data.mat']);
 
 fig = open([root_dir, 'jac_output.fig']);
 colormap('parula')
-set(gca,'FontSize',12);
+set(gca,'FontSize',13);
 
 xlabel('Control points x-coordinate P^x [degC]');
 ylabel('T_{ref} [degC]')
@@ -525,50 +539,55 @@ close();
 
 
 % c_p(T)
-% fig = open('c_p(T).fig');
-% 
-% set(gca,'FontSize',12);
-% 
-% children = get(gca,'Children');
-% delete(children(1)) % delete c_p calc from formula
-% children(2).LineWidth = 1.3;
-% 
-% ylabel('c_p [mJ/(mg*K)]')
-% box off  % entfernt den Rahmen um die figure
-% 
-% print(fig, '/home/argo/masterarbeit/thesis/images/NURBS_c_p(T)', '-dpng', '-r200');
-% close;
+fig = open([root_dir, 'c_p(T).fig']);
+
+set(gca,'FontSize',13);
+
+children = get(gca,'Children');
+delete(children(1)) % delete c_p calc from formula
+children(2).LineWidth = 1.3;
+
+xlim(gca, [30, 160]);
+ylabel('c_p [mJ/(mg*K)]')
+box off  % entfernt den Rahmen um die figure
+
+print(fig, '/home/argo/masterarbeit/thesis/images/NURBS_c_p(T)', '-dpng', '-r200');
+close;
 
 % heat flux
-% fig = open('q_pcm_in(T_ref).fig');
-% 
-% children = get(gca, 'Children');
-% children(1).LineWidth = 1.3;
-% children(2).LineWidth = 1.3;
-% children(3).LineWidth = 1.3;
-% children(2).LineStyle = '--';
-% 
-% set(gca,'FontSize',12);
-% 
-% ylabel('\Phi_q^{PCM,in} [mW]')
-% 
-% legend('off')
-% legend('show', 'location', 'northwest');
-% 
-% print(fig, '/home/argo/masterarbeit/thesis/images/NURBS_heat_flux', '-dpng', '-r200');
-% close;
+fig = open([root_dir, 'q_pcm_in(T_ref).fig']);
+
+children = get(gca, 'Children');
+children(1).LineWidth = 1.3;
+children(2).LineWidth = 1.3;
+children(3).LineWidth = 1.3;
+children(2).LineStyle = '--';
+
+set(gca,'FontSize',13);
+
+xlim(gca, [30, 160]);
+ylabel('\Phi_q^{PCM,in} [mW]')
+
+legend('off')
+legend('show', 'location', 'northwest');
+
+print(fig, '/home/argo/masterarbeit/thesis/images/NURBS_heat_flux', '-dpng', '-r200');
+close;
 
 
 %% Plot smearing effect in simulation in a pretty way
 
 % heat fluxes
-fig = open('/home/argo/masterarbeit/simulationen-data/smearing_effect_simulation/heat_flux_smearing_simulation.fig')
-set(gca,'FontSize',12);
+fig = open('/home/argo/masterarbeit/simulationen-data/smearing_effect_simulation/heat_flux_smearing_simulation.fig');
+set(fig, 'units', 'normalized', 'outerposition', [0 0 0.66 1]);
+
+
+set(gca,'FontSize',25);
 
 children = get(gca, 'Children');
 
 for i=1:7
-    children(i).LineWidth = 1.;
+    children(i).LineWidth = 2.2;
     %children(i).YData = children(i).YData / children(i).YData(1); % scaling on same level
 end
 
@@ -582,13 +601,16 @@ print(fig, '/home/argo/masterarbeit/thesis/images/smearing_effect_simulation_hea
 close();
 
 % c_p(T)
-fig = open('c_p(T).fig');
+fig = open('/home/argo/masterarbeit/simulationen-data/smearing_effect_simulation/c_p(T).fig');
+set(fig, 'units', 'normalized', 'outerposition', [0 0 0.66 1]);
 
-set(gca,'FontSize',12);
+
+set(gca,'FontSize',25);
 
 children = get(gca, 'Children');
-children(1).LineWidth = 1.;
+children(1).LineWidth = 2.2;
 
+xlim([30, 160]);
 ylabel('c_p [mJ/(mg*K)]')
 
 print(fig, '/home/argo/masterarbeit/thesis/images/smearing_effect_simulation_c_p', '-dpng', '-r200');
@@ -597,7 +619,7 @@ close();
 
 
 
-%% Plot grid error with equidistant grid as reference
+%% Plot grid error with equidistant grid as reference n_tr
 %  modify n_tr
 
 root_dir = '/home/argo/masterarbeit/simulationen-data/grid_error/';
@@ -637,7 +659,7 @@ end
 
 legend(ax1, 'show', 'location', 'northwest', 'Orientation', 'horizontal');
 xlabel(ax1, 'T_{ref} [degC]')
-ylabel(ax1, '|Relative error|')
+ylabel(ax1, 'Relative error')
 set(ax1,'FontSize',24);
 xlim(ax1, [T_test_data.T_ref_dsc(1), T_test_data.T_ref_dsc(end)]);
 ylim(ax1, [2e-7 1e-4]);
@@ -653,16 +675,18 @@ set(ax2,'FontSize',24);
 [~,b] = legend(ax2, 'show', 'location', 'north', 'orientation', 'horizontal');
 for i=7:2:15
     b(i).MarkerSize = 20;
-    b(i).LineWidth = 1.3;
+    b(i).LineWidth = 1.7;
 end
 
 
 set(fig2, 'Units', 'normalized', 'Position', [0.0, 0.0, 0.65, 1.]); 
 print(fig2, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_n_tr_gridsize', '-dpng', '-r200');
 
+close(20);
+close(21);
 
 
-%%
+%% Plot grid error with equidistant grid as reference N1
 %  modify N1
 
 root_dir = '/home/argo/masterarbeit/simulationen-data/grid_error/';
@@ -703,8 +727,9 @@ end
 
 legend(ax1, 'show', 'location', 'north', 'orientation', 'horizontal');
 xlabel(ax1, 'T_{ref} [degC]')
-ylabel(ax1, '|Relative error|')
+ylabel(ax1, 'Relative error')
 xlim(ax1, [T_test_data.T_ref_dsc(1), T_test_data.T_ref_dsc(end)]);
+ylim(ax1, [1e-11, 1e-4]);
 set(ax1,'FontSize',24);
 set(fig1, 'Units', 'normalized', 'Position', [0.0, 0.0, 0.65, 1.]); 
 print(fig1, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_N1_relErr', '-dpng', '-r200');
@@ -718,18 +743,19 @@ set(ax2,'FontSize',24);
 [~,b] = legend(ax2, 'show', 'location', 'north', 'orientation', 'horizontal');
 for i=5:1:12
     b(i).MarkerSize = 20;
-    b(i).LineWidth = 1.3;
+    b(i).LineWidth = 1.7;
 end
 
 set(fig2, 'Units', 'normalized', 'Position', [0.0, 0.0, 0.65, 1.]); 
 print(fig2, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_N1_gridsize', '-dpng', '-r200');
 
 
+close(20);
+close(21);
 
 
 
-
-%%
+%% Plot grid error with equidistant grid as reference N
 %  modify N
 
 root_dir = '/home/argo/masterarbeit/simulationen-data/grid_error/';
@@ -768,8 +794,9 @@ end
 
 legend(ax1, 'show', 'location', 'north', 'orientation', 'horizontal');
 xlabel(ax1, 'T_{ref} [degC]')
-ylabel(ax1, '|Relative error|')
+ylabel(ax1, 'Relative error')
 xlim(ax1, [T_test_data.T_ref_dsc(1), T_test_data.T_ref_dsc(end)]);
+ylim(ax1, [1e-11, 1e-4]);
 set(ax1,'FontSize',24);
 set(fig1, 'Units', 'normalized', 'Position', [0.0, 0.0, 0.65, 1.]); 
 print(fig1, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_N_relErr', '-dpng', '-r200');
@@ -783,7 +810,7 @@ set(ax2,'FontSize',24);
 [~,b] = legend(ax2, 'show', 'location', 'north', 'orientation', 'horizontal');
 for i=6:1:15
     b(i).MarkerSize = 20;
-    b(i).LineWidth = 1.3;
+    b(i).LineWidth = 1.7;
 end
 
 set(fig2, 'Units', 'normalized', 'Position', [0.0, 0.0, 0.7, 1.]);
@@ -791,6 +818,9 @@ set(fig2, 'Units', 'normalized', 'Position', [0.0, 0.0, 0.7, 1.]);
 % latex zu error figure groessenmaessig passt.
 %print(fig2, '/home/argo/masterarbeit/simulationen-data/grid_error/mod_N_gridsize', '-dpng', '-r200');
 
+
+close(20);
+close(21);
 
 
 %% Relative Error for integration tolerance 1e-7 <-> 1e-8
@@ -819,9 +849,9 @@ relErr = abs(1 - T_ref7 ./ T_ref8);
 
 fig1 = figure(23); clf; ax1 = gca; set(ax1, 'YScale', 'log'); hold on
 
-plot(ax1, T_ref_dsc, relErr, 'Linewidth', 1.3);
+plot(ax1, T_ref_dsc, relErr, 'Linewidth', 1.2);
 xlabel(ax1, 'T_{ref} [degC]')
-ylabel(ax1, '|Relative error|')
+ylabel(ax1, 'Relative error')
 set(ax1,'FontSize',12);
 print(fig1, '/home/argo/masterarbeit/thesis/images/integration_tolerance_relErr', '-dpng', '-r200');
 
@@ -1127,6 +1157,7 @@ end
 
 % fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/';
 % fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/';
+
 % fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/';
 fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/';
 
@@ -1168,7 +1199,7 @@ for j=1:length(nameSubDirs)
     legend(ax1, 'show', 'location', 'northwest');
     xlabel(ax1, 'T [degC]');
     ylabel(ax1, 'c_p [mJ/(mg*K)]');
-    set(ax1,'FontSize',24);
+    set(ax1,'FontSize',30);
     xlim(ax1, [30, 160]);
     title(ax1, sprintf('Heat rate: %1.2f K/min', fit_data.simulation.heat_rate))
 
@@ -1218,7 +1249,7 @@ for j=1:length(nameSubDirs)
     legend(ax2, 'show', 'location', 'northwest');
     xlabel(ax2, 'T_{ref} [degC]');
     ylabel(ax2, '\Phi_q^{pcm,in} [mW]');
-    set(ax2,'FontSize',24);
+    set(ax2,'FontSize',30);
     xlim(ax2, [T_ref_dsc(1), T_ref_dsc(end)]);
     title(ax2, sprintf('Heat rate: %1.2f K/min', fit_data.simulation.heat_rate))
     
@@ -1382,14 +1413,67 @@ for i=1:length(nameSubDirs)
 end
 
 
-%% Gauss plot mit allen Gaussen einzeln
+%% Gauss plot mit allen Gaussen einzeln (problem bei identifizierbarkeit bei 10 K/min)
 
-fit_data_path = '/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/2017-12-19_21:17:51_407_10Kmin_L1=40_L3=0,1/';
-fit_data = load([fit_data_path, 'fit_data.mat']);
+fit_data_path = ['/home/argo/masterarbeit/fits_data/', ...
+    '2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/', ...
+    '2017-12-19_21:17:51_407_10Kmin_L1=40_L3=0,1/'];
+
+    fit_data = load([fit_data_path, 'fit_data.mat']);
 scaled_params = fit_data.optimization.p_optim_end.';
 params = reverse_scale_params(scaled_params, fit_data.optimization.c_p_param_type);
 
 fig1 = figure(1); clf;
+set(fig1, 'Units', 'normalized', 'Position', [0., 0., 0.85, 1.]); 
+ax1 = gca; hold on
+
+T_domain = 30:0.01:160;
+
+m = params(end-1);
+b = params(end);
+
+for i=1:5
+    
+    A_i = params(3*i-2);
+    var_i = params(3*i-1);
+    offset_i = params(3*i-0);
+    
+    gauss_eval = A_i * exp(-(T_domain-offset_i).^2 ./ var_i) + m*T_domain + b;
+    
+    plot(ax1, T_domain, gauss_eval, 'DisplayName', sprintf('Gauss%d', i), ...
+        'Linestyle', '-.', 'Linewidth', 1.7);
+    
+end
+
+plot(ax1, T_domain, c_p_gauss_linear_comb(T_domain, scaled_params), ...
+    'DisplayName', 'c_p(T)', 'Linewidth', 1.7, 'color', 'black');
+
+set(gca,'FontSize',20)
+xlabel(ax1, 'T [degC]')
+ylabel(ax1, 'c_p [mJ/(mg*K)]');
+legend(ax1, 'show', 'location', 'northwest')
+xlim(ax1, [100 140]);
+
+save_path = [fit_data_path, 'Gaussians_splitted'];
+print(fig1, save_path, '-dpng', '-r200');
+    
+
+
+%% Gauss plot mit allen Gaussen einzeln (beispielbild fuer parametrisierungen)
+
+
+fit_data_path = ['/home/argo/masterarbeit/fits_data/', ...
+    '2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/', ...
+    '2017-12-19_22:24:18_407_0,3Kmin_L1=40_L3=0,1/'];
+
+    fit_data = load([fit_data_path, 'fit_data.mat']);
+scaled_params = fit_data.optimization.p_optim_end.';
+params = reverse_scale_params(scaled_params, fit_data.optimization.c_p_param_type);
+
+fig1 = figure(1); clf;
+% set(fig1, 'Units', 'normalized', 'Position', [0., 0., 0.5, 0.5]); 
+
+
 ax1 = gca; hold on
 
 T_domain = 30:0.01:160;
@@ -1411,7 +1495,7 @@ for i=1:5
 end
 
 plot(ax1, T_domain, c_p_gauss_linear_comb(T_domain, scaled_params), ...
-    'DisplayName', 'Total c_p', 'Linewidth', 1.3, 'color', 'black');
+    'DisplayName', 'c_p(T)', 'Linewidth', 1.3, 'color', 'black');
 
 set(gca,'FontSize',12)
 xlabel(ax1, 'T [degC]')
@@ -1419,10 +1503,8 @@ ylabel(ax1, 'c_p [mJ/(mg*K)]');
 legend(ax1, 'show', 'location', 'northwest')
 xlim(ax1, [100 140]);
 
-save_path = [fit_data_path, 'Gaussians_splitted'];
-% save_path = '/home/argo/masterarbeit/thesis/images/c_p_example'
+save_path = '/home/argo/masterarbeit/thesis/images/c_p_example'
 print(fig1, save_path, '-dpng', '-r200');
-    
 
 %% Comparison FwdSens with/without error control
 
@@ -1872,9 +1954,16 @@ for i=1:length(dsc_list)
     title(ax1, ['Heat rate: ', num2str(dsc.Tinfo.Tstep), ' K/min']);
     xlabel(ax1, 'T [degC]')
     ylabel(ax1, 'c_p [mJ/(mg*K)]');
-    set(ax1, 'FontSize',24)
+    xlim(ax1, [min(T_data), max(T_data)])
+    set(ax1, 'FontSize',30)
     
-    legend(ax1, 'show', 'location', 'northwest')
+%     legend(ax1, 'show', 'location', 'northwest')
+    
+    [~,b] = legend(ax1, 'show', 'location', 'northwest');
+    for i=3:1:4
+        b(i).MarkerSize = 20;
+        b(i).LineWidth = 1.7;
+    end
     
     p_unscaled = reverse_scale_params(p.', 'fraser_suzuki').';
     
@@ -1999,15 +2088,30 @@ mean(l)
 
 path_root = '/home/argo/masterarbeit/';
 path_src = [path_root, 'fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/2017-12-19_20:41:36_407_20Kmin_L1=40_L3=0,1/'];
-fit_data = load([path_src, 'fit_data.mat']);
 
-fig1 = open([path_src, 'dqdp.fig']);
+fit_data = load([path_src, 'fit_data.mat']);
+dqdp = fit_data.optimization.dqdp_end(:,[1:15, 30:31]);
+dqdp = flipud(dqdp);
+
+index_T_dsc = fit_data.measurement.index_T_dsc;
+T_ref_idx = fit_data.measurement.dsc_data.data(index_T_dsc(1):index_T_dsc(2),1);
+T_ref_idx = flipud(T_ref_idx);
+
+fig1 = figure(1);
 ax1 = gca;
+
+image(1:17, T_ref_idx, dqdp, 'CDataMapping', 'scaled')
+colorbar;
+
+set(gca,'Ydir','Normal')
+
 
 colormap('parula')
 set(gca,'FontSize',12);
 
 ylabel('T_{ref} [degC]')
+xlabel('Parameters')
+xticks(1:3:17)
 title('')
 
 
