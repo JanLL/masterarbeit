@@ -170,7 +170,7 @@
 \section*{Abstract}
 
 This thesis approaches the problem of identifying the specific heat capacity $c_p(T)$ of phase change materials (PCM). 
-An usual method elucidated in DIN 11357, using measurement data of heat flux differential scanning calorimetry (DSC), results in different outcomes $c_p^{\text{DIN}}(T)$ dependent on a measurement parameter, the heat rate. For higher heat rates, the peak of $c_p^{\text{DIN}}(T)$ is widened and its position shifts to higher temperatures. This is known as smearing problem since $c_p(T)$ is a material property and therefore independent from the heat rate.
+An usual method elucidated in DIN 11357, using measurement data of heat flux differential scanning calorimetry (DSC), results in different outcomes $c_p^{\text{DIN}}(T)$ dependent on the heat rate, a measurement parameter. For higher heat rates, the peak of $c_p^{\text{DIN}}(T)$ is broadened and its position shifts to higher temperatures. This is known as smearing problem since $c_p(T)$ is a material property and therefore independent from the heat rate.
 Therefore, in this thesis a new model is developed to simulate the measuring process of a heat flux DSC with a PCM as sample.
 The simulation is accomplished by solving the 1D heat equation where the PCM's specific heat capacity is temperature dependent and has a phase transition peak. 
 This model is capable of reproducing heat fluxes into the sample similar to those measured. 
@@ -180,8 +180,16 @@ With $c_p(T)$ parametrized with a Fraser-Suzuki peak and linear baseline, a dist
 
 
 \section*{Kurzbeschreibung}
+Diese Arbeit behandelt die Problemstellung, die spezifische W\"armekapazit\"at $c_p(T)$ von Latentw\"armespeichern (engl. phase change materials PCM) zu identifizieren.
+Ein in der DIN 11357 beschriebenes Standardverfahren, welches Messdaten der dynamischen Differenzkalorimetrie mit W\"armestr\"omen (engl. heat flux DSC) verwendet, ergibt verschiedene Resultate für $c_p^{\text{DIN}}(T)$, abh\"angig von der Heizrate, einer Kenngr\"oße der Messung. 
+Mit h\"oheren Heizraten ist der Peak von $c_p^{\text{DIN}}(T)$ verbreitert und seine Position verschiebt sich zu h\"oheren Temperaturen. 
+Dies ist bekannt als das "Smearing Problem" da $c_p(T)$ eine Stoffeigenschaft ist und daher unabhängig von der Heizrate.
+Deshalb wurde in dieser Arbeit ein neues Modell entwickelt um den Messprozess der heat flux DSC mit PCM als Probe zu simulieren. 
+Die Simulation ist verwirklicht indem die 1D Wärmegleichung gelöst wird, wobei die spezifische Wärmekapazität des PCM's temperaturabhängig ist und einen Peak für den Phasenwechsel aufweist. 
+Dieses Modell ist in der Lage Wärmeströme nachzubilden, ähnlich denen der Messdaten. 
+Die Simulation ist im Rahmen einer Least-Squares Parameterschätzung eingegliedert, wobei Wärmestrommessdaten verwendet werden um die spezifische Wärmekapazität des PCM's zu schätzen.  
+Verglichen zu $c_p^{\text{DIN}}(T)$ war bei einer Parametrisierung von $c_p(T)$ durch einen Fraser-Suzuki Peak mit linearer Basislinie eine deutliche Reduzierung der Schwankung der Peak-Kenngrößen, Position des Maximums $T_{max}$, Schmelzende $T_{off}$ und Schmelzenthalpie $\Delta H$ bei verschiedenen Heizraten möglich. 
 
-\todo{!}
 
 \newpage
 
@@ -303,16 +311,16 @@ Heat $Q$ is the energy that flows from a warmer to a colder object because of th
 
 \begin{table}[H]
 	\centering
-\begin{tabular}{| c | c | c |} \hline
-	Quantity & Symbol & Unit \\ \hline
-	Heat & $Q$ & $J$ \\[0.7ex]
-	Heat flux density & $\phi$ & $\frac{W}{m^2}$ \\[0.7ex]
-	Heat flux & $\varPhi$ & $W$ \\[0.7ex]
-	Heat conductivity & $\lambda$ & $\frac{W}{m \cdot K}$ \\[0.7ex]
-	Specific heat capacity & $c_p$ & $\frac{J}{kg \cdot K}$ \\[0.7ex]
-	Melting enthalpy & $\Delta H$ & $J$ \\ \hline
-\end{tabular}
-\caption{Important physical quantities in SI units}
+	\caption{Important physical quantities in SI units}
+	\begin{tabular}{| c | c | c |} \hline
+		Quantity & Symbol & Unit \\ \hline
+		Heat & $Q$ & $J$ \\[0.7ex]
+		Heat flux density & $\phi$ & $\frac{W}{m^2}$ \\[0.7ex]
+		Heat flux & $\varPhi$ & $W$ \\[0.7ex]
+		Heat conductivity & $\lambda$ & $\frac{W}{m \cdot K}$ \\[0.7ex]
+		Specific heat capacity & $c_p$ & $\frac{J}{kg \cdot K}$ \\[0.7ex]
+		Melting enthalpy & $\Delta H$ & $J$ \\ \hline
+	\end{tabular}
 \label{tab:important_physical_quantities}
 \end{table}
 
@@ -618,7 +626,7 @@ A common way to perform the heat flux DSC calibration, measurement and specific 
 \end{equation}
 
 where the indices $S$ and $R$ denote the sample respectively reference. Reference means here a material with known specific heat capacity $c_p^R(T)$, not to be mistaken with the reference side of the experimental setup which is usually empty. In our case this reference material is sapphire. Furthermore $m$ is the mass and $\varPhi^0$ is the heat flux if both crucibles are empty. $\varPhi^0$ is subtracted to compensate asymmetries in the experimental setup. \\
-In \cref{fig:heat_flux_measurements} the measurement data of the heat flux into the PCM $\varPhi_q^{\eta}(T_{ref})$ is shown for all heat rates dependent on the temperature at the reference crucible. For higher heat rates the peak position shifts to higher temperatures and the peak is widened (smearing effect). Using \cref{eq:c_p_formula_DIN} the computed specific heat capacities $c_p^{\text{DIN}}(T)$ of the PCM are shown in \cref{fig:c_p_DIN_formula}, exhibiting the smearing effect as well. This is known as the smearing problem since $c_p(T)$ is a material property and therefore independent of the heat rate.
+In \cref{fig:heat_flux_measurements} the measurement data of the heat flux into the PCM $\varPhi_q^{\eta}(T_{ref})$ is shown for all heat rates dependent on the temperature at the reference crucible. For higher heat rates the peak position shifts to higher temperatures and the peak is broadened (smearing effect). Using \cref{eq:c_p_formula_DIN} the computed specific heat capacities $c_p^{\text{DIN}}(T)$ of the PCM are shown in \cref{fig:c_p_DIN_formula}, exhibiting the smearing effect as well. This is known as the smearing problem since $c_p(T)$ is a material property and therefore independent of the heat rate.
 
 
 \begin{figure}[H]
@@ -793,12 +801,13 @@ The last $m$ intermediate variables represent the solution vector. Finally this 
 
 
 \begin{table}[H]
+	\centering
+	\caption{Algorithm of first order forward sweep. Elucidated in text above and exemplified in \cref{tab:AD_example_forward}.}
 	\begin{tabular}{|c | l c l | l |} \hline
 		Initialization & $[v_{i-n}, \dot{v}_{i-n}]$ & $=$ & $[x_i, \dot{x}_i]$ & $i=1,...,n$ \\ \hline
 		Intermediate steps & $[v_{i}, \dot{v}_{i}]$ & $=$ & $[\varphi_i(v_j)_{j \prec i}, \sum_{j \prec i} \frac{\partial \varphi_i}{\partial v_j}(v_j) \cdot \dot{v}_j]$ & $i=1,...,k$ \\ \hline
 		Extract solution & $[y_{m-i}, \dot{y}_{m-i}]$ & $=$ & $[v_{k-i}, \dot{v}_{k-i}]$ & $i=m-1,...,0$ \\ \hline
 	\end{tabular}
-	\caption{Algorithm of first order forward sweep. Elucidated in text above and exemplified in \cref{tab:AD_example_forward}.}
 	\label{tab:first_order_forward_sweep}
 \end{table}
 
@@ -806,6 +815,7 @@ In order to illustrate this algorithm is applied on the example function \cref{e
 
 \begin{table}[H]
 	\centering
+	\caption{First order forward sweep (\cref{tab:first_order_forward_sweep}) applied on \cref{eq:AD_example}.}
 	\begin{tabular}{| c | l | l |} \hline
 		Initialization & $v_{-2} = x_1$ & $\dot{v}_{-2} = \dot{x}_1$ \\
 		& $v_{-1} = x_2$ & $\dot{v}_{-1} = \dot{x}_2$ \\
@@ -819,7 +829,6 @@ In order to illustrate this algorithm is applied on the example function \cref{e
 		Extract  solution & $y_1 = v_5$ & $\dot{y}_1 = \dot{v}_5$ \\
 		& $y_2 = v_6$ & $\dot{y}_2 = \dot{v}_6$ \\ \hline
 	\end{tabular}
-	\caption{First order forward sweep (\cref{tab:first_order_forward_sweep}) applied on \cref{eq:AD_example}.}
 	\label{tab:AD_example_forward}
 \end{table}
 
@@ -843,6 +852,7 @@ Next, all contributions to the adjoint intermediate variables will be successive
 
 \begin{table}[H]
 	\centering
+	\caption{Algorithm of first order adjoint sweep. Elucidated in text above and exemplified in \cref{tab:AD_example_adjoint}.}
 	\begin{tabular}{| c | l c l | l |} \hline
 		Initialization & $\bar{v}_i$ & $=$ & $0$ & $i=1-n,...,k-m$ \\ \hline
 		& $v_{i-n}$ & $=$ & $x_i$ & $i=1,...,n$ \\
@@ -852,7 +862,6 @@ Next, all contributions to the adjoint intermediate variables will be successive
 		Reverse Sweep & $\bar{v}_j$ & $+ \hspace{-0.1cm} =$ & $\bar{v}_i \frac{\partial \varphi_i}{\partial v_j}(v_j) \quad \forall \ j \prec i$ & $i=k,...,1$ \\
 		& $\bar{x}_i$ & $=$ & $\bar{v}_{i-n}$ & $i=n,...,1$ \\ \hline
 	\end{tabular}
-	\caption{Algorithm of first order adjoint sweep. Elucidated in text above and exemplified in \cref{tab:AD_example_adjoint}.}
 	\label{tab:first_order_adjoint_sweep}
 \end{table}
 
@@ -860,6 +869,7 @@ Again we apply this algorithm on the exemplary function \cref{eq:AD_example}:
 
 \begin{table}[H]
 	\centering
+	\caption{First order adjoint sweep (\cref{tab:first_order_adjoint_sweep}) applied on \cref{eq:AD_example}}
 	\begin{tabular}{| c | l | l |} \hline
 		& \textbf{Forward Sweep} & \textbf{Reverse Sweep} \\ \hline
 		Initialization & $v_{-2}=x_1$ & $\bar{v}_6=\bar{y}_2$ \\
@@ -877,7 +887,6 @@ Again we apply this algorithm on the exemplary function \cref{eq:AD_example}:
 		& $y_2 = v_6$ & $\bar{x}_2 = \bar{v}_{-1}$ \\
 		& & $\bar{x}_1 = \bar{v}_{-2}$	\\ \hline
 	\end{tabular}
-	\caption{First order adjoint sweep (\cref{tab:first_order_adjoint_sweep}) applied on \cref{eq:AD_example}}
 	\label{tab:AD_example_adjoint}
 \end{table} 
 
@@ -2390,7 +2399,6 @@ All computations have been done on a laptop using Linux Ubuntu Mate, 2 Cores Int
 \begin{table}[H]
 	\centering
 	\caption{Material properties for specific heat capacity $c_p$, mass density $\rho$ and heat conductivity $\lambda$ used in numerical experiments. $^*$ Specific heat capacity of PCM is temperature dependent and parametrized, see \cref{sec:parametrizations}. \vspace{0.1cm}}
-
 	\begin{tabular}{| c | c | c | c |} \hline
 		& $c_p \ [\frac{mJ}{mg \ K}]$ & $\rho \ [\frac{mg}{mm^3}]$ & $\lambda \ [\frac{mW}{mm \ K}]$ \\ \hline
 		Silver (Ag) & $0.235$ & $10.49$ & $430$ \\
@@ -2402,7 +2410,7 @@ All computations have been done on a laptop using Linux Ubuntu Mate, 2 Cores Int
 %\subsection{Smearing effect on simulated heat flux for different heat rates}
 \subsection{Successful reconstruction of smearing effect}
 We first show that our mathematical model is capable of reproducing heat fluxes exhibiting the smearing effect similar to those measured (see \cref{sec:smearing_problem}). This was achieved by a forward simulation, i.e. solving \cref{eq:heat_equation_discretized} for several different heat rates using the same specific heat capacity (see \cref{fig:smearing_effect_c_p}) each time. \\
-The resulting heat fluxes for all heat rates from the forward simulation are displayed in \cref{fig:smearing_effect_simulation_heat_flux}. They exhibit a widening of the peak and a shift of the maximum to higher temperatures for increasing heat rates similar to the measured heat fluxes shown in \cref{fig:smearing_effect_measurement_heat_flux}. 
+The resulting heat fluxes for all heat rates from the forward simulation are displayed in \cref{fig:smearing_effect_simulation_heat_flux}. They exhibit a broadening of the peak and a shift of the maximum to higher temperatures for increasing heat rates similar to the measured heat fluxes shown in \cref{fig:smearing_effect_measurement_heat_flux}. 
 Based on this observation, the idea of the parameter estimations performed in the following sections is to identify the specific heat capacity at which the simulated and measured heat flux are equal.
 
 
@@ -2424,7 +2432,7 @@ Based on this observation, the idea of the parameter estimations performed in th
 		\caption{}
 		\label{fig:smearing_effect_simulation_heat_flux}
 	\end{subfigure}
-	\caption{(a) Used specific heat capacity for specified heat rates. Parametrization is Fraser-Suzuki (\cref{eq:fraser_suzuki}) with $h=10$, $r=2$, $wr=5$, $sr=0.3$, $z=130$, $m=0.003$ and $b=2$. (b) Heat flux measurements for specified heat rates. (c) Simulated heat flux for specified heat rates. Widening of the peak and shift of maximum position qualitatively similar to measurement values. \\
+	\caption{(a) Used specific heat capacity for specified heat rates. Parametrization is Fraser-Suzuki (\cref{eq:fraser_suzuki}) with $h=10$, $r=2$, $wr=5$, $sr=0.3$, $z=130$, $m=0.003$ and $b=2$. (b) Heat flux measurements for specified heat rates. (c) Simulated heat flux for specified heat rates. Broadening of the peak and shift of maximum position qualitatively similar to measurement values. \\
 	See smearing problem in \cref{sec:smearing_problem}.}
 \end{figure}
 
@@ -2763,8 +2771,7 @@ $T_{on}$ and $T_{off}$ have not been computed since there are more than two infl
 	\caption{For all heat rates: Temperature $T_{max}$ where $c_p(T)$ has its maximum and melting enthalpy $\Delta H$, i.e. the integral of $c_p(T)$ minus the base line over the temperature. Decreases below the baseline after the peak were ignored here. \\
 		$^{(1)}$ SD: Standard deviation with applied Bessel correction. 
 		$^{(2)}$ $T_{max}$ for $\beta=10\frac{K}{min}$ was omitted as there are two maxima. Those are responsible for deformations influencing the peak area. Therefore corresponding $\Delta H$ value was not considered in mean computation. \\
-		Peak characteristics are elucidated in \cref{sec:peak_characteristics}.
-	}
+		Peak characteristics are elucidated in \cref{sec:peak_characteristics}.}
 	\begin{tabular}{| c | c | c | c | c | c | c | c || c |} \hline
 		Heat rate $\beta$ & 20 & 10 & 5 & 2.5 & 1.25 & 0.6 & 0.3 & Mean $\pm$ SD (SD\%)$^{(1)}$ \\
 		$[K/min]$ & & & & & & & & \\ \hline
