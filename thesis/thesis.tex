@@ -203,7 +203,7 @@ Verglichen zu $c_p^{\text{DIN}}(T)$ war bei einer Parametrisierung von $c_p(T)$ 
 \addsec{Summary}
 This thesis comprises the modeling of and parameter estimation in the physical measurement process of heat flux differential scanning calorimetry (DSC). As part of the research project modELTES, phase change materials (PCM) are analyzed with respect to their specific heat capacity $c_p$. Therefore a new model of the measuring process of a heat flux DSC has been developed. This model is embedded in a parameter estimation framework in order to identify the PCM's specific heat capacity. \\
 
-The thesis begins with a general introduction in \cref{sec:introduction} about PCMs with exemplary applications of those and an overview of related work \todo{satz pruefen nachdem related work geschrieben wurde}. 
+The thesis begins with a general introduction in \cref{sec:introduction} about PCMs with exemplary applications of those and an overview of related work. 
 Further, the development of a new method for the identification of the specific heat capacity is motivated.
 \Cref{sec:physical_background} introduces the physical quantities, relevant for further comprehension. 
 The physics of a solid-liquid phase transition and its relation to the temperature dependent specific heat capacity, exhibiting a phase transition peak, is elucidated.
@@ -309,7 +309,7 @@ Since the work in this thesis is based on the experiments of a differential scan
 First of all some important physical quantities will be introduced because they are crucial for further comprehension. A summary is shown in \cref{tab:important_physical_quantities} with the consistently used symbols in this thesis and the physical unit. \\
 Heat $Q$ is the energy that flows from a warmer to a colder object because of the temperature difference. The heat flux density $\phi$ tells us how much heat flows through an unit area in one second. By considering a particular area this quantity becomes the heat flux $\varPhi$. Heat conductivity $\lambda$ is a material property how much energy is transported on a distance of $1m$, unit area and temperature difference of $1K$ in one second.
 
-\begin{table}[H]
+\begin{table}
 	\centering
 	\caption{Important physical quantities in SI units}
 	\begin{tabular}{| c | c | c |} \hline
@@ -334,7 +334,7 @@ The last physical quantity to introduce is the melting enthalpy $\Delta H$ which
 
 
 
-\begin{figure}[H]
+\begin{figure}[h]
 \hspace{-2cm}
 \begin{subfigure}{0.49\textwidth}
 \begin{tikzpicture}
@@ -2611,8 +2611,8 @@ The optimization process took on average about $7$ minutes ($50$ iterations) per
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.7\textwidth]{/home/argo/masterarbeit/thesis/images/dqdp_5Gausse.png}
-	\caption{Objective function Jacobian $J_1(p_{c_p})$ computed by \cref{eq:optimization_jacobian} in forward mode using Gaussian parametrization. Exemplary from heat rate $\beta=20 \frac{K}{min}$ at the end of optimization. \\
-	Cf. approximated Jacobian via finite differences in \cref{fig:NURBS_results} (c) and (d).}
+	\caption{Objective function Jacobian $J_1(p_{c_p})$ computed by \cref{eq:optimization_jacobian} in forward mode using Gaussian parametrization. Exemplary from heat rate $\beta=20 \frac{K}{min}$ at the end of optimization. Parameters 1-15 are from the Gaussians with parameter $p_1 = A_1$, $p_2 = \var_1$, $p_3 = T_{offset_1}$, $p_4 = A_2$ and so forth. Linear and constant part are $p_{16}=m$ and $p_{17}=b$, respectively. \\
+	See Gaussian parametrization in \cref{sec:parametrization_Gausse} and cf. approximated Jacobian via finite differences in \cref{fig:NURBS_results} (c) and (d).}
 	\label{fig:dqdp_5Gausse}
 \end{figure}
 
