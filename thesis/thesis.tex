@@ -122,7 +122,7 @@
 	Master Thesis \\[0.5ex]
 	in Scientific Computing \\[2ex]
 	submitted by \\[2ex]
-	Jan Lammel \\[0.5ex]
+	Jan Lammel \todo{Zweitname ?!} \\[0.5ex]
 	born in Heidelberg \\[3ex]
 	2018 \\[2ex]
 		
@@ -802,7 +802,7 @@ The last $m$ intermediate variables represent the solution vector. Finally, thes
 
 \begin{table}[H]
 	\centering
-	\caption{Algorithm of first order forward sweep. Elucidated in text above and exemplified in \cref{tab:AD_example_forward}.}
+	\caption{Algorithm of first order forward sweep. Elucidated in accompanying text and exemplified in \cref{tab:AD_example_forward}.}
 	\begin{tabular}{|c | l c l | l |} \hline
 		Initialization & $[v_{i-n}, \dot{v}_{i-n}]$ & $=$ & $[x_i, \dot{x}_i]$ & $i=1,...,n$ \\ \hline
 		Intermediate steps & $[v_{i}, \dot{v}_{i}]$ & $=$ & $[\varphi_i(v_j)_{j \prec i}, \sum_{j \prec i} \frac{\partial \varphi_i}{\partial v_j}(v_j) \cdot \dot{v}_j]$ & $i=1,...,k$ \\ \hline
@@ -852,7 +852,7 @@ Next, all contributions to the adjoint intermediate variables will be successive
 
 \begin{table}[H]
 	\centering
-	\caption{Algorithm of first order adjoint sweep. Elucidated in text above and exemplified in \cref{tab:AD_example_adjoint}.}
+	\caption{Algorithm of first order adjoint sweep. Elucidated in accompanying text and exemplified in \cref{tab:AD_example_adjoint}.}
 	\begin{tabular}{| c | l c l | l |} \hline
 		Initialization & $\bar{v}_i$ & $=$ & $0$ & $i=1-n,...,k-m$ \\ \hline
 		& $v_{i-n}$ & $=$ & $x_i$ & $i=1,...,n$ \\
@@ -1381,7 +1381,7 @@ Instead, based on decomposing $J_1$, two solution strategies are shown (see \cit
 		\end{cases}
 	\end{align}
 	
-	we get (cf. \cite{numerical_methods_lsq_Bjorck} theorem 1.2.10) the unique minimum norm solution  $\Delta x^*$ with
+	we get (see e.g. \cite{numerical_methods_lsq_Bjorck} theorem 1.2.10) the unique minimum norm solution  $\Delta x^*$ with
 	
 	\begin{equation}
 		\Delta x^* = V \Delta y^*
@@ -1970,7 +1970,9 @@ As the crucible of the reference side is empty there is only the silver plate wi
 	\end{empheq}
 \end{subequations}
 
-which can be solved analytically. The derivation is based on \cite{analytical_soln} chapter 5.6. If omitted in the following for legibility, it holds $x \in [0,L_{Ag}]$ and $t \in [0,t_f]$. \\
+%which can be solved analytically. The derivation is based on \cite{analytical_soln} chapter 5.6. 
+which can be solved analytically (see e.g. \cite{analytical_soln_literature} chapter 6.6).
+If omitted in the following for legibility, it holds $x \in [0,L_{Ag}]$ and $t \in [0,t_f]$. \\
 The first step is a separation ansatz of the solution function $T(x,t)$
 
 \begin{align}
@@ -2919,7 +2921,7 @@ Regarding $T_{max}$ and $\Delta H$, the deviations among different heat rates ha
 	\centering
 	\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/c_p_all.png}
 	\caption{Zoomed view of the specific heat capacities $c_p(T)$ obtained by optimization for all heat rates. The maxima positions range from $128.6$ to $130.7^{\circ}C$. \\
-	Cf. with $c_p^{\text{DIN}}(T)$ (computed by \cref{eq:c_p_formula_DIN}) shown in \cref{fig:c_p_DIN_formula} and cf. with results from Gaussian parametrization in \cref{fig:5Gaussians_all_c_p}.}
+	Cf. with $c_p^{\text{DIN}}(T)$ (computed by \cref{eq:c_p_formula_DIN}) shown in \cref{fig:c_p_DIN_formula} and with results from Gaussian parametrization in \cref{fig:5Gaussians_all_c_p}.}
 	\label{fig:FS_all_c_p}
 \end{figure}
 
@@ -3376,6 +3378,12 @@ In \cref{sec:param_estimation_summary} the specific heat capacity $c_p(T)$ obtai
 	Leon van Dommelen, 
 	Partial Differential Equations, 3/21/11 Version 0.15 alpha,
 	\url{http://www.eng.famu.fsu.edu/~dommelen/pdes/style_a/index.html}, queried 12.01.2018
+	
+\bibitem{analytical_soln_literature}
+	Yehuda Pinchover, Jacob Rubinstein.
+	An introduction to partial differential equations.
+	Cambridge University Press; Auflage: New (12. Mai 2005), 
+	ISBN-13: 978-0521613231
 	
 \bibitem{ODE_analytic}
 	Shair Ahmad, Antonio Ambrosetti.
