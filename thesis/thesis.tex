@@ -2137,7 +2137,7 @@ Finally the solution of the boundary value problem \cref{eq:analytical_soln_pde}
 
 
 \newpage
-\section{Parameter estimation of specific heat capacity}
+\section{Parameter estimation of the specific heat capacity}
 \label{sec:parameter_estimation_applied}
 
 The measuring process simulation, described in \cref{sec:simulation_of_DSC} is embedded in this section into the parameter estimation of the specific heat capacity $c_p(T)$ where a nonlinear least squares problem has to be solved. The corresponding numerical experiments are elucidated in \cref{sec:numerical_experiments}.
@@ -2164,8 +2164,8 @@ P_i^x, P_i^y \end{pmatrix}^T \in \mathbb{R}^2$ are called control points, $\omeg
 B-Spline basis functions $N_{i,k}(u)$ are defined recursively by
 
 \begin{align}
-	N_{i,k}(u) = & \frac{u - u_i}{u_{i+k} - u_i} N_{i,k-1}(u) + \frac{u_{i+k+1} - u}{u_{i+k+1} - u_{i+1}} N_{i+1,k-1}(u) \label{eq:NURBS_basis_polynomial} \\[1ex]
-	N_{i,0} = &
+	N_{i,k}(u) = & \ \frac{u - u_i}{u_{i+k} - u_i} N_{i,k-1}(u) + \frac{u_{i+k+1} - u}{u_{i+k+1} - u_{i+1}} N_{i+1,k-1}(u) \label{eq:NURBS_basis_polynomial} \\[1ex]
+	N_{i,0} = & \
 	\begin{cases}
 		1 \quad \text{if } u_i \le u < u_{i+1} \\
 		0 \quad \text{otherwise}
@@ -2205,7 +2205,7 @@ Therefore the two following parametrizations has been used with SolvIND.
 %The case structure of the basis polynomial \cref{eq:NURBS_basis_polynomial} conducts to switch the RHS of the differential equation. This is only supported by the $condassign(a,b,c,d)$ function which assigns $a=c$ if $b>0$ and $a=d$ else. Additionally to $N_{i,0}$ the denominators need this $condassign$ command in order to check for a division by zero. 
 %Furthermore the piecewise interpolation of the resulting curve $C(u)$ could be realized as well with the $condassign$ command but in total this leads to a lot of unnecessary numerical operations and makes the program quite complex. \\
 
-An alternative flexible parametrization is a linear combination of Gaussian functions which is stated in \cref{eq:parametrization_linear_comb_Gauss}. For each Gaussian, there are three optimization variables: Amplitude $A_i$, a shift in the $T$-axis $T_{\text{offset}_i}$ and the variance $\var_i$. Additionally there is a linear and constant part with variables $m$ and $b$. So in total there are $3 \cdot n_{\text{Gauss}} + 2$ optimization variables. 
+An alternative flexible parametrization is a linear combination of Gaussian functions which is stated in \cref{eq:parametrization_linear_comb_Gauss}. For each Gaussian, there are three optimization variables: Amplitude $A_i$, a shift in the $T$-axis $T_{\text{offset}_i}$ and the variance $\var_i$. Additionally, there is a linear and constant part with variables $m$ and $b$ such that in total there are $3 \cdot n_{\text{Gauss}} + 2$ optimization variables. 
 
 \begin{equation}
 c_p(T) = \sum_{i=1}^{n_{\text{Gauss}}} A_i \exp\left(- \frac{(T - T_{\text{offset}_i})^2}{{\var}_i}\right) + m \cdot T + b
@@ -2273,7 +2273,7 @@ In order to perform the parameter estimation to determine $c_p(T)$ we need to so
 	& \ \ \bar{p}_{c_p} \ge p_{c_p} \ge \underline{p}_{c_p} \nonumber
 \end{align}
 
-where $p_{c_p} \in \mathbb{R}^{n_p}$ are the optimization variables, parametrizing the specific heat capacity $c_p(T)$, $n_{{mp}}$ is the number of measurement points, $\varPhi_{q}^{pcm,in}$ is the simulated heat flux into the PCM calculated from the solution $T(t_i;T_0,p_{c_p}) \in \mathbb{R}^N$ of the discretized heat equation and $\varPhi_q^{\eta_i}$ is the heat flux measurement value at measurement time $t_i$. 
+where $p_{c_p} \in \mathbb{R}^{n_p}$ are the optimization variables, parametrizing the specific heat capacity $c_p(T)$, $n_{{mp}}$ is the number of measurement points, $\varPhi_{q}^{pcm,in}$ is the simulated heat flux into the PCM calculated from the solution $T(t_i;T_0,p_{c_p}) \in \mathbb{R}^N$ of the discretized heat equation (see \cref{eq:heat_flux_computation_final}) and $\varPhi_q^{\eta_i}$ is the heat flux measurement value at measurement time $t_i$. 
 Note here that the same measurement variance $\sigma^2$ is assumed for all measurement values and it was set implicitly to $\sigma^2=1$.
 The model $\dot{T} = f(T,t;p_{c_p})$ with $T(0) = T_0$ is equivalent to the initial value problem \cref{eq:heat_equation_discretized} of solving the discretized heat equation. Lower and upper bounds for the optimization variables are set by $\underline{p}_{c_p}$ and $\bar{p}_{c_p}$, respectively to guarantee that the model can be evaluated\footnote{E.g., to prevent division by zero in an evaluation of the parametrized function $c_p(T)$.}.
 Note that \cref{eq:parameter_estimation_least_squares_problem} is solved separately for each heat rate $\beta$, which occurs in the model \cref{eq:heat_equation_discretized}.
@@ -2288,10 +2288,10 @@ The measurement data is given as $\varPhi_q^{\eta_i}(T_{ref}^{\eta_i})$ where $T
 	\label{eq:measurement_time_computation}
 \end{align}
 
-using Newton's method where $T_{ref}^{sim}(t)$ is the analytical solution of the heat equation on the reference side \cref{eq:analytical_soln_final_formula}. An illustration is given in \cref{fig:obtaining_measurement_times}. The analytical solution (\cref{sec:analytical_solution}, \cref{eq:analytical_soln_final_formula}) can be applied here since on the reference side the material properties (pure silver) are constant. The time at which the furnace temperature $T_{furnace}$ is equal to the measured reference crucible temperature $T_{ref}^{\eta_i}$ has been used as initial value of the measurement time $t_{i,init}$ for Newton's method. 
+using Newton's method where $T_{ref}^{sim}(t)$ is the analytical solution of the heat equation on the reference side \cref{eq:analytical_soln_final_formula}. An illustration is given in \cref{fig:obtaining_measurement_times}. The analytical solution (\cref{sec:analytical_solution}, \cref{eq:analytical_soln_final_formula}) can be applied here since on the reference side the material properties (pure silver) are constant. The time $t_{i,init}$ at which the furnace temperature $T_{furnace}$ is equal to the measured reference crucible temperature $T_{ref}^{\eta_i}$ has been used as initial value for Newton's method. 
 
 \begin{align}
-	T_{ref}^{\eta_i} \stackrel{!}{=} & T_{furnace}(t_{i,init}) = T_0 + \beta \cdot t_{i,init} \nonumber \\
+	T_{ref}^{\eta_i} \stackrel{!}{=} & \ T_{furnace}(t_{i,init}) = T_0 + \beta \cdot t_{i,init} \nonumber \\
 	& \Leftrightarrow \ t_{i,init} = \frac{T_{ref}^{\eta_i} - T_0}{\beta}
 \end{align}
 
