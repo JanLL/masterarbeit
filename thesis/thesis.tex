@@ -170,12 +170,14 @@
 \section*{Abstract}
 
 This thesis approaches the problem of identifying the specific heat capacity $c_p(T)$ of phase change materials (PCM). 
-An usual method elucidated in DIN 11357, using measurement data of heat flux differential scanning calorimetry (DSC), results in different outcomes $c_p^{\text{DIN}}(T)$ dependent on the heat rate, a measurement parameter. For higher heat rates, the peak of $c_p^{\text{DIN}}(T)$ is broadened and its position shifts to higher temperatures. This is known as smearing problem since $c_p(T)$ is a material property and therefore independent from the heat rate.
+A usual method elucidated in DIN 11357, using measurement data of heat flux differential scanning calorimetry (DSC), results in different outcomes $c_p^{\text{DIN}}(T)$ dependent on the heat rate, a measurement parameter. 
+For higher heat rates, the peak of $c_p^{\text{DIN}}(T)$ is broadened and its position is shifted to higher temperatures. 
+This is known as smearing problem since $c_p(T)$ is a material property and therefore independent from the heat rate.
 Therefore, in this thesis a new model is developed to simulate the measuring process of a heat flux DSC with a PCM as sample.
-The simulation is accomplished by solving the 1D heat equation where the PCM's specific heat capacity is temperature dependent and has a phase transition peak. 
+The simulation is conducted by solving the 1D heat equation where the PCM's specific heat capacity is temperature dependent and has a phase transition peak. 
 This model is capable of reproducing heat fluxes into the sample similar to those measured. 
 The simulation is embedded in a least squares parameter estimation framework using heat flux measurement data in order to estimate the PCM's specific heat capacity. 
-With $c_p(T)$ parametrized with a Fraser-Suzuki peak and linear baseline, a distinct reduction compared to $c_p^{\text{DIN}}(T)$ in the deviation of peak characteristics maximum position $T_{max}$, offset of melting $T_{off}$ and melting enthalpy $\Delta H$ for different heat rates was possible.
+With $c_p(T)$ parametrized by a Fraser-Suzuki peak and linear baseline, a distinct reduction compared to $c_p^{\text{DIN}}(T)$ in the deviation of peak characteristics maximum position $T_{max}$, offset of melting $T_{off}$ and melting enthalpy $\Delta H$ for different heat rates was possible.
 
 
 
@@ -287,15 +289,16 @@ Therefore the two major goals of this thesis are both simulate the measuring pro
 Furthermore the heat rate is proportional to the time duration of the experiment. If we get the same $c_p(T)$ for all heat rates we are able to accelerate the measuring process and therefore the research on these materials.
 
 \paragraph{Related work} \mbox{}\\
-Fundamentals about the heat capacity of polymers and experimental identification is depicted in \cite{wunderlich_heat_capacity_polymers}.
-In \cite{wunderlich_thermal_analysis}, there is a general extensive view on the thermal analysis of polymeric materials.
-The measuring method of differential scanning calorimetry is in particular elucidated in \cite{Hoehne_DSC}, as well as the remarked smearing problem. 
-There are recent attempts on standardizing calibration procedures for consistent measuring results \cite{standardization_of_PCM}. 
+Fundamentals about the heat capacity of polymers and experimental identification is elucidated in \cite{wunderlich_heat_capacity_polymers}.
+In \cite{wunderlich_thermal_analysis}, there is a general extensive treatise on the thermal analysis of polymeric materials.
+In particular the measuring method of differential scanning calorimetry is elucidated in \cite{Hoehne_DSC}, as well as the remarked smearing problem. 
+There are recent attempts on standardizing calibration procedures for consistent measuring results given in \cite{standardization_of_PCM}. 
 In \cite{diss_DSC}, a model similar to the one we developed has been used to assess specific measurement schemes regarding their ability on the identification of the specific heat capacity of an PCM. 
-Altogether, there is research in order to tackle the smearing problem, although, not satisfactorily resolved yet. \\
+%Altogether, there is research in order to tackle the smearing problem, although, not satisfactorily resolved yet. \\
+While there exists research on the smearing problem, it so far has not been satisfactorily resolved. \\
 
 This thesis is structured as follows. In \cref{sec:physical_background} the physics of a phase transition and the measuring process of a DSC are elucidated. 
-The mathematical methods for simulation and parameter estimation are introduced in \cref{sec:mathematical_background}. These methods then have been applied in \cref{sec:simulation_of_DSC} to simulate the DSC measuring process and in \cref{sec:parameter_estimation_applied} for the parameter estimation of the specific heat capacity. Performed numerical experiments and corresponding results are shown in \cref{sec:numerical_experiments}. Finally \cref{sec:discussion} concludes this thesis with a discussion of results, problems and potential next working steps on this subject.
+The mathematical methods for simulation and parameter estimation are introduced in \cref{sec:mathematical_background}. These methods are then applied in \cref{sec:simulation_of_DSC} to simulate the DSC measuring process and in \cref{sec:parameter_estimation_applied} for the parameter estimation of the specific heat capacity. Performed numerical experiments and corresponding results are shown in \cref{sec:numerical_experiments}. Finally, \cref{sec:discussion} concludes this thesis with a discussion of results, problems and possible directions of further research.
 
 
 \section{Physical background}
