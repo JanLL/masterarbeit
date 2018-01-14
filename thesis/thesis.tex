@@ -2246,7 +2246,7 @@ In order to keep the argument of the logarithm positive it must hold $r > 0$, $w
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/thesis/images/fraser_suzuki_example.png}
-	\caption{Example of Fraser-Suzuki peak with $h=10$, $r=2$, $wr=5$, $sr=0.3$, $z=130$, $m=0.003$, $b=2$. \\
+	\caption{Example of Fraser-Suzuki peak with $h=10$, $r=2$, $w_r=5$, $s_r=0.3$, $z=130$, $m=0.003$, $b=2$. \\
 	Parametrization used for numerical experiments in \cref{sec:param_estimation_fs,sec:param_estimation_mod_heat_rate_FS}.}
 	\label{fig:parametrization_example_fraser_suzuki}
 \end{figure}
@@ -2334,7 +2334,7 @@ This is reasonable since the difference between these two temperatures is very s
 	\label{fig:obtaining_measurement_times}
 \end{figure}
 
-\subsubsection{Heat flux residuum and objective function Jacobian computation}
+\subsubsection{Computation of heat flux residuum and corresponding Jacobian}
 
 For the optimization process using Gauss-Newton method (see \cref{sec:Gauss_Newton}) we define the residuum vector 
 
@@ -2390,7 +2390,7 @@ In this section all conducted numerical experiments are presented and evaluated 
 All conducted numerical experiments involve the following subproblems: The numerical integration where we solve the model IVP \cref{eq:heat_equation_discretized} gives the temperature vector $T = (T^0 \ ... \ \ T^{N-1} )^T$ and sensitivities $\frac{\partial T}{\partial p}$. 
 This was accomplished with the numerical integrator DAESOL-II embedded in SolvIND. Relative integration tolerance was set to $10^{-7}$ unless otherwise noted.
 Sensitivities were obtained in forward mode. Theoretically adjoint mode is computationally cheaper since we just need two adjoint directions $T^{N_{Ag}}$ and $T^{N_{Ag}+1}$ compared to $n_p$ directions in forward mode. But in practice it turned out that the computation is faster using the forward mode.
-The heat flux into the PCM $\varPhi_q^{pcm,in}$ is then computed with \cref{eq:heat_flux_computation_final} and the objective function Jacobian $J_1(p_{c_p})$ with \cref{eq:optimization_jacobian}. 
+The approximated heat flux into the PCM $\varPhi_q^{pcm,in}$ is then computed by \cref{eq:heat_flux_computation_final} and the residuum function Jacobian $J_1(p_{c_p})$ with \cref{eq:optimization_jacobian}. 
 The number of PCM discretization points was set to $N_{pcm}=50$ as the heat flux approximation error is then negligible (ascertained in a comparison with $N_{pcm}=200$). 
 The parameter estimation is performed by solving the least squares problem \cref{eq:parameter_estimation_least_squares_problem} for each heat rate $\beta$ separately. 
 For comparison, this was accomplished on the one hand with Matlab's industry-standard-solver $lsqnonlin$, which uses a trust-region method and Gauss-Newton directions based on interior-reflective Newton method described in \cite{lsqnonlin_alg1} and \cite{lsqnonlin_alg2}. 
@@ -2442,13 +2442,13 @@ Based on this observation, the idea of the parameter estimations performed in th
 		\caption{}
 		\label{fig:smearing_effect_simulation_heat_flux}
 	\end{subfigure}
-	\caption{(a) Used specific heat capacity for specified heat rates. Parametrization is Fraser-Suzuki (\cref{eq:fraser_suzuki}) with $h=10$, $r=2$, $wr=5$, $sr=0.3$, $z=130$, $m=0.003$ and $b=2$. (b) Heat flux measurements for specified heat rates. (c) Simulated heat flux for specified heat rates. Broadening of the peak and shift of maximum position qualitatively similar to measurement values. \\
+	\caption{(a) Used specific heat capacity for all heat rates. Parametrization is Fraser-Suzuki (\cref{eq:fraser_suzuki}) with $h=10$, $r=2$, $w_r=5$, $s_r=0.3$, $z=130$, $m=0.003$ and $b=2$. (b) Heat flux measurements for specified heat rates. (c) Simulated heat flux for specified heat rates. Broadening of the peak and shift of maximum position qualitatively similar to measurement values. \\
 	See also smearing problem in \cref{sec:smearing_problem}.}
 \end{figure}
 
 
 
-\subsection{Preliminary study using NURBS parametrization and objective function Jacobian computed via finite differences}
+\subsection{Preliminary study using NURBS parametrization and optimization Jacobian computed via finite differences}
 \label{sec:param_estim_NURBS}
 
 For a first attempt of estimating $c_p(T)$  we used the NURBS parametrization (see \cref{sec:nurbs}) with 33 control points whose y-coordinates (corresponds to $c_p$) are optimization variables (i.e. number of optimization variables $n_p=33$). Control points' x-coordinates (corresponds to $T$) were fixed to 
@@ -2458,22 +2458,22 @@ For a first attempt of estimating $c_p(T)$  we used the NURBS parametrization (s
 \end{equation}
 
 with an increased density of control points near the melting temperature ($\approx 130^{\circ}C$ with large uncertainty). \\
-For this preliminary analysis we used the Matlab routine $ode15s$\footnote{The code ode15s for stiff systems is a quasi-constant step size implementation of the NDF’s of order 1 to 5 in terms of backward differences \cite{matlab_ode_suite}.} for integration and $lsqnonlin$ to solve the least squares problem with Jacobians computed via external numerical differentiation. 
+For this preliminary analysis we used the Matlab routine $ode15s$\footnote{The code ode15s for stiff systems is a quasi-constant step size implementation of the NDF’s of order 1 to 5 in terms of backward differences, see \cite{matlab_ode_suite} for further details.} for integration and $lsqnonlin$ to solve the least squares problem with Jacobians computed via external numerical differentiation. 
 The relative local integration tolerance was set here to $10^{-7}$ as well. Moreover, material properties of Constantan were used instead of silver for the heat transport plate from furnace to PCM. These are $c_{p,Const}=0.41\frac{mJ}{mg \ K}$, $\rho_{Const}=10.49\frac{mg}{mm^3}$ and $\lambda_{Const}=23\frac{mW}{mm \ K}$. 
-In this setting the physical lengths $L_{Const}=15mm$ (instead of $L_{Ag}$ here) and $L_{pcm}=0.5mm$ were used to minimize heat flux residuum well. The corresponding number of spatial discretization points were $N_{Const}=1500$ and $N_{pcm}=50$. \\
+In this setting the physical lengths $L_{Const}=15mm$ (instead of $L_{Ag}$ here) and $L_{pcm}=0.5mm$ were used to minimize the heat flux residuum well. The corresponding number of spatial discretization points were $N_{Const}=1500$ and $N_{pcm}=50$. \\
 The results after optimizing, using the measurement data of heat rate $\beta = 10 \frac{K}{min}$, are shown in \cref{fig:NURBS_results}. As one can see it was possible to minimize the heat flux residuum quite well aside from some oscillations which have their origin in $c_p(T)$. 
 Beside the oscillations, there is one major difference in the peak shape of the specific heat capacity from what one would expect. That is, a decrease behind the peak, followed by a big slope. \\
 
-Finally, $lsqnonlin$ delivers an approximation of the Jacobian $J_1(p_{c_p})$ at the end of the optimization process which was computed internally via finite differences, see \cref{fig:NURBS_results} (c) and (d). 
-
-Due to the NURBS' locality property and the y-coordinates of the control points are free optimization variables, each column in the Jacobian corresponds to a temperature of the control points x-coordinate $P^x$. Accordingly, the plot's x-axis labeling was selected.
+At the end of the optimization process, $lsqnonlin$ delivers an approximation of Jacobian $J_1(p_{c_p})$ which was computed internally via finite differences, see \cref{fig:NURBS_results_jac2,fig:NURBS_results_jac2_zoom}. \\
+Due to NURBS' locality property and the fact that the y-coordinates of the control points are free optimization variables, each column in the Jacobian corresponds to a temperature of the control points x-coordinate $P^x$. 
+According to this, the plot's x-axis labeling was selected.
 This way, one can directly see a connection between $J_1(p_{c_p})$ and which zone of $c_p(T)$ it affects. 
-The rows were labeled using the reference crucible temperature $T_{ref}$ since the heat flux measurement values are given as a function of those, analog to the heat flux plot \cref{fig:NURBS_results} (a).
+The rows were labeled using the reference crucible temperature $T_{ref}$ since the heat flux measurement values are given as a function of those, analog to the heat flux plot \cref{fig:NURBS_results}a.
 Two things are worth mentioning: 
-First, there is an increase of several orders of magnitude for areas of $c_p(T)$ up to temperatures of $100^\circ C$ and $T_{ref}$ above $110^\circ C$ during phase transition (upper left corner of \cref{fig:NURBS_results} (c)). Interestingly the specific heat capacity's oscillations occur in a zone of low sensitivities which explains why $lsqnonlin$ does not improve here further. 
-Second, considering the zone of increased magnitude in detail (see \cref{fig:NURBS_results} (d)), one observes sign-switching oscillations. This is a strong indication that the approximation of $J_1(p_{c_p})$ via finite differences is of poor quality and not reliable. \\
+First, there is an increase of several orders of magnitude for areas of $c_p(T)$ up to temperatures of $100^\circ C$ and $T_{ref}$ above $110^\circ C$ during phase transition (upper left corner of \cref{fig:NURBS_results}c). Interestingly the specific heat capacity's oscillations occur in a zone of low sensitivities which explains why $lsqnonlin$ does not improve here further. 
+Second, considering the zone of increased magnitude in detail (see \cref{fig:NURBS_results}d), one observes sign-switching oscillations. This is a strong indication that the approximation of $J_1(p_{c_p})$ via finite differences is of poor quality and not reliable. \\
 The optimization took in this case about 40 minutes and stopped because the norm of step fell below $10^{-6}$.
-Due to large errors in the computation of the objective function Jacobian $J_1(p_{c_p})$ by finite differences, further numerical analysis was omitted. Instead, we used SolvIND for exact derivatives of the IVP's numerical solution with Gaussian and Fraser-Suzuki parametrization.
+Due to large errors in the computation of the Jacobian $J_1(p_{c_p})$ by finite differences, further numerical analysis was omitted. Instead, we used SolvIND for exact derivatives of the IVP's numerical solution with Gaussian and Fraser-Suzuki parametrization.
 
 
 \begin{figure}[H]
@@ -2489,11 +2489,13 @@ Due to large errors in the computation of the objective function Jacobian $J_1(p
 		\hspace{0.1cm}
 		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_jac2.png}
 		\caption{}
+		\label{fig:NURBS_results_jac2}
 	\end{subfigure}
 	\begin{subfigure}{0.49\textwidth}
 		\hspace{0.4cm}
 		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/NURBS_jac_zoom2.png}
 		\caption{}
+		\label{fig:NURBS_results_jac2_zoom}
 	\end{subfigure}
 	\caption{(a) Heat flux into PCM $\varPhi_q^{pcm,in}$ measurement values (dashed red), simulation (blue) and corresponding residuum (yellow). (b) Reconstructed specific heat capacity $c_p(T)$ obtained by parameter estimation. (c) Approximated Jacobian $J_1(p_{c_p})$, note the large variations in order of magnitude. (d) Zoomed view of oscillations in approximated $J_1(p_{c_p})$. \\
 	For an explanation of the Jacobian axes labelings, see accompanying text. \\
@@ -2515,7 +2517,7 @@ The relative error
 \end{align}
 
 comparing relative local integration tolerances $10^{-7}$ and $10^{-8}$ is shown in \cref{fig:integration_tolerance_error}.
-The temperature at the last discretization point of the silver plate $T^{N_{Ag}-1}$ was evaluated for all measurement time points which corresponds to temperatures at the reference crucible $T_{ref}$. Heat rate $\beta = 5 \frac{K}{min}$ was used.
+The temperature at the last discretization point of the silver plate $T^{N_{Ag}-1}$ was evaluated for all measurement time points which corresponds to temperatures at the reference crucible $T_{ref}$. Heat rate $\beta = 5 \frac{K}{min}$ and an equidistant spatial grid was used.
 The maximum relative error $1.7 \cdot 10^{-6}$ occurs approximately at the PCM's phase transition. 
 From the magnitude of $\epsilon_{tol}^{rel}$ we can conclude that an relative local integration tolerance of $10^{-7}$ is sufficient. \\
 
@@ -2537,7 +2539,7 @@ We compare several configurations of the spatial discretization grid (see \cref{
 \end{equation}
 
 where $T_{grid_i}^{N_{Ag}-1}$ is the temperature using non-equidistant grid $i$ and $T_{eq}^{N_{Ag}-1}$ is the temperature from the reference equidistant grid using $N_{pcm}=50$ and $N_{Ag}=20000$. Both temperatures are evaluated at the silver plate's last discretization point since this corresponds to the same physical coordinate $x=L_{Ag}$ by construction in all grids. 
-We set $n_m=0.01$ and $t=0.999$ for all experiments in order to guarantee that the grid size does not change significantly once the PCM starts which is necessary for the heat flux approximation. The same specific heat capacity as in \cref{fig:smearing_effect_c_p} has been used. \\
+We set $n_m=0.01$ and $t=0.999$ for all experiments in order to guarantee that the grid size does not change significantly once the PCM begins which is necessary for the heat flux approximation. The same specific heat capacity as in \cref{fig:smearing_effect_c_p} has been used. \\
 For all result plots in \cref{fig:grid_mod_N,fig:grid_mod_N1,fig:grid_mod_n_tr}, (a) shows the grid size $\Delta x = \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$ as a function of the computation grid $\tilde{x}$ (the y-axis is logarithmic since differences in the minimum gridsize $\Delta x$ are better visible then) and (b) plots the corresponding relative error computed by \cref{eq:relErr_grid}.
 
 \subsubsection{Varying total number of discretization points}
@@ -2606,24 +2608,25 @@ Therefore the grid settings $N_{Ag}=300$, $N_{pcm}=50$, $n_{tr}=0.1$, $n_m=0.01$
 
 
 
-\subsection{Parameter estimation using parametrization of linear combination of Gaussian functions}
+\subsection{Parameter estimation using parametrization of linear combination \\ \hspace{0.85cm} of Gaussian functions}
 \label{sec:param_estimation_5Gausse}
-In the preliminary studies (see \cref{sec:param_estim_NURBS}), finite differences were used to approximate the objective function Jacobian $J_1(p_{c_p})$. 
+In the preliminary studies (see \cref{sec:param_estim_NURBS}), finite differences were used to approximate the Jacobian $J_1(p_{c_p})$. 
 Because of the described problems, in the following the software package SolvIND has been used to generate exact derivatives of the numerical solution of IVP \cref{eq:heat_equation_discretized}. \\
 The parameter estimation is performed in two different ways in this and the following section, deploying different parametrizations. In this section, we focus on the residuum minimization, while in the next section a regularization in form of a predefined peak shape (Fraser-Suzuki) is active, in order to compare both results in the end. \\
-The parameter estimation is performed using the parametrization of five Gaussians, linear and constant part (see \cref{sec:parametrization_Gausse}), i.e. in total $n_p=17$ optimization parameters. These have been rescaled on the same order of magnitude $1$ during optimization.
+The parameter estimation is performed using the parametrization of five Gaussian functions, linear and constant part (see \cref{sec:parametrization_Gausse}), i.e. in total $n_p=17$ optimization parameters. These have been rescaled on the same order of magnitude $1$ during optimization.
 Five Gaussians were used since this is the minimum number such that the residuum almost vanishes, which has been ascertained in a comparative study with variable number of Gaussians. 
 The optimization was performed again with the matlab routine $lsqnonlin$. Start values (see \cref{sec:initial_values_5Gaussians}) for the first heat rate $\beta = 20 \frac{K}{min}$ were used from previously existing results with already reduced residuum. 
-Afterwards the optimizations were performed in a decreasing order of heat rates where parameters estimated in this process were used as start values in subsequent steps. 
+Afterwards the optimizations were performed in a decreasing order of heat rates where parameters estimated in this process were used as initial guesses in subsequent steps. 
 I.e. estimated parameters at heat rate $\beta=20 \frac{K}{min}$ were used as start values for the parameter estimation at heat rate $\beta=10 \frac{K}{min}$ and so forth. \\
-The optimization process took on average about $7$ minutes ($50$ iterations) per heat rate.
+The Jacobian $J_1(p_{c_p})$ exemplary from heat rate $\beta=20\frac{K}{min}$ at the end of the optimization process is displayed in \cref{fig:dqdp_5Gausse}. Compared to the approximation of $J_1(p_{c_p})$ obtained by finite differences (see \cref{fig:NURBS_results}) in \cref{sec:param_estim_NURBS}, the order of magnitude is much lower and no oscillations are visible.
+The optimization process took on average about $7$ minutes ($50$ iterations) for each heat rate.
 
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.7\textwidth]{/home/argo/masterarbeit/thesis/images/dqdp_5Gausse.png}
-	\caption{Objective function Jacobian $J_1(p_{c_p})$ computed by \cref{eq:optimization_jacobian} in forward mode using Gaussian parametrization. Exemplary from heat rate $\beta=20 \frac{K}{min}$ at the end of optimization. Parameters 1-15 are from the Gaussians with parameter $p_1 = A_1$, $p_2 = \var_1$, $p_3 = T_{offset_1}$, $p_4 = A_2$ and so forth. Linear and constant part are $p_{16}=m$ and $p_{17}=b$, respectively. \\
-	See Gaussian parametrization in \cref{sec:parametrization_Gausse} and cf. approximated Jacobian via finite differences in \cref{fig:NURBS_results} (c) and (d).}
+	\caption{Jacobian $J_1(p_{c_p})$ computed by \cref{eq:optimization_jacobian} in forward mode using Gaussian parametrization. Exemplary from heat rate $\beta=20 \frac{K}{min}$ at the end of optimization. Parameters 1-15 are from the Gaussians with parameter $p_1 = A_1$, $p_2 = \var_1$, $p_3 = T_{offset_1}$, $p_4 = A_2$ and so forth. Linear and constant part are $p_{16}=m$ and $p_{17}=b$, respectively. \\
+	See Gaussian parametrization in \cref{sec:parametrization_Gausse} and cf. approximated Jacobian via finite differences in \cref{fig:NURBS_results_jac2,fig:NURBS_results_jac2_zoom}.}
 	\label{fig:dqdp_5Gausse}
 \end{figure}
 
@@ -2665,7 +2668,8 @@ A more detailed comparison between them follows in \cref{sec:param_estimation_Ga
 	\end{subfigure} \\[1ex]
 	
 
-	\caption{Parameter estimation results for (left) specific heat capacity $c_p$ and (right) heat flux into PCM $\varPhi_q^{pcm,in}$ for heat rates $\beta=\{ 20, 10, 5, 2.5 \} \frac{K}{min}$. $c_p(T)$ for heat rate $10 \frac{K}{min}$ has two maxima due to anomaly in heat flux measurement data. See text for further comments. Cf. with results from Fraser-Suzuki parametrization in \cref{fig:optim_c_p_heat_flux_FS_1,fig:optim_c_p_heat_flux_FS_2}.}
+	\caption{Parameter estimation results of (left) reconstructed specific heat capacity $c_p$ and (right) heat flux into PCM $\varPhi_q^{pcm,in}$ for heat rates $\beta=\{ 20, 10, 5, 2.5 \} \frac{K}{min}$. $c_p(T)$ for heat rate $10 \frac{K}{min}$ has two maxima due to anomaly in heat flux measurement data. See text for further comments. \\
+	Cf. with results from Fraser-Suzuki parametrization in \cref{fig:optim_c_p_heat_flux_FS_1,fig:optim_c_p_heat_flux_FS_2}.}
 	\label{fig:optim_c_p_heat_flux_5Gaussians_1}
 \end{figure}
 
@@ -2687,10 +2691,8 @@ A more detailed comparison between them follows in \cref{sec:param_estimation_Ga
 		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/2017-12-19_22:24:18_407_0,3Kmin_L1=40_L3=0,1/c_p.png}
 		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/2017-12-19_22:24:18_407_0,3Kmin_L1=40_L3=0,1/heat_flux.png}
 	\end{subfigure} \\[1ex]
-	
-	
-
-	\caption{Parameter estimation results for (left) specific heat capacity $c_p$ and (right) heat flux into PCM $\varPhi_q^{pcm,in}$ for heat rates $\beta=\{ 1.25, 0.6, 0.3 \} \frac{K}{min}$. See text for further comments. Cf. with results from Fraser-Suzuki parametrization in \cref{fig:optim_c_p_heat_flux_FS_1,fig:optim_c_p_heat_flux_FS_2}.}
+	\caption{Parameter estimation results of (left) reconstructed specific heat capacity $c_p$ and (right) heat flux into PCM $\varPhi_q^{pcm,in}$ for heat rates $\beta=\{ 1.25, 0.6, 0.3 \} \frac{K}{min}$. See text for further comments. \\
+	Cf. with results from Fraser-Suzuki parametrization in \cref{fig:optim_c_p_heat_flux_FS_1,fig:optim_c_p_heat_flux_FS_2}.}
 	\label{fig:optim_c_p_heat_flux_5Gaussians_2}
 \end{figure}
 
@@ -2802,9 +2804,9 @@ We have in total 6 parameters instead of 17 with Gaussian parametrization in the
 Again these parameters have been rescaled on the same order of magnitude $1$ during optimization.
 As there are fewer degrees of freedom and Fraser-Suzuki prescribes a peak shape, a form of regularization is active. \\
 The optimization was performed here with a self written Gauss-Newton solver based on \cref{sec:GN_numerical_solution} using a singular value decomposition of $J_1(p_{c_p})$ for the linearized subproblem. 
-An active set strategy for lower and upper bounds of the optimization variables has been implemented to ensure $0 < s_r < 1$ and $w_r > 0$ but it became apparent that the optimizer does not approach these limiting values. Therefore lower and upper bounds were disabled and we solve an unconstrained problem. Initial guesses (see \cref{sec:initial_values_FS}) for the parametrization at heat rate $20 \frac{K}{min}$ were chosen to be $h=14$, $w_r=10.7$, $s_r=0.705$, $z=129$, $m=0.0079$ and $b=1.69$ and following heat rates use the previous result analog to Gaussian parametrization \cref{sec:param_estimation_5Gausse}. The linear parameter $m$ was fixed to the previously obtained result for the heat rates $0.6$ and $0.3 \frac{K}{min}$ because of the problems remarked in the last section, namely the lack of measurement data when the heat flux is linear. \\
+An active set strategy for lower and upper bounds of the optimization variables has been implemented to ensure $0 < s_r < 1$ and $w_r > 0$ but it became apparent that the optimizer does not approach these limiting values. Therefore lower and upper bounds were disabled and we solve an unconstrained problem. Initial guesses (see \cref{sec:initial_values_FS}) for the parametrization at heat rate $20 \frac{K}{min}$ were chosen to be $h=14$, $w_r=10.7$, $s_r=0.705$, $z=129$, $m=0.0079$ and $b=1.69$ and following heat rates use the previous result analogous to Gaussian parametrization \cref{sec:param_estimation_5Gausse}. The linear parameter $m$ was fixed to the previously obtained result for the heat rates $0.6$ and $0.3 \frac{K}{min}$ because of the problems remarked in the last section, namely the lack of measurement data when the heat flux is linear. \\
 The relative local integration tolerance was set to $10^{-9}$ and local error control of the forward sensitivities has been enabled and set to a relative tolerance $5\cdot 10^{-6}$ which is the minimum possible. For lower values, integration problems occurred in a way that the minimum stepsize has been reached. By using this modified tolerances the first order necessary optimality condition could be satisfied better, i.e. decreased further. \\
-The optimization process took on average about $3$ minutes.
+The optimization process took on average about $3$ minutes for each heat rate.
 
 
 \subsubsection{Specific heat capacity and heat flux separately for all heat rates}
@@ -2833,7 +2835,7 @@ The resulting specific heat capacity $c_p(T)$ and corresponding heat flux $\varP
 		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:39:25_407_2,5Kmin_L1=40_L3=0,1/c_p.png}
 		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:39:25_407_2,5Kmin_L1=40_L3=0,1/heat_flux.png}
 	\end{subfigure}
-	\caption{Parameter estimation results with Fraser-Suzuki parametrization for (left) specific heat capacity $c_p$ and (right) heat flux into PCM $\varPhi_q^{pcm,in}$ for heat rates $\beta=\{ 20, 10, 5, 2.5 \} \frac{K}{min}$. Heat flux residuum increased at phase transition peak. \\
+	\caption{Parameter estimation results with Fraser-Suzuki parametrization of (left) reconstructed specific heat capacity $c_p$ and (right) heat flux into PCM $\varPhi_q^{pcm,in}$ for heat rates $\beta=\{ 20, 10, 5, 2.5 \} \frac{K}{min}$. Heat flux residuum increased at phase transition peak. \\
 	Cf. with results from Gaussian parametrization in \cref{fig:optim_c_p_heat_flux_5Gaussians_1,fig:optim_c_p_heat_flux_5Gaussians_2}.}
 	\label{fig:optim_c_p_heat_flux_FS_1}
 \end{figure}
@@ -2856,7 +2858,7 @@ The resulting specific heat capacity $c_p(T)$ and corresponding heat flux $\varP
 		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:46:27_407_0,3Kmin_L1=40_L3=0,1/c_p.png}
 		\includegraphics[width=0.49\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:46:27_407_0,3Kmin_L1=40_L3=0,1/heat_flux.png}
 	\end{subfigure}
-	\caption{Parameter estimation results with Fraser-Suzuki parametrization for (left) specific heat capacity $c_p$ and (right) heat flux into PCM $\varPhi_q^{pcm,in}$ for heat rates $\beta=\{ 1.25, 0.6, 0.3 \} \frac{K}{min}$. \\
+	\caption{Parameter estimation results with Fraser-Suzuki parametrization of (left) reconstructed specific heat capacity $c_p$ and (right) heat flux into PCM $\varPhi_q^{pcm,in}$ for heat rates $\beta=\{ 1.25, 0.6, 0.3 \} \frac{K}{min}$. \\
 	Cf. with results from Gaussian parametrization in \cref{fig:optim_c_p_heat_flux_5Gaussians_1,fig:optim_c_p_heat_flux_5Gaussians_2}.}
 	\label{fig:optim_c_p_heat_flux_FS_2}
 \end{figure}
@@ -2875,7 +2877,7 @@ The statistical analysis results are shown in \cref{tab:parameter_table_FS}. The
 	See Fraser-Suzuki parametrization \cref{sec:parametrization_FS} and statistical a posteriori analysis in \cref{sec:parameter_estimation_theory} and cf. with results from Gaussian parametrization in \cref{tab:parameter_table_5Gaussians}.}
 	\hspace{-1.6cm}
 	\begin{tabular}{| c | c | c | c | c | c | c |} \hline
-		Heat rate $\beta$ & $h$ & $wr$ & $sr$ & $z$ & Linear $m$ & Const $b$ \\ 
+		Heat rate $\beta$ & $h$ & $w_r$ & $s_r$ & $z$ & Linear $m$ & Const $b$ \\ 
 		$[K/min]$ & & & & & & \\ \hline
 		$20$ & $14.0 \pm 4.8\%$ & $10.7 \pm 5.8\%$ & $0.71 \pm 9.1\%$ & $129.0 \pm 0.35\%$ & $0.0080 \pm 18\%$ & $1.69 \pm 6.9\%$ \\
 		$10$ & $17.9 \pm 4.1\%$ & $9.83 \pm 5.1\%$ & $0.608 \pm 7.9\%$ & $130.0 \pm 0.25\%$ & $0.0055 \pm 29\%$ & $1.75 \pm 8.2\%$  \\
@@ -2927,7 +2929,7 @@ Regarding $T_{max}$ and $\Delta H$, the deviations among different heat rates ha
 As remarked, an self written Gauss-Newton solver (\cref{alg:Gauss_Newton_unconstrained}) has been used in order to solve the unconstrained nonlinear least squares problem and analyse the optimization process. Termination criteria (see \cref{alg:Gauss_Newton_unconstrained}) were set to $[NOC1]_{TOL}=10^{-2}$, $\Delta x_{TOL}=10^{-5}$, $t_{TOL}=10^{-6}$ and iterations$_{max}=1000$ though just the first two were triggered. Stepsize decrease rate $d=0.8$ has been used. \\
 Results are depicted in \cref{fig:optimization_progress_FS_1,fig:optimization_progress_FS_2} for all heat rates where the norm of residuum $||F_1^{(k)}||_2$, Gauss-Newton step $||\Delta x^{(k)}||_2$, gradient of Lagrange function (here objective function since unconstrained) $|| \nabla \mathcal{L} ||_2 = || \nabla F_1^T F_1 ||_2 = || 2 J_1^T F_1 ||_2$ and step size $t^{(k)}$ were recorded in each iteration $k$. The residuum decreases perceptibly only in the first iteration step. This is related to the fact that $||\Delta x^{(k)}||_2$ declines monotonically in a few iterations to an order of $10^{-5}$ where it starts to fluctuate as one can see very well for heat rate $5 \frac{K}{min}$ and therefore the parameters do not change significantly. 
 An similar behaviour can be observed in the norm of the first order optimality condition  $|| \nabla \mathcal{L} ||_2$ which did not get smaller than $10^{-3}$ (observed with different termination criteria).
-Unlike expectation from theory for exact arithmetic the step size does not reach and keep value $t^{(k)}=1$ once in an area of local contraction for almost all heat rates. 
+Unlike expectation from theory for exact arithmetic, the step size does not reach and keep value $t^{(k)}=1$ once in an area of local contraction for almost all heat rates. 
 This could be related to the integration problems (remarked at the beginning of this \cref{sec:param_estimation_fs}) with local error controlled sensitivities. Resolving this integration problems and a further increase in the sensitivity accuracy could lead to better satisfied optimality conditions.
 
 
@@ -2975,9 +2977,9 @@ This could be related to the integration problems (remarked at the beginning of 
 
 
 
-\subsection{Parameter estimation with heat rate retrieved from measurement data}
+\subsection{\mbox{Parameter estimation with heat rate retrieved from measurement data}}
 \label{sec:param_estimation_mod_heat_rate_FS}
-So far, just the nominal heat rate of the appropriate measurement scheme was used. 
+So far, just the nominal heat rate of the corresponding measurement scheme was used. 
 \Cref{fig:heat_rate_measurement} shows the measurement data of the heat rate at the reference crucible $\frac{\partial T_{ref}(t)}{\partial t}(T_{ref})$ exemplary for a nominal heat rate $\beta = 2.5 \frac{K}{min}$. 
 There are distinct fluctuations increasing in time due to the DSC temperature control which tries to keep the heat rate at the nominal value. 
 Computing the mean value gives a slightly lower measured heat rate than the nominal value (red line in \cref{fig:heat_rate_measurement}). 
@@ -3019,7 +3021,7 @@ Therefore it seems reasonable to conclude that the specific heat capacity estima
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.8\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-09_22:35:53_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_modHeatRate/c_p_all.png}
-	\caption{Specific heat capacities $c_p(T)$ from parameter estimation with heat rate from measurement data (\cref{tab:mod_heat_rate}) for all heat rates. These are virtually identical to the case with nominal heat rate (\cref{fig:FS_all_c_p}).}
+	\caption{Specific heat capacities $c_p(T)$ from parameter estimation with heat rate from measurement data (\cref{tab:mod_heat_rate}) for all heat rates (nominal value in legend). Virtually identical to the case with nominal heat rate (\cref{fig:FS_all_c_p}).}
 	\label{fig:FS_all_c_p_modHeatRate}
 \end{figure}
 
@@ -3048,7 +3050,7 @@ Unfortunately, the true specific heat capacity of the examined PCM is not availa
 
 
 \begin{table}[H]
-	\caption{Peak characteristics from $c_p(T)$ by DIN 11357 formula using raw measurement data (first group, see also \cref{fig:c_p_DIN_formula}) and those data fitted on a Fraser-Suzuki peak (second group, see also \cref{eq:fraser_suzuki}). Furthermore the peak characteristics from parameter estimation with Gaussian (third group) and Fraser-Suzuki (fourth group) parametrization from \cref{tab:eval_table_Tmax_deltaH_5Gaussians,tab:eval_table_Tmax_deltaH_FS}. \\
+	\caption{Peak characteristics from $c_p(T)$ by DIN 11357 formula using raw measurement data (first group, see also \cref{fig:c_p_DIN_formula}) and those data fitted on a Fraser-Suzuki peak (second group, see also \cref{eq:fraser_suzuki}). Furthermore, peak characteristics from parameter estimation with Gaussian (third group) and Fraser-Suzuki (fourth group) parametrization from \cref{tab:eval_table_Tmax_deltaH_5Gaussians,tab:eval_table_Tmax_deltaH_FS}. \\
 	$^{(1)}$ SD: Standard deviation with applied Bessel correction. $^{(2)}$ Value omitted as there are two maxima. 
 	$^{(3)}$ Values not considered for mean computation since the two maxima in Gaussian parametrization deform the peak shape and therefore compromise $\Delta H$. The remaining three values are omitted for comparability. \\
 	Peak characteristics elucidated in \cref{sec:peak_characteristics}.}
@@ -3087,14 +3089,14 @@ Unfortunately, the true specific heat capacity of the examined PCM is not availa
 
 
 \newpage
-\section{Discussion}
+\section{Discussion and outlook}
 \label{sec:discussion}
 
 One essential result of this thesis is that we are able to reconstruct the smearing effect with a 1D model. Applied in a parameter estimation framework, this allows the reconstruction of the specific heat capacity $c_p(T)$ of a material at phase change. Compared to the method of determining $c_p(T)$ as described in DIN 11357, peak characteristics maximum position $T_{max}$, offset of melting $T_{off}$ and melting enthalpy $\Delta H$ deviate much less in our approach with Fraser-Suzuki parametrization. 
 It became apparent that Fraser-Suzuki is advantageous compared to the Gaussian parametrization due to improved identifiability.
 Possibly, a less simplified model (e.g. with a crucible layer or more than one dimension) improve the results further. \\
 As remarked earlier (\cref{sec:param_estimation_summary}), "better determined" here means less deviation of $c_p(T)$ for different heat rates, due to the fact that the specific heat capacity is a material property and therefore independent of the heat rate. 
-Ideally one would compare with the true $c_p(T)$ which is unfortunately not available. 
+Ideally, one would compare with the true $c_p(T)$ which is unfortunately not available. 
 This leads to the problem that we possibly chose the physical lengths $L_{Ag}$ and $L_{pcm}$ (which are unaccessible, too, since our model is 1D and e.g. the silver plate is a disk) in such a way that our expectations on the results have influence on those. 
 The results could be verified  with measurement data from another sample with different sample mass. Although the corresponding physical lengths in the model then change (due to different mass but same mass density), ideally equal specific heat capacities should be obtained by the parameter estimation. \\
 Two assumptions of our model were that the mass density $\rho_{pcm}$ and heat conductivity $\lambda_{pcm}$ of the PCM are constant. 
@@ -3116,7 +3118,7 @@ Another open question is why the necessary optimality condition [NOC1] could not
 Possibly this is related to the fact that integration problems occurred with local relative error controlled forward sensitivities. 
 The higher the forward sensitivity accuracy is set, the lower [NOC1] becomes. 
 Solving the numerical integration problems here could resolve the problem with [NOC1] as well. 
-A possible remedy could be to solve the variational differential equation instead using IND and AD, although associated with higher computational costs. \\
+A possible remedy could be to solve the variational differential equation instead using IND and AD, even though associated with higher computational costs. \\
 
 
 
@@ -3214,7 +3216,7 @@ In \cref{sec:param_estimation_summary} the specific heat capacity $c_p(T)$ obtai
 	 Jan Albersmeyer.
 	 Adjoint-based algorithms and numerical methods for sensitivity generation and optimization of large scale dynamic systems.
 	 \url{http://www.ub.uni-heidelberg.de/archiv/11651}.
-	 (2010).
+	 (2010)
 
 \bibitem{DSC_buch}
 	Vladimir A. Bershtein, Victor M. Egorov.
@@ -3395,7 +3397,7 @@ In \cref{sec:param_estimation_summary} the specific heat capacity $c_p(T)$ obtai
 \newpage
 \addsec{Danksagung}
 
-Mein erster Dank gilt Professor Hans Georg Bock für die Vorlesungen über Optimierung gewöhnlicher Differentialgleichungen, die mein Interesse an diesem Thema geweckt haben. Ausserdem bedanke ich mich für die Möglichkeit diese Arbeit in seiner Arbeitsgruppe durchzuführen. \\
+Mein erster Dank gilt Professor Hans Georg Bock für die Vorlesungen über Optimierung gewöhnlicher Differentialgleichungen, die mein Interesse an diesem Thema geweckt haben. Außerdem bedanke ich mich für die Möglichkeit diese Arbeit in seiner Arbeitsgruppe durchzuführen. \\
 
 Mein Dank gilt auch Professor Dr. Ekaterina A. Kostina, die sich bereit erklärt hat, das Zweitgutachten dieser Arbeit zu übernehmen \todo{?!}. \\ 
 
