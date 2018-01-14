@@ -122,10 +122,13 @@ save_root_dir = '/home/argo/masterarbeit/thesis/images/';
 set(fig1, 'units', 'normalized', 'outerposition', [0 0 0.66 1]);
 set(ax1,'FontSize',25);
 xlabel(ax1, 'T_{ref} [°C]');
-ylabel(ax1, '\eta^{\Phi}[mW]');
+% ylabel(ax1, '\eta^{\Phi}[mW]');
+ylabel(ax1, '\Phi_q^{\eta} [mW]');
 set(ax1, 'xlim', [30 160]);
 legend(ax1, 'show', 'location', 'northwest');
 xlim(ax1, [80, 160]);
+
+return
 
 print(fig1, [save_root_dir, 'heat_flux_measurement'], '-dpng', '-r200');
 close(fig1);

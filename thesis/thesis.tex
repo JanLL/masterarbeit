@@ -185,7 +185,7 @@ Ein in der DIN 11357 beschriebenes Standardverfahren, welches Messdaten der dyna
 Mit h\"oheren Heizraten ist der Peak von $c_p^{\text{DIN}}(T)$ verbreitert und seine Position verschiebt sich zu h\"oheren Temperaturen. 
 Dies ist bekannt als das "Smearing Problem" da $c_p(T)$ eine Stoffeigenschaft ist und daher unabhängig von der Heizrate.
 Deshalb wurde in dieser Arbeit ein neues Modell entwickelt um den Messprozess der heat flux DSC mit PCM als Probe zu simulieren. 
-Die Simulation ist verwirklicht indem die 1D Wärmegleichung gelöst wird, wobei die spezifische Wärmekapazität des PCM's temperaturabhängig ist und einen Peak für den Phasenwechsel aufweist. 
+In der Simulation wird die 1D Wärmegleichung gelöst, wobei die spezifische Wärmekapazität des PCM's temperaturabhängig ist und einen Peak für den Phasenwechsel aufweist. 
 Dieses Modell ist in der Lage Wärmeströme nachzubilden, ähnlich denen der Messdaten. 
 Die Simulation ist im Rahmen einer Least-Squares Parameterschätzung eingegliedert, wobei Wärmestrommessdaten verwendet werden um die spezifische Wärmekapazität des PCM's zu schätzen.  
 Verglichen zu $c_p^{\text{DIN}}(T)$ war bei einer Parametrisierung von $c_p(T)$ durch einen Fraser-Suzuki Peak mit linearer Basislinie eine deutliche Reduzierung der Schwankung der Peak-Kenngrößen, Position des Maximums $T_{max}$, Schmelzende $T_{off}$ und Schmelzenthalpie $\Delta H$ bei verschiedenen Heizraten möglich. 
@@ -280,9 +280,9 @@ A popular application of PCMs are heating pads (see \cref{fig:heating_pad}) whic
 %	\label{fig:heating_pad}
 %\end{figure}
 
-In general, PCMs work as an energy buffer (LHTES: Latent heat thermal energy storage). Another application are industry processes to store the process heat for later usage \cite{pcm_process_heat}. Furthermore they can be used to optimize  photovoltaic cells as the efficiency of those cells is temperature dependent with a maximum at a certain point. PCMs are able to stabilize the temperature where the efficiency is maximal \cite{pcm_solar_cells}. 
+In general, PCMs work as an energy buffer, also known as  latent heat thermal energy storage (LHTES). Another application are industry processes to store the process heat for later usage \cite{pcm_process_heat}. Furthermore they can be used to optimize  photovoltaic cells as the efficiency of those cells is temperature dependent with a maximum at a certain point. PCMs are able to stabilize the temperature where the efficiency is maximal \cite{pcm_solar_cells}. 
 A last example are insulations of houses. During the day when it is hot, the PCM becomes liquid and absorbs heat from outside, so they work as a cooling system. On the contrary at night when it is cold outside the PCM becomes solid, releases heat and works as a heating \cite{pcm_house_insulation}. \\
-An important material property is the specific heat capacity $c_p(T)$ where a phase transition peak tells us at which temperature the phase change occurs and how much energy can be stored. The common way of computing $c_p(T)$ from differential scanning calorimetry (DSC) measurement data yields different results depending on the heat rate, a measurement parameter. Since $c_p(T)$ is a material property this is unphysical and this issue is known as the smearing problem. By applying a parameter estimation we aim to avoid this problem.
+An important material property is the specific heat capacity $c_p(T)$ where a phase transition peak tells us at which temperature the phase change occurs and how much energy can be stored. A common way of computing $c_p(T)$ from differential scanning calorimetry (DSC) measurement data yields different results depending on the heat rate, a measurement parameter. Since $c_p(T)$ is a material property this is unphysical and this issue is known as the smearing problem. By applying a parameter estimation we aim to avoid this problem.
 Therefore the two major goals of this thesis are both simulate the measuring process of a DSC where a PCM undergoes a solid-liquid phase transition and perform a parameter estimation in order to get the PCM's true specific heat capacity. 
 Furthermore the heat rate is proportional to the time duration of the experiment. If we get the same $c_p(T)$ for all heat rates we are able to accelerate the measuring process and therefore the research on these materials.
 
@@ -301,12 +301,12 @@ The mathematical methods for simulation and parameter estimation are introduced 
 \section{Physical background}
 \label{sec:physical_background}
 
-Since the work in this thesis is based on the experiments of a differential scanning calorimetry, the physical basics regarding important quantities, phase transition and the experimental setup will be introduced. Further, the heat equation will be derived, which is relevant for the simulation model later. Finally as motivation the smearing problem occurring in the hitherto usual method of computing the specific heat capacity is shown.
+Since the work in this thesis is based on the experiments of a differential scanning calorimetry, the physical basics regarding important quantities, phase transition and the experimental setup will be introduced. Further, the heat equation will be derived, which is relevant for the simulation model later. Finally as motivation, the smearing problem occurring in a hitherto usual method of computing the specific heat capacity is shown.
 
 
 \subsection{Physical quantities and phase transition}
 
-First of all some important physical quantities will be introduced because they are crucial for further comprehension. A summary is shown in \cref{tab:important_physical_quantities} with the consistently used symbols in this thesis and the physical unit. \\
+First of all, important physical quantities will be introduced since they are crucial for further comprehension. A summary is shown in \cref{tab:important_physical_quantities} with the consistently used symbols in this thesis and the physical unit. \\
 Heat $Q$ is the energy that flows from a warmer to a colder object because of the temperature difference. The heat flux density $\phi$ tells us how much heat flows through an unit area in one second. By considering a particular area this quantity becomes the heat flux $\varPhi$. Heat conductivity $\lambda$ is a material property how much energy is transported on a distance of $1m$, unit area and temperature difference of $1K$ in one second.
 
 \begin{table}
@@ -327,9 +327,9 @@ Heat $Q$ is the energy that flows from a warmer to a colder object because of th
 
 
 Probably the most important physical quantity for us is the specific heat capacity $c_p$, a temperature dependent material property that tells us how much energy is needed to increase the temperature of $1kg$ of this material by $1K$. 
-Since we are primarily interested in the phase change we handle with specific heat capacities with latent part, i.e. a peak at the melting point. Moreover the specific heat capacity not belonging to the phase transition is called sensitive part and is described by the baseline. 
-For a pure substance this phase transition peak would be ideally a Dirac delta function (see  \cref{fig:physics_c_p_dirac_delta}). A constant heat flux entering such a pure substance increases the temperature until phase change. Then the heat is absorbed in order to perform the phase transition while the temperature stays constant. Finally, after the phase change has finished, the temperature increases again. 
-In mixed substances like polyethylene in our case with different lengths of the individual polymer chains or due to lattice defects, the peak extends over a temperature range. In the case of lattice defects the atom's binding energies are decreased which lowers the phase transition's temperature partially. The corresponding shape of the specific heat capacity is shown in \cref{fig:physics_fraser_suzuki}. It is not known what shape of $c_p(T)$ we should expect exactly for a polymer. \\
+Since we are primarily interested in the phase change we handle with specific heat capacities with latent part, i.e. with a peak at the melting point. Moreover, the specific heat capacity not belonging to the phase transition is called sensitive part and is described by the baseline. 
+For a pure substance this phase transition peak would be ideally a Dirac delta function (see  \cref{fig:physics_c_p_dirac_delta}). A constant heat flux entering such a pure substance increases the temperature until phase change. Then, the heat is absorbed in order to perform the phase transition while the temperature stays constant. Finally, after the phase change has finished, the temperature increases again. 
+In mixed substances, like polyethylene in our case with different lengths of the individual polymer chains or due to lattice defects, the peak extends over a temperature range. In the case of lattice defects the atom's binding energies are decreased which lowers the phase transition's temperature partially. The corresponding shape of the specific heat capacity is shown in \cref{fig:physics_fraser_suzuki}. It is not known what shape of $c_p(T)$ we should expect exactly for a polymer. \\
 The last physical quantity to introduce is the melting enthalpy $\Delta H$ which is in the case of constant pressure the heat needed to perform the phase transition. Considering the graph $c_p(T)$, the area below the phase change peak less the baseline is equal to the melting enthalpy. This is illustrated in \cref{fig:physics_fraser_suzuki}.
 
 
@@ -404,7 +404,7 @@ area legend]
 
 \subsection{Phase transition peak characteristics}
 \label{sec:peak_characteristics}
-Beside the melting enthalpy $\Delta H$ (\cref{fig:physics_fraser_suzuki}) additional characteristics are introduced in order to quantify a given peak.
+Beside the melting enthalpy $\Delta H$ (\cref{fig:physics_fraser_suzuki}), additional characteristics are introduced in order to quantify a given peak.
 
 
 \begin{figure}[H]
@@ -415,7 +415,7 @@ Beside the melting enthalpy $\Delta H$ (\cref{fig:physics_fraser_suzuki}) additi
 	\label{fig:T_on/off_illustration}
 \end{figure}
 
-These are the maximum point $T_{max}$ and further the extrapolated on- and offset of melting $T_{on}$ and $T_{off}$ computed as the intersection of the inflection points' tangents with the baseline of $c_p(T)$, i.e. the sensitive part \cite{DIN_11357}. In the parametrizations (\cref{sec:parametrizations} except NURBS) of the specific heat capacity in this thesis the baseline is modeled linear. An illustration is given above in \cref{fig:T_on/off_illustration}.
+These are the maximum point $T_{max}$ and further the extrapolated on- and offset of melting $T_{on}$ and $T_{off}$ computed as the intersection of the inflection points' tangents with the baseline of $c_p(T)$, i.e. the sensitive part \cite{DIN_11357}. In the parametrizations (\cref{sec:parametrizations} except NURBS) of the specific heat capacity in this thesis the baseline is modeled linear. An illustration is given in \cref{fig:T_on/off_illustration}.
 
 
 \subsection{Derivation of the heat equation}
@@ -484,7 +484,7 @@ A method of measuring the heat flux into a sample over a certain temperature ran
 		\caption{}
 		\label{fig:DTA_principle}
 	\end{subfigure}
-	\caption{Principal experimental setup of (a) power compensated DSC with two chambers for reference and sample respectively regulated on the same temperature (\cref{sec:power_compensated_dsc}) and (b) differential thermal analysis (DTA) where reference and sample are heated equally and temperature difference $\Delta T$ is measured and furthermore is the basis of a heat flux DSC (\cref{sec:heat_flux_dsc}). Source: \cite{DSC_buch}}
+	\caption{Principal experimental setup of (a) power compensated DSC with two chambers for reference and sample, respectively regulated on the same temperature (\cref{sec:power_compensated_dsc}) and (b) differential thermal analysis (DTA) where reference and sample are heated equally and temperature difference $\Delta T$ is measured and moreover is the basis of heat flux DSC (\cref{sec:heat_flux_dsc}). Source: \cite{DSC_buch}}
 \end{figure}
 
 
@@ -494,7 +494,7 @@ A method of measuring the heat flux into a sample over a certain temperature ran
 The heat flux DSC is crucial for us since it has been used for the experimental data we worked with in this thesis. It is based on differential thermal analysis (DTA, see \cref{fig:DTA_principle}). 
 In DTA there is one chamber in which both reference and sample are exposed to the same heating program.
 Due to differences in the heat capacities of reference and sample, a temperature difference that varies with absolute temperature appears \footnote{This can be used to find typical temperatures of known substances to identify the sample's components, though not part of this thesis.}. \\
-Unfortunately calorimetric properties like melting enthalpy are not accessible just from the temperature difference measurement. 
+Unfortunately, calorimetric properties like melting enthalpy are not accessible just from the temperature difference measurement. 
 Note that the physical quantity measured is an electrical potential difference $\Delta U$ which is assumed to be proportional to the temperature difference due to the Seebeck effect. \\
 The heat flux DSC (see \cref{fig:heat_flux_DSC}) extends now DTA. Its experimental setup from which the used measurement data comes is as follows. Two crucibles (an empty reference one and the other filled with the sample to examine) are connected to the furnace with a silver plate. The furnace' temperature increases in time with a specific heat rate $\beta$ and because of thermal differences a temperature difference $\Delta T$ between sample and reference is measured with temperature sensors placed below the crucibles. As we are actually interested in the temperature of the reference and sample within the crucible a so called temperature calibration is performed. \\
 Finally the calorimetric quantity, i.e. the heat flux into the sample is obtained by the sensitivity calibration which is elucidated next.
@@ -588,7 +588,7 @@ This is done for a set of calibration materials (In, Sn, Zn, Al) such that we ge
 With the mapping $\varPhi(T_{ref}) = \frac{\Delta U(T_{ref})}{sens(T_{ref})}$ the heat flux into the sample then can be computed for a measurement signal $\Delta U$ of unknown materials. 
 
 \paragraph{Measurement data}\mbox{}\\
-In this context the measurements were performed as remarked at the AIT in Wien using the heat flux DSC \textit{Netzsch DSC 204 F1 Phoenix\textsuperscript{\textregistered}}. An excerpt of the .csv file which contains the measurement data for heat rate ${\beta=1.25 \frac{K}{min}}$ is shown in \cref{fig:measurement_csv_data}. Beside general information like date and time when the experiment was performed and which sample and crucibles have been used there are four columns. The first three of those contain the information recorded during the experiment, namely the temperature at the reference crucible $T_{ref}$, elapsed time $t$ since start of measurement set and electric potential $\Delta U_m$ caused by the temperature difference between reference and sample crucible. 
+In this context the measurements were performed as remarked at the AIT in Wien using the heat flux DSC \textit{Netzsch DSC 204 F1 Phoenix\textsuperscript{\textregistered}}. An excerpt of the .csv file which contains the measurement data for heat rate ${\beta=1.25 \frac{K}{min}}$ is shown in \cref{fig:measurement_csv_data}. Beside general information like date and time when the experiment was performed and which sample and crucibles have been used, there are four columns. The first three of those contain the information recorded during the experiment, namely the temperature at the reference crucible $T_{ref}$, elapsed time $t$ since start of measurement set and electric potential $\Delta U_m$ caused by the temperature difference between reference and sample crucible. 
 From the sensitivity calibration, the fourth column holds the sensitivity values $sens$.
 Note here that $\Delta U_m$ is normalized on the sample mass such that is has unit $[\Delta U_m]=\frac{\mu V}{mg}$. We need to consider this for the following computation of the heat flux into the PCM
 
@@ -613,7 +613,7 @@ These measurement data are used later in the parameter estimation optimization p
 \label{sec:power_compensated_dsc}
 Another kind of differential scanning calorimetry is the
 power compensated DSC (\cref{fig:DSC_power_compensated_principle}). 
-The main difference to a heat flux DSC is that there are 2 separated chambers for a reference and the sample. Both have individual heaters and temperature sensors such that a feedback control system keeps the temperature in both chambers on the same value. Since the electrical power for heating is known the heat flux is gained due to energy conservation. \\
+The main difference to a heat flux DSC is that there are 2 separated chambers for a reference and the sample. Both have individual heaters and temperature sensors such that a feedback control system keeps the temperature in both chambers on the same value. Since the electrical power for heating is known, the heat flux is gained due to energy conservation. \\
 
 
 \subsection{Smearing Problem}
@@ -626,7 +626,7 @@ A common way to perform the heat flux DSC calibration, measurement and specific 
 \end{equation}
 
 where the indices $S$ and $R$ denote the sample respectively reference. Reference means here a material with known specific heat capacity $c_p^R(T)$, not to be mistaken with the reference side of the experimental setup which is usually empty. In our case this reference material is sapphire. Furthermore $m$ is the mass and $\varPhi^0$ is the heat flux if both crucibles are empty. $\varPhi^0$ is subtracted to compensate asymmetries in the experimental setup. \\
-In \cref{fig:heat_flux_measurements} the measurement data of the heat flux into the PCM $\varPhi_q^{\eta}(T_{ref})$ is shown for all heat rates dependent on the temperature at the reference crucible. For higher heat rates the peak position shifts to higher temperatures and the peak is broadened (smearing effect). Using \cref{eq:c_p_formula_DIN} the computed specific heat capacities $c_p^{\text{DIN}}(T)$ of the PCM are shown in \cref{fig:c_p_DIN_formula}, exhibiting the smearing effect as well. This is known as the smearing problem since $c_p(T)$ is a material property and therefore independent of the heat rate.
+In \cref{fig:heat_flux_measurements} the measurement data of the heat flux into the PCM $\varPhi_q^{\eta}(T_{ref})$ is shown for all heat rates dependent on the temperature at the reference crucible. For higher heat rates the peak position shifts to higher temperatures and the peak is broadened (smearing effect). Using \cref{eq:c_p_formula_DIN}, the computed specific heat capacities $c_p^{\text{DIN}}(T)$ of the PCM are shown in \cref{fig:c_p_DIN_formula}, exhibiting the smearing effect as well. This is known as the smearing problem since $c_p(T)$ is a material property and therefore independent of the heat rate.
 
 
 \begin{figure}[H]
@@ -2132,7 +2132,7 @@ Finally the solution of the boundary value problem \cref{eq:analytical_soln_pde}
 
 
 \newpage
-\section{Parameter estimation of specific heat capacity $c_p$}
+\section{Parameter estimation of specific heat capacity}
 \label{sec:parameter_estimation_applied}
 
 The measuring process simulation, described in \cref{sec:simulation_of_DSC} is embedded in this section into the parameter estimation of the specific heat capacity $c_p(T)$ where a nonlinear least squares problem has to be solved. The corresponding numerical experiments are elucidated in \cref{sec:numerical_experiments}.
@@ -2140,7 +2140,7 @@ As we want to estimate a function, $c_p(T)$ has been parametrized.
 Those parametrization used in this thesis will be introduced in the following.
 
 
-\subsection{Parametrizations of $c_p$}
+\subsection{Parametrizations of the specific heat capacity}
 \label{sec:parametrizations}
 
 In this thesis the following three parametrizations for the specific heat capacity $c_p(T)$ has been used.
@@ -2274,7 +2274,7 @@ The model $\dot{T} = f(T,t;p_{c_p})$ with $T(0) = T_0$ is equivalent to the init
 Note that \cref{eq:parameter_estimation_least_squares_problem} is solved separately for each heat rate $\beta$, which occurs in the model \cref{eq:heat_equation_discretized}.
 This least squares problem is of the form of \cref{eq:param_estimation_definition}, which has been discussed in \cref{sec:parameter_estimation_theory}.
 
-\subsubsection{Mapping measured reference temperature $T_{ref}^{\eta_i}$ to measurement times $t_i$}
+\subsubsection{Mapping measured reference temperature to measurement times}
 
 The measurement data is given as $\varPhi_q^{\eta_i}(T_{ref}^{\eta_i})$ where $T_{ref}^{\eta_i}$ is the temperature at the reference crucible at measurement time $t_i$. Since we need to pass these times $t_i$ to the differential equation solver for the evaluation of the temperature and sensitivities we obtain them by solving the nonlinear equation 
 
@@ -2455,7 +2455,7 @@ For a first attempt of estimating $c_p(T)$  we used the NURBS parametrization (s
 with an increased density of control points near the melting temperature ($\approx 130^{\circ}C$ with large uncertainty). \\
 For this preliminary analysis we used the Matlab routine $ode15s$\footnote{The code ode15s for stiff systems is a quasi-constant step size implementation of the NDF’s of order 1 to 5 in terms of backward differences \cite{matlab_ode_suite}.} for integration and $lsqnonlin$ to solve the least squares problem with Jacobians computed via external numerical differentiation. 
 The relative local integration tolerance was set here to $10^{-7}$ as well. Moreover, material properties of Constantan were used instead of silver for the heat transport plate from furnace to PCM. These are $c_{p,Const}=0.41\frac{mJ}{mg \ K}$, $\rho_{Const}=10.49\frac{mg}{mm^3}$ and $\lambda_{Const}=23\frac{mW}{mm \ K}$. 
-In this setting the physical lengths $L_{Const}=15mm$ (instead of $L_{Ag}$ here) and $L_{pcm}=0.5mm$ were used to minimize heat flux residuum well. \\
+In this setting the physical lengths $L_{Const}=15mm$ (instead of $L_{Ag}$ here) and $L_{pcm}=0.5mm$ were used to minimize heat flux residuum well. The corresponding number of spatial discretization points were $N_{Const}=1500$ and $N_{pcm}=50$. \\
 The results after optimizing, using the measurement data of heat rate $\beta = 10 \frac{K}{min}$, are shown in \cref{fig:NURBS_results}. As one can see it was possible to minimize the heat flux residuum quite well aside from some oscillations which have their origin in $c_p(T)$. 
 Beside the oscillations, there is one major difference in the peak shape of the specific heat capacity from what one would expect. That is, a decrease behind the peak, followed by a big slope. \\
 
@@ -2596,12 +2596,12 @@ The number of discretization points $N_{Ag}=300$ and $N_{pcm}=50$ within the sil
 	\label{fig:grid_mod_n_tr}
 \end{figure}
 
-Summarized, a total number of discretization points $N=300$ is sufficient while the transition parameter $n_{tr}$ should not be much larger than $0.1$. Then the magnitude of the relative error is equal or less $10^{-5}$ which is negligible in our case especially when considering that the relative integration tolerance $10^{-7}$ was used.
+Summarized, a total number of discretization points $N=300$ is sufficient while the transition parameter $n_{tr}$ should not be much larger than $0.1$. Then the magnitude of the relative error is equal or less $10^{-5}$ which is negligible in our case especially when considering that the relative integration tolerance $10^{-7}$ was used. 
+Therefore the grid settings $N_{Ag}=300$, $N_{pcm}=50$, $n_{tr}=0.1$, $n_m=0.01$ and $\tau=0.999$ were used in the following sections.
 
 
 
-
-\subsection{Parameter estimation using parametrization of linear combination of Gaussians}
+\subsection{Parameter estimation using parametrization of linear combination of Gaussian functions}
 \label{sec:param_estimation_5Gausse}
 In the preliminary studies (see \cref{sec:param_estim_NURBS}), finite differences were used to approximate the objective function Jacobian $J_1(p_{c_p})$. 
 Because of the described problems, in the following the software package SolvIND has been used to generate exact derivatives of the numerical solution of IVP \cref{eq:heat_equation_discretized}. \\
@@ -3129,7 +3129,7 @@ A possible remedy could be to solve the variational differential equation instea
 \section{Parameter estimation start values}
 In this section the initial values for the iterative optimization process for parameter estimation in \cref{sec:param_estimation_5Gausse,sec:param_estimation_fs} are listed. The depicted values were used for heat rate $\beta = 20 \frac{K}{min}$. The following heat rates used successively the obtained parameters from the last heat rate as initial values, i.e. heat rate $\beta = 10 \frac{K}{min}$ used the obtained parameters from $\beta = 20 \frac{K}{min}$, heat rate $\beta = 5 \frac{K}{min}$ used the obtained parameters from $\beta = 10 \frac{K}{min}$ and so forth.
 
-\subsection{Gaussians}
+\subsection{Linear combination of Gaussian functions}
 \label{sec:initial_values_5Gaussians}
 
 The initial values for the least squares solver $lsqnonlin$ in the parameter estimation using the parametrization of five Gaussians in \cref{sec:param_estimation_5Gausse} are depicted in \cref{tab:initial_values_5Gausse}. 
@@ -3148,7 +3148,7 @@ The initial values for the least squares solver $lsqnonlin$ in the parameter est
 \end{table}
 
 
-\subsection{Fraser-Suzuki}
+\subsection{Fraser-Suzuki peak}
 \label{sec:initial_values_FS}
 
 The initial values for the self written Gauss-Newton \cref{alg:Gauss_Newton_unconstrained} in the parameter estimation using the Fraser-Suzuki parametrization in \cref{sec:param_estimation_fs} are depicted in \cref{tab:initial_values_FS}. In order to ensure identifiability it was fixed $r=2$.
@@ -3250,11 +3250,6 @@ In \cref{sec:param_estimation_summary} the specific heat capacity $c_p(T)$ obtai
 	während des Phasenübergangs.
 	Dissertation an der technischen Universität München 
 	(2006)
-	
-\bibitem{numerik1_skript_koerkel}
-	Prof. Dr. Stefan Körke.
-	Numerische Mathematik 1 Vorlesungsskript.
-	(2015)
 
 \bibitem{ADOL-C}
 	Andrea Walther and Andreas Griewank.
