@@ -1625,7 +1625,7 @@ The nonlinear least squares optimization problem as part of the parameter estima
 \section{Simulation of DSC measuring process}
 \label{sec:simulation_of_DSC}
 
-So far the physical and mathematical foundations were laid by refering known knowledge. In this section our new model of the simulation of a heat flux DSC measuring process will be introduced, resulting finally in an initial value problem for the sample side. The reference side on the other hand is solved analytically at the end of this section.
+So far, physical and mathematical foundations were laid by refering known knowledge. In this section our new model of the simulation of a heat flux DSC measuring process will be introduced, resulting finally in an initial value problem for the sample side. The reference side on the other hand is solved analytically at the end of this section.
 
 %in next \cref{sec:parameter_estimation_applied} it follows the corresponding parameter estimation in order to obtain the specific heat capacity $c_p(T)$.
 
@@ -1650,7 +1650,11 @@ Analogously to the experimental setup, the silver plate is connected with the fu
 \end{subequations}
 
 
-In order to solve \cref{eq:heat_equation_model}, the method of lines is applied for spatial discretization of the temperature field $T(x,t)$. In this context, on the BVP \cref{eq:method_of_lines} (which has the same form as \cref{eq:heat_equation_model} with constant heat conductivity $\lambda$) has been applied the method of lines already in \cref{sec:pde_discretization}. Therefore the analogous procedure is performed here. \\
+In order to solve \cref{eq:heat_equation_model}, the method of lines is applied for spatial discretization of the temperature field $T(x,t)$. 
+In this context, on BVP \cref{eq:method_of_lines} (which has the same form as \cref{eq:heat_equation_model} with constant heat conductivity $\lambda$) the method of lines has already been applied in \cref{sec:pde_discretization}.
+%has been applied the method of lines already in \cref{sec:pde_discretization}. 
+%In this context, the method of lines has (\cref{sec:pde_discretization}) already been applied on the BVP \cref{eq:method_of_lines} which has the same form as \cref{eq:heat_equation_model} with constant heat conductivity $\lambda$.
+Therefore the analogous procedure is performed here. \\
 The silver plate has $N_{Ag}$ and the PCM $N_{pcm}$ discretization points and therefore the total number of discretization points is $N = N_{Ag} + N_{pcm}$. $T^i(t)$ is the discretized temperature at physical grid position $x^i$ for $i=0,...,N-1$. Since an inhomogeneous grid has been used, the gridsizes are computed by $\Delta x_i = {x^{i+1} - x^i}$ for $i=0,...,N-2$. \\
 An illustration of the discretized model is depicted in \cref{fig:mathematical_model_discretized}. Note that the first discretized temperature within the PCM is $T^{N_{Ag}}$.
 In \cref{sec:spatial_discretization_grid} the construction of the inhomogeneous grid will be explained in detail. The resulting initial value problem reads as
@@ -1717,7 +1721,7 @@ is apparent in the ODE system of \cref{eq:heat_equation_discretized} at $\frac{d
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/discretization_grid_heat_flux.png}
-	\caption{Illustration of discretized model with discrete temperatures $T^i$, grid sizes $\Delta x_i$, physical lengths $L_{Ag}, L_{pcm}$ and heat flux approximation $\varPhi_q^{pcm,in}$ into the PCM (approximation elucidated in text below). \\
+	\caption{Illustration of discretized model with discrete temperatures $T^i$, grid sizes $\Delta x_i$, physical lengths $L_{Ag}, L_{pcm}$ and heat flux approximation $\varPhi_q^{pcm,in}$ into the PCM (approximation elucidated in accompanying text). \\
 	See for	corresponding IVP \cref{eq:heat_equation_discretized}, grid size construction \cref{sec:spatial_discretization_grid}, heat flux approximation \cref{eq:heat_flux_computation_final} and experimental setup \cref{fig:heat_flux_DSC}.}
 	\label{fig:mathematical_model_discretized}
 \end{figure}
@@ -1797,7 +1801,7 @@ Furthermore we get $\gamma$ by ($\delta \underline{x}(\tau)$ illustrated in \cre
 \end{align}
 \end{subequations}
 
-The remaining variables $\underline{x}$ and $\bar{x}$ we get by the condition that the last discretization point of the silver plate $T^{N_{Ag}-1}$ has the physical coordinate at the end of the silver plate $L_{Ag}$ (see \cref{fig:mathematical_model_discretized})
+We get the remaining variables $\underline{x}$ and $\bar{x}$ by the condition that the last discretization point of the silver plate $T^{N_{Ag}-1}$ has the physical coordinate at the end of the silver plate $L_{Ag}$ (see \cref{fig:mathematical_model_discretized})
 
 \begin{subequations}
 	\begin{align}
@@ -1807,7 +1811,7 @@ The remaining variables $\underline{x}$ and $\bar{x}$ we get by the condition th
 	\end{align}
 \end{subequations}
 
-and analog the last discretization point of the PCM $T^{N-1}$ has the physical coordinate at the end of the PCM $L_{Ag}+L_{pcm}$
+and analogously the last discretization point of the PCM $T^{N-1}$ has the physical coordinate at the end of the PCM $L_{Ag}+L_{pcm}$
 
 \begin{subequations}
 	\begin{align}
@@ -1988,9 +1992,9 @@ Inserting the boundary conditions and equating coefficients in $x$ gives
 By construction this leads to homogeneous boundary conditions of $\Gamma(x,t)$:
 
 \begin{align}
-	T(0,t) & = \bar{T}(0,t) + \Gamma(0,t) = T_0 + \beta \cdot t + \Gamma(0,t) \stackrel{\cref{eq:analytical_soln_bc_dirichlet}}{=} T_0 + \beta \cdot t \\
+	T(0,t) & = \bar{T}(0,t) + \Gamma(0,t) = T_0 + \beta \cdot t + \Gamma(0,t) \stackrel{\eqref{eq:analytical_soln_bc_dirichlet}}{=} T_0 + \beta \cdot t \\
 	 &\Rightarrow \Gamma(0,t) = 0 \\[2ex]
-	\frac{\partial T}{\partial x}(L_{Ag},t) & = \underbrace{\frac{\partial \bar{T}}{\partial x}(L_{Ag},t)}_{= 0} + \frac{\partial \Gamma}{\partial x}(L_{Ag},t) \stackrel{\cref{eq:analytical_soln_bc_neumann}}{=} 0 \\
+	\frac{\partial T}{\partial x}(L_{Ag},t) & = \underbrace{\frac{\partial \bar{T}}{\partial x}(L_{Ag},t)}_{= 0} + \frac{\partial \Gamma}{\partial x}(L_{Ag},t) \stackrel{\eqref{eq:analytical_soln_bc_neumann}}{=} 0 \\
 	 &\Rightarrow \frac{\partial \Gamma}{\partial x}(L_{Ag},t) = 0
 \end{align}
 
@@ -2031,7 +2035,7 @@ The homogeneous solution (i.e. $\bar{q}=0$) can be obtained by an separation ans
 \end{equation}
 
 
-since the LHS $\sfrac{\dot{\mathcal{T}}}{{\mathcal{T}}}$ just depends on $t$ and the RHS $\sfrac{X''}{X}$ just depends on $x$. The constant defined ${-\lambda}$ is not to be mistaken with the physical quantity of the heat conductivity outside this section. 
+since the LHS $\sfrac{\dot{\mathcal{T}}}{{\mathcal{T}}}$ just depends on $t$ and the RHS $\sfrac{X''}{X}$ just depends on $x$. The constant defined as ${-\lambda}$ is not to be mistaken with the physical quantity of the heat conductivity outside this section. 
 
 The solution of the ordinary differential equation $X'' = - \lambda \cdot X$ is
 
@@ -2081,7 +2085,7 @@ Inserting this into \cref{eq:analytical_soln_pde_gamma} gives us
 	\stackrel{X'' = - \lambda X}{\Leftrightarrow} \ \ \sum_{n=1}^{\infty} \dot{\mathcal{T}}_n(t) X_n(x) + \alpha_{Ag} \sum_{n=1}^{\infty} \lambda_n \mathcal{T}_n(t) X_n(x) = \sum_{n=1}^{\infty} \bar{q}_n(t) X_n(x)
 \end{align*}
 
-With equating the coefficients in $X_n$ we get the inhomogeneous ordinary differential equation (ODE)
+With equating the coefficients in $X_n$ we get the inhomogeneous ordinary differential equation
 
 \begin{equation}
 	\dot{\mathcal{T}_n}(t) + \alpha_{Ag} \lambda_n \mathcal{T}_n(t) = \bar{q}_n(t)
@@ -2110,7 +2114,7 @@ The solution of the inhomogeneous ODE \cref{eq:analytical_soln_inhomo_ode} then 
 	& = -\frac{4 \beta}{\pi (2n - 1)} \frac{1}{\alpha_{Ag} \lambda_n} \left[1 - e^{-\alpha_{Ag} \lambda_n t} \right] + A_{n,c} e^{- \alpha_{Ag} \lambda_n t} \nonumber
 \end{align}
 
-The remaining unknown $A_{n,c}$ is determined by considering the Fourier series of the starting condition
+The remaining unknown $A_{n,c}$ is determined by considering the Fourier series of the initial condition
 
 \begin{equation}
 	\Gamma(x,0) = \sum_{n=1}^{\infty} \mathcal{T}_n(0) X_n(x) = \sum_{n=1}^{\infty} \bar{f}_n X_n(x) = \bar{f}(x)
@@ -2127,7 +2131,8 @@ Finally the solution of the boundary value problem \cref{eq:analytical_soln_pde}
 \begin{align}
 	& \ \ T(x,t) = \bar{T}(x,t) + \Gamma(x,t) \nonumber \\
 	\Leftrightarrow \ \ & T(x,t) = T_0 + \beta \cdot t + \sum_{n=1}^{\infty} \mathcal{T}_n(t) X_n(x) \nonumber \\[1ex]
-	\Leftrightarrow \ \ & \raalign{}{T(x,t) = T_0 + \beta \cdot t - \sum_{n=1}^{\infty} \left\{ \frac{4 \beta}{\pi (2n - 1)} \frac{1}{\alpha_{Ag} \cdot \lambda_n} \left[ 1 - e^{- \alpha_{Ag} \lambda_n t} \right] \cdot \sin(\sqrt{\lambda_n} \cdot x) \right\}} \label{eq:analytical_soln_final_formula}
+	\Leftrightarrow \ \ & \raalign{}{T(x,t) = T_0 + \beta \cdot t - \sum_{n=1}^{\infty} \left\{ \frac{4 \beta}{\pi (2n - 1)} \frac{1}{\alpha_{Ag} \cdot \lambda_n} \left[ 1 - e^{- \alpha_{Ag} \lambda_n t} \right] \cdot \sin(\sqrt{\lambda_n} \cdot x) \right\}} \label{eq:analytical_soln_final_formula} \\
+	& \qquad \text{with} \quad \sqrt{\lambda_n} = \frac{(2n -1)\pi}{2 L_{Ag}} \qquad n=1,2,... \nonumber
 \end{align}
 
 
