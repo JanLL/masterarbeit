@@ -655,8 +655,8 @@ In this section the mathematical problems we treat in this thesis will be introd
 Since crucial and occurring several times in this section, we introduce the initial value problem (IVP)
 
 \begin{align}
-	\dot{y} = f(y(t), t; p) \label{eq:initial_value_problem_definition} \\
-	y(t_0) = y_0 \nonumber
+	\dot{y} = & \ f(y(t), t; p) \label{eq:initial_value_problem_definition} \\
+	y(t_0) = & \ y_0 \nonumber
 \end{align}
 
 with differential state vector $y \in \mathbb{R}^n$, time $t \in \mathbb{R}$ and parameters $p \in \mathbb{R}^{n_p}$. Function $f: \mathbb{R}^n \times \mathbb{R} \rightarrow \mathbb{R}^n$ assumed sufficiently smooth is called the differential equation's right hand side within the ordinary differential equation (ODE) $\dot{y} = f(y(t), t; p)$. The semicolon separates function arguments and  parameters\footnote{E.g., also controls $u$ in the context of optimal control.}. Initial time and state are $t_0$ and $y_0$, respectively. \\
@@ -784,7 +784,7 @@ x_2 \cdot \sin(1+x_1)
 For a profound view on the subject of automatic differentiation, see e.g. \cite{eval_derivatives_walther_griewank}.
 
 
-\paragraph{Forward Mode}\mbox{}\\
+\paragraph{Forward mode}\mbox{}\\
 In the forward mode, the directional derivative $\dot{y}$ is computed for a given direction $\dot{x}$ (i.e. $|| \dot{x} || = 1$) at an evaluation point $x$:
 
 \begin{equation}
@@ -792,11 +792,11 @@ In the forward mode, the directional derivative $\dot{y}$ is computed for a give
 \end{equation}
 
 Here the notation $\dot{x}$ should not be mixed-up with the time derivative often used in physics context.
-The algorithm called \textit{first order forward sweep} (see \cref{tab:first_order_forward_sweep}) is structured into three parts. First the auxiliary variables $v_{1-n},...,v_0$ and $\dot{v}_{1-n},...,\dot{v}_0$ are initialized with the evaluation point $x$ and the direction of the directional derivative $\dot{x}$. So if we want to get $\frac{\partial f}{\partial x_2}$ we would need to set $\dot{x} = \begin{bmatrix}
+The algorithm called \textit{first order forward sweep} (see \cref{tab:first_order_forward_sweep}) is structured into three parts. First, the auxiliary variables $v_{1-n},...,v_0$ and $\dot{v}_{1-n},...,\dot{v}_0$ are initialized with the evaluation point $x$ and the direction of the directional derivative $\dot{x}$. So if we want to get $\frac{\partial f}{\partial x_2}$ we would need to set $\dot{x} = \begin{bmatrix}
 0 & 1 & 0 & \dots & 0
 \end{bmatrix}^T$. One can see here that with one forward sweep we get one column of the Jacobian $ \frac{\partial f}{\partial x}$. 
 After the initialization the actual forward sweep begins where the $k$ elemental functions of $f$ are evaluated and saved in the intermediate values $v_i$. Simultaneously, their derivatives  $\dot{v}_i$ are computed using previously calculated intermediate values and derivatives. E.g., for $v_2 = \varphi_2(v_0, v_1)$ it holds $\dot{v}_2 = \frac{\partial \varphi_2}{\partial v_0} \dot{v_0} + \frac{\partial \varphi_2}{\partial v_1} \dot{v_1}$. \\
-The last $m$ intermediate variables represent the solution vector. Finally these values and derivatives are extracted.
+The last $m$ intermediate variables represent the solution vector. Finally, these values and derivatives are extracted.
 
 
 
@@ -835,7 +835,7 @@ In order to illustrate this algorithm is applied on the example function \cref{e
 
 
 
-\paragraph{Adjoint Mode}\mbox{}\\
+\paragraph{Adjoint mode}\mbox{}\\
 Beside the forward mode there is the adjoint mode where the adjoint directional derivative $\bar{x}^T$ is computed for a given adjoint direction $\bar{y}^T$ at the evaluation point $x$. 
 
 \begin{equation}
@@ -844,7 +844,7 @@ Beside the forward mode there is the adjoint mode where the adjoint directional 
 
 The algorithm is shown in \cref{tab:first_order_adjoint_sweep} where operator $+ \hspace{-0.12cm} =$ is defined as $x + \hspace{-0.12cm} = y \ \Leftrightarrow \ x = x + y$. In contrary to the forward mode we need an additional set of adjoint intermediate variables $\bar{v}_i$ here. These contain the adjoint sensitivity information which are initialized to zero in the first step. \\
 The following forward sweep is analogous to the one shown in \cref{tab:first_order_forward_sweep}, however here we compute just the intermediate function evaluations without derivatives. We need these function values in the next part. \\
-The actual adjoint directional derivatives are now computed in the reverse sweep which consists of three sub-steps. First of all, the adjoint directions $\bar{y}$ are chosen. So for example, if we want the second row of the Jacobian $\frac{\partial f_2}{\partial x}$ we need to set $\bar{y} = \begin{bmatrix}
+The actual adjoint directional derivatives are computed in the reverse sweep which consists of three sub-steps. First of all, the adjoint directions $\bar{y}$ are chosen. So for example, if we want the second row of the Jacobian $\frac{\partial f_2}{\partial x}$ we need to set $\bar{y} = \begin{bmatrix}
 0 & 1 & 0 & \dots & 0
 \end{bmatrix}^T$.
 Next, all contributions to the adjoint intermediate variables will be successively summed up by applying the adjoint equation $\bar{y}^T \dot{y} = \bar{y}^T \frac{\partial f}{\partial x}(x) \cdot \dot{x} = \bar{x}^T \dot{x}$ in a reverse scheme (that is why we need the forward sweep and hence the intermediate value evaluations first). Finally, we can extract the solution $\bar{x}$ which corresponds to a row in $\frac{\partial f}{\partial x}$.
@@ -930,7 +930,7 @@ It is defined as
 
 where $\alpha_{ij} \in \mathbb{R}$ with $\alpha_{0m},\alpha_{km} \ne 0 \ \forall \ m$ are the method's coefficients. BDF methods up to order 6 are used in practice because these are zero-stable. \\
 Since \cref{eq:bdf_formula} is a nonlinear system of equations it can be solved iteratively using Newton's method (therefore we need $f \in \mathcal{C}^1$). In order to obtain a good starting point a so called predictor is used, which is the integration polynomial of the previous integration step. With this initial guess for $y_{m+k}$ the Newton method can be applied to get the so called corrector polynomial, which satisfies the differential equation at $t_{m+k}$. \\
-As we want the numerical integrator both to perform large integration steps to minimize the required time to solve the IVP and limit the inevitable numerical errors to a predefined value we are dependent on a strategy to choose the step width $h_{m+k-1}$ accordingly. This is done by estimating the local error (see e.g. \cite{diss_jan} page 128) in each integration step. Either the local error is smaller than some tolerance then the step width might be increased in the next integration step, otherwise decreased until the local error tolerance is satisfied. \\
+As we want the numerical integrator both to perform large integration steps to minimize the required time to solve the IVP and limit the inevitable numerical errors to a predefined value we are dependent on a strategy to choose the step width $h_{m+k-1}$ accordingly. This is done by estimating the local error (see e.g. \cite{diss_jan} page 128) in each integration step. Either the local error is smaller than some tolerance, then the step width might be increased in the next integration step, otherwise decreased until the local error tolerance is satisfied. \\
 
 The BDF solver DAESOL-II embedded in SolvIND has been used in this thesis to solve \cref{eq:heat_equation_discretized}.
 
@@ -957,10 +957,10 @@ Since later in \cref{sec:simulation_of_DSC} the heat conduction problem shall be
 	\label{eq:method_of_lines}
 \end{subequations}
 
-on the domain $x \in [a,b] = \Omega \subseteq \mathbb{R}$ and $t \in [t_0,t_f] \subseteq \mathbb{R}$. \Cref{eq:method_of_lines_pde} is the 1D parabolic partial differential equation with $\alpha(u(x,t)) > 0$ (cf. heat equation \eqref{eq:heat_eq_derivation_1}), \cref{eq:method_of_lines_dirichlet} is the Dirichlet boundary condition at $x=a$, \cref{eq:method_of_lines_neumann} respectively the Neumann boundary condition at $x=b$ and lastly \cref{eq:method_of_lines_start} are the initial values at ${t=t_0}$. \\
+on the domain $x \in [a,b] = \Omega \subseteq \mathbb{R}$ and $t \in [t_0,t_f] \subseteq \mathbb{R}$. \Cref{eq:method_of_lines_pde} is the 1D parabolic partial differential equation with $\alpha(u(x,t)) > 0$ (see heat equation \eqref{eq:heat_eq_derivation_1}), \cref{eq:method_of_lines_dirichlet} is the Dirichlet boundary condition at $x=a$ and \cref{eq:method_of_lines_neumann} the Neumann boundary condition at $x=b$, respectively and lastly \cref{eq:method_of_lines_start} are the initial values at ${t=t_0}$. \\
 Remark: This BVP is a special case and crucial for us in this thesis. For a more general view on the numerical solution of PDEs especially method of lines see e.g. \cite{pde_buch_solin}. \\
 
-In order to make this boundary value problem numerically solvable the idea of method of lines is to keep the temporal variable $t$ continuous while space coordinate $x$ is discretized. Thus the PDE is transformed into an ODE. Here we use the spatial grid
+In order to make this boundary value problem numerically solvable, the idea of method of lines is to keep the temporal variable $t$ continuous while space coordinate $x$ is discretized. Thus the PDE is transformed into an ODE. Here we use the spatial grid
 \begin{align}
 	x_k = a + k \cdot h & & k=0,...,N
 \end{align}
@@ -1017,7 +1017,7 @@ Putting all these together, where due to the equality in \cref{eq:method_of_line
 	\alpha(u_{N-2}(t)) \\
 	\alpha(u_{N-1}(t))
 	\end{pmatrix}
-	.* \left[
+	. \hspace{-0.1cm} * \left[
 	\begin{pmatrix}
 		0 & & ... & & 0 \\
 		1 & -2 & 1 \\
@@ -1049,7 +1049,7 @@ Putting all these together, where due to the equality in \cref{eq:method_of_line
 	u_k(t_0) = & \ u_{init}(x_k) \qquad \text{for} \ k = 0,...,N-1 \nonumber
 \end{align}
  
-where operator $.*$ is a row-wise multiplication, i.e. for vectors $v, w \in \mathbb{R}^n$ it holds $(v \ .* \ w)_i = v_i \cdot w_i$ for component $i$. This system can be solved by an appropriate ODE solver (see \cref{sec:theory_ODE_solver_BDF}) where the temporal discretization occurs. \\
+where operator $.*$ is a row-wise multiplication, i.e. for vectors $v, w \in \mathbb{R}^n$ it holds $(v \ . \hspace{-0.1cm} * \ w)_i = v_i \cdot w_i$ for component $i$. This system can be solved by an appropriate ODE solver (see \cref{sec:theory_ODE_solver_BDF}) where the temporal discretization occurs. \\
 Note that for simplicity we discussed here the case of an equidistant spatial grid. The numerical experiments were done with a heterogeneous grid (\cref{sec:spatial_discretization_grid}) which modifies the discretized second derivative equation \eqref{eq:discretized_second_derivative}, see \cref{eq:2_point_formula_inhomogeneous}. \\
 The method of lines was applied in this thesis in \cref{sec:mathematical_model}.
 
@@ -1097,7 +1097,7 @@ The method of lines was applied in this thesis in \cref{sec:mathematical_model}.
 
 \subsection{Optimization task: Parameter estimation}
 
-In this section at first general results of optimization theory are introduced. Afterwards we will focus on nonlinear least squares problems which are used in the context of parameter estimation and solved numerically with the method of Gauss-Newton.
+In this section first of all, general results of optimization theory are introduced. Afterwards, we will focus on nonlinear least squares problems which are used in the context of parameter estimation and solved numerically with the method of Gauss-Newton.
 
 \subsubsection{General nonlinear program and optimality criteria}
 \label{sec:optimization_theory_NLP}
@@ -1175,7 +1175,7 @@ and the sufficient optimality condition [SOC]
 \begin{Theorem}
 	$[\text{\textbf{SOC}}]$ \\
 	Let $x^* \in S$ and let there exist $\lambda^*, \mu^* \ge 0$ such that $\nabla_x \mathcal{L}(x^*, \lambda^*, \mu^*) = 0$ and \\ $(\mu^*)^T \cdot F_3(x^*) = 0$. 
-	Let $p^T \nabla_x^2 \mathcal{L}(x^*, \lambda^*, \mu^*) p > 0$ for $p \in T^+(x^*) \backslash \{0\}$. \\
+	Let $p^T \nabla_x^2 \mathcal{L}(x^*, \lambda^*, \mu^*) p > 0 \ \forall \ p \in T^+(x^*) \backslash \{0\}$. \\
 	Then: $x^*$ is a strict local minimum.
 \end{Theorem}
 
@@ -1189,7 +1189,7 @@ Finally we introduce for later usage
 
 \subsubsection{Nonlinear least squares problem and Gauss-Newton method}
 \label{sec:Gauss_Newton}
-Since the thesis contains parameter estimation problems we will treat now the equality and inequality constrained nonlinear least squares problem
+Since this thesis contains parameter estimation problems we will treat now the equality and inequality constrained nonlinear least squares problem
 
 \begin{align}
 	\min_x \ & \frac{1}{2}|| F_1(x) ||_2^2 \label{eq:least_squares_problem} \\
@@ -1197,46 +1197,46 @@ Since the thesis contains parameter estimation problems we will treat now the eq
 	& F_3(x) \ge 0 \nonumber
 \end{align}
 
-with $x \in \mathbb{R}^n$, residuum vector $F_1: \mathbb{R}^n \rightarrow \mathbb{R}^{m_1}$, equality constraints $F_2: \mathbb{R}^n \rightarrow \mathbb{R}^{m_2}$ and inequality constraints $F_3: \mathbb{R}^n \rightarrow \mathbb{R}^{m_3}$ and let $F_i \in \mathcal{C}^3$ for $i=\{1,2,3\}$.
+with $x \in \mathbb{R}^n$, residuum vector $F_1: \mathbb{R}^n \rightarrow \mathbb{R}^{m_1}$, equality constraints $F_2: \mathbb{R}^n \rightarrow \mathbb{R}^{m_2}$ and inequality constraints $F_3: \mathbb{R}^n \rightarrow \mathbb{R}^{m_3}$ and let $F_i \in \mathcal{C}^3$ for $i=\{1,2,3\}$, $m_1 > n$ and $m_2 < n$.
 Instead of applying the KKT-conditions on \cref{eq:least_squares_problem} we apply the method of Gauss-Newton (GN). \\
-I.e., we solve this problem iteratively by updating an initial point $x^{(0)}$ with a sequence of solutions $\Delta x^{(k)}$ in iteration $k$ from linearized subproblems of the form
+I.e., we solve this problem iteratively by updating an initial guess $x^{(0)}$ with a sequence of solutions $\Delta x^{(k)}$ in iteration $k$ from linearized subproblems of the form
 
 \begin{align}
-\min_{\Delta x^{(k)}} \ & \frac{1}{2}|| F_1(x^{(k)}) + J_1(x^{(k)}) \Delta x^{(k)} ||_2^2 \label{eq:least_squares_problem_linearized} \\
+\min_{\Delta x^{(k)}} \ & \frac{1}{2} \left| \left| F_1(x^{(k)}) + J_1(x^{(k)}) \Delta x^{(k)} \right|\right|_2^2 \label{eq:least_squares_problem_linearized} \\
 s.t. \ & F_2(x^{(k)}) + J_2(x^{(k)}) \Delta x^{(k)} = 0 \nonumber \\
 & F_3(x^{(k)}) + J_3(x^{(k)}) \Delta x^{(k)} \ge 0 \nonumber
 \end{align}
 
-with $J_1(x^{(k)}) := \frac{\partial F_1}{\partial x}(x^{(k)}) \in \mathbb{R}^{m_1 \times n}$, $J_2(x^{(k)}) := \frac{\partial F_2}{\partial x}(x^{(k)}) \in \mathbb{R}^{m_2 \times n}$ and $J_3(x^{(k)}) := \frac{\partial F_3}{\partial x}(x^{(k)}) \in \mathbb{R}^{m_3 \times n}$. Advantageous here is that we can avoid the computationally costly Hessian of the objective function. The iteration using the Gauss-Newton step $\Delta x^{(k)}$ in iteration $k$ then reads as
+with $J_1(x^{(k)}) := \frac{\partial F_1}{\partial x}(x^{(k)}) \in \mathbb{R}^{m_1 \times n}$, $J_2(x^{(k)}) := \frac{\partial F_2}{\partial x}(x^{(k)}) \in \mathbb{R}^{m_2 \times n}$ and $J_3(x^{(k)}) := \frac{\partial F_3}{\partial x}(x^{(k)}) \in \mathbb{R}^{m_3 \times n}$. Advantageous here is that we can avoid the computationally costly Hessian of $F_1(x^{(k)})$. The iteration using the Gauss-Newton step $\Delta x^{(k)}$ in iteration $k$ then reads as
 
 \begin{equation}
 x^{(k+1)} = x^{(k)} + t^{(k)} \Delta x^{(k)}
 \label{eq:Gauss_Newton_iteration}
 \end{equation}
 
-with stepsize $t^{(k)} \in (0,1]$ for global convergence, i.e. convergence to a local minimum from an arbitrary initial point $x^{(0)}$ (see \cref{sec:GN_numerical_solution}). Crucial is the equivalence of the solution $x^*$ of \cref{eq:least_squares_problem,eq:least_squares_problem_linearized} which is shown in \cite{diss_bock} Lemma 3.1.18.
+with stepsize $t^{(k)} \in (0,1]$ for global convergence, i.e. convergence to a local minimum from an arbitrary initial guess $x^{(0)}$ (see \cref{sec:GN_numerical_solution}). Crucial is the equivalence of the solution $x^*$ of \cref{eq:least_squares_problem,eq:least_squares_problem_linearized} which is shown in \cite{diss_bock} Lemma 3.1.18.
 In the following we will omit the function argument and iteration index for better readability, i.e. $F_i(x^{(k)}) \equiv F_i$ and $J_i(x^{(k)}) \equiv J_i$ for $i \in \{1,2,3\}$. \\
 
 Applying KKT conditions on the linearized problem \cref{eq:least_squares_problem_linearized} gives the system
 
 \begin{equation}
-	\begin{bmatrix}
-		J_1^T J_1 & -\tilde{J}_2^T \\
+	\begin{pmatrix}
+		J_1^T J_1 & \tilde{J}_2^T \\
 		\tilde{J}_2 & 0
-	\end{bmatrix}
-	\begin{bmatrix}
+	\end{pmatrix}
+	\begin{pmatrix}
 		\Delta x \\
-		\tilde{\lambda}
-	\end{bmatrix}
+		-\tilde{\lambda}
+	\end{pmatrix}
 	= -
-	\begin{bmatrix}
+	\begin{pmatrix}
 	J_1^T F_1 \\
 	\tilde{F}_2
-	\end{bmatrix}
+	\end{pmatrix}
 	\label{eq:GN_KKT_system}
 \end{equation}
 
-with active constraints $\tilde{F_2}$ and corresponding Jacobian $\tilde{J}_2$ since inactive inequality constraints do not contribute to the computation of $\Delta x$ as their Lagrange multiplier is zero. The solution $\Delta x$ therefore reads as
+with active constraints $\tilde{F_2}$ and corresponding active Lagrange multiplier $\tilde{\lambda}$ and Jacobian $\tilde{J}_2$ since inactive inequality constraints do not contribute to the computation of $\Delta x$ as their Lagrange multiplier is zero. The solution $\Delta x$ therefore reads as
 
 \begin{align}
 	\Delta x & =
@@ -1269,7 +1269,7 @@ with the generalized inverse $J^+ \equiv J^+(x^{(k)})$. An important result \cit
 	= n$,
 	then 	
 	$\begin{pmatrix}
-		J_1^T J_1 & -\tilde{J}_2^T \\
+		J_1^T J_1 & \tilde{J}_2^T \\
 		\tilde{J}_2 & 0
 	\end{pmatrix}$
 	is non-singular.
@@ -1278,7 +1278,7 @@ with the generalized inverse $J^+ \equiv J^+(x^{(k)})$. An important result \cit
 \subsubsection{Numerical solution}
 \label{sec:GN_numerical_solution}
 
-For the numerical solution of the linear least squares subproblem \cref{eq:least_squares_problem_linearized} we will successively introduce the unconstrained, the equality constrained and finally the general equality and inequality constrained case because they are built up on each other, cf. \cite{numerical_methods_lsq_Bjorck}. Before that, we discuss methods for global convergence in order to be independent of a good initial point $x^{(0)}$. \\
+For the numerical solution of the linear least squares subproblem \cref{eq:least_squares_problem_linearized} we will successively introduce the unconstrained, the equality constrained and finally the general equality and inequality constrained case because they are built up on each other, see e.g. \cite{numerical_methods_lsq_Bjorck}. Before that, we discuss methods for global convergence in order to be independent of a good initial guess $x^{(0)}$. \\
 In this context a \textit{level function} $T(x^{(k)})$ is introduced which must be decreased in each iteration. For the general equality and inequality constrained case, the choice
 
 \begin{equation}
@@ -1303,7 +1303,7 @@ Instead, based on decomposing $J_1$, two solution strategies are shown (see \cit
 
 \begin{itemize}
 	\item \textbf{QR decomposition} \\
-	First $J_1$ is decomposed using a column pivoting QR factorization
+	First, $J_1$ is decomposed using a column pivoting QR factorization
 	\begin{equation}
 		J_1 P = Q R = 
 		\begin{pmatrix}
@@ -1314,7 +1314,7 @@ Instead, based on decomposing $J_1$, two solution strategies are shown (see \cit
 			0
 		\end{pmatrix}
 	\end{equation}
-	where $Q \in \mathbb{R}^{m_1 \times m_1}$ is an orthogonal matrix split into $Q_1 \in \mathbb{R}^{m_1 \times n}$ and $Q_2 \in \mathbb{R}^{m_1 \times (m_1-n)}$. Further, $R \in \mathbb{R}^{m_1 \times n}$ with $\bar{R} \in \mathbb{R}^{n \times n}$ upper triangular matrix. Lastly $P \in \mathbb{R}^{n \times n}$ is a permutation matrix and therefore orthogonal. Inserting into the objective function \cref{eq:numerical_solution_LSQ} and omitting factor $\frac{1}{2}$ gives
+	where $Q \in \mathbb{R}^{m_1 \times m_1}$ is an orthogonal matrix split into $Q_1 \in \mathbb{R}^{m_1 \times n}$ and $Q_2 \in \mathbb{R}^{m_1 \times (m_1-n)}$. Further, $R \in \mathbb{R}^{m_1 \times n}$ with $\bar{R} \in \mathbb{R}^{n \times n}$ is upper triangular matrix. Lastly, $P \in \mathbb{R}^{n \times n}$ is a permutation matrix and therefore orthogonal. Inserting into the objective function of \cref{eq:numerical_solution_LSQ} and omitting factor $\frac{1}{2}$ gives
 	
 	\begin{align}
 		|| F_1 + J_1 \Delta x ||_2^2 & = || Q^T (F_1 + J_1 P P^T \Delta x) ||_2^2 = || Q^T F_1 + Q^T Q R P^T \Delta x ||_2^2 \\
@@ -1330,7 +1330,7 @@ Instead, based on decomposing $J_1$, two solution strategies are shown (see \cit
 		& = || Q_1^T F_1 + \bar{R} P^T \Delta x ||_2^2 + ||Q_2^T F_1 ||_2^2 \nonumber
 	\end{align}
 	
-	If $rank(J_1)=n$ and therefore $\bar{R}$ has positive diagonal elements (\cite{numerical_methods_lsq_Bjorck} theorem 1.3.4) and is invertible  one can solve for $\Delta x$ since $\bar{R}$ is triangular:
+	If $rank(J_1)=n$ and therefore $\bar{R}$ has positive diagonal elements (\cite{numerical_methods_lsq_Bjorck} theorem 1.3.4) and is invertible  one can solve for $\Delta x$ (backsolve since $\bar{R}$ is triangular):
 	
 	\begin{equation}
 		\bar{R} P^T \Delta x = -Q_1^T F_1
@@ -1341,7 +1341,7 @@ Instead, based on decomposing $J_1$, two solution strategies are shown (see \cit
 		
 		
 	\item \textbf{Singular value decomposition} \\
-	Using a singular value decomposition (SVD) $J_1$ decomposes to
+	Using a singular value decomposition (SVD), $J_1$ decomposes to
 	\begin{equation}
 		J_1 = U \Sigma V^T =
 		\begin{pmatrix}
@@ -1358,7 +1358,7 @@ Instead, based on decomposing $J_1$, two solution strategies are shown (see \cit
 	Inserting modifies the objective function of \cref{eq:numerical_solution_LSQ} where we omit again factor $\frac{1}{2}$ by
 	
 	\begin{align}
-		|| F_1 + J_1 \Delta x ||_2^2 & = || F_1 + U \Sigma \overbrace{V^T \Delta x}^{=: \Delta y} ||_2^2 = || U ( U^T F_1 + \Sigma \Delta y ||_2^2 \label{eq:numerical_solution_LSQ_SVD} \\
+		|| F_1 + J_1 \Delta x ||_2^2 & = || F_1 + U \Sigma \overbrace{V^T \Delta x}^{=: \Delta y} ||_2^2 = || U ( U^T F_1 + \Sigma \Delta y ) ||_2^2 \label{eq:numerical_solution_LSQ_SVD} \\
 		& = \left| \left| \begin{pmatrix}
 		U_1^T F_1 \\
 		U_2^T F_1
@@ -1371,7 +1371,7 @@ Instead, based on decomposing $J_1$, two solution strategies are shown (see \cit
 		& = || \underbrace{U_1^T F_1}_{=: c} + \bar{\Sigma} \Delta y ||_2^2 + || U_2^T F_1 ||_2^2 \nonumber
 	\end{align}
 	
-	For $rank(J_1) < n$ the solution $\Delta y$ is not unique to minimize \cref{eq:numerical_solution_LSQ_SVD}. By choosing
+	For $rank(J_1) < n$ the solution $\Delta y$ minimizing \cref{eq:numerical_solution_LSQ_SVD} is not unique. By choosing
 	
 	\begin{align}
 		\Delta y_i^* = 
@@ -1389,9 +1389,9 @@ Instead, based on decomposing $J_1$, two solution strategies are shown (see \cit
 
 \end{itemize}
 
-The singular value decomposition is computationally more costly than pivoting QR, though has the advantage that we get get the matrix' singular values we may require (e.g. to compute the matrix' condition number). \\
+The singular value decomposition is computationally more costly than pivoting QR, though has the advantage that we get the matrix' singular values we may require (e.g. to compute the matrix' condition number). \\
 
-\Cref{alg:Gauss_Newton_unconstrained} depicts the procedure of finding a local minimum of an unconstrained least squares problem using Gauss-Newton iterations. The algorithm is terminated successfully if the necessary optimality condition [NOC1] is satisfied numerically, i.e. below a tolerance. Further, it stops if the computed Gauss-Newton direction $\Delta x^{(k)}$ or the stepsize $t^{(k)}$ becomes too small or if a maximum number of iterations is reached. Stepsize control is achieved via the trivial level function $T(x) = ||F_1(x)||_2$ and a step is accepted for any decrease in the level function. Otherwise the step $t^{(k)}$ is reduced by an factor $d$. \\
+\Cref{alg:Gauss_Newton_unconstrained} depicts the procedure of finding a local minimum of an unconstrained least squares problem using Gauss-Newton iterations. The algorithm is terminated successfully if the necessary optimality condition [NOC1] is satisfied numerically, i.e. below a tolerance. Further, it stops if the computed Gauss-Newton direction $\Delta x^{(k)}$ or the stepsize $t^{(k)}$ becomes too small or if a maximum number of iterations is reached. Stepsize control is achieved via the trivial level function $T(x) = ||F_1(x)||_2$ and a step is accepted for any decrease in the level function. Otherwise the step $t^{(k)}$ is reduced by a factor $d$. \\
 This algorithm has been used in \cref{sec:param_estimation_fs} in order to analyse the sequence of Gauss-Newton iterations at the parameter estimation.  \\
 
 
@@ -1401,11 +1401,11 @@ This algorithm has been used in \cref{sec:param_estimation_fs} in order to analy
 	\SetKwInOut{Input}{Input}
 	\SetKwInOut{Output}{Output}
 	
-	\Input{Start value $x_{start}$, stepsize decrease rate $d \in (0,1)$ \\ 
+	\Input{Initial guess $x_{init}$, stepsize decrease rate $d \in (0,1)$ \\ 
 		termination criteria $[NOC1]_{TOL}$, $\Delta x_{TOL}$, $t_{TOL}$ and iterations$_{max}$}
 	\Output{End value $x_{end}$ \\ \mbox{}\\}
 	
-	\textbf{Initialize} $k=0$, $x^{(0)} = x_{start}$ \\\mbox{}\\
+	\textbf{Initialize} $k=0$, $x^{(0)} = x_{init}$ \\\mbox{}\\
 	
 	Compute residuum $F_1(x^{(k)})$ and Jacobian $J_1(x^{(k)})$ \\
 	Compute Gauss-Newton step $\Delta x^{(k)}$ with introduced methods \\
@@ -1413,7 +1413,7 @@ This algorithm has been used in \cref{sec:param_estimation_fs} in order to analy
 	Set $t^{(k)} = 1$ \\
 	Compute next potential state $x^{(k+1)} = x^{(k)} + t^{(k)} \cdot \Delta x^{(k)}$ and \\ \quad corresponding residuum $F_1(x^{(k+1)})$ \\
 	
-	\uIf{$t^{(k)} > t_{TOL} \text{ and } || F_1(x^{(k+1)}) ||_2 \ge || F_1(x^{(k)}) ||_2$}
+	\uIf{$t^{(k)} > t_{TOL} \ \text{ and } \ || F_1(x^{(k+1)}) ||_2 \ge || F_1(x^{(k)}) ||_2$}
 	{Set $t^{(k)} = t^{(k)} \cdot d$ \\
 		goto (7)}
 	\Else{
@@ -1442,7 +1442,7 @@ In the equality constrained case we handle the problem
 	s.t. & \ F_2 + J_2 \Delta x = 0 \nonumber
 \end{align}
 
-We consider here the case $rank(J_1) = n$ and $rank(J_2)=m_2$. First we factorize $J_2^T$ by a QR decomposition without column pivoting as we assume full rank for simplicity
+We consider here the case $rank(J_1) = n$ and $rank(J_2)=m_2$. Factorizing $J_2^T$ by a QR decomposition without column pivoting as we assume full rank for simplicity gives
 
 \begin{equation}
 	J_2^T = Q R = 
@@ -1518,7 +1518,7 @@ We treat this problem with an active set strategy illustrated below, see \cite{d
 	\textcolor{white}{\qquad}$\alpha := \max\{ s \in [0,1] \ | \ F_{3,i}(x^{(k)}) + J_{3,i}(x^{(k)}) y(s) \ge 0 \}$ and \\
 	\textcolor{white}{\qquad}$y(s) := x^{(k)} + s \cdot \Delta x^{(k)}$ \\
 	
-	If new inequality constraint gets active, add to active set $I^{(k)}$ and goto 2. \\
+	If new inequality constraint becomes active, add to active set $I^{(k)}$ and goto 2. \\
 	\textcolor{white}{\quad}else goto 3.
 	
 	\item $x^{(k)}$ is stationary point of \cref{active_set_strategy_substep}. Compute corresponding Lagrange multiplier $(\lambda, \mu)$. \\
@@ -1566,10 +1566,10 @@ h_{n_{mp}}(x(t_{n_{mp}};p),p) - \eta_{n_{mp}}
 equality constraints \cref{eq:param_estimation_definition_IVP_diff_eq,eq:param_estimation_definition_IVP_init} and inequality constraints \cref{eq:param_estimation_definition_lbub}, the parameter estimation problem \cref{eq:param_estimation_definition} is analogous to the stated nonlinear least squares problem \cref{eq:least_squares_problem}. \\
 
 In order to quantify how trustworthy the obtained estimated parameters are, a statistical a posteriori analysis is applied. The results shown in the following part can be found in \cite{diss_bock}. \\
-Since the measurement data $\eta$ is a random variable the estimated parameters $p$ are random variables as well. The corresponding covariance matrix of the estimate $p^*$ is defined as
+Since the measurement data $\eta$ is a random variable, the estimated parameters $p$ are random variables as well. The corresponding covariance matrix of the estimate $p^*$ reads as
 
 \begin{align}
-	C(p^*) = & \mathbb{E} [ \Delta p \Delta p^T ]
+	C(p^*) = & \ \mathbb{E} [ \Delta p \Delta p^T ]
 	\ \stackrel{\cref{eq:GN_solution_formal}}{=} \ J^+(p^*)
 	\begin{pmatrix}
 	\beta^2  \mathbbm{1} & 0 \\
@@ -1592,10 +1592,10 @@ with $n_c$ number of active constraints. We define the confidence region
 	& \text{with} \ \gamma(\alpha) := b^2 (n_p - n_c) \cdot F_{1-\alpha}(n_p - n_c, n_{mp} - (n_p - n_c)) \label{eq:stat_ana_fisher_dist}
 \end{align} 
 
-where $F_{1-\alpha}$ is the $1-\alpha$ quantile of the Fisher-distribution. In $G_N(\alpha)$ the true parameter values lie with probability $1-\alpha$. Its linearization reads as
+where $F_{1-\alpha}$ is the $1-\alpha$ quantile of the Fisher-distribution. The true parameter values lie with probability $1-\alpha$ in $G_N(\alpha)$. Its linearization reads as
 
 \begin{align}
-	G_L(\alpha, p^*) = \left\{ p \in \mathbb{R}^{n_p} \ | \ \right. & F_2(p^*) + J_2(p^*)(p - p^*) = 0, \label{eq:stat_ana_lin_confidence_region} \\ 
+	G_L(\alpha, p^*) = \left\{ p \in \mathbb{R}^{n_p} \ | \ \right. & \tilde{F}_2(p^*) + \tilde{J}_2(p^*)(p - p^*) = 0, \label{eq:stat_ana_lin_confidence_region} \\ 
 	& \left. || F_1(p^*) + J_1(p^*)(p - p^*) ||_2^2 - || F_1(p^*)||_2^2 \le \gamma(\alpha) \right\} \nonumber	
 \end{align}
 
@@ -1611,7 +1611,7 @@ The final important result for us is
 	
 with $\gamma(\alpha)$ defined in \cref{eq:stat_ana_fisher_dist} and $C_{ii}(p^*)$ are the diagonal elements of the covariance matrix obtained by \cref{eq:stat_ana_covariance_matrix}. Then the linearized confidence region \cref{eq:stat_ana_lin_confidence_region} is a subset of a cuboid with edge lengths $2 \theta_i$:
 	\begin{equation}
-		G_L(\alpha, p^*) \subseteq [p_1^* - \theta_1, p_1^* + \theta_1] \times ... \times [p_{n_p}^* - \theta_{n_p}, p_{n_p}^* + \theta_{n_p}]
+		G_L(\alpha, p^*) \subset [p_1^* - \theta_1, p_1^* + \theta_1] \times ... \times [p_{n_p}^* - \theta_{n_p}, p_{n_p}^* + \theta_{n_p}]
 	\end{equation}
 	
 \end{Theorem}
