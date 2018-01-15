@@ -803,7 +803,7 @@ For a profound view on the subject of automatic differentiation, see e.g. \cite{
 
 
 \paragraph{Forward mode}\mbox{}\\
-In the forward mode, the directional derivative $\dot{y}$ is computed for a given direction $\dot{x}$ (i.e. $|| \dot{x} || = 1$) at an evaluation point $x$:
+In the forward mode, the directional derivative $\dot{y}$ is computed for a given direction $\dot{x}$ \\ (i.e. $|| \dot{x} || = 1$) at an evaluation point $x$:
 
 \begin{equation}
 \dot{y} = \frac{\partial f}{\partial x}(x) \cdot \dot{x}
@@ -829,7 +829,7 @@ The last $m$ intermediate variables represent the solution vector. Finally, thes
 	\label{tab:first_order_forward_sweep}
 \end{table}
 
-In order to illustrate this algorithm is applied on the example function \cref{eq:AD_example}, see \cref{tab:AD_example_forward}:
+In order to illustrate this algorithm is applied on the example function \cref{eq:AD_example}, see \cref{tab:AD_example_forward}.
 
 \begin{table}[H]
 	\centering
@@ -867,7 +867,6 @@ The actual adjoint directional derivatives are computed in the reverse sweep whi
 \end{bmatrix}^T$.
 Next, all contributions to the adjoint intermediate variables will be successively summed up by applying the adjoint equation $\bar{y}^T \dot{y} = \bar{y}^T \frac{\partial f}{\partial x}(x) \cdot \dot{x} = \bar{x}^T \dot{x}$ in a reverse scheme (that is why we need the forward sweep and hence the intermediate value evaluations first). Finally, we can extract the solution $\bar{x}$ which corresponds to a row in $\frac{\partial f}{\partial x}$.
 
-
 \begin{table}[H]
 	\centering
 	\caption{Algorithm of first order adjoint sweep. Elucidated in accompanying text and exemplified in \cref{tab:AD_example_adjoint}.}
@@ -883,9 +882,9 @@ Next, all contributions to the adjoint intermediate variables will be successive
 	\label{tab:first_order_adjoint_sweep}
 \end{table}
 
-Again we apply this algorithm on the exemplary function \cref{eq:AD_example}:
+Again we apply this algorithm on the exemplary function \cref{eq:AD_example}.
 
-\begin{table}[H]
+\begin{table}[h]
 	\centering
 	\caption{First order adjoint sweep (\cref{tab:first_order_adjoint_sweep}) applied on \cref{eq:AD_example}}
 	\begin{tabular}{| c | l | l |} \hline
@@ -912,14 +911,16 @@ Again we apply this algorithm on the exemplary function \cref{eq:AD_example}:
 Until now, the fundamental principles of AD have been explained, in particular just the first order derivative in forward and adjoint mode. Higher derivatives of arbitrary order can be obtained for example by the method of Taylor Coefficient Propagation (fundamentals in \cite{TC-prop_basis} and applied in \cite{diss_jan}). \\
 
 In this thesis we are actually interested in the sensitivities of the solution of an IVP \cref{eq:initial_value_problem_definition} with respect to parameters $p$, namely $\frac{\partial y}{\partial p}$. 
-This can be done by solving the variational differential equation (see e.g. \cite{diff_equations_numerics}) which can be derived as follows using the integral form of the IVP and assuming $f$ continuously differentiable. Initial values $y_0$ are assumed to be independent of $p$ here.
+This can be done by solving the variational differential equation (see e.g. \cite{diff_equations_numerics}) which can be derived as follows using the integral form of the IVP and assuming $f$ continuously differentiable. Initial values $y_0$ are assumed to be independent of $p$ here. \\
+
+Function arguments of the partial derivatives are omitted in the following for better readability.
 
 \begin{align}
 	y(t;p) = \ & y_0 + \int_{t_0}^{t} f(y(\tau;p),\tau;p) \ d\tau \\
 	\Rightarrow \frac{\partial y}{\partial p} = & \int_{t_0}^{t} \left[ \frac{\partial f}{\partial y} \cdot \frac{\partial y}{\partial p} + \frac{\partial f}{\partial p} \right] d\tau \nonumber
 \end{align}
 
-Function arguments of the partial derivatives are omitted here for better readability. Taking the derivative with respect to time on both sides gives the corresponding initial value problem
+Taking the derivative with respect to time on both sides gives the corresponding initial value problem
 
 \begin{align}
 	\frac{\partial}{\partial t} \left( \frac{\partial y}{\partial p} \right) = \ & \frac{\partial f}{\partial y} \cdot \frac{\partial y}{\partial p} + \frac{\partial f}{\partial p} \\
@@ -957,7 +958,7 @@ The BDF solver DAESOL-II embedded in SolvIND has been used in this thesis to sol
 
 
 
-
+\newpage
 \subsection{Partial differential equation discretization in space: Method of lines}
 \label{sec:pde_discretization}
 
@@ -1127,6 +1128,7 @@ In this section we first treat the general nonlinear optimization problem (NLP) 
 	& \ F_3(x) \ge 0 \nonumber
 \end{align}
 
+\vspace{-1cm}
 where $x \in \mathbb{R}^n$ is the optimization variable, $f\text{: } \mathbb{R}^n \rightarrow \mathbb{R}$ is the objective function, $F_2\text{: } \mathbb{R}^n \rightarrow \mathbb{R}^{m_2}$ and $F_3\text{: } \mathbb{R}^n \rightarrow \mathbb{R}^{m_3}$ are the equality and inequality constraints, respectively. $f$, $F_2$ and $F_3$ are assumed to be sufficiently smooth. Index $m_1$ is missing because we will need this later in the context of a least squares problem. The results shown in this chapter can be found for example in \cite{nonlinear_optimiziation_wright}. \\
 
 The Lagrange function of \cref{eq:NLP_formulation} is defined as
@@ -1174,6 +1176,8 @@ Before stating the major results from optimization theory we introduce the follo
 \end{Definition}
 
 Major results from optimization theory are the necessary optimality conditions [NOC]
+
+\enlargethispage{2\baselineskip}
 
 \begin{Theorem}
 	$[\text{\textbf{NOC}}]$ \\
@@ -1232,7 +1236,8 @@ x^{(k+1)} = x^{(k)} + t^{(k)} \Delta x^{(k)}
 \label{eq:Gauss_Newton_iteration}
 \end{equation}
 
-with stepsize $t^{(k)} \in (0,1]$ for global convergence, i.e. convergence to a local minimum from an arbitrary initial guess $x^{(0)}$ (see \cref{sec:GN_numerical_solution}). Crucial is the equivalence of the solution $x^*$ of \cref{eq:least_squares_problem,eq:least_squares_problem_linearized} which is shown in \cite{diss_bock} Lemma 3.1.18.
+with stepsize $t^{(k)} \in (0,1]$ for global convergence, i.e. convergence to a local minimum from an arbitrary initial guess $x^{(0)}$ (see \cref{sec:GN_numerical_solution}). \\
+Crucial is the equivalence of the solution $x^*$ of \cref{eq:least_squares_problem,eq:least_squares_problem_linearized} which is shown in \cite{diss_bock} Lemma 3.1.18.
 In the following we will omit the function argument and iteration index for better readability, i.e. $F_i(x^{(k)}) \equiv F_i$ and $J_i(x^{(k)}) \equiv J_i$ for $i \in \{1,2,3\}$. \\
 
 Applying KKT conditions on the linearized problem \cref{eq:least_squares_problem_linearized} gives the system
@@ -1332,7 +1337,7 @@ Instead, based on decomposing $J_1$, two solution strategies are shown (see \cit
 			0
 		\end{pmatrix}
 	\end{equation}
-	where $Q \in \mathbb{R}^{m_1 \times m_1}$ is an orthogonal matrix split into $Q_1 \in \mathbb{R}^{m_1 \times n}$ and $Q_2 \in \mathbb{R}^{m_1 \times (m_1-n)}$. Further, $R \in \mathbb{R}^{m_1 \times n}$ with $\bar{R} \in \mathbb{R}^{n \times n}$ is upper triangular matrix. Lastly, $P \in \mathbb{R}^{n \times n}$ is a permutation matrix and therefore orthogonal. Inserting into the objective function of \cref{eq:numerical_solution_LSQ} and omitting factor $\frac{1}{2}$ gives
+	with orthogonal matrix $Q \in \mathbb{R}^{m_1 \times m_1}$ split into $Q_1 \in \mathbb{R}^{m_1 \times n}$ and $Q_2 \in \mathbb{R}^{m_1 \times (m_1-n)}$. Further, $R \in \mathbb{R}^{m_1 \times n}$ with $\bar{R} \in \mathbb{R}^{n \times n}$ is upper triangular matrix. Lastly, $P \in \mathbb{R}^{n \times n}$ is a permutation matrix and therefore orthogonal. Inserting into the objective function of \cref{eq:numerical_solution_LSQ} and omitting factor $\frac{1}{2}$ gives
 	
 	\begin{align}
 		|| F_1 + J_1 \Delta x ||_2^2 & = || Q^T (F_1 + J_1 P P^T \Delta x) ||_2^2 = || Q^T F_1 + Q^T Q R P^T \Delta x ||_2^2 \\
@@ -1372,7 +1377,7 @@ Instead, based on decomposing $J_1$, two solution strategies are shown (see \cit
 			V^T
 	\end{equation}
 	
-	with $U \in \mathbb{R}^{m_1 \times m_1}$ orthogonal split into $U_1 \in \mathbb{R}^{m_1 \times n}$ and $U_2 \in \mathbb{R}^{m_1 \times (m_1 - n)}$, $V \in \mathbb{R}^{n \times n}$ orthogonal and $\Sigma \in \mathbb{R}^{m_1 \times n}$ with $\bar{\Sigma} \in \mathbb{R}^{n \times n}$ diagonal. Let $r := rank(J_1)$. Then $\bar{\Sigma}$ has the singular values $\sigma_1 \ge \sigma_2 \ge ... \ge \sigma_r > 0$ and $\sigma_{r+1}=...=\sigma_{n} = 0$ on the diagonal. \\
+	with $U \in \mathbb{R}^{m_1 \times m_1}$ orthogonal matrix split into $U_1 \in \mathbb{R}^{m_1 \times n}$ and $U_2 \in \mathbb{R}^{m_1 \times (m_1 - n)}$, $V \in \mathbb{R}^{n \times n}$ orthogonal and $\Sigma \in \mathbb{R}^{m_1 \times n}$ with $\bar{\Sigma} \in \mathbb{R}^{n \times n}$ diagonal. Let $r := rank(J_1)$. Then $\bar{\Sigma}$ has the singular values $\sigma_1 \ge \sigma_2 \ge ... \ge \sigma_r > 0$ and $\sigma_{r+1}=...=\sigma_{n} = 0$ on the diagonal. \\
 	Inserting modifies the objective function of \cref{eq:numerical_solution_LSQ} where we omit again factor $\frac{1}{2}$ by
 	
 	\begin{align}
@@ -1412,10 +1417,7 @@ The singular value decomposition is computationally more costly than pivoting QR
 \Cref{alg:Gauss_Newton_unconstrained} depicts the procedure of finding a local minimum of an unconstrained least squares problem using Gauss-Newton iterations. The algorithm is terminated successfully if the necessary optimality condition [NOC1] is satisfied numerically, i.e. below a tolerance. Further, it stops if the computed Gauss-Newton direction $\Delta x^{(k)}$ or the stepsize $t^{(k)}$ becomes too small or if a maximum number of iterations is reached. Stepsize control is achieved via the trivial level function $T(x) = ||F_1(x)||_2$ and a step is accepted for any decrease in the level function. Otherwise the step $t^{(k)}$ is reduced by a factor $d$. \\
 This algorithm has been used in \cref{sec:param_estimation_fs} in order to analyse the sequence of Gauss-Newton iterations at the parameter estimation.  \\
 
-
-
 \begin{algorithm}[H]
-	
 	\SetKwInOut{Input}{Input}
 	\SetKwInOut{Output}{Output}
 	
@@ -1447,11 +1449,14 @@ This algorithm has been used in \cref{sec:param_estimation_fs} in order to analy
 		}
 	}
 
-	\caption{Gauss-Newton for unconstrained least squares problem}
+	\caption{Gauss-Newton for unconstrained least squares problem. \newline
+		Applied in \cref{sec:param_estimation_fs} and corresponding optimization process iterations depicted in \cref{fig:optimization_progress_FS_1,fig:optimization_progress_FS_2}.}
 	\label{alg:Gauss_Newton_unconstrained}
 \end{algorithm}
 
-\vspace{0.5cm}
+
+%\vspace{0.5cm}
+\newpage
 \paragraph{Equality constrained case}\mbox{}\\
 In the equality constrained case we handle the problem
 
@@ -1603,7 +1608,9 @@ for the case that the measurement variances $\sigma^2$ are known except a common
 	\beta^2 \approx b^2 = \frac{|| F_1(p^*) ||_2^2}{n_{mp} - (n_p - n_c)}
 \end{equation}
 
-with $n_c$ number of active constraints. We define the confidence region
+with $n_c$ number of active constraints. 
+The confidence region is defined by
+%We define the confidence region
 
 \begin{align}
 	G_N&(\alpha)  := \left\{ p \in \mathbb{R}^{n_p} \ | \ \tilde{F}_2(p) = 0, \ || F_1(p) ||_2^2 - || F_1(p^*) ||_2^2 \le \gamma(\alpha) \right\} \\
