@@ -1732,8 +1732,10 @@ Note here that the Dirichlet boundary condition
 	T^0 = T_0 + \beta \cdot t
 \end{equation}
 
-is apparent in the ODE system of \cref{eq:heat_equation_discretized} at $\frac{dT^0}{dt}$ by the heat rate $\beta$. Zero flux Neumann boundary condition on the other hand
+is apparent in the ODE system of \cref{eq:heat_equation_discretized} at $\frac{dT^0}{dt}$ by the heat rate $\beta$. 
 
+\newpage
+Zero flux Neumann boundary condition on the other hand
 \begin{align}
 	\frac{\partial}{\partial x} T^{N-1} \approx & \ \frac{T^N - T^{N-1}}{\Delta x_{N-1}} \stackrel{!}{=} \ 0 \\
 	\Leftrightarrow T^{N-1} = & \ T^N \nonumber 
@@ -1743,7 +1745,7 @@ is apparent in the ODE system of \cref{eq:heat_equation_discretized} at $\frac{d
 
  at the PCM gives the expression for $\frac{d T^{N-1}}{dt}$ in \cref{eq:heat_equation_discretized} where a virtual grid point $T^N$ has been used.
 
-\begin{figure}[H]
+\begin{figure}
 	\centering
 	\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/discretization_grid_heat_flux.png}
 	\caption{Illustration of discretized model with discrete temperatures $T^i$, grid sizes $\Delta x_i$, physical lengths $L_{Ag}, L_{pcm}$ and heat flux approximation $\varPhi_q^{pcm,in}$ into the PCM (approximation elucidated in accompanying text). \\
@@ -1807,7 +1809,120 @@ with the parameters $\Delta \underline{x}, \Delta \bar{x} \in \mathbb{R}^+$ as l
 	\item $\tau < 1$: At grid point $N-N_{pcm}-N_m$, $\frac{\partial \chi(\tilde{x})}{\partial \tilde{x}}$ has finished the transition by \underline{threshold} $(100 \cdot \tau)\%$.
 \end{itemize}
 
+\enlargethispage{1\baselineskip}
+
 First of all, the ratios of grid points $n_i$ can be converted into absolute numbers with $N_i = N \cdot n_i$ for $i \in \{ pcm, tr, m \}$. An illustration of the grid generating function $\frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$, the mapping from computation to physical grid $\chi(\tilde{x})$ and introduced parameters is shown in \cref{fig:computation_physical_grid,fig:grid_size}. \\
+
+
+\begin{figure}[H]
+	\centering
+	\hspace{-1.4cm}
+	\begin{tikzpicture}
+	\begin{axis}[domain=0:25,
+	samples=100,
+	xmin=0, xmax=30,
+	ymin=0., ymax=13.,	 
+	axis lines=left,
+	xtick={15., 25.},
+	xticklabels={$N\text{-}1\text{-}N_{pcm}$, $N \text{-} 1$},
+	ytick={10.36, 11.5},
+	yticklabels={$L_{Ag}$, $L_{Ag} + L_{pcm}$},
+	xlabel=$\tilde{x}$, xlabel style={at=(current axis.right of origin), anchor=west},
+	ylabel=\empty
+	]
+	
+	%	\addplot+[color=black, mark=none] {(1 - 0.05)*(x + 1/0.5 * ln((exp(-0.5*10) + 1) / (exp(0.5*(x-10))+1))) + 0.05*x}
+	%	node[pos=0.95, above, sloped] {$\chi(\tilde{x})$};
+	
+	
+	\addplot+[color=black, mark=none] {(1 - 0.10)*(x + 1/0.5 * ln((exp(-0.5*10) + 1) / (exp(0.5*(x-10))+1))) + 0.10*x}
+	node[pos=0.95, above, sloped] {$\chi(\tilde{x})$};
+	
+	\addplot[only marks, mark=x, color=black] 
+	table {15	10.36
+		25   11.50
+	};	
+	
+	% L1
+	\draw [loosely dashed] (0, 103.6) -- (150, 103.6);
+	\draw [loosely dashed] (150, 0) -- (150, 103.6);	
+	
+	
+	% L1 + L3
+	\draw [loosely dashed] (0, 115) -- (250, 115);
+	\draw [loosely dashed] (250, 0) -- (250, 115);	
+	
+	
+	\end{axis}
+	\end{tikzpicture}
+	\caption{Illustrative mapping of the physical grid $x=\chi(\tilde{x})$ as a function of the computation grid $\tilde{x}$. $L_{Ag}$ and $L_{pcm}$ are the physical lengths of the silver plate and PCM, respectively. $N$ and $N_{pcm}$ are the numbers of discretization points in total and within the PCM, respectively.}
+	\label{fig:computation_physical_grid}
+\end{figure}
+
+
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}
+	\begin{axis}[
+	axis x line = middle,
+	axis y line = middle,
+	xtick={7,13,16,25},
+	ytick={0.05, 1., 0.155, 0.895},
+	xticklabels={, , , $N\text{-}1$},
+	yticklabels={$\Delta \underline{x}$, $\Delta \bar{x}$, $\delta \underline{x}(\tau)$, $\delta {\bar{x}}(\tau)$},
+	xmin=0, xmax=27,
+	ymin=-0.4, ymax=1.1,
+	xlabel=$\tilde{x}$, xlabel style={at=(current axis.right of origin), anchor=west},
+	]
+	\addplot [domain=0:25] {(1 - 0.05) / (exp(0.7*(x-10))+1) + 0.05} node[pos=0.9, above, sloped] {$\frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$};
+	
+	\draw [thick,decoration={brace,mirror,raise=3pt},decorate] 
+	(axis cs:16,0) --
+	node[below=7pt] {$N_{pcm}$} 
+	(axis cs:25,0);
+	
+	\draw [thick,decoration={brace,mirror,raise=3pt},decorate] 
+	(axis cs:13,0) --
+	node[below=7pt] {$N_{m}$} 
+	(axis cs:16,0);
+	
+	\draw [thick,decoration={brace,mirror,raise=3pt},decorate] 
+	(axis cs:7,0) --
+	node[below=7pt] {$N_{tr}$} 
+	(axis cs:13,0);
+	
+	\draw [thick,decoration={brace,mirror,raise=3pt},decorate] 
+	(axis cs:0,-0.2) --
+	node[below=7pt] {$N_{Ag}$} 
+	(axis cs:16,-0.2);
+	
+	\addplot[only marks, mark=x, color=black] 
+	table {7	0.895
+		13   0.155
+	};	
+	
+	% L1
+	\draw [loosely dashed] (0, 129.5) -- (70, 129.5);
+	\draw [loosely dashed] (70, 40) -- (70, 129.5);	
+	
+	% L1 + L3
+	\draw [loosely dashed] (0, 55.5) -- (130, 55.5);
+	\draw [loosely dashed] (130, 40) -- (130, 55.5);	
+	
+	\draw [loosely dashed] (160, 20) -- (160, 40);	
+	
+	
+	
+	\end{axis}
+	\end{tikzpicture}
+	\caption{Illustrative mapping of the gridsize $\Delta x = \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$ as a function of the computation grid $\tilde{x}$ (note: first discretization point at $\tilde{x}=0$). $N$, $N_{pcm}$, $N_m$ and $N_{tr}$ are the number of discretization points in total, within the PCM, margin and grid transition part. Start $\delta \bar{x}(\tau) := \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x})\cdot \tau$  \ and end $\delta \underline{x}(\tau) := \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x})\cdot(1-\tau)$ of the grid transition w.r.t. threshold $\tau$ are marked. Grid size lower and upper bound $\Delta \underline{x}$ and $\Delta \bar{x}$ used in \cref{eq:gridsize_definition}. \\
+	Remark: Gridsize still changes noticeable outside transition zone here since threshold is set here to a very low value ${\tau=0.85}$ in order to illustrate how the gridsize construction works. In the numerical experiments ${\tau=0.999}$ was used.}
+	\label{fig:grid_size}
+\end{figure}
+
+
+
 We now derive the unknown parameters $b$, $\gamma$, $\Delta \underline{x}$ and $\Delta \bar{x}$. On the computation grid the central position of the grid transition is
 
 \begin{equation}
@@ -1868,114 +1983,6 @@ This gives the linear system
 
 
 
-\begin{figure}[H]
-	\centering
-	\begin{tikzpicture}
-	\begin{axis}[domain=0:25,
-	samples=100,
-	xmin=0, xmax=30,
-	ymin=0., ymax=13.,	 
-	axis lines=left,
-	xtick={15., 25.},
-	xticklabels={$N\text{-}1\text{-}N_{pcm}$, $N \text{-} 1$},
-	ytick={10.36, 11.5},
-	yticklabels={$L_{Ag}$, $L_{Ag} + L_{pcm}$},
-	xlabel=$\tilde{x}$, xlabel style={at=(current axis.right of origin), anchor=west},
-	ylabel=\empty
-	]
-	
-%	\addplot+[color=black, mark=none] {(1 - 0.05)*(x + 1/0.5 * ln((exp(-0.5*10) + 1) / (exp(0.5*(x-10))+1))) + 0.05*x}
-%	node[pos=0.95, above, sloped] {$\chi(\tilde{x})$};
-	
-
-	\addplot+[color=black, mark=none] {(1 - 0.10)*(x + 1/0.5 * ln((exp(-0.5*10) + 1) / (exp(0.5*(x-10))+1))) + 0.10*x}
-	node[pos=0.95, above, sloped] {$\chi(\tilde{x})$};
-	
-	\addplot[only marks, mark=x, color=black] 
-	table {15	10.36
-		   25   11.50
-	};	
-	
-	% L1
-	\draw [loosely dashed] (0, 103.6) -- (150, 103.6);
-	\draw [loosely dashed] (150, 0) -- (150, 103.6);	
-	
-	
-	% L1 + L3
-	\draw [loosely dashed] (0, 115) -- (250, 115);
-	\draw [loosely dashed] (250, 0) -- (250, 115);	
-	
-	
-	\end{axis}
-	\end{tikzpicture}
-	\caption{Illustrative mapping of the physical grid $x=\chi(\tilde{x})$ as a function of the computation grid $\tilde{x}$. $L_{Ag}$ and $L_{pcm}$ are the physical lengths of the silver plate and PCM, respectively. $N$ and $N_{pcm}$ are the numbers of discretization points in total and within the PCM, respectively.}
-	\label{fig:computation_physical_grid}
-\end{figure}
-
-
-
-
-
-
-\begin{figure}[H]
-	\centering
-	\begin{tikzpicture}
-	\begin{axis}[
-	axis x line = middle,
-	axis y line = middle,
-	xtick={7,13,16,25},
-	ytick={0.05, 1., 0.155, 0.895},
-	xticklabels={, , , $N\text{-}1$},
-	yticklabels={$\Delta \underline{x}$, $\Delta \bar{x}$, $\delta \underline{x}(\tau)$, $\delta {\bar{x}}(\tau)$},
-	xmin=0, xmax=27,
-	ymin=-0.4, ymax=1.1,
-	xlabel=$\tilde{x}$, xlabel style={at=(current axis.right of origin), anchor=west},
-	]
-	\addplot [domain=0:25] {(1 - 0.05) / (exp(0.7*(x-10))+1) + 0.05} node[pos=0.9, above, sloped] {$\frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$};
-	
-	\draw [thick,decoration={brace,mirror,raise=3pt},decorate] 
-	(axis cs:16,0) --
-	node[below=7pt] {$N_{pcm}$} 
-	(axis cs:25,0);
-	
-	\draw [thick,decoration={brace,mirror,raise=3pt},decorate] 
-	(axis cs:13,0) --
-	node[below=7pt] {$N_{m}$} 
-	(axis cs:16,0);
-	
-	\draw [thick,decoration={brace,mirror,raise=3pt},decorate] 
-	(axis cs:7,0) --
-	node[below=7pt] {$N_{tr}$} 
-	(axis cs:13,0);
-	
-	\draw [thick,decoration={brace,mirror,raise=3pt},decorate] 
-	(axis cs:0,-0.2) --
-	node[below=7pt] {$N_{Ag}$} 
-	(axis cs:16,-0.2);
-
-	\addplot[only marks, mark=x, color=black] 
-	table {7	0.895
-	       13   0.155
-	};	
-	
-	% L1
-	\draw [loosely dashed] (0, 129.5) -- (70, 129.5);
-	\draw [loosely dashed] (70, 40) -- (70, 129.5);	
-	
-	% L1 + L3
-	\draw [loosely dashed] (0, 55.5) -- (130, 55.5);
-	\draw [loosely dashed] (130, 40) -- (130, 55.5);	
-
-	\draw [loosely dashed] (160, 20) -- (160, 40);	
-	
-	
-	
-	\end{axis}
-	\end{tikzpicture}
-	\caption{Illustrative mapping of the gridsize $\Delta x = \frac{\partial \chi}{\partial \tilde{x}}(\tilde{x})$ as a function of the computation grid $\tilde{x}$ (note: first discretization point at $\tilde{x}=0$). $N$, $N_{pcm}$, $N_m$ and $N_{tr}$ are the number of discretization points in total, within the PCM, margin and grid transition part. Start $\delta \bar{x}(\tau) := \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x})\cdot \tau$  \ and end $\delta \underline{x}(\tau) := \Delta \underline{x} + (\Delta \bar{x} - \Delta \underline{x})\cdot(1-\tau)$ of the grid transition w.r.t. threshold $\tau$ are marked. Grid size lower and upper bound $\Delta \underline{x}$ and $\Delta \bar{x}$ used in \cref{eq:gridsize_definition}. \\
-	Remark: Gridsize still changes noticeable outside transition zone here since threshold is set here to a very low value ${\tau=0.85}$ in order to illustrate how the gridsize construction works. In the numerical experiments ${\tau=0.999}$ was used.}
-	\label{fig:grid_size}
-\end{figure}
 
 
 \subsection{Analytical solution of reference side}
@@ -2070,7 +2077,7 @@ The solution of the ordinary differential equation $X'' = - \lambda \cdot X$ is
 	X(x) = c_1 \cdot \sin(\sqrt{\lambda} x) + c_2 \cdot \cos(\sqrt{\lambda} x)
 \end{equation}
 
-where $c_1$ and $c_2$ are determined by the boundary conditions $X(0) = 0$ and $X'(L_{Ag}) = 0$:
+where $c_1$ and $c_2$ are determined by the boundary conditions $X(0) = 0$ and $X'(L_{Ag}) = 0$
 
 \begin{align}
 	X(0) = c_2 \stackrel{!}{=} 0 \\
@@ -2153,12 +2160,13 @@ From $\mathcal{T}_n(0) = A_{n,c}$, $\bar{f}_n=0$ and again equating the coeffici
 	A_{n,c} = 0
 \end{equation}
 
+\newpage
 Finally the solution of the boundary value problem \cref{eq:analytical_soln_pde} of the reference side reads as
 
 \begin{align}
 	& \ \ T(x,t) = \bar{T}(x,t) + \Gamma(x,t) \nonumber \\
 	\Leftrightarrow \ \ & T(x,t) = T_0 + \beta \cdot t + \sum_{n=1}^{\infty} \mathcal{T}_n(t) X_n(x) \nonumber \\[1ex]
-	\Leftrightarrow \ \ & \raalign{}{T(x,t) = T_0 + \beta \cdot t - \sum_{n=1}^{\infty} \left\{ \frac{4 \beta}{\pi (2n - 1)} \frac{1}{\alpha_{Ag} \cdot \lambda_n} \left[ 1 - e^{- \alpha_{Ag} \lambda_n t} \right] \cdot \sin(\sqrt{\lambda_n} \cdot x) \right\}} \label{eq:analytical_soln_final_formula} \\
+	\Leftrightarrow \ \ & \raalign{}{T(x,t) = T_0 + \beta \cdot t - \sum_{n=1}^{\infty} \left\{ \frac{4 \beta}{\pi (2n - 1)} \frac{1}{\alpha_{Ag} \cdot \lambda_n} \left[ 1 - e^{- \alpha_{Ag} \lambda_n t} \right] \cdot \sin(\sqrt{\lambda_n} \cdot x) \right\}} \raisetag{-.5em} \label{eq:analytical_soln_final_formula} \\
 	& \qquad \text{with} \quad \sqrt{\lambda_n} = \frac{(2n -1)\pi}{2 L_{Ag}} \qquad n=1,2,... \nonumber
 \end{align}
 
