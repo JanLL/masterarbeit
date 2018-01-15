@@ -268,8 +268,8 @@ The thesis concludes in \cref{sec:discussion} with a discussion of the results, 
 This thesis is part of project modELTES \cite{modELTES}, a cooperation of the Austrian Institute of Technology GmbH (AIT), VOIGT+WIPP Engineers GmbH and Interdisziplinäres Zentrum für Wissenschaftliches Rechnen (IWR) here at Ruprecht-Karls-Universität Heidelberg in order to examine so called phase change materials (PCM). The physical experiments have been performed in Wien at the AIT while in Heidelberg the aim is on the development of simulation software. \\
 A popular application of PCMs are heating pads (see \cref{fig:heating_pad}) which are liquid in fully charged state. Folding induces a phase change to a solid state where energy is released and therefore the temperature increases. They can be recharged by applying a temperature for a sufficiently long time above the melting point (e.g. with boiling water). 
 
-\begin{wrapfigure}{l}{0.4\textwidth}
-	\includegraphics[width=0.4\textwidth]{/home/argo/masterarbeit/thesis/images/handwaermer[wiki].jpg}
+\begin{wrapfigure}{l}{0.43\textwidth}
+	\includegraphics[width=0.43\textwidth]{/home/argo/masterarbeit/thesis/images/handwaermer[wiki].jpg}
 	\caption{Heating pad \\ left: liquid; right: solid \\
 		Source: \cite{heating_pad_image}}
 	\label{fig:heating_pad}
@@ -310,7 +310,7 @@ Since the work in this thesis is based on the experiments of a differential scan
 \subsection{Physical quantities and phase transition}
 
 First of all, important physical quantities will be introduced since they are crucial for further comprehension. A summary is shown in \cref{tab:important_physical_quantities} with the consistently used symbols in this thesis and the physical unit. \\
-Heat $Q$ is the energy that flows from a warmer to a colder object because of the temperature difference. The heat flux density $\phi$ tells us how much heat flows through an unit area in one second. By considering a particular area this quantity becomes the heat flux $\varPhi$. Heat conductivity $\lambda$ is a material property how much energy is transported on a distance of $1m$, unit area and temperature difference of $1K$ in one second.
+Heat $Q$ is the energy that flows from a warmer to a colder object because of the temperature difference. The heat flux density $\phi$ tells us how much heat flows through an unit area in one second. By considering a particular area this quantity becomes the heat flux $\varPhi$. Heat conductivity $\lambda$ is a material property that indicates how much energy is transported on a distance of $1m$, unit area and temperature difference of $1K$ in one second.
 
 \begin{table}
 	\centering
@@ -463,6 +463,8 @@ where $\lambda$ is the heat conductivity. Since \cref{eq:heat_eq_derivation_1} m
 
 Due to the definition of the heat capacity at constant volume $c_v(T) := \frac{\partial u}{\partial T}(T)$ and due to the assumption of a constant pressure $c_p = c_v$ we get the final heat equation
 
+\enlargethispage{3\baselineskip}
+
 \begin{equation}
 	\rho c_p(T) \frac{\partial T}{\partial t} = \nabla \cdot \left[ \lambda \cdot \nabla T \right]
 	\label{eq:heat_equation_derivation}
@@ -475,7 +477,7 @@ Due to the definition of the heat capacity at constant volume $c_v(T) := \frac{\
 \label{sec:physics_DSC}
 A method of measuring the heat flux into a sample over a certain temperature range is called Differential Scanning Calorimetry (DSC). 
 
-\begin{figure}[H]
+\begin{figure}[h]
 	\centering
 	\begin{subfigure}{0.49\textwidth}
 		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/dsc_principle.png}
@@ -503,7 +505,8 @@ The heat flux DSC (see \cref{fig:heat_flux_DSC}) extends now DTA. Its experiment
 Finally the calorimetric quantity, i.e. the heat flux into the sample is obtained by the sensitivity calibration which is elucidated next.
 
 
-\begin{figure}[H]
+\begin{figure}[h]
+	\vspace{-1cm}
 	\centering
 	\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/dsc_funktionsprinzip.png}
 	\caption{Principle experimental scheme of heat flux DSC from which the used measurement data comes from. Two crucibles (an empty reference one and the other filled with the sample to examine) are connected to the furnace with a silver plate. The furnace' temperature increases in time with a specific heat rate $\beta$ and because of thermal differences a temperature difference $\Delta T$ between sample and reference is measured with temperature sensors placed below the crucibles. The final measurement quantity obtained by sensitivity calibration is the heat flux into the sample $\varPhi_s^2$. \\
@@ -521,6 +524,8 @@ The area of this peak $A_{\Delta U}$ (see \cref{fig:dsc-calibration_dU(t)}) is a
 \end{equation} 
 
 This is done for a set of calibration materials (In, Sn, Zn, Al) such that we get a mapping $sens(T)$ by interpolating the data points $(T_{\text{Kal,i}}, sens_i)$, see \cref{fig:dsc-calibration_sens(T)}.
+
+With the mapping $\varPhi(T_{ref}) = \frac{\Delta U(T_{ref})}{sens(T_{ref})}$ the heat flux into the sample then can be computed for a measurement signal $\Delta U$ of unknown materials. 
 
 \begin{figure}[H]
 	\centering
@@ -588,7 +593,7 @@ This is done for a set of calibration materials (In, Sn, Zn, Al) such that we ge
 	Measurement data of $\Delta U$ and $sens$ listed in \cref{fig:measurement_csv_data}.}
 \end{figure}
 
-With the mapping $\varPhi(T_{ref}) = \frac{\Delta U(T_{ref})}{sens(T_{ref})}$ the heat flux into the sample then can be computed for a measurement signal $\Delta U$ of unknown materials. 
+
 
 \paragraph{Measurement data}\mbox{}\\
 In this context the measurements were performed as remarked at the AIT in Wien using the heat flux DSC \textit{Netzsch DSC 204 F1 Phoenix\textsuperscript{\textregistered}}. An excerpt of the .csv file which contains the measurement data for heat rate ${\beta=1.25 \frac{K}{min}}$ is shown in \cref{fig:measurement_csv_data}. Beside general information like date and time when the experiment was performed and which sample and crucibles have been used, there are four columns. The first three of those contain the information recorded during the experiment, namely the temperature at the reference crucible $T_{ref}$, elapsed time $t$ since start of measurement set and electric potential $\Delta U_m$ caused by the temperature difference between reference and sample crucible. 
@@ -603,20 +608,14 @@ where $m_{pcm}$ is the sample mass, $\Delta U_m(T_{ref}^{\eta_i})$ is the voltag
 These measurement data are used later in the parameter estimation optimization problem in \cref{sec:optimization_problem}.
 
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=.8\textwidth]{/home/argo/masterarbeit/thesis/images/messdaten.png}
-	\caption{Exemplary excerpt of measurement data .csv file for heat rate $\beta=1.25 \frac{K}{min}$. In the upper part measurement properties like measuring device or sample mass are listed. Below there are four columns with the measurement values: Temperature at reference crucible $T_{ref}$, elapsed time $t$ since start of measurement set, electric potential $\Delta U_m$ because of temperature difference between reference and sample crucible (normalized on sample mass) and sensitivity values $sens$ from sensitivity calibration. \\
-	See \cref{sec:heat_flux_dsc} paragraph sensitivity calibration and heat flux measurement plots in \cref{fig:heat_flux_measurements}.}
-	\label{fig:measurement_csv_data}
-\end{figure}
+
 
 
 \subsubsection{Power compensated DSC}
 \label{sec:power_compensated_dsc}
 Another kind of differential scanning calorimetry is the
 power compensated DSC (\cref{fig:DSC_power_compensated_principle}). 
-The main difference to a heat flux DSC is that there are 2 separated chambers for a reference and the sample. Both have individual heaters and temperature sensors such that a feedback control system keeps the temperature in both chambers on the same value. Since the electrical power for heating is known, the heat flux is gained due to energy conservation. \\
+The main difference to a heat flux DSC is that there are two separated chambers for a reference and the sample. Both have individual heaters and temperature sensors such that a feedback control system keeps the temperature in both chambers on the same value. Since the electrical power for heating is known, the heat flux is gained due to energy conservation. \\
 
 
 \subsection{Smearing Problem}
@@ -629,17 +628,19 @@ A common way to perform the heat flux DSC calibration, measurement and specific 
 \end{equation}
 
 where the indices $S$ and $R$ denote the sample respectively reference. Reference means here a material with known specific heat capacity $c_p^R(T)$, not to be mistaken with the reference side of the experimental setup which is usually empty. In our case this reference material is sapphire. Furthermore $m$ is the mass and $\varPhi^0$ is the heat flux if both crucibles are empty. $\varPhi^0$ is subtracted to compensate asymmetries in the experimental setup. \\
-In \cref{fig:heat_flux_measurements} the measurement data of the heat flux into the PCM $\varPhi_q^{\eta}(T_{ref})$ is shown for all heat rates dependent on the temperature at the reference crucible. For higher heat rates the peak position shifts to higher temperatures and the peak is broadened (smearing effect). Using \cref{eq:c_p_formula_DIN}, the computed specific heat capacities $c_p^{\text{DIN}}(T)$ of the PCM are shown in \cref{fig:c_p_DIN_formula}, exhibiting the smearing effect as well. This is known as the smearing problem since $c_p(T)$ is a material property and therefore independent of the heat rate.
+In \cref{fig:heat_flux_measurements} the measurement data of the heat flux into the PCM $\varPhi_q^{\eta}(T_{ref})$ is shown for all heat rates dependent on the temperature at the reference crucible. For higher heat rates the peak position shifts to higher temperatures and the peak is broadened (smearing effect). Using \cref{eq:c_p_formula_DIN}, the computed specific heat capacities $c_p^{\text{DIN}}(T)$ of the PCM are shown in \cref{fig:c_p_DIN_formula}, exhibiting the smearing effect as well. This is known as the smearing problem since $c_p(T)$ is a material property and therefore independent of the heat rate. \\
+
+\enlargethispage{5\baselineskip}
 
 
 \begin{figure}[H]
 	\centering
-	\begin{subfigure}{0.7\textwidth}
+	\begin{subfigure}{0.65\textwidth}
 		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/heat_flux_measurement.png}
 		\caption{}
 		\label{fig:heat_flux_measurements}
 	\end{subfigure}
-	\begin{subfigure}{0.7\textwidth}
+	\begin{subfigure}{0.65\textwidth}
 		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/c_p_DIN_formula.png}
 		\caption{}
 		\label{fig:c_p_DIN_formula}
@@ -647,6 +648,20 @@ In \cref{fig:heat_flux_measurements} the measurement data of the heat flux into 
 	\caption{(a) Heat flux measurement values $\varPhi_q^{\eta}(T_{ref})$ and (b) computed specific heat capacity $c_p^{\text{DIN}}(T)$ using \cref{eq:c_p_formula_DIN}. Distinct smearing effect for higher heat rates. \\
 	Cf. Simulated heat flux (\cref{fig:smearing_effect_simulation_heat_flux}) and $c_p(T)$ obtained by parameter estimation depicted in \cref{fig:5Gaussians_all_c_p,fig:FS_all_c_p,fig:FS_all_c_p_modHeatRate}.}
 \end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/messdaten.png}
+	\caption{Exemplary excerpt of measurement data .csv file for heat rate $\beta=1.25 \frac{K}{min}$. In the upper part measurement properties like measuring device or sample mass are listed. Below there are four columns with the measurement values: Temperature at reference crucible $T_{ref}$, elapsed time $t$ since start of measurement set, electric potential $\Delta U_m$ because of temperature difference between reference and sample crucible (normalized on sample mass) and sensitivity values $sens$ from sensitivity calibration. \\
+		See \cref{sec:heat_flux_dsc} paragraph sensitivity calibration and heat flux measurement plots in \cref{fig:heat_flux_measurements}.}
+	\label{fig:measurement_csv_data}
+\end{figure}
+
+
+
+
+
+
 
 
 \newpage
