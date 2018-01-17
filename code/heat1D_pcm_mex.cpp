@@ -327,6 +327,7 @@ svLong diffRHS(TArgs_ffcn<T> &args, TDependency *depends)
 	//rho_pcm_formula(x[N1+N3-1], rho_j, drho_j);
 	rho_j = 0.85; //  [mg/mm^3]
 
+	// factor alpha missing since gridsize in PCM constant and therefore not necessary
 	args.rhs[N1+N3-1] = lambda_pcm/(c_p_j*rho_j) / (spatial_gridsize[N1+N3-2]*spatial_gridsize[N1+N3-2])
 						* (x[N1+N3-2] - x[N1+N3-1]);
 

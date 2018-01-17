@@ -123,7 +123,7 @@
 	Master Thesis \\[0.5ex]
 	in Scientific Computing \\[2ex]
 	submitted by \\[2ex]
-	Jan Lammel \todo{Zweitname ?!} \\[0.5ex]
+	Jan Lammel \\[0.5ex]
 	born in Heidelberg \\[3ex]
 	2018 \\[2ex]
 		
@@ -141,14 +141,12 @@
 	\begin{center}
 		\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
 		\HRule \\[0.1cm]
-%		{\huge \bfseries Simulation of heat flux differential \\[0.1ex]
-%		scanning calorimetry with phase change \\[0.1ex]
-%		materials and parameter estimation of the \\[0.2ex]
-%		specific heat capacity }
-		{\huge \bfseries Heat flux differential scanning calorimetry simulation and applied parameter estimation of the specific heat capacity of phase change materials}
+%		{\huge \bfseries Numerical simulation of \\ heat flux differential scanning calorimetry \\ and applied parameter estimation \\ of the specific heat capacity of \\ phase change materials}
+%		{\huge \bfseries Numerical simulation of \\ heat flux differential scanning calorimetry \\ and parameter estimation \\ to determine the specific heat capacity of \\ phase change materials}
+		{\huge \bfseries Modeling, numerical simulation \\ and parameter estimation in \\[0.7ex] heat flux differential scanning calorimetry}
 		\HRule \\[0.3cm]
 		
-		\vspace{10cm}
+		\vspace{9cm}
 		
 		{\Large This master thesis has been carried out by Jan Lammel \\[2ex]
 		at the \\[2ex]
@@ -190,8 +188,8 @@ Dies ist bekannt als das "Smearing Problem" da $c_p(T)$ eine Stoffeigenschaft is
 Deshalb wurde in dieser Arbeit ein neues Modell entwickelt um den Messprozess der heat flux DSC mit PCM als Probe zu simulieren. 
 In der Simulation wird die 1D Wärmegleichung gelöst, wobei die spezifische Wärmekapazität des PCM's temperaturabhängig ist und einen Peak für den Phasenwechsel aufweist. 
 Dieses Modell ist in der Lage Wärmeströme nachzubilden, ähnlich denen der Messdaten. 
-Die Simulation ist im Rahmen einer Least-Squares Parameterschätzung eingegliedert, wobei Wärmestrommessdaten verwendet werden um die spezifische Wärmekapazität des PCM's zu schätzen.  
-Verglichen zu $c_p^{\text{DIN}}(T)$ war bei einer Parametrisierung von $c_p(T)$ durch einen Fraser-Suzuki Peak mit linearer Basislinie eine deutliche Reduzierung der Schwankung der Peak-Kenngrößen, Position des Maximums $T_{max}$, Schmelzende $T_{off}$ und Schmelzenthalpie $\Delta H$ bei verschiedenen Heizraten möglich. 
+Die Simulation ist im Rahmen einer Least-Squares Parameterschätzung eingegliedert, wobei Wärmestrommessdaten verwendet werden um die spezifische Wärmekapazität des PCM's zu ermitteln.  
+Verglichen zu $c_p^{\text{DIN}}(T)$ war bei einer Parametrisierung von $c_p(T)$ durch einen Fraser-Suzuki Peak mit linearer Basislinie eine deutliche Reduzierung der Streuung der Peak-Kenngrößen, Position des Maximums $T_{max}$, Schmelzende $T_{off}$ und Schmelzenthalpie $\Delta H$ bei verschiedenen Heizraten möglich. 
 
 
 \newpage
@@ -258,7 +256,7 @@ Due to the observation of a small deviation of the nominal and measured heat rat
 It is shown that there is no significant difference to the results before, indicating that the sensitivity with respect to the heat rate is small. 
 \Cref{sec:numerical_experiments} concludes with a comparison of $c_p(T)$ obtained both by the method in DIN 11357 and the parameter estimation performed in this thesis. 
 This leads to the result that the deviation of the peak characteristics $T_{max}$, $T_{off}$ and $\Delta H$ among the different heat rates is significantly reduced when employing the parameter estimation with Fraser-Suzuki parametrization. \\
-The thesis concludes in \cref{sec:discussion} with a discussion of the results, occured problems and possibilities for future work on this subject.
+The thesis concludes in \cref{sec:discussion} with a discussion of the results, occured problems and possible directions of further research.
 
 
 \newpage
@@ -283,7 +281,7 @@ A popular application of PCMs are heating pads (see \cref{fig:heating_pad}) whic
 %	\label{fig:heating_pad}
 %\end{figure}
 
-In general, PCMs work as an energy buffer, also known as  latent heat thermal energy storage (LHTES). Another application are industry processes to store the process heat for later usage \cite{pcm_process_heat}. Furthermore they can be used to optimize  photovoltaic cells as the efficiency of those cells is temperature dependent with a maximum at a certain point. PCMs are able to stabilize the temperature where the efficiency is maximal \cite{pcm_solar_cells}. 
+In general, PCMs work as an energy buffer and are also known as  latent heat thermal energy storage (LHTES). Another application are industry processes to store the process heat for later usage \cite{pcm_process_heat}. Furthermore they can be used to optimize  photovoltaic cells as the efficiency of those cells is temperature dependent with a maximum at a certain point. PCMs are able to stabilize the temperature where the efficiency is maximal \cite{pcm_solar_cells}. 
 A last example are insulations of houses. During the day when it is hot, the PCM becomes liquid and absorbs heat from outside, so they work as a cooling system. On the contrary at night when it is cold outside the PCM becomes solid, releases heat and works as a heating \cite{pcm_house_insulation}. \\
 An important material property is the specific heat capacity $c_p(T)$ where a phase transition peak tells us at which temperature the phase change occurs and how much energy can be stored. A common way of computing $c_p(T)$ from differential scanning calorimetry (DSC) measurement data yields different results depending on the heat rate, a measurement parameter. Since $c_p(T)$ is a material property this is unphysical and this issue is known as the smearing problem. By applying a parameter estimation we aim to avoid this problem.
 Therefore the two major goals of this thesis are both simulate the measuring process of a DSC where a PCM undergoes a solid-liquid phase transition and perform a parameter estimation in order to get the PCM's true specific heat capacity. 
@@ -300,7 +298,6 @@ While there exists research on the smearing problem, it so far has not been sati
 
 This thesis is structured as follows. In \cref{sec:physical_background} the physics of a phase transition and the measuring process of a DSC are elucidated. 
 The mathematical methods for simulation and parameter estimation are introduced in \cref{sec:mathematical_background}. These methods are then applied in \cref{sec:simulation_of_DSC} to simulate the DSC measuring process and in \cref{sec:parameter_estimation_applied} for the parameter estimation of the specific heat capacity. Performed numerical experiments and corresponding results are shown in \cref{sec:numerical_experiments}. Finally, \cref{sec:discussion} concludes this thesis with a discussion of results, problems and possible directions of further research.
-
 
 \section{Physical background}
 \label{sec:physical_background}
@@ -501,7 +498,7 @@ The heat flux DSC is crucial for us since it has been used for the experimental 
 In DTA there is one chamber in which both reference and sample are exposed to the same heating program.
 Due to differences in the heat capacities of reference and sample, a temperature difference that varies with absolute temperature appears \footnote{This can be used to find typical temperatures of known substances to identify the sample's components, though not part of this thesis.}. \\
 Unfortunately, calorimetric properties like melting enthalpy are not accessible just from the temperature difference measurement. 
-Note that the physical quantity measured is an electrical potential difference $\Delta U$ which is assumed to be proportional to the temperature difference due to the Seebeck effect. \\
+Note that the physical quantity measured is an electrical potential difference $\Delta U$ which is assumed to be proportional to the temperature difference due to the Seebeck effect (see e.g. \cite{demtroeder_2} chapter 2.9.2). \\
 The heat flux DSC (see \cref{fig:heat_flux_DSC}) extends now DTA. Its experimental setup from which the used measurement data comes is as follows. Two crucibles (an empty reference one and the other filled with the sample to examine) are connected to the furnace with a silver plate. The furnace' temperature increases in time with a specific heat rate $\beta$ and because of thermal differences a temperature difference $\Delta T$ between sample and reference is measured with temperature sensors placed below the crucibles. As we are actually interested in the temperature of the reference and sample within the crucible a so called temperature calibration is performed. \\
 Finally the calorimetric quantity, i.e. the heat flux into the sample is obtained by the sensitivity calibration which is elucidated next.
 
@@ -949,7 +946,7 @@ It is defined as
 \end{equation}
 
 where $\alpha_{ij} \in \mathbb{R}$ with $\alpha_{0m},\alpha_{km} \ne 0 \ \forall \ m$ are the method's coefficients. BDF methods up to order 6 are used in practice because these are zero-stable. \\
-Since \cref{eq:bdf_formula} is a nonlinear system of equations it can be solved iteratively using Newton's method (therefore we need $f \in \mathcal{C}^1$). In order to obtain a good starting point a so called predictor is used, which is the integration polynomial of the previous integration step. With this initial guess for $y_{m+k}$ the Newton method can be applied to get the so called corrector polynomial, which satisfies the differential equation at $t_{m+k}$. \\
+Since \cref{eq:bdf_formula} is a nonlinear system of equations it can be solved iteratively using Newton's method (therefore we assumed $f \in \mathcal{C}^1$). In order to obtain a good starting point, a so called predictor is used, which is the integration polynomial of the previous integration step. With this initial guess for $y_{m+k}$ the Newton method can be applied to get the so called corrector polynomial, which satisfies the differential equation at $t_{m+k}$. \\
 As we want the numerical integrator both to perform large integration steps to minimize the required time to solve the IVP and limit the inevitable numerical errors to a predefined value we are dependent on a strategy to choose the step width $h_{m+k-1}$ accordingly. This is done by estimating the local error (see e.g. \cite{diss_jan} page 128) in each integration step. Either the local error is smaller than some tolerance, then the step width might be increased in the next integration step, otherwise decreased until the local error tolerance is satisfied. \\
 
 The BDF solver DAESOL-II embedded in SolvIND has been used in this thesis to solve \cref{eq:heat_equation_discretized}.
@@ -1609,8 +1606,9 @@ for the case that the measurement variances $\sigma^2$ are known except a common
 	\beta^2 \approx b^2 = \frac{|| F_1(p^*) ||_2^2}{n_{mp} - (n_p - n_c)}
 \end{equation}
 
-with $n_c$ number of active constraints. 
-The confidence region is defined by
+with $n_c$ number of active constraints. \\
+
+The confidence region of solution $p^*$ is defined by
 %We define the confidence region
 
 \begin{align}
@@ -2313,7 +2311,7 @@ In order to perform the parameter estimation to determine $c_p(T)$ we need to so
 
 where $p_{c_p} \in \mathbb{R}^{n_p}$ are the optimization variables, parametrizing the specific heat capacity $c_p(T)$, $n_{{mp}}$ is the number of measurement points, $\varPhi_{q}^{pcm,in}$ is the simulated heat flux into the PCM calculated from the solution $T(t_i;T_0,p_{c_p}) \in \mathbb{R}^N$ of the discretized heat equation (see \cref{eq:heat_flux_computation_final}) and $\varPhi_q^{\eta_i}$ is the heat flux measurement value at measurement time $t_i$. 
 Note here that the same measurement variance $\sigma^2$ is assumed for all measurement values and it was set implicitly to $\sigma^2=1$.
-The model $\dot{T} = f(T,t;p_{c_p})$ with $T(0) = T_0$ is equivalent to the initial value problem \cref{eq:heat_equation_discretized} of solving the discretized heat equation. Lower and upper bounds for the optimization variables are set by $\underline{p}_{c_p}$ and $\bar{p}_{c_p}$, respectively to guarantee that the model can be evaluated\footnote{E.g., to prevent division by zero in an evaluation of the parametrized function $c_p(T)$.}.
+The model $\dot{T} = f(T,t;p_{c_p})$ with $T(0) = T_0$ is equivalent to the initial value problem \cref{eq:heat_equation_discretized} of solving the discretized heat equation. Lower and upper bounds for the optimization variables are set by $\underline{p}_{c_p}$ and $\bar{p}_{c_p}$, respectively to guarantee that the model can be evaluated\footnote{E.g., to prevent negative argument in logarithm in an evaluation of the parametrized function $c_p(T)$.}.
 Note that \cref{eq:parameter_estimation_least_squares_problem} is solved separately for each heat rate $\beta$, which occurs in the model \cref{eq:heat_equation_discretized}.
 This least squares problem is of the form of \cref{eq:param_estimation_definition}, which has been discussed in \cref{sec:parameter_estimation_theory}.
 
@@ -3319,6 +3317,12 @@ In \cref{sec:param_estimation_summary} the specific heat capacity $c_p(T)$ obtai
 	während des Phasenübergangs.
 	Dissertation an der technischen Universität München 
 	(2006)
+	
+\bibitem{demtroeder_2}
+	Wolfgang Demtröder.
+	Experimentalphysik 2 --- Elektrizität und Optik.
+	Fünfte, überarbeitete und erweiterte Auflage.
+	ISBN 978-3-540-68210-3
 
 \bibitem{ADOL-C}
 	Andrea Walther and Andreas Griewank.
@@ -3484,7 +3488,7 @@ Vielen lieben Dank!
 \textbf{Erklärung:} \\[3ex]
 Ich versichere, dass ich diese Arbeit selbständig verfasst habe und keine anderen als die angegebenen Quellen und Hilfsmittel verwendet habe.\\[2ex]
 
-Heidelberg, den 15. Januar 2018 \\[6ex]
+Heidelberg, den 16. Januar 2018 \\[6ex]
 
 $\overline{\qquad \quad \text{Jan Lammel} \quad \qquad}$
 
@@ -3494,7 +3498,7 @@ $\overline{\qquad \quad \text{Jan Lammel} \quad \qquad}$
 \textbf{Declaration:} \\[3ex]
 I hereby confirm that I wrote this work independently and did not use any sources other than those indicated.\\[2ex]
 
-Heidelberg, January 15, 2018 \\[6ex]
+Heidelberg, January 16, 2018 \\[6ex]
 
 $\overline{\qquad \quad \text{Jan Lammel} \quad \qquad}$
 
