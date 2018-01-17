@@ -74,7 +74,7 @@
 
 }
 
-\section{Physical background}
+\section{Physics}
 \subsection{Important physical quantities}
 \frame{
 	\frametitle{Important physical quantities}
@@ -107,7 +107,7 @@
 	
 	\begin{textblock}{15}(0.4,4)
 		\centering
-		\includegraphics[width=0.7\textwidth]{/home/argo/masterarbeit/thesis/images/dsc_funktionsprinzip.png}
+		\includegraphics[width=0.7\textwidth]{/home/argo/masterarbeit/vortrag/images/dsc_funktionsprinzip.png}
 		
 		\begin{itemize}
 			\item Empty reference crucible and crucible with PCM are heated equally.
@@ -125,7 +125,7 @@
 	\frametitle{Smearing problem}	
 	
 	\begin{textblock}{10}(0.5,5)
-		\includegraphics[width=0.7\textwidth]{/home/argo/masterarbeit/thesis/images/heat_flux_measurement.png}
+		\includegraphics[width=0.7\textwidth]{/home/argo/masterarbeit/vortrag/images/heat_flux_measurement.png}
 	\end{textblock}
 	
 	\begin{textblock}{4}(7.5,8)
@@ -133,7 +133,7 @@
 	\end{textblock}
 	
 	\begin{textblock}{10}(8.7,5)
-		\includegraphics[width=0.7\textwidth]{/home/argo/masterarbeit/thesis/images/c_p_DIN_formula.png}
+		\includegraphics[width=0.7\textwidth]{/home/argo/masterarbeit/vortrag/images/c_p_DIN_formula.png}
 	\end{textblock}
 	
 	\begin{textblock}{14}(1,12.5)
@@ -151,7 +151,7 @@
 	\frametitle{Mathematical model}
 	
 	\begin{textblock}{14}(1, 4)
-		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/discretization_grid_heat_flux.png}
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/discretization_grid.png}
 	\end{textblock}
 	
 	
@@ -234,6 +234,7 @@
 		\end{equation*}
 		
 		\centering
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/old_Constantan/2017-10-05_00:14:13_407_0,3Kmin_L1=15_L3=0,35/c_p(T).png}
 		
 	\end{textblock}
 	
@@ -260,7 +261,7 @@
 	\frametitle{Heat flux computation}	
 	
 	\begin{textblock}{14}(1,5)
-		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/discretization_grid_heat_flux.png}
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/discretization_grid_heat_flux.png}
 	\end{textblock}
 	
 	\begin{textblock}{14}(1, 10)
@@ -301,22 +302,21 @@
 
 	\begin{textblock}{10}(0.5,4.)
 	\begin{align*}
-		\min_{p_{c_p}} \ & \sum_{i=1}^{n_{mp}} \left|\left|  \varPhi_{q}^{pcm,in}(T(t_i;T_0,p_{c_p})) - \varPhi_q^{\eta_i} \right|\right|_2^2 \\
+		\min_{p_{c_p}} \ & \sum_{i=1}^{n_{MP}} \left|\left|  \varPhi_{q}^{PCM,in}(T(t_i;T_0,p_{c_p})) - \varPhi_q^{\eta_i} \right|\right|_2^2 \\
 		s.t. \ & \quad \  \dot{T} = f(T,t;p_{c_p}) \\
 		       & T(0) = T_0
 	\end{align*}
 	\end{textblock}
 	
-	\begin{textblock}{7}(12,6.5)
-		separately for all \\
-		 heat rates $\beta$
+	\begin{textblock}{7}(11,7)
+		$\forall$ heat rates $\beta$
 	\end{textblock}
 	
 	\begin{textblock}{16}(0.3,9.4)
 	\begin{itemize}
 		\item $\varPhi_q^{\eta_i}$: heat flux measurement value at time $t_i$.
-		\item $\varPhi_q^{\text{pcm,in}}$: heat flux into PCM from simulation. \\
-		\item $n_{mp}$: number of measurement points. \\
+		\item $\varPhi_q^{\text{PCM,in}}$: heat flux into PCM from simulation. \\
+		\item $n_{MP}$: number of measurement points. \\
 		\item $p_{c_p}$: optimization parameters specifying specific heat capacity $c_p(T)$. \\
 		\item $f(T,t;p_{c_p})$: discretized differential equation system from heat equation.
 	\end{itemize}
@@ -330,159 +330,159 @@
 
 
 
-\section{Numerical experiments and results}
-\subsection{Gaussian parametrization}
+\subsection{Results}
+\frame{
+	\frametitle{Results}
+	\begin{textblock}{14}(1,5)
+		\centering
+		Heat rate: $20\frac{K}{min}$
+	\end{textblock}
+	
+	\begin{textblock}{14}(1,6)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-18_16:40:21_407_L1=40_L3=0.1_N1=500_N3=50/2017-10-18_16:44:17_407_20Kmin_L1=40_L3=0,1/c_p(T).png}
+	\end{textblock}
+	
+	\begin{textblock}{14}(8,6)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-18_16:40:21_407_L1=40_L3=0.1_N1=500_N3=50/2017-10-18_16:44:17_407_20Kmin_L1=40_L3=0,1/q_pcm_in(T_ref).png}
+	\end{textblock}	
+}
+
 
 \frame{
-	\frametitle{Specific heat capacity \& heat flux}
+	\frametitle{Results}
 	\begin{textblock}{14}(1,5)
 		\centering
 		Heat rate: $10\frac{K}{min}$
 	\end{textblock}
 	
-	\begin{textblock}{14}(1,6.5)
-		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/2017-12-19_21:17:51_407_10Kmin_L1=40_L3=0,1/c_p.png}
+	\begin{textblock}{14}(1,6)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-18_16:40:21_407_L1=40_L3=0.1_N1=500_N3=50/2017-10-18_16:55:30_407_10Kmin_L1=40_L3=0,1/c_p(T).png}
 	\end{textblock}
 	
-	\begin{textblock}{14}(8,6.5)
-		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/2017-12-19_21:17:51_407_10Kmin_L1=40_L3=0,1/heat_flux.png}
+	\begin{textblock}{14}(8,6)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-18_16:40:21_407_L1=40_L3=0.1_N1=500_N3=50/2017-10-18_16:55:30_407_10Kmin_L1=40_L3=0,1/q_pcm_in(T_ref).png}
 	\end{textblock}	
 }
 
 
 \frame{
-	\frametitle{Specific heat capacity \& heat flux}
+	\frametitle{Results}
 	\begin{textblock}{14}(1,5)
 		\centering
 		Heat rate: $5\frac{K}{min}$
 	\end{textblock}
 	
-	\begin{textblock}{14}(1,6.5)
-		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/2017-12-19_21:17:51_407_10Kmin_L1=40_L3=0,1/c_p.png}
+	\begin{textblock}{14}(1,6)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-18_16:40:21_407_L1=40_L3=0.1_N1=500_N3=50/2017-10-18_17:12:14_407_5Kmin_L1=40_L3=0,1/c_p(T).png}
 	\end{textblock}
 	
-	\begin{textblock}{14}(8,6.5)
-		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/2017-12-19_21:17:51_407_10Kmin_L1=40_L3=0,1/heat_flux.png}
+	\begin{textblock}{14}(8,6)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-18_16:40:21_407_L1=40_L3=0.1_N1=500_N3=50/2017-10-18_17:12:14_407_5Kmin_L1=40_L3=0,1/q_pcm_in(T_ref).png}
 	\end{textblock}	
 }
 
 
-\frame{
-	\frametitle{Statistical a posteriori analysis \& [NOC1]}	
-	
-	\begin{textblock}{14}(1.,5.)
-		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/stat_a_post_analysis_Gausse.png}
-	\end{textblock}	
-	
-}
 
-
-\subsection{Fraser-Suzuki parametrization}
 \frame{
-	\frametitle{Specific heat capacity \& heat flux}	
+	\frametitle{Results}
 	\begin{textblock}{14}(1,5)
 		\centering
-		Heat rate: $10\frac{K}{min}$
+		Heat rate: $0.3\frac{K}{min}$
 	\end{textblock}
 	
-	\begin{textblock}{14}(1,6.5)
-		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:30:23_407_10Kmin_L1=40_L3=0,1/c_p.png}
+	\begin{textblock}{14}(1,6)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-18_16:40:21_407_L1=40_L3=0.1_N1=500_N3=50/2017-10-18_17:55:49_407_0,3Kmin_L1=40_L3=0,1/c_p(T).png}
 	\end{textblock}
 	
-	\begin{textblock}{14}(8,6.5)
-		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:30:23_407_10Kmin_L1=40_L3=0,1/heat_flux.png}
+	\begin{textblock}{14}(8,6)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-18_16:40:21_407_L1=40_L3=0.1_N1=500_N3=50/2017-10-18_17:55:49_407_0,3Kmin_L1=40_L3=0,1/q_pcm_in(T_ref).png}
 	\end{textblock}	
-	
 }
 
 
+
+
+
+
 \frame{
-	\frametitle{Specific heat capacity \& heat flux}	
+	\frametitle{Results}
 	\begin{textblock}{14}(1,5)
 		\centering
-		Heat rate: $5\frac{K}{min}$
+		$c_p$ curves for all heat rates
 	\end{textblock}
 	
-	\begin{textblock}{14}(1,6.5)
-		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:36:33_407_5Kmin_L1=40_L3=0,1/c_p.png}
+	\begin{textblock}{14}(1,6)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-18_16:40:21_407_L1=40_L3=0.1_N1=500_N3=50/c_p_all.png}
 	\end{textblock}
 	
-	\begin{textblock}{14}(8,6.5)
-		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:36:33_407_5Kmin_L1=40_L3=0,1/heat_flux.png}
+	\begin{textblock}{14}(8,6)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-18_16:40:21_407_L1=40_L3=0.1_N1=500_N3=50/c_p_all_zoom.png}
 	\end{textblock}	
-	
 }
 
+
+
 \frame{
-	\frametitle{Statistical a posteriori analysis}	
-	
-	\begin{textblock}{14}(1.,5.)
-		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/stat_a_post_analysis_FS.png}
-	\end{textblock}	
-	
-	\begin{textblock}{15}(0.5,10)
-		\begin{itemize}
-			\item $^*$ parameter fixed due to lack of measurement data in sensitive part
-		\end{itemize}
+	\frametitle{Results}
+	\begin{textblock}{14}(1,5)
+		\centering
+		Modifying silver / PCM length $L_1$ / $L_3$
 	\end{textblock}
 	
-}
-
-
-\frame{
-	\frametitle{Examination Gauss-Newton iterations}	
-	
-	
-}
-
-
-
-
-\frame{
-	\frametitle{Examination Gauss-Newton iterations}	
-	
-	
-}
-
-
-
-
-\subsection{Comparison of retrieved specific heat capacity}
-
-\frame{
-	\frametitle{$c_p^{DIN}(T)$ from DIN 11357 formula}
-	
-	\begin{textblock}{14}(4,5)
-		\includegraphics[width=0.6\textwidth]{/home/argo/masterarbeit/thesis/images/c_p_DIN_formula.png}
-	\end{textblock}
-	
-}
-
-\frame{
-	\frametitle{$c_p(T)$ from parameter estimation}	
-	
-		\begin{textblock}{14}(0.,5.5)
-			\includegraphics[width=0.6\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/c_p_all.png}
-		\end{textblock}
+	\begin{textblock}{14}(1,6)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-18_10:59:34_407_L1=80_L3=0.1_N1=200_N3=50/c_p_all_zoom.png} \\
 		
-		\begin{textblock}{14}(8,5.5)
-			\includegraphics[width=0.6\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/c_p_all.png}
-		\end{textblock}
+		\qquad \qquad  $L_1 = 80$, $L_3 = 0.1$
+	\end{textblock}
 	
+	\begin{textblock}{14}(8,6)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-18_14:41:19_407_L1=40_L3=0.2_N1=200_N3=50/c_p_all_zoom.png} \\
+		
+		\qquad \qquad  $L_1 = 40$, $L_3 = 0.2$
+	\end{textblock}	
 }
+
+
 
 \frame{
-	\frametitle{Peak characteristics}
-	
-	\begin{textblock}{14}(1.,5)
-		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/summary_peak_characteristics3.png}
+	\frametitle{Results}
+	\begin{textblock}{14}(1,5)
+		\centering
+		Modifying silver / PCM length $L_1$ / $L_3$
 	\end{textblock}
-
+	
+	\begin{textblock}{14}(1,6)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-15_21:08:00_407_L1=5_L3=0.1_N1=200_N3=50/c_p_all_zoom.png} \\
+		
+		\qquad \qquad  $L_1 = 5$, $L_3 = 0.1$
+	\end{textblock}
+	
+	\begin{textblock}{14}(8,6)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-10-18_12:11:40_407_L1=40_L3=0.01_N1=200_N3=50/c_p_all_zoom.png} \\
+		
+		\qquad \qquad  $L_1 = 40$, $L_3 = 0.01$
+	\end{textblock}	
 }
 
 
 
 
+
+\section{Next potential steps}
+\frame{
+	\frametitle{Next potential steps}
+	
+	\begin{itemize}
+		\item Discretization transition from silver to PCM softer.
+		\item Heat equation with $\rho=\rho(T)$. \\
+		$\rightarrow$ problem with value of absolute enthalpy term.
+		\item $L_1$ and $L_3$ as optimization variables. \\
+		$\rightarrow$ high programming effort.
+		\item Crucible part between silver and PCM. \\
+		$\rightarrow$ we do not know $L_2$ (risk of overfitting). \\
+	\end{itemize}
+	
+}
 
 
 
@@ -492,27 +492,112 @@
 	
 	\begin{itemize}
 		\item Reason for shift and different shape of $c_p$ from optimization?
-		\item 
+		\item How to get $L_1$ and $L_3$ except as optimization variable?
+		\item Heat equation derivation with $\rho=\rho(T)$ correct? \\
+		$\rightarrow$ How to get enthalpy $h$?
 	\end{itemize}
 	
 }
 
+
+\frame{
+	\frametitle{Heat equation derivation}
 	
+	\begin{textblock}{14}(1,3.5)
+	\begin{align}
+		p=const \Rightarrow dH = dQ \\
+		\Rightarrow \frac{\partial \rho_h}{\partial t} + \nabla \cdot J_q = 0
+	\end{align}	
+	\end{textblock}
+	
+	\begin{textblock}{14}(1,6.5)
+	\begin{align}
+		\rho_h = \rho \cdot h \\
+		J_q = - \lambda \cdot \nabla T
+	\end{align}
+	\end{textblock}
+	
+	\begin{textblock}{14}(1,9.5)
+	\begin{align}
+	\frac{\partial (\rho h)}{\partial t} = \nabla \cdot \left[\lambda \cdot \nabla T\right] \\
+	\Leftrightarrow \frac{\partial \rho}{\partial T} \frac{\partial T}{\partial t} h + \rho \frac{\partial h}{\partial T} \frac{\partial T}{\partial t} = \nabla \cdot \left[\lambda \cdot \nabla T\right] \\
+	\Leftrightarrow \left( \frac{\partial \rho}{\partial T} h + \rho c_p \right) \frac{\partial T}{\partial t} = \nabla \cdot \left[\lambda \cdot \nabla T\right]
+	\end{align}
+	\end{textblock}
+	
+	\begin{textblock}{5}(0.,4)
+		\begin{itemize}
+			\item $p$: pressure
+			\item $H$: enthalpy
+			\item $\rho_h$: specific enthalpy density
+			\item $\rho = \rho(T(x,t))$
+			\item $h = h(T(x,t))$
+		\end{itemize}
+	\end{textblock}
+	
+	
+}
+
+\frame{
+	\frametitle{Heat equation derivation}
+	
+	\begin{textblock}{14}(1,4)
+		\begin{align}
+		 \left( \frac{\partial \rho}{\partial T} h + \rho c_p \right) \frac{\partial T}{\partial t} = \nabla \cdot \left[\lambda \cdot \nabla T\right]
+		\end{align}
+		\begin{align}
+		c_p := \left. \frac{\partial h}{\partial T} \right|_{p=const}
+		\end{align}
+		\begin{equation}
+		\Rightarrow h(T) = \tilde{h} + \int_{\tilde{T}}^{T} c_p(T) dT
+		\end{equation}
+		
+		$h(\tilde{T})=\tilde{h}$ unknown $\rightarrow$ optimization variable
+		
+	\end{textblock}
+	
+
+	
+
+}
+
+
+\frame{
+	\frametitle{Relative error discretization grid w.r.t. $N_1$}
+	
+	\begin{textblock}{14}(1., 4.5)
+		$L_1 = 40$, $L_3 = 0.1$, $N_3 = 50$, $N_1=2500$ \\
+		equidistand grid would be $N_1 = 20,000$
+	\end{textblock}
+	
+	\begin{textblock}{7.5}(0.5, 6)
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/relErr_discretization_grid_200_2500.png} \\
+		\qquad \qquad \quad $N_1^\prime = 200$
+	\end{textblock}
+	
+	\begin{textblock}{7.5}(8.5, 6)
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/relErr_discretization_grid_500_2500.png} \\
+		\qquad \qquad \quad $N_1^\prime = 500$
+	\end{textblock}
+	
+}
 
 \frame{
 	
-\begin{textblock}{15}(0.5,2.5)
-	\includegraphics[width=1.0\textwidth]{/home/argo/masterarbeit/thesis/images/2nd_derivative_2-point_formula_illustration.png}
-\end{textblock}
 	
-\begin{textblock}{15}(0.2,6)
-	\begin{subequations}
-		\begin{align}
-		f(x-h) = & f(x) - h \cdot \frac{\partial f}{\partial x}(x) + \frac{h^2}{2} \cdot \frac{\partial^2 f}{\partial^2 x}(x) + \mathcal{O}(h^3) \label{eq:finite_differences_taylor_exp_non-homogenous_1} \\
-		f(x+\alpha h) = & f(x) + \alpha h \cdot \frac{\partial f}{\partial x}(x) + \frac{\alpha^2 h^2}{2} \cdot \frac{\partial^2 f}{\partial^2 x}(x) + \mathcal{O}(h^3) \\[3ex]
-		\Leftrightarrow \frac{\partial^2 f}{\partial^2 x}(x) = & \frac{1}{h^2} \left[ \frac{2}{1+\alpha} f(x-h) - \frac{2}{\alpha} f(x) + \frac{2}{\alpha (\alpha+1)} f(x+\alpha h) \right] + \mathcal{O}(h^3) 
-		\end{align}
-	\end{subequations}
+\begin{textblock}{15}(0.2,3)
+\begin{subequations}
+	\label{eq:finite_differences_taylor_exp_non-homogenous}
+	\begin{align}
+	f(x-h) = & f(x) - h \cdot \frac{\partial f}{\partial x}(x) + \frac{h^2}{2} \cdot \frac{\partial^2 f}{\partial^2 x}(x) + \mathcal{O}(h^3) \label{eq:finite_differences_taylor_exp_non-homogenous_1} \\
+	f(x+\alpha h) = & f(x) + \alpha h \cdot \frac{\partial f}{\partial x}(x) + \frac{\alpha^2 h^2}{2} \cdot \frac{\partial^2 f}{\partial^2 x}(x) + \mathcal{O}(h^3)  \label{eq:finite_differences_taylor_exp_non-homogenous_2}
+	\end{align}
+\end{subequations}
+
+
+\begin{equation}
+\Leftrightarrow \frac{\partial^2 f}{\partial^2 x}(x) = \frac{1}{h^2} \left[ \frac{2}{1+\alpha} f(x-h) - \frac{2}{\alpha} f(x) + \frac{2}{\alpha (\alpha+1)} f(x+\alpha h) \right] + \mathcal{O}(h^3) 
+\end{equation}
 \end{textblock}
 
 }
