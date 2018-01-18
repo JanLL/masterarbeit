@@ -19,6 +19,8 @@
 
 
 \newcommand{\todo}[1]{\textcolor{red}{TODO: #1}}
+\newcommand{\var}{\operatorname{Var}}
+
 
 \addtobeamertemplate{navigation symbols}{}{%
     \usebeamerfont{footline}%
@@ -34,7 +36,10 @@
 \usetheme{Luebeck}
 \usecolortheme{orchid}
 
-\title[Current state of master thesis]{Parameter estimation of specific heat capacity $c_p$ at phase change using a model \\ of a heat flux DSC}
+
+
+
+\title[Current state of master thesis]{Modeling, numerical simulation \\ and parameter estimation in \\ heat flux differential scanning calorimetry}
 \subtitle{Current state of master thesis}
 
 \author{Jan Lammel}
@@ -136,9 +141,9 @@
 		\includegraphics[width=0.7\textwidth]{/home/argo/masterarbeit/thesis/images/c_p_DIN_formula.png}
 	\end{textblock}
 	
-	\begin{textblock}{14}(1,12.5)
+	\begin{textblock}{14}(1,12)
 		\begin{equation}
-			\text{DIN 11357: } \quad c_p^S(T) = c_p^{R}(T) \cdot \frac{m^R}{m^S} \cdot \frac{\Phi^S(T) - \Phi^0(T)}{\Phi^R(T) - \Phi^0(T)}
+			\text{DIN 11357: } \quad c_p^{DIN}(T) = c_p^{R}(T) \cdot \frac{m^R}{m^S} \cdot \frac{\Phi^S(T) - \Phi^0(T)}{\Phi^R(T) - \Phi^0(T)}
 		\end{equation}
 	\end{textblock}
 	
@@ -150,30 +155,30 @@
 \frame{
 	\frametitle{Mathematical model}
 	
-	\begin{textblock}{14}(1, 4)
+	\begin{textblock}{14}(1, 3.9)
 		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/discretization_grid_heat_flux.png}
 	\end{textblock}
 	
 	
-	\begin{textblock}{14}(1, 8.4)
+	\begin{textblock}{14}(0.4, 8.8)
 	
 		\begin{itemize}
 			\item Heat equation: \quad $\rho c_p(T(x,t)) \frac{\partial T}{\partial t}(x,t) = \nabla \cdot \left[ \lambda \cdot \nabla T(x,t) \right]$
-			\item $\rho$, $\lambda$ constant.
+			\item $\rho$, $\lambda$ constant
 			\item Boundary conditions: 
 				\begin{itemize}
-				\item $T^0 = T_{\text{start}} + \beta \cdot t$ \\
-				\item No flux outside PCM.
+				\item $T^0 = T_0 + \beta \cdot t$ \\
+				\item No flux outside PCM
 				\end{itemize}
-			\item Reference and PCM side are independent.
-			\item Spatial discretization by method of lines.
+			\item Reference and PCM side are independent
+			\item Spatial discretization by method of lines
 			
 		\end{itemize}
 	\end{textblock}
 	
 	\begin{textblock}{7}(8,10.35)
 		\begin{itemize}
-			\item Start condition: 
+			\item Initial condition: 
 			\begin{itemize}
 				\item $T^i(t_0)=T_0 \ \forall \ i$
 			\end{itemize}
@@ -185,94 +190,103 @@
 
 
 \frame{
-	\frametitle{Mathematical Model}
 
-	\begin{textblock}{14}(1.5, 3.8)
+	\begin{textblock}{12}(1.8, 2.5)
+		\includegraphics[width=1.0\textwidth]{/home/argo/masterarbeit/vortrag/images/model_IVP.png}
+	\end{textblock}
 	
-		\begin{align*}
-		\hspace{-1cm}
-		\frac{d}{dt} \begin{bmatrix*}
-		T^0 \\[1ex]
-		T^1 \\[0.3ex]
-		\vdots \\[1ex]
-		T^{N_1-2} \\[1.7ex]
-		T^{N_1-1} \\[1.7ex]
-		T^{N_1} \\[0.5ex]
-		\vdots \\[1.5ex]
-		T^{N_1+N_3-2} \\[1ex]
-		T^{N_1+N_3-1}
-		\end{bmatrix*} =
-		\begin{bmatrix}
-		\beta \\
-		\frac{\lambda^{\text{Ag}}}{\rho^{\text{Ag}} \ c_p^{\text{Ag}}} \cdot \frac{T^{0} - 2 T^{1} + T^{2}}{\Delta x_{\text{Ag}}^2} \\
-		\vdots \\
-		\frac{\lambda^{\text{Ag}}}{\rho^{\text{Ag}} \ c_p^{\text{Ag}}} \cdot \frac{T^{N_1-3} - 2 T^{N_1-2} + T^{N_1-1}}{\Delta x_{\text{Ag}}^2} \\
-		\frac{\lambda^{\text{Ag}}}{\rho^{\text{Ag}} \ c_p^{\text{Ag}}} \cdot \frac{\frac{2}{1+\alpha} T^{N_1-2} - \frac{2}{\alpha} T^{N_1-1} + \frac{2}{\alpha (\alpha + 1)} T^{N_1}}{\Delta x_{\text{Ag}}^2} \\
-		\frac{\lambda^{\text{PCM}}}{\rho^{\text{PCM}} \ c_p^{\text{PCM}}(T^{N^1})} \cdot \frac{T^{N_1-1} - 2 T^{N_1} + T^{N_1+1}}{\Delta x_{\text{PCM}}^2} \\
-		\vdots \\
-		\frac{\lambda^{\text{PCM}}}{\rho^{\text{PCM}} \ c_p^{\text{PCM}}(T^{N^1+N^3-2})} \cdot \frac{T^{N_1+N_3-3} - 2 T^{N_1+N_3-2} + T^{N_1+N_3-1}}{\Delta x_{\text{PCM}}^2} \\
-		\frac{\lambda^{\text{PCM}}}{\rho^{\text{PCM}} \ c_p^{\text{PCM}}(T^{N^1+N^3-1})} \cdot \frac{T^{N_1+N_3-2} - T^{N_1+N_3-1}}{\Delta x_{\text{PCM}}^2}
-		\end{bmatrix}
-	\end{align*}
-
+	\begin{textblock}{12}(1,13.5)
+		 \includegraphics[width=1.0\textwidth]{/home/argo/masterarbeit/vortrag/images/discretized_2nd_derivative_in_IVP.png}
 	\end{textblock}
 }
 
 
-
-
-
-
-\subsection{Parametrization $c_p$}
-\frame{
-	\frametitle{Parametrization $c_p$}
-	
-	\begin{textblock}{14}(1,5)
-		
-		\begin{equation*}
-			c_p(T) = \sum_{i=1}^{10} A_i \exp\left(- \frac{(T - T_{\text{offset}_i})^2}{\sigma_i^2}\right) + m \cdot T + b
-		\end{equation*}
-		
-		\centering
-		
-	\end{textblock}
-	
-}
-
-
-
-\frame{
-	\frametitle{Numerical Solution of heat equation}
-	
-	\begin{textblock}{14}(1,5)
-		\begin{itemize}
-			\item Software: SolvIND using integrator DAESOL-II. \\ \vspace{0.15cm}
-			$\rightarrow$ Gives as well needed sensitivities $\frac{\partial T}{\partial p}$ for optimization \\
-			\qquad via IND forward mode.
-			\item Used Relative Tolerance: $10^{-7}$.
-		\end{itemize}
-	\end{textblock}	
-}
-
-
-\subsection{Optimization problem}
 \frame{
 	\frametitle{Heat flux computation}	
 	
-	\begin{textblock}{14}(1,5)
+	\begin{textblock}{14}(1,4.5)
 		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/discretization_grid_heat_flux.png}
 	\end{textblock}
 	
 	\begin{textblock}{14}(1, 10)
 		\begin{itemize}
 			\item Heat flux into PCM: \\ \vspace{0.15cm}
-			$\varPhi_{q}^{PCM,in} = - \bar{\lambda} \frac{T^{N_1} - T^{N_1-1}}{dx_{PCM}} \cdot A_{PCM}
-			\approx - \lambda_{PCM} \frac{T^{N_1+1} - T^{N_1}}{dx_{PCM}} \cdot A_{PCM}$ \\ \vspace{0.15cm}
-			where for the cross section $A_{PCM}$ we used $m_i = \rho \cdot A \cdot dx_i$.
+			$\varPhi_{q}^{pcm,in} \approx - \bar{\lambda} \frac{T^{N_{Ag}} - T^{N_{Ag}-1}}{\Delta x_{N_{Ag}-1}} \cdot A_{pcm}
+			\approx - \lambda_{pcm} \frac{T^{N_{Ag}+1} - T^{N_{Ag}}}{\Delta x_{N_{Ag}}} \cdot A_{pcm}$ \\ \vspace{0.15cm}
+			where for the cross section $A_{pcm}$ we used $m_{N_{Ag}} = \rho_{pcm} \cdot A_{pcm} \cdot \Delta x_{N_{Ag}}$
 		\end{itemize}
 	\end{textblock}
 	
 }
+
+
+
+%\frame{
+%	\frametitle{Grid generation}
+%
+%	\begin{textblock}{10}(0.5,5)
+%		\includegraphics[width=1.0\textwidth]{/home/argo/masterarbeit/vortrag/images/grid_generation.png}
+%	\end{textblock}
+%	
+%}
+
+
+
+
+\subsection{Parametrization $c_p$}
+\frame{
+	\frametitle{Linear combination of Gaussians}
+	
+	\begin{textblock}{14}(1,4.5)
+		\begin{equation*}
+			c_p(T) = \sum_{i=1}^{5} A_i \exp\left(- \frac{(T - T_{\text{offset}_i})^2}{\var_i}\right) + m \cdot T + b
+		\end{equation*}
+	\end{textblock}
+	
+	\begin{textblock}{8}(1,7)
+		\includegraphics[width=1.0\textwidth]{/home/argo/masterarbeit/thesis/images/c_p_example.png}
+	\end{textblock}
+	
+	\begin{textblock}{7}(8.5,7)
+		\begin{itemize}
+			\item Parameter: \\
+			$A_i$, $T_{offset_i}$ and $\var_i$ for Gaussian i \\
+			$m$ and $b$ for linear baseline
+			\item In total $17$ parameter 
+		\end{itemize}
+	\end{textblock}
+	
+}
+
+
+\frame{
+	\frametitle{Fraser-Suzuki peak}
+	
+	\begin{textblock}{15.5}(0.2,4.3)
+		\includegraphics[width=1.0\textwidth]{/home/argo/masterarbeit/vortrag/images/fs_formula.png}
+	\end{textblock}
+	
+	\begin{textblock}{8}(0.5,7)
+		\includegraphics[width=1.0\textwidth]{/home/argo/masterarbeit/thesis/images/fraser_suzuki_example.png}
+	\end{textblock}
+	
+	\begin{textblock}{7}(8.5,8)
+		\begin{itemize}
+			\item Parameter: \\
+			$h$, $w_r$, $s_r$, $z$ for \\
+			Fraser-Suzuki peak
+			\item fixed $r=2$ for identifiability
+			$m$ and $b$ for linear baseline
+			\item In total $6$ parameter 
+		\end{itemize}
+	\end{textblock}
+	
+}
+
+
+
+
+\subsection{Optimization problem}
 
 
 \frame{
@@ -331,6 +345,21 @@
 
 
 \section{Numerical experiments and results}
+
+\frame{
+	\frametitle{Numerical Solution of heat equation}
+	
+	\begin{textblock}{14}(1,5)
+		\begin{itemize}
+			\item Software: SolvIND using integrator DAESOL-II \\ \vspace{0.15cm}
+			$\rightarrow$ Computes as well needed sensitivities $\frac{\partial T}{\partial p}$ for optimization \\
+			\qquad in forward mode
+			\item Used relative integration tolerance: $10^{-7}$
+		\end{itemize}
+	\end{textblock}	
+}
+
+
 \subsection{Gaussian parametrization}
 
 \frame{
@@ -340,29 +369,29 @@
 		Heat rate: $10\frac{K}{min}$
 	\end{textblock}
 	
-	\begin{textblock}{14}(1,6.5)
-		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/2017-12-19_21:17:51_407_10Kmin_L1=40_L3=0,1/c_p.png}
+	\begin{textblock}{15}(0.5,6.5)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/2017-12-19_21:17:51_407_10Kmin_L1=40_L3=0,1/c_p_vortrag.png}
 	\end{textblock}
 	
-	\begin{textblock}{14}(8,6.5)
-		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/2017-12-19_21:17:51_407_10Kmin_L1=40_L3=0,1/heat_flux.png}
+	\begin{textblock}{15}(8.,6.7)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/2017-12-19_21:17:51_407_10Kmin_L1=40_L3=0,1/heat_flux_vortrag.png}
 	\end{textblock}	
 }
 
 
 \frame{
 	\frametitle{Specific heat capacity \& heat flux}
-	\begin{textblock}{14}(1,5)
+	\begin{textblock}{15}(0.5,5)
 		\centering
 		Heat rate: $5\frac{K}{min}$
 	\end{textblock}
 	
-	\begin{textblock}{14}(1,6.5)
-		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/2017-12-19_21:17:51_407_10Kmin_L1=40_L3=0,1/c_p.png}
+	\begin{textblock}{15}(1,6.5)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/2017-12-19_21:44:04_407_5Kmin_L1=40_L3=0,1/c_p_vortrag.png}
 	\end{textblock}
 	
-	\begin{textblock}{14}(8,6.5)
-		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/2017-12-19_21:17:51_407_10Kmin_L1=40_L3=0,1/heat_flux.png}
+	\begin{textblock}{14}(8,7.)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/2017-12-19_21:44:04_407_5Kmin_L1=40_L3=0,1/heat_flux_vortrag.png}
 	\end{textblock}	
 }
 
@@ -370,9 +399,15 @@
 \frame{
 	\frametitle{Statistical a posteriori analysis \& [NOC1]}	
 	
-	\begin{textblock}{14}(1.,5.)
+	\begin{textblock}{14}(1.,4.5)
 		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/stat_a_post_analysis_Gausse.png}
 	\end{textblock}	
+	
+	\begin{textblock}{14}(1.,13.5)
+		\begin{itemize}
+			\item Probability of error: $5\%$
+		\end{itemize}
+	\end{textblock}
 	
 }
 
@@ -386,11 +421,11 @@
 	\end{textblock}
 	
 	\begin{textblock}{14}(1,6.5)
-		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:30:23_407_10Kmin_L1=40_L3=0,1/c_p.png}
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:30:23_407_10Kmin_L1=40_L3=0,1/c_p_vortrag.png}
 	\end{textblock}
 	
-	\begin{textblock}{14}(8,6.5)
-		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:30:23_407_10Kmin_L1=40_L3=0,1/heat_flux.png}
+	\begin{textblock}{14}(8,6.65)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:30:23_407_10Kmin_L1=40_L3=0,1/heat_flux_vortrag.png}
 	\end{textblock}	
 	
 }
@@ -404,11 +439,11 @@
 	\end{textblock}
 	
 	\begin{textblock}{14}(1,6.5)
-		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:36:33_407_5Kmin_L1=40_L3=0,1/c_p.png}
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:36:33_407_5Kmin_L1=40_L3=0,1/c_p_vortrag.png}
 	\end{textblock}
 	
-	\begin{textblock}{14}(8,6.5)
-		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:36:33_407_5Kmin_L1=40_L3=0,1/heat_flux.png}
+	\begin{textblock}{14}(8,6.65)
+		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:36:33_407_5Kmin_L1=40_L3=0,1/heat_flux_vortrag.png}
 	\end{textblock}	
 	
 }
@@ -422,6 +457,7 @@
 	
 	\begin{textblock}{15}(0.5,10)
 		\begin{itemize}
+			\item Probability of error: $5\%$
 			\item $^*$ parameter fixed due to lack of measurement data in sensitive part
 		\end{itemize}
 	\end{textblock}
@@ -430,17 +466,15 @@
 
 
 \frame{
-	\frametitle{Examination Gauss-Newton iterations}	
+	\frametitle{Examination of Gauss-Newton iterations}	
 	
+	\begin{textblock}{8}(0.5,4)
+		\includegraphics[width=0.9\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:36:33_407_5Kmin_L1=40_L3=0,1/optimization_progress.png}
+	\end{textblock}
 	
-}
-
-
-
-
-\frame{
-	\frametitle{Examination Gauss-Newton iterations}	
-	
+	\begin{textblock}{8}(8.5,4)
+		\includegraphics[width=0.9\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:44:53_407_0,6Kmin_L1=40_L3=0,1/optimization_progress.png}
+	\end{textblock}
 	
 }
 
@@ -453,7 +487,21 @@
 	\frametitle{$c_p^{DIN}(T)$ from DIN 11357 formula}
 	
 	\begin{textblock}{14}(4,5)
-		\includegraphics[width=0.6\textwidth]{/home/argo/masterarbeit/thesis/images/c_p_DIN_formula.png}
+		\includegraphics[width=0.6\textwidth]{/home/argo/masterarbeit/vortrag/images/c_p_DIN_formula.png}
+	\end{textblock}
+	
+}
+
+
+\frame{
+	\frametitle{$c_p(T)$ from parameter estimation}	
+	
+	\begin{textblock}{14}(0.,5.5)
+		\includegraphics[width=0.6\textwidth]{/home/argo/masterarbeit/vortrag/images/c_p_all_Gaussians.png}
+	\end{textblock}
+	
+	\begin{textblock}{14}(8,5.5)
+		\includegraphics[width=0.6\textwidth]{/home/argo/masterarbeit/vortrag/images/c_p_all_FS.png}
 	\end{textblock}
 	
 }
@@ -461,15 +509,30 @@
 \frame{
 	\frametitle{$c_p(T)$ from parameter estimation}	
 	
-		\begin{textblock}{14}(0.,5.5)
-			\includegraphics[width=0.6\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/c_p_all.png}
-		\end{textblock}
-		
-		\begin{textblock}{14}(8,5.5)
-			\includegraphics[width=0.6\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/c_p_all.png}
-		\end{textblock}
+	\begin{textblock}{14}(0.,5.5)
+		\includegraphics[width=0.6\textwidth]{/home/argo/masterarbeit/vortrag/images/c_p_all_zoom_Gaussians.png}
+	\end{textblock}
+	
+	\begin{textblock}{14}(8,5.5)
+		\includegraphics[width=0.6\textwidth]{/home/argo/masterarbeit/vortrag/images/c_p_all_zoom_FS.png}
+	\end{textblock}
 	
 }
+
+
+
+
+
+
+\frame{
+	\frametitle{Peak characteristics}
+	
+	\begin{textblock}{13.5}(1.3,4)
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/T_on_T_off_illustration.png}
+	\end{textblock}
+	
+}
+
 
 \frame{
 	\frametitle{Peak characteristics}
@@ -486,15 +549,26 @@
 
 
 
-\section{Open Questions}
+\section{Possible directions of further research}
 \frame{
-	\frametitle{Open Questions}
+	\frametitle{Possible directions of further research}
 	
-	\begin{itemize}
-		\item Reason for shift and different shape of $c_p$ from optimization?
-		\item 
-	\end{itemize}
-	
+	\begin{textblock}{14}(1,4.5)
+		\begin{itemize}
+			\item Reason for different shape of $c_p$ from optimization?
+			\begin{itemize}
+				\item Temperature dependent mass density $\rho_{pcm}$? \\
+				$\rightarrow$ Mechanical work by volume change has to be considered
+				\item Temperature dependent heat conductivity $\lambda_{pcm}$? \\
+				$\rightarrow$ Nonlinear term in heat equation
+				\item Too simplified model? \\
+				$\rightarrow$ 2D model, crucible layer, ...
+			\end{itemize}
+			\item Reason for NOC1
+			\item Reason for integration problems with relative locale error control of forward sensitivities? \\
+			$\rightarrow$ Solve variational differential equation
+		\end{itemize}
+	\end{textblock}	
 }
 
 	
