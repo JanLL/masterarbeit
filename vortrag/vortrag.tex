@@ -39,8 +39,8 @@
 
 
 
-\title[Current state of master thesis]{Modeling, numerical simulation \\ and parameter estimation in \\ heat flux differential scanning calorimetry}
-\subtitle{Current state of master thesis}
+\title[Master thesis]{Modeling, numerical simulation \\ and parameter estimation in \\ heat flux differential scanning calorimetry}
+\subtitle{Master thesis}
 
 \author{Jan Lammel}
 
@@ -60,19 +60,19 @@
 
 	\begin{textblock}{7}(1,5)
 		\includegraphics[width=1.0\textwidth]{/home/argo/masterarbeit/thesis/images/handwaermer[wiki].jpg} \\
-		\qquad \quad Source: Wikipedia
+		\qquad \quad Source: Wikipedia \cite{heating_pad}
 	\end{textblock}
 	
 	\begin{textblock}{8}(8,5)
 	\begin{itemize}
-		\item We examine so called phase change materials (PCM).
+		\item We examine so called phase change materials (PCM)
 		\item Important property is the heat capacity $c_p$: When does it melt and how much energy fits into?
 	\end{itemize}
 	\end{textblock}
 
 	\begin{textblock}{14}(1,12.5)
 
-	\textbf{Goal:} Simulation of measuring process to obtain specific heat capacity $c_p$ of phase change material (PCM) by parameter estimation.
+	\textbf{Goal:} Simulation of measuring process to obtain specific heat capacity $c_p$ of phase change material (PCM) by parameter estimation
 
 	\end{textblock}
 	
@@ -87,18 +87,18 @@
 	\begin{textblock}{15}(0.3,4.2)
 		\begin{itemize}
 			\item Heat $Q$, \qquad $[Q] = J$ \\
-			Amount of energy transferred because of temperature difference. \\ \vspace{0.2cm}
+			Amount of energy transferred because of temperature difference \\ \vspace{0.2cm}
 			
 			\item heat flux density $\Phi_q$, \qquad$[\Phi_q] = \frac{W}{m^2}$ \\
-			Rate of energy transferred per unit area. \\
+			Rate of energy transferred per unit area \\
 			$\rightarrow$ heat flux: $\varPhi_q$
 			\vspace{0.2cm} 
 			
 			\item heat conductivity $\lambda$, \qquad $[\lambda] = \frac{W}{m \cdot K}$ \\
-			Material property: Amount of energy being transported on a distance of $1m$ (unit area) at a temperature difference of $1K$ in $1s$. \vspace{0.2cm}
+			Material property: Amount of energy being transported on a distance of $1m$ (unit area) at a temperature difference of $1K$ in $1s$ \vspace{0.2cm}
 			
 			\item specific heat capacity $c_p$, \qquad $[c_p] = \frac{J}{kg \cdot K}$ \\
-			Material property: Amount of energy needed to raise the temperature of $1kg$ by $1K$.
+			Material property: Amount of energy needed to raise the temperature of $1kg$ by $1K$
 			
 		\end{itemize}
 	\end{textblock}
@@ -112,12 +112,13 @@
 	
 	\begin{textblock}{15}(0.4,4)
 		\centering
-		\includegraphics[width=0.7\textwidth]{/home/argo/masterarbeit/thesis/images/dsc_funktionsprinzip.png}
+%		\includegraphics[width=0.7\textwidth]{/home/argo/masterarbeit/thesis/images/dsc_funktionsprinzip.png}
+		\includegraphics[width=0.7\textwidth]{/home/argo/masterarbeit/old_vortrag/images/dsc_funktionsprinzip.png}
 		
 		\begin{itemize}
-			\item Empty reference crucible and crucible with PCM are heated equally.
-			\item Due to thermal properties differences (mainly $c_p$) of reference and PCM a temperature difference $\Delta T$ is induced.
-			\item Sensitivity calibration with materials of known thermal properties provides mapping $\Delta T \rightarrow \varPhi_q$.
+			\item Empty reference crucible and crucible with PCM are heated equally
+			\item Due to different thermal properties (mainly $c_p$) of reference and PCM a temperature difference $\Delta T$ is induced
+			\item Sensitivity calibration with materials of known thermal properties provides mapping $\Delta T \rightarrow \varPhi_q$
 		\end{itemize}
 		
 	\end{textblock}
@@ -151,9 +152,37 @@
 
 
 \section{Mathematical model \& parameter estimation}
+\frame{
+	\frametitle{Existing similar model --- Dissertation Stefan Hiebler \cite{diss_dsc}}
+	
+	\begin{textblock}{15}(0.3, 4.5)
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/diss_dsc_widerstand_schaltbild.png}
+	\end{textblock}
+
+	
+}
+
+\frame{
+	\frametitle{Existing similar model --- Dissertation Stefan Hiebler \cite{diss_dsc}}
+	
+	\begin{textblock}{13}(1, 5)
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/diss_dsc_diskretisierung.png}
+	\end{textblock}
+	
+	\begin{textblock}{13}(1,11)
+		\begin{itemize}
+			\item Heat resistors $R$ are obtained by calibration measurement with Indium \\
+			$\rightarrow$ Such measurement data is not available for us
+		\end{itemize}
+	\end{textblock}
+	
+}
+
+
+
 \subsection{Mathematical model}
 \frame{
-	\frametitle{Mathematical model}
+	\frametitle{Developed mathematical model}
 	
 	\begin{textblock}{14}(1, 3.9)
 		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/thesis/images/discretization_grid_heat_flux.png}
@@ -233,9 +262,29 @@
 
 
 
-\subsection{Parametrization $c_p$}
+\subsection{Parametrization $c_p(T)$}
 \frame{
-	\frametitle{Linear combination of Gaussians}
+	\frametitle{Parametrization $c_p(T)$}	
+
+	\begin{textblock}{14}(1,5)
+		\begin{itemize}
+			\item Used parametrizations of specific heat capacity function $c_p(T)$ in this thesis:  \\[0.4ex]
+			\begin{itemize}
+				\item Non-Uniform Rational B-Splines (NURBS) \\[0.7ex]
+				\item Linear combination of Gaussians \\[0.7ex]
+				\item Fraser-Suzuki Peak 
+			\end{itemize}
+		\end{itemize}
+	\end{textblock}	
+		
+}
+
+
+
+
+
+\frame{
+	\frametitle{Parametrization $c_p(T)$ --- Linear combination of Gaussians}
 	
 	\begin{textblock}{14}(1,4.5)
 		\begin{equation*}
@@ -257,6 +306,210 @@
 	\end{textblock}
 	
 }
+
+
+\frame{
+	\frametitle{Parametrization $c_p(T)$ --- Fraser-Suzuki peak}
+	
+	\begin{textblock}{15.5}(0.2,4.3)
+		\includegraphics[width=1.0\textwidth]{/home/argo/masterarbeit/vortrag/images/fs_formula.png}
+	\end{textblock}
+	
+	\begin{textblock}{8}(0.5,7)
+		\includegraphics[width=1.0\textwidth]{/home/argo/masterarbeit/thesis/images/fraser_suzuki_example.png}
+	\end{textblock}
+	
+	\begin{textblock}{7}(8.5,8)
+		\begin{itemize}
+			\item Parameter: \\
+			$h$, $w_r$, $s_r$, $z$ for \\
+			Fraser-Suzuki peak
+			\item fixed $r=2$ for identifiability
+			\item $m$ and $b$ for linear baseline
+			\item In total $6$ parameter 
+		\end{itemize}
+	\end{textblock}
+	
+}
+
+
+
+
+\subsection{Optimization problem}
+
+
+\frame{
+	\frametitle{Computation of measurement time points}
+	
+	\begin{textblock}{8.5}(0.35,5)
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/measurement_time_computation2.png}
+	\end{textblock}
+	
+	\begin{textblock}{6.8}(8.5,5.)
+	\begin{itemize}
+		\item Reference side $T_{ref}^{sim}(t)$ is solved analytically \\[2ex]
+		\item Given heat flux measurement values $\varPhi_q^{\eta_i} = \varPhi_q^{\eta_i}(T_{ref}^{\eta_i})$ \\[1ex]
+		$\rightarrow$ For fixed $T_0$ we can compute points in time $t_i$ where measurements were done using Newton's method
+	\end{itemize}
+	\end{textblock}
+
+	
+}
+
+
+
+\frame{
+	\frametitle{Optimization problem}	
+
+
+	\begin{textblock}{10}(0.5,3.5)
+	\begin{align*}
+		\min_{p_{c_p}} \ & \sum_{i=1}^{n_{mp}} \left(  \varPhi_{q}^{pcm,in}(T(t_i;T_0,p_{c_p})) - \varPhi_q^{\eta_i} \right)^2 \\
+		s.t. \ & \quad \  \dot{T} = f(T,t;p_{c_p}) \\
+		       & T(0) = T_0 \\
+		       & \underline{p} \le p_{c_p} \le \bar{p}
+	\end{align*}
+	\end{textblock}
+	
+	\begin{textblock}{7}(12,6.7)
+		separately for all \\
+		 heat rates $\beta$
+	\end{textblock}
+	
+	\begin{textblock}{16}(0.3,9.4)
+	\begin{itemize}
+		\item $\varPhi_q^{\eta_i}$: heat flux measurement value at time $t_i$
+		\item $\varPhi_q^{\text{pcm,in}}$: heat flux into PCM from simulation \\
+		\item $n_{mp}$: number of measurement points \\
+		\item $p_{c_p}$: optimization parameters specifying specific heat capacity $c_p(T)$ \\
+		\item $f(T,t;p_{c_p})$: discretized differential equation system from heat equation
+	\end{itemize}
+	
+	\end{textblock}
+
+	
+}
+
+
+
+
+
+\section{Numerical experiments and results}
+
+\subsection{Gaussian parametrization}
+\frame{
+	\frametitle{Numerical experiments --- Gaussian parametrization}
+	
+	\begin{textblock}{14}(1,5)
+		\begin{itemize}
+			\item Software: SolvIND using integrator DAESOL-II \\ \vspace{0.15cm}
+			$\rightarrow$ Computes as well needed sensitivities $\frac{\partial T}{\partial p}$ for optimization \\
+			\qquad using AD in forward mode
+			\item Used relative local integration tolerance: $10^{-7}$
+			\item Nonlinear least squares solver: Matlab routine $lsqnonlin$
+		\end{itemize}
+	\end{textblock}	
+}
+
+
+\frame{
+	\frametitle{Linear combination of Gaussians}
+	
+	\begin{textblock}{14}(1,4.5)
+		\begin{equation*}
+		c_p(T) = \sum_{i=1}^{5} A_i \exp\left(- \frac{(T - T_{\text{offset}_i})^2}{\var_i}\right) + m \cdot T + b
+		\end{equation*}
+	\end{textblock}
+	
+	\begin{textblock}{8}(1,7)
+		\includegraphics[width=1.0\textwidth]{/home/argo/masterarbeit/thesis/images/c_p_example.png}
+	\end{textblock}
+	
+	\begin{textblock}{7}(8.5,7)
+		\begin{itemize}
+			\item Parameter: \\
+			$A_i$, $T_{offset_i}$ and $\var_i$ for Gaussian i \\
+			$m$ and $b$ for linear baseline
+			\item In total $17$ parameter 
+		\end{itemize}
+	\end{textblock}
+	
+}
+
+\frame{
+	\frametitle{Specific heat capacity \& heat flux}
+	\begin{textblock}{14}(1,5)
+		\centering
+		Heat rate: $10\frac{K}{min}$
+	\end{textblock}
+	
+	\begin{textblock}{8}(0.3,6.5)
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/2017-12-19_21:17:51_407_10Kmin_L1=40_L3=0,1/c_p_vortrag.png}
+	\end{textblock}
+	
+	\begin{textblock}{8}(8.2,6.7)
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/2017-12-19_21:17:51_407_10Kmin_L1=40_L3=0,1/heat_flux_vortrag.png}
+	\end{textblock}	
+}
+
+
+\frame{
+	\frametitle{Specific heat capacity \& heat flux}
+	\begin{textblock}{15}(0.5,5)
+		\centering
+		Heat rate: $5\frac{K}{min}$
+	\end{textblock}
+	
+	\begin{textblock}{8}(0.3,6.5)
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/2017-12-19_21:44:04_407_5Kmin_L1=40_L3=0,1/c_p_vortrag.png}
+	\end{textblock}
+	
+	\begin{textblock}{8}(8.2,6.7)
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/2017-12-19_21:44:04_407_5Kmin_L1=40_L3=0,1/heat_flux_vortrag.png}
+	\end{textblock}	
+}
+
+
+\frame{
+	\frametitle{Statistical a posteriori analysis \& [NOC1]}	
+	
+	\begin{textblock}{14}(1.,4.5)
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/stat_a_post_analysis_Gausse.png}
+	\end{textblock}	
+	
+	\begin{textblock}{14}(1.,13.5)
+		\begin{itemize}
+%			\item $G_L(\alpha) \subset [p_1-\theta_1,p_1+\theta_1] \times ... \times [p_{n_p}-\theta_{n_p},p_{n_p}+\theta_{n_p}]$
+			\item Probability of error: $5\%$
+		\end{itemize}
+	\end{textblock}
+	
+%	\begin{textblock}{8}(6, 13.)
+%		\begin{itemize}
+%			\item $G_L(\alpha) \subset [p_1-\theta_1,p_1+\theta_1] \times ... \times [p_{n_p}-\theta_{n_p},p_{n_p}+\theta_{n_p}]$
+%		\end{itemize}
+%	\end{textblock}
+	
+}
+
+
+\subsection{Fraser-Suzuki parametrization}
+\frame{
+	\frametitle{Numerical experiments --- Fraser-Suzuki parametrization}
+	
+	\begin{textblock}{14}(1,5)
+		\begin{itemize}
+			\item Software: SolvIND using integrator DAESOL-II \\ \vspace{0.15cm}
+			$\rightarrow$ Computes as well needed sensitivities $\frac{\partial T}{\partial p}$ for optimization \\
+			\qquad using AD in forward mode
+			\item Relative local integration tolerance: $10^{-9}$
+			\item Relative local forward sensitivities tolerance: $5 \cdot 10^{-6}$
+			\item Nonlinear least squares solver: Self written Gauss-Newton with linesearch and active set strategy
+		\end{itemize}
+	\end{textblock}	
+}
+
+
 
 
 \frame{
@@ -285,134 +538,6 @@
 
 
 
-
-\subsection{Optimization problem}
-
-
-\frame{
-	\frametitle{Measurement time points computation}
-	
-	\begin{textblock}{8.5}(0.35,5)
-		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/measurement_time_computation2.png}
-	\end{textblock}
-	
-	\begin{textblock}{6.8}(8.5,5.)
-	\begin{itemize}
-		\item Reference side $T_{ref}^{sim}(t)$ is solved analytically. \\[2ex]
-		\item Given heat flux measurement values $\varPhi_q^{\eta_i} = \varPhi_q^{\eta_i}(T_{ref}^{\eta_i})$. \\[1ex]
-		$\rightarrow$ For fixed $T_0$ we can compute points in time $t_i$ where measurements were done using Newton's method.
-	\end{itemize}
-	\end{textblock}
-
-	
-}
-
-
-
-\frame{
-	\frametitle{Optimization problem}	
-
-
-	\begin{textblock}{10}(0.5,4.)
-	\begin{align*}
-		\min_{p_{c_p}} \ & \sum_{i=1}^{n_{mp}} \left|\left|  \varPhi_{q}^{pcm,in}(T(t_i;T_0,p_{c_p})) - \varPhi_q^{\eta_i} \right|\right|_2^2 \\
-		s.t. \ & \quad \  \dot{T} = f(T,t;p_{c_p}) \\
-		       & T(0) = T_0
-	\end{align*}
-	\end{textblock}
-	
-	\begin{textblock}{7}(12,6.5)
-		separately for all \\
-		 heat rates $\beta$
-	\end{textblock}
-	
-	\begin{textblock}{16}(0.3,9.4)
-	\begin{itemize}
-		\item $\varPhi_q^{\eta_i}$: heat flux measurement value at time $t_i$.
-		\item $\varPhi_q^{\text{pcm,in}}$: heat flux into PCM from simulation. \\
-		\item $n_{mp}$: number of measurement points. \\
-		\item $p_{c_p}$: optimization parameters specifying specific heat capacity $c_p(T)$. \\
-		\item $f(T,t;p_{c_p})$: discretized differential equation system from heat equation.
-	\end{itemize}
-	
-	\end{textblock}
-
-	
-}
-
-
-
-
-
-\section{Numerical experiments and results}
-
-\frame{
-	\frametitle{Numerical Solution of heat equation}
-	
-	\begin{textblock}{14}(1,5)
-		\begin{itemize}
-			\item Software: SolvIND using integrator DAESOL-II \\ \vspace{0.15cm}
-			$\rightarrow$ Computes as well needed sensitivities $\frac{\partial T}{\partial p}$ for optimization \\
-			\qquad in forward mode
-			\item Used relative integration tolerance: $10^{-7}$
-		\end{itemize}
-	\end{textblock}	
-}
-
-
-\subsection{Gaussian parametrization}
-
-\frame{
-	\frametitle{Specific heat capacity \& heat flux}
-	\begin{textblock}{14}(1,5)
-		\centering
-		Heat rate: $10\frac{K}{min}$
-	\end{textblock}
-	
-	\begin{textblock}{15}(0.5,6.5)
-		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/2017-12-19_21:17:51_407_10Kmin_L1=40_L3=0,1/c_p_vortrag.png}
-	\end{textblock}
-	
-	\begin{textblock}{15}(8.,6.7)
-		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/2017-12-19_21:17:51_407_10Kmin_L1=40_L3=0,1/heat_flux_vortrag.png}
-	\end{textblock}	
-}
-
-
-\frame{
-	\frametitle{Specific heat capacity \& heat flux}
-	\begin{textblock}{15}(0.5,5)
-		\centering
-		Heat rate: $5\frac{K}{min}$
-	\end{textblock}
-	
-	\begin{textblock}{15}(1,6.5)
-		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/2017-12-19_21:44:04_407_5Kmin_L1=40_L3=0,1/c_p_vortrag.png}
-	\end{textblock}
-	
-	\begin{textblock}{14}(8,7.)
-		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/2017-12-19_21:44:04_407_5Kmin_L1=40_L3=0,1/heat_flux_vortrag.png}
-	\end{textblock}	
-}
-
-
-\frame{
-	\frametitle{Statistical a posteriori analysis \& [NOC1]}	
-	
-	\begin{textblock}{14}(1.,4.5)
-		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/stat_a_post_analysis_Gausse.png}
-	\end{textblock}	
-	
-	\begin{textblock}{14}(1.,13.5)
-		\begin{itemize}
-			\item Probability of error: $5\%$
-		\end{itemize}
-	\end{textblock}
-	
-}
-
-
-\subsection{Fraser-Suzuki parametrization}
 \frame{
 	\frametitle{Specific heat capacity \& heat flux}	
 	\begin{textblock}{14}(1,5)
@@ -420,12 +545,12 @@
 		Heat rate: $10\frac{K}{min}$
 	\end{textblock}
 	
-	\begin{textblock}{14}(1,6.5)
-		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:30:23_407_10Kmin_L1=40_L3=0,1/c_p_vortrag.png}
+	\begin{textblock}{8}(0.3,6.5)
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:30:23_407_10Kmin_L1=40_L3=0,1/c_p_vortrag.png}
 	\end{textblock}
 	
-	\begin{textblock}{14}(8,6.65)
-		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:30:23_407_10Kmin_L1=40_L3=0,1/heat_flux_vortrag.png}
+	\begin{textblock}{8}(8.2,6.65)
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:30:23_407_10Kmin_L1=40_L3=0,1/heat_flux_vortrag.png}
 	\end{textblock}	
 	
 }
@@ -438,12 +563,12 @@
 		Heat rate: $5\frac{K}{min}$
 	\end{textblock}
 	
-	\begin{textblock}{14}(1,6.5)
-		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:36:33_407_5Kmin_L1=40_L3=0,1/c_p_vortrag.png}
+	\begin{textblock}{8}(0.3,6.5)
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:36:33_407_5Kmin_L1=40_L3=0,1/c_p_vortrag.png}
 	\end{textblock}
 	
-	\begin{textblock}{14}(8,6.65)
-		\includegraphics[width=0.5\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:36:33_407_5Kmin_L1=40_L3=0,1/heat_flux_vortrag.png}
+	\begin{textblock}{8}(8,6.65)
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:36:33_407_5Kmin_L1=40_L3=0,1/heat_flux_vortrag.png}
 	\end{textblock}	
 	
 }
@@ -468,12 +593,12 @@
 \frame{
 	\frametitle{Examination of Gauss-Newton iterations}	
 	
-	\begin{textblock}{8}(0.5,4)
-		\includegraphics[width=0.9\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:36:33_407_5Kmin_L1=40_L3=0,1/optimization_progress.png}
+	\begin{textblock}{8}(0.3,4.5)
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:36:33_407_5Kmin_L1=40_L3=0,1/optimization_progress_vortrag.png}
 	\end{textblock}
 	
-	\begin{textblock}{8}(8.5,4)
-		\includegraphics[width=0.9\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:44:53_407_0,6Kmin_L1=40_L3=0,1/optimization_progress.png}
+	\begin{textblock}{8}(8.2,4.5)
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/2017-12-20_14:44:53_407_0,6Kmin_L1=40_L3=0,1/optimization_progress_vortrag.png}
 	\end{textblock}
 	
 }
@@ -484,40 +609,39 @@
 \subsection{Comparison of retrieved specific heat capacity}
 
 \frame{
-	\frametitle{$c_p^{DIN}(T)$ from DIN 11357 formula}
 	
-	\begin{textblock}{14}(4,5)
-		\includegraphics[width=0.6\textwidth]{/home/argo/masterarbeit/vortrag/images/c_p_DIN_formula.png}
+	\begin{textblock}{6}(0.5, 2.8)
+		\underline{Comparison of differently} \\ \underline{computed specific heat}\\ 
+		\underline{capacity $c_p(T)$}
+	\end{textblock}
+	
+	\begin{textblock}{6.9}(0,6.5)
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/c_p_DIN_formula.png}
+	\end{textblock}
+	
+	
+	\begin{textblock}{6.9}(8.,2.3)
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/c_p_all_Gaussians.png}
+	\end{textblock}
+	
+	\begin{textblock}{6.9}(8,8.7)
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/c_p_all_FS.png}
 	\end{textblock}
 	
 }
 
-
-\frame{
-	\frametitle{$c_p(T)$ from parameter estimation}	
-	
-	\begin{textblock}{14}(0.,5.5)
-		\includegraphics[width=0.6\textwidth]{/home/argo/masterarbeit/vortrag/images/c_p_all_Gaussians.png}
-	\end{textblock}
-	
-	\begin{textblock}{14}(8,5.5)
-		\includegraphics[width=0.6\textwidth]{/home/argo/masterarbeit/vortrag/images/c_p_all_FS.png}
-	\end{textblock}
-	
-}
-
-\frame{
-	\frametitle{$c_p(T)$ from parameter estimation}	
-	
-	\begin{textblock}{14}(0.,5.5)
-		\includegraphics[width=0.6\textwidth]{/home/argo/masterarbeit/vortrag/images/c_p_all_zoom_Gaussians.png}
-	\end{textblock}
-	
-	\begin{textblock}{14}(8,5.5)
-		\includegraphics[width=0.6\textwidth]{/home/argo/masterarbeit/vortrag/images/c_p_all_zoom_FS.png}
-	\end{textblock}
-	
-}
+%\frame{
+%	\frametitle{$c_p(T)$ from parameter estimation}	
+%	
+%	\begin{textblock}{14}(0.,5.5)
+%		\includegraphics[width=0.6\textwidth]{/home/argo/masterarbeit/vortrag/images/c_p_all_zoom_Gaussians.png}
+%	\end{textblock}
+%	
+%	\begin{textblock}{14}(8,5.8)
+%		\includegraphics[width=0.6\textwidth]{/home/argo/masterarbeit/vortrag/images/c_p_all_zoom_FS.png}
+%	\end{textblock}
+%	
+%}
 
 
 
@@ -527,8 +651,16 @@
 \frame{
 	\frametitle{Peak characteristics}
 	
-	\begin{textblock}{13.5}(1.3,4)
-		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/T_on_T_off_illustration.png}
+	\begin{textblock}{13.5}(0.,4)
+		\includegraphics[width=1.\textwidth]{/home/argo/masterarbeit/vortrag/images/T_on_T_off_illustration2.png}
+	\end{textblock}
+	
+	\begin{textblock}{6}(10,6)
+		\begin{itemize}
+			\item Maximum point $T_{max}$
+			\item On- and offset of melting $T_{on}$, $T_{off}$
+			\item Melting enthalpy $\Delta H$
+		\end{itemize}
 	\end{textblock}
 	
 }
@@ -548,29 +680,70 @@
 
 
 
-
 \section{Possible directions of further research}
 \frame{
 	\frametitle{Possible directions of further research}
 	
-	\begin{textblock}{14}(1,4.5)
+	\begin{textblock}{14}(1,5.)
 		\begin{itemize}
-			\item Reason for different shape of $c_p$ from optimization?
+			\item Reason for remaining shape differences of $c_p$ from parameter estimation?
 			\begin{itemize}
 				\item Temperature dependent mass density $\rho_{pcm}$? \\
 				$\rightarrow$ Mechanical work by volume change has to be considered
 				\item Temperature dependent heat conductivity $\lambda_{pcm}$? \\
 				$\rightarrow$ Nonlinear term in heat equation
-				\item Too simplified model? \\
+				\item Model too simplified? \\
 				$\rightarrow$ 2D model, crucible layer, ...
 			\end{itemize}
-			\item Reason for NOC1
-			\item Reason for integration problems with relative locale error control of forward sensitivities? \\
-			$\rightarrow$ Solve variational differential equation
+			\item Perform parameter estimation with measurement data of another sample mass
+			\item Analogous modeling of power compensated DSC
 		\end{itemize}
 	\end{textblock}	
 }
 
+
+
+\frame{
+	\frametitle{Possible directions of further research}
+	
+	\begin{textblock}{14}(1,5.)
+		\begin{itemize}
+			\item Reason why necessary optimality condition [NOC1] could not be satisfied better, i.e. $||\nabla L||_2$ decreased further
+			\item Reason for integration problems with relative locale error control of forward sensitivities? \\
+			$\rightarrow$ Solve variational differential equation
+			\item Sensitivity generation: Why did forward mode showed to be faster than adjoint mode?
+		\end{itemize}
+	\end{textblock}	
+}
+
+	
+\frame{
+	\frametitle{References}
+	
+	\begin{textblock}{15}(0.5, 4.)
+		
+		
+		\begin{thebibliography}{9}
+			
+			\bibitem{heating_pad}
+				https://de.wikipedia.org/wiki/Latentw\"{a}rmespeicher, \\
+				queried 27.12.2017
+			
+			\bibitem{diss_dsc}
+				Stefan Hiebler.
+				Kalorimetrische Methoden zur Bestimmung
+				der Enthalpie von Latentwärmespeichermaterialien
+				während des Phasenübergangs.
+				Dissertation an der technischen Universität München 
+				(2006)
+			
+			
+		\end{thebibliography}
+		
+	\end{textblock}
+	
+}
+	
 	
 
 \frame{

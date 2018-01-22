@@ -81,14 +81,14 @@ set(gcf, 'units', 'normalized', 'outerposition', [0 0 0.66 1]);
 children = get(gca, 'Children');
 num_children = length(children);
 for i=1:num_children; children(i).LineWidth = 1.3; end
-set(gca,'FontSize',20)
-set(gca,'xlim', [115 140]);
+set(gca,'FontSize',24)
+set(gca,'xlim', [105 160]);
 set(gca,'ylim', [0 60]);
 ylabel('c_p [mJ/(mg*K)]');
 title('Linear combination of Gaussians');
 % title('Fraser-Suzuki peak')
-% print(fig, 'c_p_all_FS', '-dpng', '-r200');
-print(fig, 'c_p_all_zoom_Gaussians', '-dpng', '-r200');
+print(fig, 'c_p_all_Gaussians', '-dpng', '-r200');
+% print(fig, 'c_p_all_zoom_Gaussians', '-dpng', '-r200');
 % savefig(fig, 'c_p_all.fig');
 
 % set(gca,'xlim', [110 160]);

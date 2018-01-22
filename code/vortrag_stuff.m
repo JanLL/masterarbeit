@@ -170,15 +170,83 @@ set(fig2, 'units', 'normalized', 'outerposition', [0 0 0.66 1]);
 set(ax2,'FontSize',25);
 xlabel(ax2, 'T [°C]');
 ylabel(ax2, 'c_p [mJ/(mg*K)]');
+title(ax2, 'DIN 11357 formula')
 set(ax2, 'xlim', [30 160]);
 legend(ax2, 'show', 'location', 'northwest');
 xlim(ax2, [105, 160]);
-
-return
 
 print(fig2, [save_root_dir, 'c_p_DIN_formula'], '-dpng', '-r200');
 close(fig2);
 
 
 return
+
+
+
+%% Plot optimization progress
+
+fit_dir = '2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used';
+
+% fit_dir = '2017-12-20_02:01:34_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS';
+% fit_dir = '2017-12-17_22:56:22_407_L1=40_L3=0,1_N1=200_N3=50_GN_Gaussians';
+% fit_dir = '2017-12-15_00:21:25_407_L1=40_L3=0,1_N1=200_N3=50_GN_FS';
+% fit_dir = '2017-12-15_13:42:19_407_L1=40_L3=0,1_N1=200_N3=50_GN_FS';
+
+fit_path = strcat('/home/argo/masterarbeit/fits_data/', fit_dir, '/');
+
+file_list = dir(fit_path);
+
+isub = [file_list(:).isdir]; %# returns logical vector
+nameSubDirs = {file_list(isub).name}';
+nameSubDirs(ismember(nameSubDirs,{'.','..'})) = [];
+
+
+fig = figure(1); clf;
+set(fig, 'Units', 'normalized', 'OuterPosition', [0., 0., 0.53, 1.1]); 
+
+ax1 = gca; set(ax1, 'YScale', 'log'); hold on
+
+
+for i=1:length(nameSubDirs)
+        
+    clf;
+    ax1 = gca; set(ax1, 'YScale', 'log'); hold on
+
+    disp(nameSubDirs{i})
+    
+    filepath = strcat(fit_path, nameSubDirs{i}, '/fit_data.mat');
+    fit_data = load(filepath);
+    
+    num_iterations = length(fit_data.optimization.progress_dx_norm);
+    
+    plot(ax1, 0:num_iterations, fit_data.optimization.progress_F1_norm, ...
+        '-s', 'DisplayName', '||F_1^{(k)}||_2', 'Linewidth', 2.);
+    plot(ax1, 0:num_iterations-1, fit_data.optimization.progress_dx_norm, ...
+        '-s', 'DisplayName', '||\Deltax^{(k)}||_2', 'Linewidth', 2.);
+    plot(ax1, 0:num_iterations-1, fit_data.optimization.progress_t_k, ...
+        '-s', 'DisplayName', 't^{(k)}', 'Linewidth', 2.);
+    plot(ax1, 0:num_iterations, fit_data.optimization.progress_NOC1, ...
+        '-s', 'DisplayName', '||\nablaL^{(k)}||_2', 'Linewidth', 2.);
+    
+    
+    xlim(ax1, [0, num_iterations]);
+    xlabel('#Iteration');
+    
+    heat_rate_str = num2str(fit_data.measurement.dsc_data.Tinfo.Tstep);
+    title(ax1, sprintf('Heat rate: %s K/min',heat_rate_str));
+    
+    legend(ax1, 'show', 'location', 'northeast', 'Orientation', 'horizontal');
+    
+%     if (i == 4 || i == 6 || i == 7 )
+%         legend(ax1, 'show', 'location', 'southwest', 'Orientation', 'vertical');
+%     else
+%         legend(ax1, 'show', 'location', 'northeast');
+%     end
+    
+    set(ax1,'FontSize',20, 'FontWeight', 'bold');
+    grid(ax1, 'on');    
+    
+    print(fig, [fit_path, nameSubDirs{i}, '/optimization_progress_vortrag'], '-dpng', '-r300');
+ 
+end
 
