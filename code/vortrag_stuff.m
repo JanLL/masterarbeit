@@ -5,8 +5,8 @@
 % fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-08_22:22:31_407_L1=40_L3=0,1_N1=300_N3=50_5Gaussians/';
 % fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-09_18:33:20_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS/';
 
-fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/';
-% fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/';
+% fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-19_20:27:59_407_L1=40_L3=0.1_N1=300_N3=50_5Gaussians_used/';
+fit_dir = '/home/argo/masterarbeit/fits_data/2017-12-20_14:25:10_407_L1=40_L3=0,1_N1=300_N3=50_GN_FS_used/';
 
 
 file_list = dir(fit_dir);
@@ -42,7 +42,7 @@ for j=1:length(nameSubDirs)
             c_p_plot = c_p_gauss_linear_comb(T_plot, p_optim_all);
     end    
     
-    plot(ax1, T_plot, c_p_plot, 'DisplayName', 'c_p(T)', 'Linewidth', 2.)
+    plot(ax1, T_plot, c_p_plot, 'DisplayName', 'c_p(T)', 'Linewidth', 2.3)
     legend(ax1, 'show', 'location', 'northwest');
     xlabel(ax1, 'T [°C]');
     ylabel(ax1, 'c_p [mJ/(mg*K)]');
@@ -60,39 +60,39 @@ for j=1:length(nameSubDirs)
              meas_data(index_T_dsc(1):index_T_dsc(2),3) ./ ...
              meas_data(index_T_dsc(1):index_T_dsc(2),4);
          
-%     switch fit_data.simulation.heat_rate
-%         case 20
-%             T_ref_dsc = T_ref_dsc(1:1:end);
-%             q_meas = q_meas(1:1:end);
-%         case 10
-%             T_ref_dsc = T_ref_dsc(1:2:end);
-%             q_meas = q_meas(1:2:end);
-%         case 5
-%             T_ref_dsc = T_ref_dsc(1:4:end);
-%             q_meas = q_meas(1:4:end);
-%         case 2.5
-%             T_ref_dsc = T_ref_dsc(1:8:end);
-%             q_meas = q_meas(1:8:end);
-%         case 1.25
-%             T_ref_dsc = T_ref_dsc(1:16:end);
-%             q_meas = q_meas(1:16:end);
-%         case 0.6
-%             T_ref_dsc = T_ref_dsc(1:32:end);
-%             q_meas = q_meas(1:32:end);
-%         case 0.3
-%             T_ref_dsc = T_ref_dsc(1:64:end);
-%             q_meas = q_meas(1:64:end);
-%         otherwise
-%             error('Heat rate invalid!')
-%     end
+    switch fit_data.simulation.heat_rate
+        case 20
+            T_ref_dsc = T_ref_dsc(1:1:end);
+            q_meas = q_meas(1:1:end);
+        case 10
+            T_ref_dsc = T_ref_dsc(1:2:end);
+            q_meas = q_meas(1:2:end);
+        case 5
+            T_ref_dsc = T_ref_dsc(1:4:end);
+            q_meas = q_meas(1:4:end);
+        case 2.5
+            T_ref_dsc = T_ref_dsc(1:8:end);
+            q_meas = q_meas(1:8:end);
+        case 1.25
+            T_ref_dsc = T_ref_dsc(1:16:end);
+            q_meas = q_meas(1:16:end);
+        case 0.6
+            T_ref_dsc = T_ref_dsc(1:32:end);
+            q_meas = q_meas(1:32:end);
+        case 0.3
+            T_ref_dsc = T_ref_dsc(1:64:end);
+            q_meas = q_meas(1:64:end);
+        otherwise
+            error('Heat rate invalid!')
+    end
          
          
     q_sim = q_res + q_meas;
     
-    plot(ax2, T_ref_dsc, q_sim, 'DisplayName', 'Simulation', 'Linewidth', 2.); hold on
+    plot(ax2, T_ref_dsc, q_sim, 'DisplayName', 'Simulation', 'Linewidth', 2.3); hold on
     plot(ax2, T_ref_dsc, q_meas, 'DisplayName', 'Measurement', ...
-         'Linestyle', '--', 'Linewidth', 2.);
-    plot(ax2, T_ref_dsc, q_res, 'DisplayName', 'Residuum', 'Linewidth', 2.);
+         'Linestyle', '--', 'Linewidth', 2.3);
+    plot(ax2, T_ref_dsc, q_res, 'DisplayName', 'Residuum', 'Linewidth', 2.3);
     legend(ax2, 'show', 'location', 'northwest');
     xlabel(ax2, 'T_{ref} [°C]');
     ylabel(ax2, '\Phi_q^{pcm,in} [mW]');
@@ -100,8 +100,8 @@ for j=1:length(nameSubDirs)
     xlim(ax2, [T_ref_dsc(1), T_ref_dsc(end)]);
     title(ax2, '')
     
-    print(fig1, [fit_dir, nameSubDirs{j}, '/c_p_vortrag'], '-dpng', '-r200');
-    print(fig2, [fit_dir, nameSubDirs{j}, '/heat_flux_vortrag'], '-dpng', '-r200');
+    print(fig1, [fit_dir, nameSubDirs{j}, '/c_p_vortrag2'], '-dpng', '-r200');
+    print(fig2, [fit_dir, nameSubDirs{j}, '/heat_flux_vortrag2'], '-dpng', '-r200');
     
     
 end
@@ -144,7 +144,7 @@ for i=1:length(dsc_list)
     c_p = calc_cp(dsc);
     legend_str = [num2str(dsc.Tinfo.Tstep), ' K/min'];
     plot(ax2, c_p(:,1), c_p(:,2), 'DisplayName', legend_str, ...
-        'LineWidth', 1.3);
+        'LineWidth', 2.2);
     
     
     
